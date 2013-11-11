@@ -1,45 +1,5 @@
-systemback (0.7.5.630) release; urgency=low
+systemback (0.7.6.001) release; urgency=low
 
-  * 0.7.5.630
-  * Support other themes with initial window size workaround
+  * 0.7.6.001
 
-  * 0.7.5.620
-  * Fix Gambas version check
-
-  * 0.7.5.610
-  * Rewrite the initial window size workaround
-
-  * 0.7.5.600
-  * Workaround for borderless window on Saucy + Unity
-  * Fix Gambas dependency
-  * Improve progress bar
-
-  * 0.7.5.510
-  * Compile with Gambas 3.5.0
-  * Initial Trusty (Ubuntu 14.04) support
-
-  * 0.7.5.500
-  * Improve sblive originality filter
-
-  * 0.7.5.400
-  * Rewrite Debian source
-
-  * 0.7.5.311
-  * Fix Systemback GUI reopening
-
-  * 0.7.5.310
-  * Fix scheduler file locking conflict
-
-  * 0.7.5.300
-  * Fix missing log files in /var/log directory
-  * Rebuild with Gambas 3.4.2
-
-  * 0.7.5.200
-  * Add some button tooltips
-
-  * 0.7.5.102
-  * Fix permission problem while reading user dirs
-
-  * 0.7.5.100
-
- -- Kende Krisztián <nemh@freemail.hu>  Sun, 03 Nov 2013 12:58:02 +0100
+ -- Kende Krisztián <nemh@freemail.hu>  Mon, 11 Nov 2013 18:12:36 +0100

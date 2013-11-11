@@ -1,0 +1,776 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-11-01 04:27+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .project:1
+msgid "systembackgui"
+msgstr ""
+
+#: systembackgui.form:351
+msgid "! Interrupt !"
+msgstr "! اقطع !"
+
+#: systembackgui.form:418
+msgid "Cancel"
+msgstr "ألغِ"
+
+#: systembackgui.form:502
+msgid "Storage directory"
+msgstr "دليل الوسيط"
+
+#: systembackgui.form:510
+msgid "Highlighted restore points"
+msgstr "نقاط الاستعادة المُبرزة"
+
+#: systembackgui.form:518
+msgid "Restore points"
+msgstr "نقاط الاستعادة"
+
+#: systembackgui.form:526
+msgid "Function menu"
+msgstr "قائمة الوظائف"
+
+#: systembackgui.form:541
+msgid "Point operations"
+msgstr "عمليات النقطة"
+
+#: systembackgui.form:550
+msgid "empty"
+msgstr "فارغ"
+
+#: systembackgui.form:699
+msgid "Create new"
+msgstr "أنشئ جديد"
+
+#: systembackgui.form:706
+msgid "Highlight"
+msgstr "أبرز"
+
+#: systembackgui.form:713
+msgid "Rename"
+msgstr "أعد التسمية"
+
+#: systembackgui.form:720
+msgid "Delete"
+msgstr "احذف"
+
+#: systembackgui.form:733
+msgid "Select restore point"
+msgstr "اختر نقطة استعادة"
+
+#: systembackgui.form:926
+msgid "System restore"
+msgstr "استعد النظام"
+
+#: systembackgui.form:934
+msgid "System copy"
+msgstr "انسخ النظام"
+
+#: systembackgui.form:942
+msgid "System install"
+msgstr "ثبّت النظام"
+
+#: systembackgui.form:950
+msgid "Live system create"
+msgstr "انشئ نظام حيّ"
+
+#: systembackgui.form:958
+msgid "System repair"
+msgstr "أصلح النظام"
+
+#: systembackgui.form:966
+msgid "System upgrade"
+msgstr "رقِّ النظام"
+
+#: systembackgui.form:973
+msgid "Exclude"
+msgstr "استثنِ"
+
+#: systembackgui.form:981
+msgid "Back"
+msgstr "السابق"
+
+#: systembackgui.form:988
+msgid "Next"
+msgstr "التالي"
+
+#: systembackgui.form:1000
+msgid "About"
+msgstr "حول"
+
+#: systembackgui.form:1008
+msgid "Schedule"
+msgstr "الجدولة"
+
+#: systembackgui.form:1022
+msgid "Maximum number of temporary restore points"
+msgstr "أقصى عدد لنقاطة الاستعادة المؤقّتة"
+
+#: systembackgui.form:1110
+msgid "Change path"
+msgstr "غيّر المسار"
+
+#: systembackgui.form:1111
+msgid "..."
+msgstr ""
+
+#: systembackgui.form:1141
+msgid "Restore type"
+msgstr "نوع الاستعادة"
+
+#: systembackgui.form:1149
+msgid "Full restore"
+msgstr "استعادة كاملة"
+
+#: systembackgui.form:1157
+msgid "System files restore"
+msgstr "استعادة ملفات النظام"
+
+#: systembackgui.form:1164
+msgid "User(s) configuration files restore"
+msgstr ""
+
+#: systembackgui.form:1171
+msgid "Keep newly installed configuration files"
+msgstr ""
+
+#: systembackgui.form:1178
+msgid "Options"
+msgstr "خيارات"
+
+#: systembackgui.form:1186
+msgid "Auto detection"
+msgstr "اكتشف آليًّا"
+
+#: systembackgui.form:1194
+msgid "Do not restore fstab file"
+msgstr "لا تستعد ملف fstab"
+
+#: systembackgui.form:1200
+msgid "Reinstall GRUB 2 bootloader:"
+msgstr "أعد تثبيت محمّل الإقلاع GRUB 2:"
+
+#: systembackgui.form:1210
+msgid "Disabled"
+msgstr "معطّل"
+
+#: systembackgui.form:1223
+msgid "Include user(s):"
+msgstr "ضمّن المستخدمين:"
+
+#: systembackgui.form:1243
+msgid "Filesystem:"
+msgstr "نظام الملفات:"
+
+#: systembackgui.form:1250
+msgid "Mount point:"
+msgstr "نقطة الضم:"
+
+#: systembackgui.form:1273
+msgid "Partition settings"
+msgstr "إعدادات القسم"
+
+#: systembackgui.form:1287
+msgid "Umount"
+msgstr "افصِل"
+
+#: systembackgui.form:1308
+msgid "Format"
+msgstr "الهيئة"
+
+#: systembackgui.form:1316
+msgid "Reset partitions settings"
+msgstr "أعد تعيين إعدادات الأقسام"
+
+#: systembackgui.form:1324
+msgid "Change partition settings"
+msgstr "غيّر إعدادات القسم"
+
+#: systembackgui.form:1341
+msgid "Transfer user configuration files"
+msgstr ""
+
+#: systembackgui.form:1349
+msgid "Copy user data files"
+msgstr "انسخ ملفات بيانات المستخدم"
+
+#: systembackgui.form:1355
+msgid "Install GRUB 2 bootloader:"
+msgstr "ثبّت محمّل الإقلاع GRUB 2:"
+
+#: systembackgui.form:1461
+msgid "Full name of the new user:"
+msgstr "اسم المستخدم الجديد الكامل:"
+
+#: systembackgui.form:1484
+msgid "New user name to login:"
+msgstr "اسم المستخدم الجديد للولوج:"
+
+#: systembackgui.form:1507
+msgid "New user account password:"
+msgstr "كلمة مرور حساب المستخدم الجديد:"
+
+#: systembackgui.form:1530
+msgid "New root password (optional, not recommended for Ubuntu):"
+msgstr "كلمة الجذر الجديدة (اختيارية، غير مستحسنة لأبونتو):"
+
+#: systembackgui.form:1553
+msgid "New hostname:"
+msgstr "اسم المضيف الجديد:"
+
+#: systembackgui.form:1590
+msgid "Live operations"
+msgstr ""
+
+#: systembackgui.form:1598
+msgid "Write target"
+msgstr "هدف الكتابة"
+
+#: systembackgui.form:1614
+msgid "Name of Live system"
+msgstr "اسم النظام الحيّ"
+
+#: systembackgui.form:1622
+msgid "Created Live images"
+msgstr "الصور الحيّة المُنشأة"
+
+#: systembackgui.form:1630
+msgid "Working directory"
+msgstr "دليل العمل"
+
+#: systembackgui.form:1677
+msgid "Include user data files"
+msgstr "ضمّن ملفات بيانات المستخدم"
+
+#: systembackgui.form:1690
+msgid "Convert to ISO"
+msgstr "حوّل إلى ISO"
+
+#: systembackgui.form:1703
+msgid "Write to USB"
+msgstr "اكتب على USB"
+
+#: systembackgui.form:1710
+msgid "Redetect devices"
+msgstr "أعد اكتشاف الأجهزة"
+
+#: systembackgui.form:1780
+msgid "Mount the faulty system partition(s) to '/mnt' directory according to the original structure.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
+msgstr ""
+
+#: systembackgui.form:1800
+msgid "Mount"
+msgstr "ضُمّ"
+
+#: systembackgui.form:1807
+msgid "Reset mounts"
+msgstr ""
+
+#: systembackgui.form:1815
+msgid "Repair type"
+msgstr "نوع الإصلاح"
+
+#: systembackgui.form:1823
+msgid "System files repair"
+msgstr "إصلاح ملفات النظام"
+
+#: systembackgui.form:1831
+msgid "Full repair"
+msgstr "إصلاح شامل"
+
+#: systembackgui.form:1838
+msgid "GRUB 2 repair"
+msgstr "إصلاح GRUB 2"
+
+#: systembackgui.form:1861
+msgid "Do not repair fstab file"
+msgstr "لا تُصلح ملف fstab"
+
+#: systembackgui.form:1888
+msgid "Add item to exclusion list"
+msgstr "أضف العنصر إلى قائمة الاستثناء"
+
+#: systembackgui.form:1902
+msgid "Remove item from exclusion list"
+msgstr "أزل العنصر من قائمة الاستثناء"
+
+#: systembackgui.form:1917
+msgid "Items"
+msgstr "العناصر"
+
+#: systembackgui.form:1925
+msgid "Excluded items"
+msgstr "العناصر المُستثناة"
+
+#: systembackgui.form:1933
+msgid "Exclude hidden user files and directories from restore points"
+msgstr "استثنِ ملفات المستخدم المخفية والأدلة من نقاط الاستعادة"
+
+#: systembackgui.form:1941
+msgid "Exclude user data files and directories from Live system"
+msgstr "استثنِ ملفات المستخدم والأدلة من النظام الحيّ"
+
+#: systembackgui.form:1975
+msgid "License"
+msgstr "الرخصة"
+
+#: systembackgui.form:1989
+msgid "Simple system backup and restore application with extra features"
+msgstr "تطبيق بسيط لنسخ النظام احتياطيًّا واستعادته مع بعض الميزات الإضافية"
+
+#: systembackgui.form:1996
+msgid "Project homepage:"
+msgstr "صفحة المشروع الرئيسية:"
+
+#: systembackgui.form:2021
+msgid "Contact:"
+msgstr "راسلني:"
+
+#: systembackgui.form:2037
+msgid "Donate:"
+msgstr "تبرّع:"
+
+#: systembackgui.form:2054
+msgid "Systemback version:"
+msgstr ""
+
+#: systembackgui.form:2074
+msgid "(c) 2013, Krisztián Kende"
+msgstr ""
+
+#: systembackgui.form:2117
+msgid "Writable Linux filesystem!"
+msgstr "نظام ملفات لينكس قابل للكتابة!"
+
+#: systembackgui.form:2156
+msgid "Re-read directories"
+msgstr "أعد قراءة الأدلة"
+
+#: systembackgui.form:2216
+msgid "Scheduler state:"
+msgstr "حالة المجدول:"
+
+#: systembackgui.form:2224
+msgid "Use silent mode"
+msgstr "استخدم الوضع الصامت"
+
+#: systembackgui.form:2239
+msgid "Timer settings"
+msgstr "إعدادات المؤقت"
+
+#: systembackgui.form:2246
+msgid "Waiting time before creating a new restore point:"
+msgstr "وقت الانتظار قبل إنشاء نقطة استعادة:"
+
+#: systembackgui.form:2260
+msgid "Visible countdown time:"
+msgstr ""
+
+#: systembackgui.form:2299
+msgid "Pop-up window position on screen:"
+msgstr "موقع النافذة المنبثقة على الشاشة:"
+
+#: systembackgui.form:2308
+msgid "Top left"
+msgstr "أعلى اليسار"
+
+#: systembackgui.form:2308
+msgid "Top right"
+msgstr "أعلى اليمين"
+
+#: systembackgui.form:2308
+msgid "Center"
+msgstr "الوسط"
+
+#: systembackgui.form:2308
+msgid "Bottom left"
+msgstr "أدنى اليسار"
+
+#: systembackgui.form:2308
+msgid "Bottom right"
+msgstr "أدنى اليمين"
+
+#: systembackgui.form:2315
+msgid "More"
+msgstr "أكثر"
+
+#: systembackgui.form:2323
+msgid "Less"
+msgstr "أقل"
+
+#: systembackgui.form:2473
+msgid "Creates a scheduled restore point within few seconds."
+msgstr ""
+
+#: systembackgui.form:2483
+msgid "Later"
+msgstr "لاحقًا"
+
+#: systembackgui.form:2490
+msgid "Start"
+msgstr "ابدأ"
+
+#: systembackgui.class:169
+msgid "scheduler"
+msgstr "المجدول"
+
+#: systembackgui.class:1169
+msgid "Live image"
+msgstr ""
+
+#: systembackgui.class:1201
+msgid "Currently running system"
+msgstr ""
+
+#: systembackgui.class:1455
+msgid "Everyone"
+msgstr ""
+
+#: systembackgui.class:1675
+msgid "Upgrading the system"
+msgstr "يرقّي النظام"
+
+#: systembackgui.class:1880
+msgid "Another Systemback process is currently running, please wait until it finishes."
+msgstr ""
+
+#: systembackgui.class:1886
+msgid "Unable to get exclusive lock!<p>First, close all package manager."
+msgstr "تعذّر الحصول على استثناء قفل!<p>أولًا، أغلق كل مدراء الحزم."
+
+#: systembackgui.class:1892
+msgid "The specified name contains unsupported character(s)!<p>Please enter a new name!"
+msgstr "الاسم المحدّد يحوي محارف غير صالحة!<p>فضلًا أدخِل اسمًا جديدًا!"
+
+#: systembackgui.class:1898
+msgid "Restore the system files to the following restore point:"
+msgstr "استعد ملفات النظام إلى نقطة الاستعادة التالية:"
+
+#: systembackgui.class:1905
+msgid "Repair the system files with the following restore point:"
+msgstr "أصلح ملفات النظام بنقطة الاستعادة التالية:"
+
+#: systembackgui.class:1912
+msgid "Repair the complete system with the following restore point:"
+msgstr ""
+
+#: systembackgui.class:1919
+msgid "Restore the complete user(s) configuration files to the following restore point:"
+msgstr "استعد ملفات إعداد مستخدمي الحاسوب الكاملة إلى نقطة الاستعادة التالية:"
+
+#: systembackgui.class:1926
+msgid "Restore the user(s) configuration files to the following restore point:"
+msgstr "استعد ملفات إعداد مستخدمي الحاسوب إلى نقطة الاستعادة التالية:"
+
+#: systembackgui.class:1933
+msgid "User(s) configuration files full restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr ""
+
+#: systembackgui.class:1934
+msgid "X restart"
+msgstr ""
+
+#: systembackgui.class:1942
+msgid "User(s) configuration files restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr ""
+
+#: systembackgui.class:1951
+msgid "System files repair are completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr ""
+
+#: systembackgui.class:1957
+msgid "Full system repair is completed."
+msgstr ""
+
+#: systembackgui.class:1963
+msgid "System repair is completed."
+msgstr ""
+
+#: systembackgui.class:1969
+msgid "Copy the system, using the following restore point:"
+msgstr "انسخ النظام، باستخدام نقطة الاستعادة التالية:"
+
+#: systembackgui.class:1976
+msgid "Install the system, using the following restore point:"
+msgstr "ثبّت النظام، باستخدام نقطة الاستعادة التالية:"
+
+#: systembackgui.class:1983
+msgid "Restore point creation is aborted! Not enough free disk space to complete the process."
+msgstr "قُوطعَ إنشاء نقطة استعادة. لا مساحة حرة على القرص لمتابعة العملية."
+
+#: systembackgui.class:1989
+msgid "Root privileges are required for running Systemback!"
+msgstr ""
+
+#: systembackgui.class:1995
+msgid "Restore complete system to the following restore point:"
+msgstr ""
+
+#: systembackgui.class:2002
+msgid "System files restoration are completed.<p>The computer will restart automatically within 30 seconds."
+msgstr "اكتمل ترميم ملفات النظام.<p>سيُعاد تشغيل الحاسوب تلقائيًّا خلال 30 ثانية."
+
+#: systembackgui.class:2003
+msgid "Reboot"
+msgstr "أعد الإقلاع"
+
+#: systembackgui.class:2011
+msgid "Full system restoration is completed.<p>The computer will restart automatically within 30 seconds."
+msgstr ""
+
+#: systembackgui.class:2020
+msgid "The specified partition(s) does not have enough free space to copy the system! The copied system will not function properly!"
+msgstr ""
+
+#: systembackgui.class:2026
+msgid "System copy is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "اكتمل نسخ النظام، لكن مع حدوث خطأ أثناء تثبيت GRUB! تحتاج إلى تثبيت محّمل إقلاع يدويًّا."
+
+#: systembackgui.class:2032
+msgid "An error occurred while reinstalling GRUB!"
+msgstr "حدث خطأ أثناء إعادة تثبيت GRUB!"
+
+#: systembackgui.class:2038
+msgid "Full system repair is completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr ""
+
+#: systembackgui.class:2044
+msgid "System copy is completed."
+msgstr "اكتمل نسخ النظام."
+
+#: systembackgui.class:2050
+msgid "An error occurred while creating filesystem image!"
+msgstr "حدث خطأ أثناء إنشاء صورة لنظام الملفات!"
+
+#: systembackgui.class:2056
+msgid "An error occurred while creating container file!"
+msgstr "حدث خطأ أثناء إنشاء الملف الحاوي!"
+
+#: systembackgui.class:2062
+msgid "Live system creation is completed.<p>The created .sblive file can be written to pendrive."
+msgstr ""
+
+#: systembackgui.class:2068
+msgid "The selected directory does not have enough free space to create Live system!"
+msgstr "الدليل المحدّد ليس له مساحة حرّة كافية لإنشاء النظام الحيّ!"
+
+#: systembackgui.class:2074
+msgid "Format the"
+msgstr "هيّئ"
+
+#: systembackgui.class:2074
+msgid ", and write the following Live system image:"
+msgstr "، واكتب صورة النظام الحيّ التالية:"
+
+#: systembackgui.class:2081
+msgid "The specified partition could not be mounted!"
+msgstr "تعذّر ضمّ القسم المحدّد!"
+
+#: systembackgui.class:2095
+msgid "GRUB 2 repair is completed."
+msgstr "اكتمل إصلاح GRUB 2."
+
+#: systembackgui.class:2101
+msgid "System install is completed."
+msgstr "اكتمل تثبيت النظام."
+
+#: systembackgui.class:2107
+msgid "System install is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "اكتمل تثبيت النظام، لكن مع حدوث خطأ أثناء تثبيت GRUB! تحتاج إلى تثبيت محّمل إقلاع يدويًّا."
+
+#: systembackgui.class:2113
+msgid "The specified partition(s) does not have enough free space to install the system! The installed system will not function properly!"
+msgstr ""
+
+#: systembackgui.class:2119
+msgid "The specified partition could not be formatted (in use or unavailable)!"
+msgstr "تعذّر تهيئة القسم المحدّد (إما أنه يُستخدم أو أنه غير متوفّر)!"
+
+#: systembackgui.class:2133
+msgid "An error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "حدث خطأ أثناء إعادة تثبيت GRUB! قد لا يكون النظام قابلًا للإقلاع. (بشكل عام، اختلاف المعمارية يسبّب المشكلة.)"
+
+#: systembackgui.class:2139
+msgid "Restore point creation is aborted! There has been critical changes in the file system during this operation."
+msgstr "قُوطع إنشاء نقطة الاستعادة! توجد تغيّرات حَرِجة في نظام الملفات أثناء العملية."
+
+#: systembackgui.class:2145
+msgid "System copying is aborted! There has been critical changes in the file system during this operation."
+msgstr "قُوطع نسخ النظام! توجد تغيّرات حَرِجة في نظام الملفات أثناء العملية."
+
+#: systembackgui.class:2151
+msgid "System installation is aborted! There has been critical changes in the file system during this operation."
+msgstr "قُوطع تثبيت النظام! توجد تغيّرات حَرِجة في نظام الملفات أثناء العملية."
+
+#: systembackgui.class:2157
+msgid "Repair the GRUB 2 bootloader."
+msgstr "أصلِح محمّل الإقلاع GRUB 2."
+
+#: systembackgui.class:2164
+msgid "The selected partition does not have enough space to write the Live system!"
+msgstr "القسم المحدّد ليس له مساحة حرّة لكتابة النظام الحيّ!"
+
+#: systembackgui.class:2170
+msgid "An error occurred while unpacking Live system files!"
+msgstr "حدث خطأ أثناء فكّ تحزيم ملفات النظام الحيّ!"
+
+#: systembackgui.class:2176
+msgid "Live system image write is completed."
+msgstr "اكتمل كتابة صورة النظام الحيّ."
+
+#: systembackgui.class:2182
+msgid "An error occurred while renaming essential Live files!"
+msgstr ""
+
+#: systembackgui.class:2188
+msgid "An error occurred while creating .iso image!"
+msgstr "حدث خطأ أثناء إنشاء صورة ‎.iso !"
+
+#: systembackgui.class:2194
+msgid "An error occurred while reading .sblive image!"
+msgstr "حدث خطأ أثناء قراءة صورة ‎.sblive !"
+
+#: systembackgui.class:2449
+msgid "not used"
+msgstr "غير مُستخدم"
+
+#: systembackgui.class:3171
+msgid "Deleting incomplete restore point"
+msgstr "يحذف نقطة الاستعادة غير المكتملة"
+
+#: systembackgui.class:3196
+msgid "Deleting old restore point"
+msgstr "يحذف نقطة الاستعادة القديمة"
+
+#: systembackgui.class:3299
+msgid "Checking files and directories"
+msgstr "يتحقّق من الملفات والأدلة"
+
+#: systembackgui.class:3434
+msgid "Creating restore point"
+msgstr "ينشأ نقطة استعادة"
+
+#: systembackgui.class:3617
+msgid "Emptying cache"
+msgstr "يمحو الخبيئة"
+
+#: systembackgui.class:3896
+msgid "day(s)"
+msgstr ""
+
+#: systembackgui.class:3897
+msgid "hour(s)"
+msgstr ""
+
+#: systembackgui.class:3898
+msgid "minute(s)"
+msgstr ""
+
+#: systembackgui.class:3899
+msgid "seconds"
+msgstr ""
+
+#: systembackgui.class:3905
+msgid "Partition"
+msgstr ""
+
+#: systembackgui.class:3906
+msgid "Current mount point"
+msgstr "نقطة الضمّ الحالية"
+
+#: systembackgui.class:3907
+msgid "New mount point"
+msgstr "نقطة ضمّ جديدة"
+
+#: systembackgui.class:3908
+msgid "Filesystem"
+msgstr "نظام الملفات"
+
+#: systembackgui.class:3922
+msgid "Device"
+msgstr "الجهاز"
+
+#: systembackgui.class:4181
+msgid "Copying the system"
+msgstr "ينسخ النظام"
+
+#: systembackgui.class:4181
+msgid "Installing the system"
+msgstr "يثبّت النظام"
+
+#: systembackgui.class:4230
+msgid "Writing Live image to USB device"
+msgstr "يكتب النظام الحيّ إلى جهاز USB"
+
+#: systembackgui.class:4241
+msgid "Deleting restore point"
+msgstr "يحذف نقطة الاستعادة"
+
+#: systembackgui.class:4241
+msgid "Restoring the full system"
+msgstr ""
+
+#: systembackgui.class:4241
+msgid "Restoring users configuration files"
+msgstr "يستعيد ملفات إعداد المستخدمين"
+
+#: systembackgui.class:4241
+msgid "Restoring the system files"
+msgstr "يستعيد ملفات النظام"
+
+#: systembackgui.class:4241
+msgid "Repairing the system files"
+msgstr "يُصلح ملفات النظام"
+
+#: systembackgui.class:4241
+msgid "Repairing the full system"
+msgstr ""
+
+#: systembackgui.class:4241
+msgid "Creating Live system"
+msgstr "ينشأ النظام الحيّ"
+
+#: systembackgui.class:4241
+msgid "Converting Live system image"
+msgstr "يحوّل صورة النظام الحيّ"
+
+#: systembackgui.class:7428
+msgid "Repairing the GRUB 2"
+msgstr "يُصلح GRUB 2"
+
+#: systembackgui.class:11134
+msgid "Boot Live without xorg.conf file"
+msgstr ""
+
+#: systembackgui.class:11508
+msgid "Boot Live system"
+msgstr "أقلِع النظام الحيّ"
+
+#: systembackgui.class:11508
+msgid "Boot Live in safe graphics mode"
+msgstr ""
+
+#: systembackgui.class:11508
+msgid "Boot Live in debug mode"
+msgstr ""
+
+#: systembackgui.class:11509
+msgid "Press 'E' key to edit"
+msgstr "اضغط زر 'E' للتحرير"
+
+#: systembackgui.class:11514
+msgid "Press TAB key to edit"
+msgstr "اضغط زر TAB للتحرير"
+
+#: systembackgui.class:12371
+msgid "Enabled"
+msgstr "مُمكّن"
+

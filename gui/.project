@@ -1,8 +1,8 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.5.0
+# Compiled with Gambas 3.5.1
 Title=systembackgui
 Startup=systembackgui
-Version=0.7.5
+Version=0.7.6
 Component=gb.image
 Component=gb.gtk
 Authors="Krisztián Kende"

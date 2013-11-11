@@ -1,0 +1,725 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-11-01 04:27+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .project:1
+msgid "systembackgui"
+msgstr "-"
+
+#: systembackgui.class:152
+msgid "scheduler"
+msgstr ""
+
+#: systembackgui.class:1152
+msgid "Live image"
+msgstr "Imagine Live"
+
+#: systembackgui.class:1184
+msgid "Currently running system"
+msgstr "În prezent sistemul rulează"
+
+#: systembackgui.class:1438
+msgid "Everyone"
+msgstr ""
+
+#: systembackgui.class:1651
+msgid "Upgrading the system"
+msgstr "Actualizare sistem"
+
+#: systembackgui.class:1842
+msgid "Another Systemback process is currently running, please wait until it finishes."
+msgstr "Un alt proces Systemback se execută în prezent, vă rugăm să așteptați până când se termină."
+
+#: systembackgui.class:1848
+msgid "Unable to get exclusive lock!<p>First, close all package manager."
+msgstr "Blocarea exclusivă nu este posibilă!<p>Închideți toate programele pentru administrare pachete."
+
+#: systembackgui.class:1854
+msgid "The specified name contains unsupported character(s)!<p>Please enter a new name!"
+msgstr "Numele specificat conține caracter(e) neacceptat(e)!<p>Vă rugăm să introduceți un nume nou!"
+
+#: systembackgui.class:1860
+msgid "Restore the system files to the following restore point:"
+msgstr "Restabilire fișiere de sistem folosind următorul punct de restabilire:"
+
+#: systembackgui.class:1867
+msgid "Repair the system files with the following restore point:"
+msgstr "Reparare fișiere de sistem folsoind următorul punct de restabilire:"
+
+#: systembackgui.class:1874
+msgid "Repair the complete system with the following restore point:"
+msgstr "Reparare sistem complet folosind următorul punct de restabilire:"
+
+#: systembackgui.class:1881
+msgid "Restore the complete user(s) configuration files to the following restore point:"
+msgstr "Restabilire completă a fișierelor de configurare folosind următorul punct de restabilire:"
+
+#: systembackgui.class:1888
+msgid "Restore the user(s) configuration files to the following restore point:"
+msgstr "Restabilire fișiere de configurare ale utilizatorilor folosind următorul punct de restabilire:"
+
+#: systembackgui.class:1895
+msgid "User(s) configuration files full restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr "Restabilirea completă a fișierelor de configurare este finalizată.<p>Serverul X repornește automat într-un interval de 30 de secunde."
+
+#: systembackgui.class:1896
+msgid "X restart"
+msgstr "Reporniți X"
+
+#: systembackgui.class:1904
+msgid "User(s) configuration files restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr "Restabilirea fișierelor de configurare este finalizată.<p>Serverul X repornește automat într-un interval de 30 de secunde."
+
+#: systembackgui.class:1913
+msgid "System files repair are completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Repararea fișierelor de sistem este finalizată,  dar cu eroare la reinstalarea GRUB! Pornirea sistemului nu este garantată! (În general, problema este cauzată de diferența de arhitectură.)"
+
+#: systembackgui.class:1919
+msgid "Full system repair is completed."
+msgstr "Repararea completă a sistemului este finalizată."
+
+#: systembackgui.class:1925
+msgid "System repair is completed."
+msgstr "Repararea sistemului este finalizată."
+
+#: systembackgui.class:1931
+msgid "Copy the system, using the following restore point:"
+msgstr "Copiază sistemul, folosind următorul punct de restabilire:"
+
+#: systembackgui.class:1938
+msgid "Install the system, using the following restore point:"
+msgstr "Instalează sistemul, folosind următorul punct de restabilire:"
+
+#: systembackgui.class:1945
+msgid "Restore point creation is aborted! Not enough free disk space to complete the process."
+msgstr "Crearea punctului de restabilire este abandonată! Nu există suficient spațiu pe disc pentru a finaliza procesul."
+
+#: systembackgui.class:1951
+msgid "Root privileges are required for running Systemback!"
+msgstr "Pentru Systemback sunt necesare privilegii root!"
+
+#: systembackgui.class:1957
+msgid "Restore complete system to the following restore point:"
+msgstr "Restaurarea sistemului complet folosind următorul punct de restabilire:"
+
+#: systembackgui.class:1964
+msgid "System files restoration are completed.<p>The computer will restart automatically within 30 seconds."
+msgstr "Restabilirea fișierelor de sistem este finalizată.<p>Calculatorul va fi repornit automat în interval de 30 de secunde."
+
+#: systembackgui.class:1965
+msgid "Reboot"
+msgstr "Repornire"
+
+#: systembackgui.class:1973
+msgid "Full system restoration is completed.<p>The computer will restart automatically within 30 seconds."
+msgstr "Restabilirea sistemului complet este finalizată.<p>Calculatorul va fi repornit automat într-un interval de 30 de secunde."
+
+#: systembackgui.class:1982
+msgid "The specified partition(s) does not have enough free space to copy the system! The copied system will not function properly!"
+msgstr "Partiția specificată nu are suficient spațiu liber pentru a copia sistemul! Sistemul copiat nu va funcționa corect!"
+
+#: systembackgui.class:1988
+msgid "System copy is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "Copierea sistemului este finalizată, dar cu eroare la instalarea GRUB! Trebuie să instalați manual un încărcător de sisteme."
+
+#: systembackgui.class:1994
+msgid "An error occurred while reinstalling GRUB!"
+msgstr "Eroare la reinstalarea GRUB!"
+
+#: systembackgui.class:2000
+msgid "Full system repair is completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Repararea completă a sistemului este finalizată, dar cu eroare la reinstalarea GRUB! Pornirea sistemului nu este garantată! (În general, problema este cauzată de diferența de arhitectură.)"
+
+#: systembackgui.class:2006
+msgid "System copy is completed."
+msgstr "Copierea sistemului este finalizată."
+
+#: systembackgui.class:2012
+msgid "An error occurred while creating filesystem image!"
+msgstr "Eroare la crearea imaginei sistemukui!"
+
+#: systembackgui.class:2018
+msgid "An error occurred while creating container file!"
+msgstr ""
+
+#: systembackgui.class:2024
+msgid "Live system creation is completed.<p>The created .sblive file can be written to pendrive."
+msgstr ""
+
+#: systembackgui.class:2030
+msgid "The selected directory does not have enough free space to create Live system!"
+msgstr "Dosarul selectat nu are suficient spațiu liber pentru a crea un sistem Live!"
+
+#: systembackgui.class:2036
+msgid ", and write the following Live system image:"
+msgstr ""
+
+#: systembackgui.class:2036
+msgid "Format the"
+msgstr ""
+
+#: systembackgui.class:2043
+msgid "The specified partition could not be mounted!"
+msgstr "Partiția specificată nu se poate monta!"
+
+#: systembackgui.class:2057
+msgid "GRUB 2 repair is completed."
+msgstr "Repararea GRUB 2 este finalizată."
+
+#: systembackgui.class:2063
+msgid "System install is completed."
+msgstr "Instalarea sistemului este finalizată."
+
+#: systembackgui.class:2069
+msgid "System install is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "Instalarea sistemului este terminată, dar cu  eroare la instalarea GRUB-ului! Trebuie să instalați manual încărcătorul de sisteme."
+
+#: systembackgui.class:2075
+msgid "The specified partition(s) does not have enough free space to install the system! The installed system will not function properly!"
+msgstr "Partițiile specificate nu au suficient spațiu liber pentru a instala sistemul! Sistemul instalat nu va funcționa corect!"
+
+#: systembackgui.class:2081
+msgid "The specified partition could not be formatted (in use or unavailable)!"
+msgstr "Partiția specificată nu se poate formata (este în uz sau nu este disponibilă)!"
+
+#: systembackgui.class:2095
+msgid "An error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Eroare la reinstalarea GRUB! (În general, problema este cauzată de diferența de arhitectură.)"
+
+#: systembackgui.class:2101
+msgid "Restore point creation is aborted! There has been critical changes in the file system during this operation."
+msgstr "Crearea punctului de restabilire este abandonată! În timpul acestei operațiuni au fost efectuate modificări importante în sistemul de fișiere."
+
+#: systembackgui.class:2107
+msgid "System copying is aborted! There has been critical changes in the file system during this operation."
+msgstr "Copierea sistemului este abandonată! În timpul acestei operațiuni au fost efectuate modificări importante în sistemul de fișiere."
+
+#: systembackgui.class:2113
+msgid "System installation is aborted! There has been critical changes in the file system during this operation."
+msgstr "Instalarea sistemului este abandonată! În timpul acestei operațiuni au fost efectuate modificări importante în sistemul de fișiere."
+
+#: systembackgui.class:2119
+msgid "Repair the GRUB 2 bootloader."
+msgstr "Repararea încărcătorului de sisteme GRUB 2."
+
+#: systembackgui.class:2126
+msgid "The selected partition does not have enough space to write the Live system!"
+msgstr ""
+
+#: systembackgui.class:2132
+msgid "An error occurred while unpacking Live system files!"
+msgstr ""
+
+#: systembackgui.class:2138
+msgid "Live system image write is completed."
+msgstr ""
+
+#: systembackgui.class:2144
+msgid "An error occurred while renaming essential Live files!"
+msgstr ""
+
+#: systembackgui.class:2150
+msgid "An error occurred while creating .iso image!"
+msgstr ""
+
+#: systembackgui.class:2156
+msgid "An error occurred while reading .sblive image!"
+msgstr ""
+
+#: systembackgui.class:2411
+msgid "not used"
+msgstr ""
+
+#: systembackgui.class:3125
+msgid "Deleting incomplete restore point"
+msgstr "Ștergerea punctelor de restabilire incomplete"
+
+#: systembackgui.class:3150
+msgid "Deleting old restore point"
+msgstr "Ștergere punct de restabilire vechi"
+
+#: systembackgui.class:3253
+msgid "Checking files and directories"
+msgstr "Verificarea dosarelor și fișierelor"
+
+#: systembackgui.class:3380
+msgid "Creating restore point"
+msgstr "Creare punct de restabilire"
+
+#: systembackgui.class:3562
+msgid "Emptying cache"
+msgstr "Golire cache"
+
+#: systembackgui.class:3840
+msgid "day(s)"
+msgstr ""
+
+#: systembackgui.class:3841
+msgid "hour(s)"
+msgstr ""
+
+#: systembackgui.class:3842
+msgid "minute(s)"
+msgstr ""
+
+#: systembackgui.class:3843
+msgid "seconds"
+msgstr ""
+
+#: systembackgui.class:3849
+msgid "Partition"
+msgstr "Partiție"
+
+#: systembackgui.class:3850
+msgid "Current mount point"
+msgstr "Punctul actual de montare"
+
+#: systembackgui.class:3851
+msgid "New mount point"
+msgstr "Punt nou de montare"
+
+#: systembackgui.class:3852
+msgid "Filesystem"
+msgstr "Sistem de fișiere"
+
+#: systembackgui.class:3866
+msgid "Device"
+msgstr ""
+
+#: systembackgui.class:4115
+msgid "Copying the system"
+msgstr "Copiere sistem"
+
+#: systembackgui.class:4115
+msgid "Installing the system"
+msgstr "Instalare sistem"
+
+#: systembackgui.class:4154
+msgid "Writing Live image to USB device"
+msgstr ""
+
+#: systembackgui.class:4165
+msgid "Converting Live system image"
+msgstr ""
+
+#: systembackgui.class:4165
+msgid "Creating Live system"
+msgstr "Creare sistem Live"
+
+#: systembackgui.class:4165
+msgid "Deleting restore point"
+msgstr "Ștergere punct de restabilire"
+
+#: systembackgui.class:4165
+msgid "Repairing the full system"
+msgstr "Reparare sistem complet"
+
+#: systembackgui.class:4165
+msgid "Repairing the system files"
+msgstr "Reparare fișiere de sistem"
+
+#: systembackgui.class:4165
+msgid "Restoring the full system"
+msgstr "Restabilire sistem complet"
+
+#: systembackgui.class:4165
+msgid "Restoring the system files"
+msgstr "Restabilire fișiere de sistem"
+
+#: systembackgui.class:4165
+msgid "Restoring users configuration files"
+msgstr "Restabilire fișiere de configurare ale utilizatorilor"
+
+#: systembackgui.class:7285
+msgid "Repairing the GRUB 2"
+msgstr "Reparare GRUB 2"
+
+#: systembackgui.class:10923
+msgid "Boot Live without xorg.conf file"
+msgstr ""
+
+#: systembackgui.class:11289
+msgid "Boot Live in debug mode"
+msgstr ""
+
+#: systembackgui.class:11289
+msgid "Boot Live in safe graphics mode"
+msgstr ""
+
+#: systembackgui.class:11289
+msgid "Boot Live system"
+msgstr ""
+
+#: systembackgui.class:11290
+msgid "Press 'E' key to edit"
+msgstr ""
+
+#: systembackgui.class:11295
+msgid "Press TAB key to edit"
+msgstr ""
+
+#: systembackgui.class:12104
+msgid "Enabled"
+msgstr ""
+
+#: systembackgui.form:346
+msgid "! Interrupt !"
+msgstr "! Întrerupe !"
+
+#: systembackgui.form:413
+msgid "Cancel"
+msgstr "Renunță"
+
+#: systembackgui.form:497
+msgid "Storage directory"
+msgstr "Dosarul de salvare"
+
+#: systembackgui.form:505
+msgid "Highlighted restore points"
+msgstr "Puncte de restabilire subliniate"
+
+#: systembackgui.form:513
+msgid "Restore points"
+msgstr "Puncte de restabilire"
+
+#: systembackgui.form:521
+msgid "Function menu"
+msgstr "Funcția meniu"
+
+#: systembackgui.form:536
+msgid "Point operations"
+msgstr "Operațiuni cu puncte"
+
+#: systembackgui.form:545
+msgid "empty"
+msgstr ""
+
+#: systembackgui.form:694
+msgid "Create new"
+msgstr "Creare nou"
+
+#: systembackgui.form:701
+msgid "Highlight"
+msgstr "Evidențiere"
+
+#: systembackgui.form:708
+msgid "Rename"
+msgstr "Redenumește"
+
+#: systembackgui.form:715
+msgid "Delete"
+msgstr "Șterge"
+
+#: systembackgui.form:907
+msgid "System restore"
+msgstr "Restabilire sistem"
+
+#: systembackgui.form:915
+msgid "System copy"
+msgstr "Copiere sistem"
+
+#: systembackgui.form:923
+msgid "System install"
+msgstr "Instalare sistem"
+
+#: systembackgui.form:931
+msgid "Live system create"
+msgstr "Creare sistem Live"
+
+#: systembackgui.form:939
+msgid "System repair"
+msgstr "Reparare sistem"
+
+#: systembackgui.form:947
+msgid "System upgrade"
+msgstr "Actualizare sistem"
+
+#: systembackgui.form:954
+msgid "Exclude"
+msgstr "Excluderi"
+
+#: systembackgui.form:979
+msgid "About"
+msgstr "Despre aplicație"
+
+#: systembackgui.form:987
+msgid "Schedule"
+msgstr ""
+
+#: systembackgui.form:1095
+msgid "Next"
+msgstr "Înainte"
+
+#: systembackgui.form:1102
+msgid "Back"
+msgstr "Înapoi"
+
+#: systembackgui.form:1110
+msgid "Restore type"
+msgstr "Tipul de restabilire"
+
+#: systembackgui.form:1118
+msgid "Full restore"
+msgstr "Restabilire completă"
+
+#: systembackgui.form:1126
+msgid "System files restore"
+msgstr "Restabilirea fișierelor sistemului"
+
+#: systembackgui.form:1133
+msgid "User(s) configuration files restore"
+msgstr "Restabilire fișiere de configurare ale utilizatorilor"
+
+#: systembackgui.form:1140
+msgid "Keep newly installed configuration files"
+msgstr "Păstrează fișierele de configurare nou instalate"
+
+#: systembackgui.form:1147
+msgid "Options"
+msgstr "Opțiuni"
+
+#: systembackgui.form:1155
+msgid "Auto detection"
+msgstr "Detectare automată"
+
+#: systembackgui.form:1163
+msgid "Do not restore fstab file"
+msgstr "Nu restabilește fișierul fstab"
+
+#: systembackgui.form:1169
+msgid "Reinstall GRUB 2 bootloader:"
+msgstr "Reinstalare încărcător de sisteme GRUB 2:"
+
+#: systembackgui.form:1179
+msgid "Disabled"
+msgstr "Dezactivat"
+
+#: systembackgui.form:1192
+msgid "Include user(s):"
+msgstr ""
+
+#: systembackgui.form:1212
+msgid "Filesystem:"
+msgstr "Sistem de fișiere:"
+
+#: systembackgui.form:1219
+msgid "Mount point:"
+msgstr "Punct de montare:"
+
+#: systembackgui.form:1242
+msgid "Partition settings"
+msgstr "Configurări partiție"
+
+#: systembackgui.form:1256
+msgid "Umount"
+msgstr "Demontează"
+
+#: systembackgui.form:1277
+msgid "Format"
+msgstr "Formatare"
+
+#: systembackgui.form:1308
+msgid "Transfer user configuration files"
+msgstr "Realizează transferul fișierelor de configurare ale utilizatorilor"
+
+#: systembackgui.form:1316
+msgid "Copy user data files"
+msgstr "Copiază fișiere de date ale utilizatorilor"
+
+#: systembackgui.form:1322
+msgid "Install GRUB 2 bootloader:"
+msgstr "Instalare încărcător de sistem GRUB 2:"
+
+#: systembackgui.form:1428
+msgid "Full name of the new user:"
+msgstr "Numele complet al noului utilizator:"
+
+#: systembackgui.form:1451
+msgid "New user name to login:"
+msgstr "Nume autentificare pentru noul utilizator:"
+
+#: systembackgui.form:1474
+msgid "New user account password:"
+msgstr "Parola pentru contul noului utilizator:"
+
+#: systembackgui.form:1497
+msgid "New root password (optional, not recommended for Ubuntu):"
+msgstr "Noua parolă de root (opțional, nu este recomandată pentru Ubuntu):"
+
+#: systembackgui.form:1520
+msgid "New hostname:"
+msgstr "Nume nou pentru gazdă:"
+
+#: systembackgui.form:1557
+msgid "Live operations"
+msgstr ""
+
+#: systembackgui.form:1565
+msgid "Write target"
+msgstr ""
+
+#: systembackgui.form:1581
+msgid "Name of Live system"
+msgstr ""
+
+#: systembackgui.form:1589
+msgid "Created Live images"
+msgstr ""
+
+#: systembackgui.form:1597
+msgid "Working directory"
+msgstr "Dosar de lucru"
+
+#: systembackgui.form:1644
+msgid "Include user data files"
+msgstr ""
+
+#: systembackgui.form:1657
+msgid "Convert to ISO"
+msgstr ""
+
+#: systembackgui.form:1670
+msgid "Write to USB"
+msgstr ""
+
+#: systembackgui.form:1745
+msgid "Mount the faulty system partition(s) to '/mnt' directory according to the original structure.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
+msgstr "Montează partițiile sistemului defect sub dosarul  '/mnt', în conformitate cu structura inițială.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
+
+#: systembackgui.form:1765
+msgid "Mount"
+msgstr "Montează"
+
+#: systembackgui.form:1779
+msgid "Repair type"
+msgstr "Tipul de reparație"
+
+#: systembackgui.form:1787
+msgid "System files repair"
+msgstr "Repararea fisierelor de sistem"
+
+#: systembackgui.form:1795
+msgid "Full repair"
+msgstr "Reparare totală"
+
+#: systembackgui.form:1802
+msgid "GRUB 2 repair"
+msgstr "Reparare GRUB 2"
+
+#: systembackgui.form:1825
+msgid "Do not repair fstab file"
+msgstr "Nu repara fișierul fstab"
+
+#: systembackgui.form:1881
+msgid "Items"
+msgstr "Elemente"
+
+#: systembackgui.form:1889
+msgid "Excluded items"
+msgstr "Elemente excluse"
+
+#: systembackgui.form:1897
+msgid "Exclude hidden user files and directories from restore points"
+msgstr "Exclude fișierele și dosarele ascunse ale utilizatorului din punctele de restabilire"
+
+#: systembackgui.form:1905
+msgid "Exclude user data files and directories from Live system"
+msgstr ""
+
+#: systembackgui.form:1933
+msgid "License"
+msgstr "Licență"
+
+#: systembackgui.form:1947
+msgid "Simple system backup and restore application with extra features"
+msgstr "O aplicație simplă pentru crearea de copii de siguranță și restabilirea acestora, cu caracteristici suplimentare"
+
+#: systembackgui.form:1954
+msgid "Project homepage:"
+msgstr "Pagina web a proiectului:"
+
+#: systembackgui.form:1979
+msgid "Contact:"
+msgstr "Contact:"
+
+#: systembackgui.form:1995
+msgid "Donate:"
+msgstr "Donație:"
+
+#: systembackgui.form:2012
+msgid "Systemback version:"
+msgstr "Versiune Systemback:"
+
+#: systembackgui.form:2032
+msgid "(c) 2013, Krisztián Kende"
+msgstr "-"
+
+#: systembackgui.form:2075
+msgid "Writable Linux filesystem!"
+msgstr "Sistem de fișiere Linux cu drepturi de scriere!"
+
+#: systembackgui.form:2172
+msgid "Scheduler state:"
+msgstr ""
+
+#: systembackgui.form:2180
+msgid "Use silent mode"
+msgstr ""
+
+#: systembackgui.form:2195
+msgid "Timer settings"
+msgstr ""
+
+#: systembackgui.form:2202
+msgid "Waiting time before creating a new restore point:"
+msgstr ""
+
+#: systembackgui.form:2216
+msgid "Visible countdown time:"
+msgstr ""
+
+#: systembackgui.form:2255
+msgid "Pop-up window position on screen:"
+msgstr ""
+
+#: systembackgui.form:2264
+msgid "Bottom left"
+msgstr ""
+
+#: systembackgui.form:2264
+msgid "Bottom right"
+msgstr ""
+
+#: systembackgui.form:2264
+msgid "Center"
+msgstr ""
+
+#: systembackgui.form:2264
+msgid "Top left"
+msgstr ""
+
+#: systembackgui.form:2264
+msgid "Top right"
+msgstr ""
+
+#: systembackgui.form:2401
+msgid "Creates a scheduled restore point within few seconds."
+msgstr ""
+
+#: systembackgui.form:2411
+msgid "Later"
+msgstr ""
+
+#: systembackgui.form:2418
+msgid "Start"
+msgstr "Pornește"
+

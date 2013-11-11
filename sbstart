@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [[ "350" -le "$(gbr3 -V | sed "s+\.++g" | head -c 3)" ]]
+then
+
+  if [[ "${1}" = "schedulerdaemon" ]]
+  then sudo -nH systemback schedulerdaemon ${XAUTHORITY}
+  elif [[ -s /usr/bin/systembackgui ]]
+  then
+
+    if grep "Component=gb.gtk" /usr/bin/systembackgui >/dev/null 2>&1
+    then
+
+      if [[ -e /usr/lib/gambas3/gb.gtk.so || -e /usr/local/lib/gambas3/gb.gtk.so ]]
+      then systembackgui
+      elif which zenity >/dev/null
+      then zenity --title="Systemback" --error --text="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
+      else kdialog --title="Systemback" --error="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
+      fi
+
+    elif grep "Component=gb.qt4" /usr/bin/systembackgui >/dev/null 2>&1
+    then
+
+      if [[ -e /usr/lib/gambas3/gb.qt4.so || -e /usr/local/lib/gambas3/gb.qt4.so ]]
+      then systembackgui
+      elif which zenity >/dev/null
+      then zenity --title="Systemback" --error --text="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
+      else kdialog --title="Systemback" --error="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
+      fi
+
+    fi
+
+  else systemback
+  fi
+
+else
+
+  if which zenity >/dev/null
+  then zenity --title="Systemback" --error --text="Gambas runtime version is too old!\n\nPlease upgrade your system."
+  else kdialog --title="Systemback" --error="Gambas runtime version is too old!\n\nPlease upgrade your system."
+  fi
+
+  if [[ "${?}" != "0" ]]
+  then
+
+    tput reset
+    tput bold
+    tput setaf 1
+    echo -e "\n Gambas runtime version is too old!\n\n Please upgrade your system.\n"
+    tput sgr0
+    exit 1
+
+  fi
+
+fi

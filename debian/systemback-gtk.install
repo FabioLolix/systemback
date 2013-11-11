@@ -1,0 +1,9 @@
+gui/systembackgui usr/bin
+systemback-kde.desktop usr/share/applications
+systemback.desktop usr/share/applications
+icons/128x128/systemback.png usr/share/icons/hicolor/128x128/apps
+icons/256x256/systemback.png usr/share/icons/hicolor/256x256/apps
+icons/48x48/systemback.png usr/share/icons/hicolor/48x48/apps
+icons/64x64/systemback.png usr/share/icons/hicolor/64x64/apps
+efi.tar.gz usr/share/systemback
+splash.png usr/share/systemback

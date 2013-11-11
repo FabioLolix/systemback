@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+if [[ "${1}" = "upgrade" && -s /tmp/sbschedulerid ]]
+then echo -n "restart" >/tmp/sbschedulerid
+elif [[ "${1}" = "purge" && -e /etc/systemback.conf && -e /etc/systemback.excludes ]]
+then rm /etc/systemback.{conf,excludes}
+fi
+#DEBHELPER#

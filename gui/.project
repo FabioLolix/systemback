@@ -1,0 +1,13 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.5.0
+Title=systembackgui
+Startup=systembackgui
+Version=0.7.5
+Component=gb.image
+Component=gb.gtk
+Authors="Krisztián Kende"
+TabSize=2
+Translate=1
+Language=en
+ExecPath=/home/systembackgui.gambas
+Packager=1

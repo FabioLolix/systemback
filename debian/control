@@ -1,0 +1,35 @@
+Source: systemback
+Section: utils
+Priority: optional
+Maintainer: Kende Krisztián <nemh@freemail.hu>
+Build-Depends: debhelper (>= 9), gambas3-dev (>= 3.5.0), gambas3-gb-gtk (>= 3.5.0), gambas3-gb-image (>= 3.5.0), gambas3-gb-qt4 (>= 3.5.0), gambas3-runtime (>= 3.5.0)
+Standards-Version: 3.9.4.0
+
+Package: systemback
+Architecture: all
+Pre-Depends: bash (>= 4.1), coreutils (>= 7.4), grep (>= 2.5.4), procps, sed (>= 4.2.1)
+Depends: ${misc:Depends}, apt, base-files (>= 5.0), casper | live-boot, dosfstools, dpkg (>= 1.15.5), e2fsprogs (>= 1.41.11), fonts-freefont-ttf | ttf-freefont, gambas3-runtime (>= 3.5.0), genisoimage, mount (>= 2.17.2), ncurses-bin (>= 5.7), parted, passwd,
+ rsync, squashfs-tools, syslinux, upstart | sysvinit (>= 2.88) | systemd, util-linux (>= 2.17.2), whois (>= 5.0.7) | mkpasswd
+Recommends: systemback-gtk (= ${source:Version}) | systemback-qt4 (= ${source:Version})
+Conflicts: live-config, live-config-systemd
+Description: Simple system backup and restore application with extra features
+ Systemback makes it easy to create backups of system and users
+ configuration files. In case of problems you can easily restore the
+ previous state of the system. There are extra features like system
+ copying, system installation and Live system creation.
+
+Package: systemback-gtk
+Architecture: all
+Depends: ${misc:Depends}, gambas3-gb-gtk (>= 3.5.0), gambas3-gb-image (>= 3.5.0), gambas3-runtime (>= 3.5.0), gksu | kdesudo, systemback (= ${source:Version}), xterm, zenity | kde-baseapps-bin | kdebase-bin
+Replaces: systemback (<< 0.7.4)
+Conflicts: systemback-qt4
+Description: Systemback GTK+ interface
+ This package contains a GTK+ graphical user interface for Systemback.
+
+Package: systemback-qt4
+Architecture: all
+Depends: ${misc:Depends}, gambas3-gb-qt4 (>= 3.5.0), gambas3-gb-image (>= 3.5.0), gambas3-runtime (>= 3.5.0), gksu | kdesudo, systemback (= ${source:Version}), xterm, zenity | kde-baseapps-bin | kdebase-bin
+Replaces: systemback (<< 0.7.4)
+Conflicts: systemback-gtk
+Description: Systemback Qt4 interface
+ This package contains a Qt4 graphical user interface for Systemback.

@@ -1,0 +1,725 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-11-01 04:27+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .project:1
+msgid "systembackgui"
+msgstr "-"
+
+#: systembackgui.class:152
+msgid "scheduler"
+msgstr "tareas programadas"
+
+#: systembackgui.class:1152
+msgid "Live image"
+msgstr "Imagen Live"
+
+#: systembackgui.class:1184
+msgid "Currently running system"
+msgstr "Sistema actual en ejecución"
+
+#: systembackgui.class:1438
+msgid "Everyone"
+msgstr ""
+
+#: systembackgui.class:1651
+msgid "Upgrading the system"
+msgstr "Actualizado el sistema"
+
+#: systembackgui.class:1842
+msgid "Another Systemback process is currently running, please wait until it finishes."
+msgstr "Otro proceso de Systemback se está ejecutando, por favor espere hasta que éste termine."
+
+#: systembackgui.class:1848
+msgid "Unable to get exclusive lock!<p>First, close all package manager."
+msgstr "No se ha podido obtener el bloqueo exclusivo!<p>Mire de cerrar cualquier gestor de paquetes abierto."
+
+#: systembackgui.class:1854
+msgid "The specified name contains unsupported character(s)!<p>Please enter a new name!"
+msgstr "El nombre especificado contiene caracteres no soportados!<p>Por favor, introduzca otro nombre!"
+
+#: systembackgui.class:1860
+msgid "Restore the system files to the following restore point:"
+msgstr "Restaurar los archivos de sistema al siguiente punto de restauración:"
+
+#: systembackgui.class:1867
+msgid "Repair the system files with the following restore point:"
+msgstr "Reparación de los archivos de sistema al siguiente punto de restauración:"
+
+#: systembackgui.class:1874
+msgid "Repair the complete system with the following restore point:"
+msgstr "Reparación completa del sistema al siguiente punto de restauración:"
+
+#: systembackgui.class:1881
+msgid "Restore the complete user(s) configuration files to the following restore point:"
+msgstr "Restauración completa de archivos de configuración de usuario(s) al siguiente punto de restauración:"
+
+#: systembackgui.class:1888
+msgid "Restore the user(s) configuration files to the following restore point:"
+msgstr "Restaurar los archivos de configuración de usuario(s) al siguiente punto de restauración:"
+
+#: systembackgui.class:1895
+msgid "User(s) configuration files full restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr "Completada la restauración total de archivos de configuración de usuario(s).<p>El servidor X se reiniciará automáticamente en 30 segundos."
+
+#: systembackgui.class:1896
+msgid "X restart"
+msgstr "Reiniciar X"
+
+#: systembackgui.class:1904
+msgid "User(s) configuration files restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr "Completada la restauración de archivos de configuración de usuario(s).<p>El servidor X se reiniciará automáticamente en 30 segundos."
+
+#: systembackgui.class:1913
+msgid "System files repair are completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Reparación del sistema de archivos completada, pero se produjo un error al reinstalar GRUB! El sistema no podrá arrancar! (Una arquitectura diferente puede estar causando este problema.)"
+
+#: systembackgui.class:1919
+msgid "Full system repair is completed."
+msgstr "Reaparación total del sistema completada."
+
+#: systembackgui.class:1925
+msgid "System repair is completed."
+msgstr "Reaparación del sistema completada."
+
+#: systembackgui.class:1931
+msgid "Copy the system, using the following restore point:"
+msgstr "Copiar sistema usando el siguiente punto de restauración:"
+
+#: systembackgui.class:1938
+msgid "Install the system, using the following restore point:"
+msgstr "Instalar sistema usando el siguiente punto de restauración:"
+
+#: systembackgui.class:1945
+msgid "Restore point creation is aborted! Not enough free disk space to complete the process."
+msgstr "Creación del punto de restauración abortado! No hay suficiente espacio libre en el disco para completar el proceso."
+
+#: systembackgui.class:1951
+msgid "Root privileges are required for running Systemback!"
+msgstr "Se necesitan privilegios root para ejecutar Systemback!"
+
+#: systembackgui.class:1957
+msgid "Restore complete system to the following restore point:"
+msgstr "Restaurar completamente el sistema al siguiente punto de restauración:"
+
+#: systembackgui.class:1964
+msgid "System files restoration are completed.<p>The computer will restart automatically within 30 seconds."
+msgstr "Restauración del sistema de archivos completada.<p>El equipo se reiniciará automáticamente en 30 segundos."
+
+#: systembackgui.class:1965
+msgid "Reboot"
+msgstr "Reiniciar"
+
+#: systembackgui.class:1973
+msgid "Full system restoration is completed.<p>The computer will restart automatically within 30 seconds."
+msgstr "Restauración completa del sistema realizada.<p>El equipo se reiniciará automáticamente en 30 segundos."
+
+#: systembackgui.class:1982
+msgid "The specified partition(s) does not have enough free space to copy the system! The copied system will not function properly!"
+msgstr "La partición especificada no tiene suficiente espacio libre! La copia del sistema no funcionarán correctamente!"
+
+#: systembackgui.class:1988
+msgid "System copy is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "Copia del sistema completada, pero se produjo un error durante la instalación del GRUB! Será necesario instalar manualmente un gestor de arranque."
+
+#: systembackgui.class:1994
+msgid "An error occurred while reinstalling GRUB!"
+msgstr "Se produjo un error al reinstalar el GRUB!"
+
+#: systembackgui.class:2000
+msgid "Full system repair is completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Reparación del sistema completada, pero se produjo un error al reinstalar el GRUB! El sistema no podrá arrancar! (Una arquitectura diferente puede estar causando este problema.)"
+
+#: systembackgui.class:2006
+msgid "System copy is completed."
+msgstr "Copia del sistema completada."
+
+#: systembackgui.class:2012
+msgid "An error occurred while creating filesystem image!"
+msgstr "Se produjo un error al crear la imagen del sistema de archivos!"
+
+#: systembackgui.class:2018
+msgid "An error occurred while creating container file!"
+msgstr "Se produjo un error al crear el archivo contenedor!"
+
+#: systembackgui.class:2024
+msgid "Live system creation is completed.<p>The created .sblive file can be written to pendrive."
+msgstr "La creación del sistema Live se ha completado. <p>El archivo creado .sblive puede ser escrito a un pendrive."
+
+#: systembackgui.class:2030
+msgid "The selected directory does not have enough free space to create Live system!"
+msgstr "El directorio seleccionado no dispone de espacio libre suficiente para crear un sistema Live!"
+
+#: systembackgui.class:2036
+msgid ", and write the following Live system image:"
+msgstr ", y escribir la siguiente imagen del sistema Live:"
+
+#: systembackgui.class:2036
+msgid "Format the"
+msgstr "Formatear"
+
+#: systembackgui.class:2043
+msgid "The specified partition could not be mounted!"
+msgstr "La partición especificada no se pudo montar!"
+
+#: systembackgui.class:2057
+msgid "GRUB 2 repair is completed."
+msgstr "Reaparación del GRUB 2 completada."
+
+#: systembackgui.class:2063
+msgid "System install is completed."
+msgstr "instalación del sistema completado."
+
+#: systembackgui.class:2069
+msgid "System install is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "Instalación completada, pero se produjo un error durante la instalación del GRUB! Será necesario instalar manualmente un gestor de arranque."
+
+#: systembackgui.class:2075
+msgid "The specified partition(s) does not have enough free space to install the system! The installed system will not function properly!"
+msgstr "La partición especificada no tiene suficiente espacio libre! El sistema instalado no funcionará correctamente!"
+
+#: systembackgui.class:2081
+msgid "The specified partition could not be formatted (in use or unavailable)!"
+msgstr "No se pudo dar formato a la partición especificada (ésta se encuentra en uso o no está disponible)!"
+
+#: systembackgui.class:2095
+msgid "An error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Se produjo un error al reinstalar el GRUB! (Una arquitectura diferente puede estar causando este problema.)"
+
+#: systembackgui.class:2101
+msgid "Restore point creation is aborted! There has been critical changes in the file system during this operation."
+msgstr "La creación del punto de restauración se abortó! No han habido cambios significativos en el sistema de archivos durante esta operación."
+
+#: systembackgui.class:2107
+msgid "System copying is aborted! There has been critical changes in the file system during this operation."
+msgstr "La copia del sistema se abortó! No han habido cambios significativos en el sistema de archivos durante esta operación."
+
+#: systembackgui.class:2113
+msgid "System installation is aborted! There has been critical changes in the file system during this operation."
+msgstr "La instalación del sistema se abortó! No han habido cambios significativos en el sistema de archivos durante esta operación."
+
+#: systembackgui.class:2119
+msgid "Repair the GRUB 2 bootloader."
+msgstr "Reparar el cargador de arranque GRUB 2."
+
+#: systembackgui.class:2126
+msgid "The selected partition does not have enough space to write the Live system!"
+msgstr "La partición seleccionada no dispone de espacio suficiente para escribir el sistema Live!"
+
+#: systembackgui.class:2132
+msgid "An error occurred while unpacking Live system files!"
+msgstr "Ocurrió un error al descomprimir los archivos del sistema Live!"
+
+#: systembackgui.class:2138
+msgid "Live system image write is completed."
+msgstr "La escritura de la imagen del sistema Live se ha completado."
+
+#: systembackgui.class:2144
+msgid "An error occurred while renaming essential Live files!"
+msgstr "Ocurrió un error al cambiar el nombre de archivos esenciales del sistema Live!"
+
+#: systembackgui.class:2150
+msgid "An error occurred while creating .iso image!"
+msgstr "Se produjo un error durante la creación de la imagen .iso!"
+
+#: systembackgui.class:2156
+msgid "An error occurred while reading .sblive image!"
+msgstr "Se produjo un error durante la lectura de la imagen . sblive!"
+
+#: systembackgui.class:2411
+msgid "not used"
+msgstr "no utilizar"
+
+#: systembackgui.class:3125
+msgid "Deleting incomplete restore point"
+msgstr "Eliminando punto de restauración incompleto"
+
+#: systembackgui.class:3150
+msgid "Deleting old restore point"
+msgstr "Eliminando punto de restauración obsoleto"
+
+#: systembackgui.class:3253
+msgid "Checking files and directories"
+msgstr "Comprobando archivos y directorios"
+
+#: systembackgui.class:3380
+msgid "Creating restore point"
+msgstr "Creando punto de restauración"
+
+#: systembackgui.class:3562
+msgid "Emptying cache"
+msgstr "Vaciando caché"
+
+#: systembackgui.class:3840
+msgid "day(s)"
+msgstr "día(s)"
+
+#: systembackgui.class:3841
+msgid "hour(s)"
+msgstr "hora(s)"
+
+#: systembackgui.class:3842
+msgid "minute(s)"
+msgstr "minuto(s)"
+
+#: systembackgui.class:3843
+msgid "seconds"
+msgstr "segundos"
+
+#: systembackgui.class:3849
+msgid "Partition"
+msgstr "Partición"
+
+#: systembackgui.class:3850
+msgid "Current mount point"
+msgstr "Punto de montaje actual"
+
+#: systembackgui.class:3851
+msgid "New mount point"
+msgstr "Nuevo punto de montaje"
+
+#: systembackgui.class:3852
+msgid "Filesystem"
+msgstr "Sistema de archivos"
+
+#: systembackgui.class:3866
+msgid "Device"
+msgstr "Dispositivo"
+
+#: systembackgui.class:4115
+msgid "Copying the system"
+msgstr "Copiando sistema"
+
+#: systembackgui.class:4115
+msgid "Installing the system"
+msgstr "Instalando el sistema"
+
+#: systembackgui.class:4154
+msgid "Writing Live image to USB device"
+msgstr "Escribiendo imagen Live en dispositivo USB"
+
+#: systembackgui.class:4165
+msgid "Converting Live system image"
+msgstr "Convirtiendo imagen del sistema Live"
+
+#: systembackgui.class:4165
+msgid "Creating Live system"
+msgstr "Creando sistema Live"
+
+#: systembackgui.class:4165
+msgid "Deleting restore point"
+msgstr "Eliminando punto de restauración"
+
+#: systembackgui.class:4165
+msgid "Repairing the full system"
+msgstr "Reparando por completo el sistema"
+
+#: systembackgui.class:4165
+msgid "Repairing the system files"
+msgstr "Reparando sistema de archivos"
+
+#: systembackgui.class:4165
+msgid "Restoring the full system"
+msgstr "Restauración completa del sistema"
+
+#: systembackgui.class:4165
+msgid "Restoring the system files"
+msgstr "Restaurando sistema de archivos"
+
+#: systembackgui.class:4165
+msgid "Restoring users configuration files"
+msgstr "Restaurando configuración de archivos de usuario"
+
+#: systembackgui.class:7285
+msgid "Repairing the GRUB 2"
+msgstr "Reparación del GRUB 2"
+
+#: systembackgui.class:10923
+msgid "Boot Live without xorg.conf file"
+msgstr "Arrancar sistema Live sin el archivo xorg.conf"
+
+#: systembackgui.class:11289
+msgid "Boot Live in debug mode"
+msgstr "Arrancar en modo de depuracion"
+
+#: systembackgui.class:11289
+msgid "Boot Live in safe graphics mode"
+msgstr "Arrancar sistema Live en modo grafico seguro"
+
+#: systembackgui.class:11289
+msgid "Boot Live system"
+msgstr "Arrancar sistema Live"
+
+#: systembackgui.class:11290
+msgid "Press 'E' key to edit"
+msgstr "Pulse la tecla 'E' para editar"
+
+#: systembackgui.class:11295
+msgid "Press TAB key to edit"
+msgstr "Pulse la tecla TAB para editar"
+
+#: systembackgui.class:12104
+msgid "Enabled"
+msgstr "Activado"
+
+#: systembackgui.form:346
+msgid "! Interrupt !"
+msgstr "! Parar proceso !"
+
+#: systembackgui.form:413
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: systembackgui.form:497
+msgid "Storage directory"
+msgstr "Ruta de almacenamiento"
+
+#: systembackgui.form:505
+msgid "Highlighted restore points"
+msgstr "Puntos destacados"
+
+#: systembackgui.form:513
+msgid "Restore points"
+msgstr "Puntos de restauración"
+
+#: systembackgui.form:521
+msgid "Function menu"
+msgstr "Menú de funciones"
+
+#: systembackgui.form:536
+msgid "Point operations"
+msgstr "Acciones"
+
+#: systembackgui.form:545
+msgid "empty"
+msgstr "vacío"
+
+#: systembackgui.form:694
+msgid "Create new"
+msgstr "Crear nuevo"
+
+#: systembackgui.form:701
+msgid "Highlight"
+msgstr "Poner en destacados"
+
+#: systembackgui.form:708
+msgid "Rename"
+msgstr "Renombrar"
+
+#: systembackgui.form:715
+msgid "Delete"
+msgstr "Eliminar"
+
+#: systembackgui.form:907
+msgid "System restore"
+msgstr "Restaurar Sistema"
+
+#: systembackgui.form:915
+msgid "System copy"
+msgstr "Copiar Sistema"
+
+#: systembackgui.form:923
+msgid "System install"
+msgstr "Instalar Sistema"
+
+#: systembackgui.form:931
+msgid "Live system create"
+msgstr "Crear Sistema Live"
+
+#: systembackgui.form:939
+msgid "System repair"
+msgstr "Reparar Sistema"
+
+#: systembackgui.form:947
+msgid "System upgrade"
+msgstr "Actualizar sistema"
+
+#: systembackgui.form:954
+msgid "Exclude"
+msgstr "Excluir"
+
+#: systembackgui.form:979
+msgid "About"
+msgstr "Acerca de"
+
+#: systembackgui.form:987
+msgid "Schedule"
+msgstr "Tareas programadas"
+
+#: systembackgui.form:1095
+msgid "Next"
+msgstr "Siguiente"
+
+#: systembackgui.form:1102
+msgid "Back"
+msgstr "Atrás"
+
+#: systembackgui.form:1110
+msgid "Restore type"
+msgstr "Seleccione un tipo de restauración"
+
+#: systembackgui.form:1118
+msgid "Full restore"
+msgstr "Restauración completa"
+
+#: systembackgui.form:1126
+msgid "System files restore"
+msgstr "Restaurar archivos del sistema"
+
+#: systembackgui.form:1133
+msgid "User(s) configuration files restore"
+msgstr "Restaurar archivos de configuración de usuario(s)"
+
+#: systembackgui.form:1140
+msgid "Keep newly installed configuration files"
+msgstr "Mantener los archivos de configuración recientemente instalados"
+
+#: systembackgui.form:1147
+msgid "Options"
+msgstr "Opciones"
+
+#: systembackgui.form:1155
+msgid "Auto detection"
+msgstr "Auto detectar"
+
+#: systembackgui.form:1163
+msgid "Do not restore fstab file"
+msgstr "No restaurar el archivo fstab"
+
+#: systembackgui.form:1169
+msgid "Reinstall GRUB 2 bootloader:"
+msgstr "Reinstalación del gestor de arranque GRUB 2:"
+
+#: systembackgui.form:1179
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: systembackgui.form:1192
+msgid "Include user(s):"
+msgstr ""
+
+#: systembackgui.form:1212
+msgid "Filesystem:"
+msgstr "Sistema de archivos:"
+
+#: systembackgui.form:1219
+msgid "Mount point:"
+msgstr "Punto de montaje:"
+
+#: systembackgui.form:1242
+msgid "Partition settings"
+msgstr "Configuración de discos y particiones"
+
+#: systembackgui.form:1256
+msgid "Umount"
+msgstr "Desmontar"
+
+#: systembackgui.form:1277
+msgid "Format"
+msgstr "Formatear"
+
+#: systembackgui.form:1308
+msgid "Transfer user configuration files"
+msgstr "Transferencia de archivos de configuración de usuario"
+
+#: systembackgui.form:1316
+msgid "Copy user data files"
+msgstr "Copiar archivos de datos de usuario"
+
+#: systembackgui.form:1322
+msgid "Install GRUB 2 bootloader:"
+msgstr "Instalar el gestor de arranque GRUB 2:"
+
+#: systembackgui.form:1428
+msgid "Full name of the new user:"
+msgstr "Nombre completo del nuevo usuario:"
+
+#: systembackgui.form:1451
+msgid "New user name to login:"
+msgstr "Nombre de usuario para iniciar sesión:"
+
+#: systembackgui.form:1474
+msgid "New user account password:"
+msgstr "Contraseña de la cuenta del nuevo usuario:"
+
+#: systembackgui.form:1497
+msgid "New root password (optional, not recommended for Ubuntu):"
+msgstr "Nueva contraseña root (opcional, no recomendable para Ubuntu):"
+
+#: systembackgui.form:1520
+msgid "New hostname:"
+msgstr "Nuevo nombre del equipo:"
+
+#: systembackgui.form:1557
+msgid "Live operations"
+msgstr "Opciones Live"
+
+#: systembackgui.form:1565
+msgid "Write target"
+msgstr "Dispositivos disponibles"
+
+#: systembackgui.form:1581
+msgid "Name of Live system"
+msgstr "Nombre del sistema Live"
+
+#: systembackgui.form:1589
+msgid "Created Live images"
+msgstr "Live imágenes disponibles"
+
+#: systembackgui.form:1597
+msgid "Working directory"
+msgstr "Directorio de trabajo"
+
+#: systembackgui.form:1644
+msgid "Include user data files"
+msgstr "Incluir archivos de datos de usuario"
+
+#: systembackgui.form:1657
+msgid "Convert to ISO"
+msgstr "Convertir a ISO"
+
+#: systembackgui.form:1670
+msgid "Write to USB"
+msgstr "Escribir en USB"
+
+#: systembackgui.form:1745
+msgid "Mount the faulty system partition(s) to '/mnt' directory according to the original structure.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
+msgstr "Monte la partición del sistema defectuoso en el directorio '/mnt' según la estructura original.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
+
+#: systembackgui.form:1765
+msgid "Mount"
+msgstr "Montar"
+
+#: systembackgui.form:1779
+msgid "Repair type"
+msgstr "Tipo de reparación"
+
+#: systembackgui.form:1787
+msgid "System files repair"
+msgstr "Reparación del sistema de archivos"
+
+#: systembackgui.form:1795
+msgid "Full repair"
+msgstr "Reparación completa"
+
+#: systembackgui.form:1802
+msgid "GRUB 2 repair"
+msgstr "Reparar el GRUB 2"
+
+#: systembackgui.form:1825
+msgid "Do not repair fstab file"
+msgstr "No reparar el archivo fstab"
+
+#: systembackgui.form:1881
+msgid "Items"
+msgstr "Elementos disponibles"
+
+#: systembackgui.form:1889
+msgid "Excluded items"
+msgstr "Excluir elementos"
+
+#: systembackgui.form:1897
+msgid "Exclude hidden user files and directories from restore points"
+msgstr "Excluir archivos ocultos de usuario y directorios de puntos de restauración"
+
+#: systembackgui.form:1905
+msgid "Exclude user data files and directories from Live system"
+msgstr "Excluir archivos de datos del usuario y  directorios del sistema Live"
+
+#: systembackgui.form:1933
+msgid "License"
+msgstr "Licencia"
+
+#: systembackgui.form:1947
+msgid "Simple system backup and restore application with extra features"
+msgstr "Programa fácil para realizar copias de seguridad y restauración del sistema"
+
+#: systembackgui.form:1954
+msgid "Project homepage:"
+msgstr "Página web del proyecto:"
+
+#: systembackgui.form:1979
+msgid "Contact:"
+msgstr "Contacto:"
+
+#: systembackgui.form:1995
+msgid "Donate:"
+msgstr "Donar:"
+
+#: systembackgui.form:2012
+msgid "Systemback version:"
+msgstr "Versión de Systemback:"
+
+#: systembackgui.form:2032
+msgid "(c) 2013, Krisztián Kende"
+msgstr "-"
+
+#: systembackgui.form:2075
+msgid "Writable Linux filesystem!"
+msgstr "Sistema de archivos Linux (writable)!"
+
+#: systembackgui.form:2172
+msgid "Scheduler state:"
+msgstr "Estado de tareas programadas:"
+
+#: systembackgui.form:2180
+msgid "Use silent mode"
+msgstr "Utilizar modo silencioso"
+
+#: systembackgui.form:2195
+msgid "Timer settings"
+msgstr "Ajustes del temporizador"
+
+#: systembackgui.form:2202
+msgid "Waiting time before creating a new restore point:"
+msgstr "El tiempo de espera antes de crear un nuevo punto de restauración:"
+
+#: systembackgui.form:2216
+msgid "Visible countdown time:"
+msgstr "Temporizador de cuenta atrás visible:"
+
+#: systembackgui.form:2255
+msgid "Pop-up window position on screen:"
+msgstr "Posición de la ventana emergente en la pantalla:"
+
+#: systembackgui.form:2264
+msgid "Bottom left"
+msgstr "Abajo a la izquierda"
+
+#: systembackgui.form:2264
+msgid "Bottom right"
+msgstr "Abajo a la derecha"
+
+#: systembackgui.form:2264
+msgid "Center"
+msgstr "Centrada"
+
+#: systembackgui.form:2264
+msgid "Top left"
+msgstr "Arriba a la izquierda"
+
+#: systembackgui.form:2264
+msgid "Top right"
+msgstr "Arriba a la derecha"
+
+#: systembackgui.form:2401
+msgid "Creates a scheduled restore point within few seconds."
+msgstr "Crea un punto de restauración programado en pocos segundos."
+
+#: systembackgui.form:2411
+msgid "Later"
+msgstr "Más adelante"
+
+#: systembackgui.form:2418
+msgid "Start"
+msgstr "Iniciar"
+

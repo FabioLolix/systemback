@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+if [[ "${1}" = "configure" && "$(tail -n 1 /etc/sudoers)" != "#includedir /etc/sudoers.d" ]]
+then
+
+  echo "Correcting /etc/sudoers file ..."
+  sed -i "/^#includedir \/etc\/sudoers.d$/d" /etc/sudoers
+  echo -e "$(cat -s /etc/sudoers)\n\n#includedir /etc/sudoers.d" >/etc/sudoers
+
+fi
+#DEBHELPER#

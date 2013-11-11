@@ -1,0 +1,725 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-11-01 04:27+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .project:1
+msgid "systembackgui"
+msgstr "-"
+
+#: systembackgui.class:152
+msgid "scheduler"
+msgstr "tasca programada"
+
+#: systembackgui.class:1152
+msgid "Live image"
+msgstr "Imatge Live"
+
+#: systembackgui.class:1184
+msgid "Currently running system"
+msgstr "Sistema actual en execució"
+
+#: systembackgui.class:1438
+msgid "Everyone"
+msgstr ""
+
+#: systembackgui.class:1651
+msgid "Upgrading the system"
+msgstr "Actualitzat el sistema"
+
+#: systembackgui.class:1842
+msgid "Another Systemback process is currently running, please wait until it finishes."
+msgstr "Altre procés Systemback està funcionant, si us plau, esperar fins que acabi."
+
+#: systembackgui.class:1848
+msgid "Unable to get exclusive lock!<p>First, close all package manager."
+msgstr "No s'ha pogut obtenir el bloqueig exclusiu!<p>Proveu de tancar qualsevol director de paquet obert."
+
+#: systembackgui.class:1854
+msgid "The specified name contains unsupported character(s)!<p>Please enter a new name!"
+msgstr "El nom especificat conté caràcters no vàlids!<p>Si us plau, introduïu un altre nom!"
+
+#: systembackgui.class:1860
+msgid "Restore the system files to the following restore point:"
+msgstr "Restaurar els arxius de sistema amb el següent punt de restauració:"
+
+#: systembackgui.class:1867
+msgid "Repair the system files with the following restore point:"
+msgstr "Reparar els arxius de sistema amb el següent punt de restauració:"
+
+#: systembackgui.class:1874
+msgid "Repair the complete system with the following restore point:"
+msgstr "Reparació completa del sistema amb el següent punt de restauració:"
+
+#: systembackgui.class:1881
+msgid "Restore the complete user(s) configuration files to the following restore point:"
+msgstr "Restauració completa d'arxius de configuració d'usuari(s) amb el següent punt de restauració:"
+
+#: systembackgui.class:1888
+msgid "Restore the user(s) configuration files to the following restore point:"
+msgstr "Restaurar els arxius de configuració d'usuari(s) amb el següent punt de restauració:"
+
+#: systembackgui.class:1895
+msgid "User(s) configuration files full restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr "Completada la restauració total d'arxius de configuració d'usuari(s).<p>El servidor X es reiniciarà automàticament en 30 segons."
+
+#: systembackgui.class:1896
+msgid "X restart"
+msgstr "Reprendre X"
+
+#: systembackgui.class:1904
+msgid "User(s) configuration files restoration are completed.<p>The X server will restart automatically within 30 seconds."
+msgstr "Completada la restauració d'arxius de configuració d'usuari(s).<p>El servidor X es reiniciarà automàticament en 30 segons."
+
+#: systembackgui.class:1913
+msgid "System files repair are completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Reparació del sistema d'arxius completada, però es va produir un error al reinstal·lar GRUB! El sistema no podrà arrencar! (Una arquitectura diferent pot estar causant aquest problema)."
+
+#: systembackgui.class:1919
+msgid "Full system repair is completed."
+msgstr "Reparació total del sistema completada."
+
+#: systembackgui.class:1925
+msgid "System repair is completed."
+msgstr "Reparació del sistema completada."
+
+#: systembackgui.class:1931
+msgid "Copy the system, using the following restore point:"
+msgstr "Copiar sistema usant el següent punt de restauració:"
+
+#: systembackgui.class:1938
+msgid "Install the system, using the following restore point:"
+msgstr "Instal·lar sistema usant el següent punt de restauració:"
+
+#: systembackgui.class:1945
+msgid "Restore point creation is aborted! Not enough free disk space to complete the process."
+msgstr "Creació del punt de restauració avortat! No hi ha suficient espai lliure en el disc per a completar el procés."
+
+#: systembackgui.class:1951
+msgid "Root privileges are required for running Systemback!"
+msgstr "Es necessiten privilegis root per a executar Systemback!"
+
+#: systembackgui.class:1957
+msgid "Restore complete system to the following restore point:"
+msgstr "Restaurar completament el sistema al següent punt de restauració:"
+
+#: systembackgui.class:1964
+msgid "System files restoration are completed.<p>The computer will restart automatically within 30 seconds."
+msgstr "Restauració del sistema d'arxius completada.<p>L'equip es reiniciarà automàticament en 30 segons."
+
+#: systembackgui.class:1965
+msgid "Reboot"
+msgstr "Reinicia"
+
+#: systembackgui.class:1973
+msgid "Full system restoration is completed.<p>The computer will restart automatically within 30 seconds."
+msgstr "Restauració completa del sistema realitzada.<p>L'equip es reiniciarà automàticament en 30 segons."
+
+#: systembackgui.class:1982
+msgid "The specified partition(s) does not have enough free space to copy the system! The copied system will not function properly!"
+msgstr "La partició especificada no té suficient espai lliure! La còpia del sistema no funcionaran correctament!"
+
+#: systembackgui.class:1988
+msgid "System copy is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "Còpia del sistema completada, però es va produir un error durant la instal·lació del GRUB! Serà necessari instal·lar manualment un gestor d'arrencada."
+
+#: systembackgui.class:1994
+msgid "An error occurred while reinstalling GRUB!"
+msgstr "Es va produir un error al reinstal·lar el GRUB!"
+
+#: systembackgui.class:2000
+msgid "Full system repair is completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Reparació del sistema completada, però es va produir un error al reinstal·lar el GRUB! El sistema no podrà arrencar! (Una arquitectura diferent pot estar causant aquest problema.)"
+
+#: systembackgui.class:2006
+msgid "System copy is completed."
+msgstr "Còpia del sistema completada."
+
+#: systembackgui.class:2012
+msgid "An error occurred while creating filesystem image!"
+msgstr "Es va produir un error al crear la imatge del sistema d'arxius!"
+
+#: systembackgui.class:2018
+msgid "An error occurred while creating container file!"
+msgstr "Es va produir un error al crear l'arxiu contenidor!"
+
+#: systembackgui.class:2024
+msgid "Live system creation is completed.<p>The created .sblive file can be written to pendrive."
+msgstr "La creació del sistema Live s'ha completat.<p>L'arxiu creat .sblive pot ser escrit a un pendrive."
+
+#: systembackgui.class:2030
+msgid "The selected directory does not have enough free space to create Live system!"
+msgstr "El directori seleccionat no disposa d'espai lliure suficient per a crear un sistema Live!"
+
+#: systembackgui.class:2036
+msgid ", and write the following Live system image:"
+msgstr ", i escriure la següent imatge del sistema Live:"
+
+#: systembackgui.class:2036
+msgid "Format the"
+msgstr "Formatar"
+
+#: systembackgui.class:2043
+msgid "The specified partition could not be mounted!"
+msgstr "La partició especificada no es va poder muntar!"
+
+#: systembackgui.class:2057
+msgid "GRUB 2 repair is completed."
+msgstr "Reparació del GRUB 2 completada."
+
+#: systembackgui.class:2063
+msgid "System install is completed."
+msgstr "Instal·lació del sistema completat."
+
+#: systembackgui.class:2069
+msgid "System install is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
+msgstr "Instal·lació completada, però es va produir un error durant la instal·lació del GRUB! Serà necessari instal·lar manualment un gestor d'arrencada."
+
+#: systembackgui.class:2075
+msgid "The specified partition(s) does not have enough free space to install the system! The installed system will not function properly!"
+msgstr "La partició especificada no té suficient espai lliure! El sistema instal·lat no funcionarà correctament!"
+
+#: systembackgui.class:2081
+msgid "The specified partition could not be formatted (in use or unavailable)!"
+msgstr "No es va poder donar format a la partició especificada (aquesta es troba en ús o no està disponible)!"
+
+#: systembackgui.class:2095
+msgid "An error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
+msgstr "Es va produir un error al reinstal·lar el GRUB! (Una arquitectura diferent pot estar causant aquest problema)."
+
+#: systembackgui.class:2101
+msgid "Restore point creation is aborted! There has been critical changes in the file system during this operation."
+msgstr "La creació del punt de restauració es va avortar! No han hagut canvis significatius en el sistema d'arxius durant aquesta operació."
+
+#: systembackgui.class:2107
+msgid "System copying is aborted! There has been critical changes in the file system during this operation."
+msgstr "La còpia del sistema es va avortar! No han hagut canvis significatius en el sistema d'arxius durant aquesta operació."
+
+#: systembackgui.class:2113
+msgid "System installation is aborted! There has been critical changes in the file system during this operation."
+msgstr "La instal·lació del sistema es va avortar! No han hagut canvis significatius en el sistema d'arxius durant aquesta operació."
+
+#: systembackgui.class:2119
+msgid "Repair the GRUB 2 bootloader."
+msgstr "Reparar el carregador d'arrencada GRUB 2."
+
+#: systembackgui.class:2126
+msgid "The selected partition does not have enough space to write the Live system!"
+msgstr "La partició seleccionada no disposa d'espai suficient per a escriure el sistema Live!"
+
+#: systembackgui.class:2132
+msgid "An error occurred while unpacking Live system files!"
+msgstr "Va ocórrer un error al descomprimir els arxius del sistema Live!"
+
+#: systembackgui.class:2138
+msgid "Live system image write is completed."
+msgstr "L'escriptura de la imatge del sistema Live s'ha completat."
+
+#: systembackgui.class:2144
+msgid "An error occurred while renaming essential Live files!"
+msgstr "Va ocórrer un error al canviar el nom d'arxius essencials del sistema Live!"
+
+#: systembackgui.class:2150
+msgid "An error occurred while creating .iso image!"
+msgstr "Es va produir un error durant la creació de la imatge .iso!"
+
+#: systembackgui.class:2156
+msgid "An error occurred while reading .sblive image!"
+msgstr "Es va produir un error durant la lectura de la imatge .sblive!"
+
+#: systembackgui.class:2411
+msgid "not used"
+msgstr "no utilitzar"
+
+#: systembackgui.class:3125
+msgid "Deleting incomplete restore point"
+msgstr "Eliminant punt de restauració incomplet"
+
+#: systembackgui.class:3150
+msgid "Deleting old restore point"
+msgstr "Eliminant punt de restauració obsolet"
+
+#: systembackgui.class:3253
+msgid "Checking files and directories"
+msgstr "Comprovant arxius i directoris"
+
+#: systembackgui.class:3380
+msgid "Creating restore point"
+msgstr "Creant punt de restauració"
+
+#: systembackgui.class:3562
+msgid "Emptying cache"
+msgstr "Buidant caché"
+
+#: systembackgui.class:3840
+msgid "day(s)"
+msgstr "dia(es)"
+
+#: systembackgui.class:3841
+msgid "hour(s)"
+msgstr "hora(es)"
+
+#: systembackgui.class:3842
+msgid "minute(s)"
+msgstr "minut(s)"
+
+#: systembackgui.class:3843
+msgid "seconds"
+msgstr "segons"
+
+#: systembackgui.class:3849
+msgid "Partition"
+msgstr "Partició"
+
+#: systembackgui.class:3850
+msgid "Current mount point"
+msgstr "Punto de montaje actual"
+
+#: systembackgui.class:3851
+msgid "New mount point"
+msgstr "Nou punt de muntatge"
+
+#: systembackgui.class:3852
+msgid "Filesystem"
+msgstr "Sistema d'arxius"
+
+#: systembackgui.class:3866
+msgid "Device"
+msgstr "Dispositiu"
+
+#: systembackgui.class:4115
+msgid "Copying the system"
+msgstr "Copiant sistema"
+
+#: systembackgui.class:4115
+msgid "Installing the system"
+msgstr "Instal·lant el sistema"
+
+#: systembackgui.class:4154
+msgid "Writing Live image to USB device"
+msgstr "Escrivint imatge Live en dispositiu USB"
+
+#: systembackgui.class:4165
+msgid "Converting Live system image"
+msgstr "Convertint imatge del sistema Live"
+
+#: systembackgui.class:4165
+msgid "Creating Live system"
+msgstr "Creant un sistema Live"
+
+#: systembackgui.class:4165
+msgid "Deleting restore point"
+msgstr "Eliminant punt de restauració"
+
+#: systembackgui.class:4165
+msgid "Repairing the full system"
+msgstr "Reparant per complet el sistema"
+
+#: systembackgui.class:4165
+msgid "Repairing the system files"
+msgstr "Reparant sistema d'arxius"
+
+#: systembackgui.class:4165
+msgid "Restoring the full system"
+msgstr "Restauració completa del sistema"
+
+#: systembackgui.class:4165
+msgid "Restoring the system files"
+msgstr "Restaurant el sistema d'arxius"
+
+#: systembackgui.class:4165
+msgid "Restoring users configuration files"
+msgstr "Restaurant la configuració d'arxius d'usuari"
+
+#: systembackgui.class:7285
+msgid "Repairing the GRUB 2"
+msgstr "Reparant GRUB 2"
+
+#: systembackgui.class:10923
+msgid "Boot Live without xorg.conf file"
+msgstr "Arrencar sistema Live sense l'arxiu xorg.conf"
+
+#: systembackgui.class:11289
+msgid "Boot Live in debug mode"
+msgstr "Arrencar en manera de depuracio"
+
+#: systembackgui.class:11289
+msgid "Boot Live in safe graphics mode"
+msgstr "Arrencar sistema Live en manera grafica segur"
+
+#: systembackgui.class:11289
+msgid "Boot Live system"
+msgstr "Arrencar sistema Live"
+
+#: systembackgui.class:11290
+msgid "Press 'E' key to edit"
+msgstr "Premi la tecla 'E' per a editar"
+
+#: systembackgui.class:11295
+msgid "Press TAB key to edit"
+msgstr "Premi la tecla TAB per a editar"
+
+#: systembackgui.class:12104
+msgid "Enabled"
+msgstr "Activat"
+
+#: systembackgui.form:346
+msgid "! Interrupt !"
+msgstr "! Aturar el procés !"
+
+#: systembackgui.form:413
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+#: systembackgui.form:497
+msgid "Storage directory"
+msgstr "Ruta d'emmagatzematge"
+
+#: systembackgui.form:505
+msgid "Highlighted restore points"
+msgstr "Punts Destacats"
+
+#: systembackgui.form:513
+msgid "Restore points"
+msgstr "Punts de Restauració"
+
+#: systembackgui.form:521
+msgid "Function menu"
+msgstr "Menú de funcions"
+
+#: systembackgui.form:536
+msgid "Point operations"
+msgstr "Accions"
+
+#: systembackgui.form:545
+msgid "empty"
+msgstr "buit"
+
+#: systembackgui.form:694
+msgid "Create new"
+msgstr "Crear nou Punt"
+
+#: systembackgui.form:701
+msgid "Highlight"
+msgstr "Posar en Destacats"
+
+#: systembackgui.form:708
+msgid "Rename"
+msgstr "Reanomenar"
+
+#: systembackgui.form:715
+msgid "Delete"
+msgstr "Esborrar"
+
+#: systembackgui.form:907
+msgid "System restore"
+msgstr "Restaurar Sistema"
+
+#: systembackgui.form:915
+msgid "System copy"
+msgstr "Copiar Sistema"
+
+#: systembackgui.form:923
+msgid "System install"
+msgstr "Instal·lar Sistema"
+
+#: systembackgui.form:931
+msgid "Live system create"
+msgstr "Crear Sistema Live"
+
+#: systembackgui.form:939
+msgid "System repair"
+msgstr "Reparar Sistema"
+
+#: systembackgui.form:947
+msgid "System upgrade"
+msgstr "Actualitzar el Sistema"
+
+#: systembackgui.form:954
+msgid "Exclude"
+msgstr "Excloure arxius"
+
+#: systembackgui.form:979
+msgid "About"
+msgstr "Sobre"
+
+#: systembackgui.form:987
+msgid "Schedule"
+msgstr "Tasca programada"
+
+#: systembackgui.form:1095
+msgid "Next"
+msgstr "Següent"
+
+#: systembackgui.form:1102
+msgid "Back"
+msgstr "Enrere"
+
+#: systembackgui.form:1110
+msgid "Restore type"
+msgstr "Seleccioni un tipus de restauració"
+
+#: systembackgui.form:1118
+msgid "Full restore"
+msgstr "Restauració completa"
+
+#: systembackgui.form:1126
+msgid "System files restore"
+msgstr "Restaurar arxius del sistema"
+
+#: systembackgui.form:1133
+msgid "User(s) configuration files restore"
+msgstr "Restaurar arxius de configuració d'usuari(s)"
+
+#: systembackgui.form:1140
+msgid "Keep newly installed configuration files"
+msgstr "Mantenir els arxius de configuració recentment instal·lats"
+
+#: systembackgui.form:1147
+msgid "Options"
+msgstr "Opcions"
+
+#: systembackgui.form:1155
+msgid "Auto detection"
+msgstr "Auto detectar"
+
+#: systembackgui.form:1163
+msgid "Do not restore fstab file"
+msgstr "No restaurar l'arxiu fstab"
+
+#: systembackgui.form:1169
+msgid "Reinstall GRUB 2 bootloader:"
+msgstr "Reinstal·lació del gestor d'arrencada GRUB 2:"
+
+#: systembackgui.form:1179
+msgid "Disabled"
+msgstr "Desactivat"
+
+#: systembackgui.form:1192
+msgid "Include user(s):"
+msgstr ""
+
+#: systembackgui.form:1212
+msgid "Filesystem:"
+msgstr "Sistema d'arxius:"
+
+#: systembackgui.form:1219
+msgid "Mount point:"
+msgstr "Punt de muntatge:"
+
+#: systembackgui.form:1242
+msgid "Partition settings"
+msgstr "Configuració de discos i particions"
+
+#: systembackgui.form:1256
+msgid "Umount"
+msgstr "Desmuntar"
+
+#: systembackgui.form:1277
+msgid "Format"
+msgstr "Formatar"
+
+#: systembackgui.form:1308
+msgid "Transfer user configuration files"
+msgstr "Transferir arxius de la configuració d'usuari"
+
+#: systembackgui.form:1316
+msgid "Copy user data files"
+msgstr "Copiar arxius de dades d'usuari"
+
+#: systembackgui.form:1322
+msgid "Install GRUB 2 bootloader:"
+msgstr "Instal·lar el gestor d'arrencada GRUB 2:"
+
+#: systembackgui.form:1428
+msgid "Full name of the new user:"
+msgstr "Nom complet del nou usuari:"
+
+#: systembackgui.form:1451
+msgid "New user name to login:"
+msgstr "Nom d'usuari per a iniciar sessió:"
+
+#: systembackgui.form:1474
+msgid "New user account password:"
+msgstr "Contrasenya del compte del nou usuari:"
+
+#: systembackgui.form:1497
+msgid "New root password (optional, not recommended for Ubuntu):"
+msgstr "Nova contrasenya root (opcional, no recomanable per Ubuntu):"
+
+#: systembackgui.form:1520
+msgid "New hostname:"
+msgstr "Nou nom per a l'equip:"
+
+#: systembackgui.form:1557
+msgid "Live operations"
+msgstr "Opcions Live"
+
+#: systembackgui.form:1565
+msgid "Write target"
+msgstr "Dispositius disponibles"
+
+#: systembackgui.form:1581
+msgid "Name of Live system"
+msgstr "Nom de sistema Live"
+
+#: systembackgui.form:1589
+msgid "Created Live images"
+msgstr "Live imatges disponibles"
+
+#: systembackgui.form:1597
+msgid "Working directory"
+msgstr "Directori de treball"
+
+#: systembackgui.form:1644
+msgid "Include user data files"
+msgstr "Incloure arxius de dades de l'usuari"
+
+#: systembackgui.form:1657
+msgid "Convert to ISO"
+msgstr "Convertir a ISO"
+
+#: systembackgui.form:1670
+msgid "Write to USB"
+msgstr "Escriure en USB"
+
+#: systembackgui.form:1745
+msgid "Mount the faulty system partition(s) to '/mnt' directory according to the original structure.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
+msgstr "Muntar la partició del sistema defectuós en el directori '/mnt' segons l'estructura original.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
+
+#: systembackgui.form:1765
+msgid "Mount"
+msgstr "Muntar"
+
+#: systembackgui.form:1779
+msgid "Repair type"
+msgstr "Tipus de reparació"
+
+#: systembackgui.form:1787
+msgid "System files repair"
+msgstr "Reparació del sistema d'arxius"
+
+#: systembackgui.form:1795
+msgid "Full repair"
+msgstr "Reparació completa"
+
+#: systembackgui.form:1802
+msgid "GRUB 2 repair"
+msgstr "Reparar el GRUB 2"
+
+#: systembackgui.form:1825
+msgid "Do not repair fstab file"
+msgstr "No reparar l'arxiu fstab"
+
+#: systembackgui.form:1881
+msgid "Items"
+msgstr "Elements disponibles"
+
+#: systembackgui.form:1889
+msgid "Excluded items"
+msgstr "Excloure elements"
+
+#: systembackgui.form:1897
+msgid "Exclude hidden user files and directories from restore points"
+msgstr "Excloure arxius ocults d'usuari i directoris de punts de restauració"
+
+#: systembackgui.form:1905
+msgid "Exclude user data files and directories from Live system"
+msgstr "Excloure arxius de dades de l'usuari i els directoris de sistema Live"
+
+#: systembackgui.form:1933
+msgid "License"
+msgstr "Llicència"
+
+#: systembackgui.form:1947
+msgid "Simple system backup and restore application with extra features"
+msgstr "Programa fàcil per a realitzar còpies de seguretat i punts de restauració del sistema"
+
+#: systembackgui.form:1954
+msgid "Project homepage:"
+msgstr "Pàgina web del projecte:"
+
+#: systembackgui.form:1979
+msgid "Contact:"
+msgstr "Contacte:"
+
+#: systembackgui.form:1995
+msgid "Donate:"
+msgstr "Donar:"
+
+#: systembackgui.form:2012
+msgid "Systemback version:"
+msgstr "Versió de Systemback:"
+
+#: systembackgui.form:2032
+msgid "(c) 2013, Krisztián Kende"
+msgstr "-"
+
+#: systembackgui.form:2075
+msgid "Writable Linux filesystem!"
+msgstr "Sistema d'arxius Linux (Writable)!"
+
+#: systembackgui.form:2172
+msgid "Scheduler state:"
+msgstr "Estat de tasques programades"
+
+#: systembackgui.form:2180
+msgid "Use silent mode"
+msgstr "Usar manera silenciosa"
+
+#: systembackgui.form:2195
+msgid "Timer settings"
+msgstr "Ajustaments del temporitzador"
+
+#: systembackgui.form:2202
+msgid "Waiting time before creating a new restore point:"
+msgstr "Temps d'espera abans de crear un nou punt de restauració:"
+
+#: systembackgui.form:2216
+msgid "Visible countdown time:"
+msgstr "Mostrar compte enrere del Temporitzador:"
+
+#: systembackgui.form:2255
+msgid "Pop-up window position on screen:"
+msgstr "Posició de la finestra emergent en la pantalla:"
+
+#: systembackgui.form:2264
+msgid "Bottom left"
+msgstr "Inferior esquerra"
+
+#: systembackgui.form:2264
+msgid "Bottom right"
+msgstr "Inferior dreta"
+
+#: systembackgui.form:2264
+msgid "Center"
+msgstr "Centre"
+
+#: systembackgui.form:2264
+msgid "Top left"
+msgstr "Superior esquerra"
+
+#: systembackgui.form:2264
+msgid "Top right"
+msgstr "Superior dreta"
+
+#: systembackgui.form:2401
+msgid "Creates a scheduled restore point within few seconds."
+msgstr "Crea un punt de restauració programada en uns pocs segons."
+
+#: systembackgui.form:2411
+msgid "Later"
+msgstr "Més endavant"
+
+#: systembackgui.form:2418
+msgid "Start"
+msgstr "Inicia"
+

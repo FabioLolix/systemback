@@ -1,0 +1,209 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-11-01 04:27+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .project:1
+msgid "systemback"
+msgstr "-"
+
+#: systemback.module:41
+msgid "\n Usage: systemback [option]\n\n Options:\n\n  -n, --newbackup          create a new restore point\n\n  -s, --storagedir <path>  get or set restore points storage directory path\n\n  -u, --upgrade            upgrade current system\n                           remove unnecessary files and packages\n\n  -v, --version            output Systemback version number\n\n  -h, --help               show this help\n"
+msgstr ""
+
+#: systemback.module:120
+msgid "Restore points storage directory is not available or not writable!"
+msgstr ""
+
+#: systemback.module:156
+msgid "First, close all package manager."
+msgstr "Sulje kaikki pakettienhallintaohjelmaa."
+
+#: systemback.module:156
+msgid "Unable to get exclusive lock!"
+msgstr "Ei saatu haluttua lukitusta!"
+
+#: systemback.module:177
+msgid "Another Systemback process is currently running, please wait until it\n finishes."
+msgstr "Toinen Systemback prosessi on käynnissä, odota kunnes se päättyy."
+
+#: systemback.module:202
+msgid "Root privileges are required for running Systemback!"
+msgstr "Systemback tarvitsee pääkäyttäjän oikeudet käynnistyäkseen!"
+
+#: systemback.module:281
+msgid "Available restore point(s):"
+msgstr ""
+
+#: systemback.module:353
+msgid "Create new"
+msgstr "Luo uusi"
+
+#: systemback.module:353
+msgid "Quit"
+msgstr "Lopeta"
+
+#: systemback.module:475
+msgid "Back"
+msgstr "Edellinen"
+
+#: systemback.module:475
+msgid "Delete"
+msgstr "Poista"
+
+#: systemback.module:475
+msgid "Selected restore point:"
+msgstr ""
+
+#: systemback.module:475
+msgid "System restore"
+msgstr "Järjestelmän palautus"
+
+#: systemback.module:505
+msgid "Deleting restore point"
+msgstr "Poistetaan palautuspiste"
+
+#: systemback.module:517
+msgid "Emptying cache"
+msgstr "Tyhjennetään välimuisti"
+
+#: systemback.module:611
+msgid "The specified storage directory path is set."
+msgstr "Määritelty varastointi hakemistopolkua on asetettu."
+
+#: systemback.module:635
+msgid "The specified storage directory path has not been set!"
+msgstr "Määritelty varastointi hakemistopolkua ei asetettu!"
+
+#: systemback.module:768
+msgid "An error occurred while upgrading the system!"
+msgstr "Järjestelmän päivitys on virheellinen!"
+
+#: systemback.module:770
+msgid "Restart upgrade ..."
+msgstr "Käynnistä uudelleen päivitys ..."
+
+#: systemback.module:796
+msgid "Cancel"
+msgstr "Keskeytä"
+
+#: systemback.module:796
+msgid "Complete configuration files restore"
+msgstr "Täydellinen asetustiedostojen palautus"
+
+#: systemback.module:796
+msgid "Full restore"
+msgstr "Koko järjestelmän palautus"
+
+#: systemback.module:796
+msgid "Keep newly installed configuration files"
+msgstr "Pidä  uudet asennustiedostot"
+
+#: systemback.module:796
+msgid "Restore with the following restore method:"
+msgstr "Palauttaa seuraavaalla menetelmällä:"
+
+#: systemback.module:796
+msgid "Restore with the following restore point:"
+msgstr "Palautus seuraavan palautuspisten avulla:"
+
+#: systemback.module:796
+msgid "System files restore"
+msgstr "Järjestelmän tiedostojen palauttaminen"
+
+#: systemback.module:796
+msgid "Users configuration files restore"
+msgstr "Palauta käyttäjien asennustiedostot"
+
+#: systemback.module:846
+msgid "Configuration files restore"
+msgstr "Palautetaan asetustiedostot"
+
+#: systemback.module:854
+msgid "You want to keep the current fstab file? (Y/N)"
+msgstr "Haluatko pitää nykyisen fstab tiedoston? (K/E)"
+
+#: systemback.module:887
+msgid "Reinstall the GRUB 2 bootloader? (Y/N)"
+msgstr "Asentamaanko GRUB 2:n uudelleen? (K/E)"
+
+#: systemback.module:920
+msgid "Start the restore? (Y/N)"
+msgstr "Aloitetaanko palautus? (K/E)"
+
+#: systemback.module:987
+msgid "Restoring the full system"
+msgstr "Palautetaan koko järjestelmä"
+
+#: systemback.module:991
+msgid "Restoring the system files"
+msgstr "Palautetaan järjestelmätiedostot"
+
+#: systemback.module:995
+msgid "Restoring users configuration files"
+msgstr "Palautetaan käyttäjien asetustiedostot"
+
+#: systemback.module:1107
+msgid "Restoration is completed, but an error occurred while reinstalling GRUB!"
+msgstr "Palautus on valmis, mutta GRUB:n asennuksessa tapahtui virhe!"
+
+#: systemback.module:1126
+msgid "Full system restoration is completed."
+msgstr "Koko järjestelmän palauttaminen on valmis."
+
+#: systemback.module:1126
+msgid "Press 'ENTER' key to reboot computer, or 'Q' to quit."
+msgstr "Painaa 'ENTER' käynnistä tietokone uudelleen, tai 'Q' lopettaa."
+
+#: systemback.module:1149
+msgid "System files restoration are completed."
+msgstr "Järjestelmätiedostojen palauttaminen on valmis."
+
+#: systemback.module:1171
+msgid "Users configuration files full restoration are completed."
+msgstr "Käyttäjien asetustiedostojen täysi palautuminen on valmis."
+
+#: systemback.module:1177
+msgid "Users configuration files restoration are completed."
+msgstr "Käyttäjien asennustiedostojen palauttaminen on valmis."
+
+#: systemback.module:1191
+msgid "Restore is aborted!"
+msgstr "Palauta keskeytetään!"
+
+#: systemback.module:1352
+msgid "Deleting incomplete restore point"
+msgstr "Epätäydellinen palautuspisteen poistaminen"
+
+#: systemback.module:1362
+msgid "Deleting old restore point(s)"
+msgstr ""
+
+#: systemback.module:1432
+msgid "Checking files and directories"
+msgstr "Tarkistetaan tiedostoja ja hakemistoja"
+
+#: systemback.module:1513
+msgid "Creating restore point"
+msgstr "Luodaan palautuspiste"
+
+#: systemback.module:1696
+msgid "Not enough free disk space to complete the process."
+msgstr ""
+
+#: systemback.module:1696
+msgid "Restore point creation is aborted!"
+msgstr ""
+
+#: systemback.module:1711
+msgid "There has been critical changes in the file system during this operation."
+msgstr ""
+

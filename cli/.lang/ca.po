@@ -1,0 +1,209 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-11-01 04:27+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .project:1
+msgid "systemback"
+msgstr "-"
+
+#: systemback.module:138
+msgid "Restore points storage directory is not available or not writable!"
+msgstr ""
+
+#: systemback.module:161
+msgid "\n Usage: systemback [option]\n\n Options:\n\n  -n, --newbackup          create a new restore point\n\n  -s, --storagedir <path>  get or set restore points storage directory path\n\n  -u, --upgrade            upgrade current system\n                           remove unnecessary files and packages\n\n  -v, --version            output Systemback version number\n\n  -h, --help               show this help\n"
+msgstr ""
+
+#: systemback.module:171
+msgid "First, close all package manager."
+msgstr "Tanqui qualsevol gestor de paquets que tingui obert."
+
+#: systemback.module:171
+msgid "Unable to get exclusive lock!"
+msgstr "No s'ha pogut obtenir el bloqueig exclusiu!"
+
+#: systemback.module:192
+msgid "Another Systemback process is currently running, please wait until it\n finishes."
+msgstr "Altre procés Systemback està funcionant, si us plau, esperar fins que acabi."
+
+#: systemback.module:219
+msgid "Root privileges are required for running Systemback!"
+msgstr "Es necessiten privilegis root per a executar Systemback!"
+
+#: systemback.module:296
+msgid "Available restore point(s):"
+msgstr ""
+
+#: systemback.module:368
+msgid "Create new"
+msgstr "Crear nou Punt"
+
+#: systemback.module:368
+msgid "Quit"
+msgstr "Sortir"
+
+#: systemback.module:490
+msgid "Back"
+msgstr "Enrere"
+
+#: systemback.module:490
+msgid "Delete"
+msgstr "Esborrar"
+
+#: systemback.module:490
+msgid "Selected restore point:"
+msgstr ""
+
+#: systemback.module:490
+msgid "System restore"
+msgstr "Restaurar Sistema"
+
+#: systemback.module:520
+msgid "Deleting restore point"
+msgstr "Eliminant punt de restauració"
+
+#: systemback.module:532
+msgid "Emptying cache"
+msgstr "Buidant caché"
+
+#: systemback.module:626
+msgid "The specified storage directory path is set."
+msgstr "Es va establir un directori per a la ruta d'emmagatzematge."
+
+#: systemback.module:650
+msgid "The specified storage directory path has not been set!"
+msgstr "No es va establir un directori per a la ruta d'emmagatzematge!"
+
+#: systemback.module:779
+msgid "An error occurred while upgrading the system!"
+msgstr "Es va produir un error a l'actualitzar el sistema!"
+
+#: systemback.module:781
+msgid "Restart upgrade ..."
+msgstr "Reiniciant l'actualització ..."
+
+#: systemback.module:807
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+#: systemback.module:807
+msgid "Complete configuration files restore"
+msgstr "Restauració completa de configuració d'arxius"
+
+#: systemback.module:807
+msgid "Full restore"
+msgstr "Restauració completa"
+
+#: systemback.module:807
+msgid "Keep newly installed configuration files"
+msgstr "Mantenir els arxius de configuració recentment instal·lats"
+
+#: systemback.module:807
+msgid "Restore with the following restore method:"
+msgstr "Realitzar la restauració amb el següent criteri:"
+
+#: systemback.module:807
+msgid "Restore with the following restore point:"
+msgstr "Restaurar al següent punt de restauració:"
+
+#: systemback.module:807
+msgid "System files restore"
+msgstr "Restaurar arxius del sistema"
+
+#: systemback.module:807
+msgid "Users configuration files restore"
+msgstr "Restaurar arxius de configuració d'usuaris"
+
+#: systemback.module:857
+msgid "Configuration files restore"
+msgstr "Restaurar arxius de configuració"
+
+#: systemback.module:865
+msgid "You want to keep the current fstab file? (Y/N)"
+msgstr "Desitja mantenir l'arxiu actual fstab? (Y/N)"
+
+#: systemback.module:898
+msgid "Reinstall the GRUB 2 bootloader? (Y/N)"
+msgstr "Reinstal·lar el gestor d'arrencada GRUB 2? (Y/N)"
+
+#: systemback.module:931
+msgid "Start the restore? (Y/N)"
+msgstr "Iniciar la restauració? (Y/N)"
+
+#: systemback.module:998
+msgid "Restoring the full system"
+msgstr "Restauració completa del sistema"
+
+#: systemback.module:1002
+msgid "Restoring the system files"
+msgstr "Restaurant el sistema d'arxius"
+
+#: systemback.module:1006
+msgid "Restoring users configuration files"
+msgstr "Restaurant la configuració d'arxius d'usuari"
+
+#: systemback.module:1118
+msgid "Restoration is completed, but an error occurred while reinstalling GRUB!"
+msgstr "Restauració completada, però es va produir un error al reinstal·lar el GRUB!"
+
+#: systemback.module:1137
+msgid "Full system restoration is completed."
+msgstr "Restauració completa del sistema realitzada."
+
+#: systemback.module:1137
+msgid "Press 'ENTER' key to reboot computer, or 'Q' to quit."
+msgstr "Pressioni 'ENTER' per a reiniciar ordinador, o 'Q' per a sortir."
+
+#: systemback.module:1160
+msgid "System files restoration are completed."
+msgstr "Restauració del sistema d'arxius completada."
+
+#: systemback.module:1182
+msgid "Users configuration files full restoration are completed."
+msgstr "Completada la restauració total d'arxius de configuració d'usuaris."
+
+#: systemback.module:1188
+msgid "Users configuration files restoration are completed."
+msgstr "Completada la restauració d'arxius de configuració d'usuaris."
+
+#: systemback.module:1202
+msgid "Restore is aborted!"
+msgstr "Restauració avortada!"
+
+#: systemback.module:1362
+msgid "Deleting incomplete restore point"
+msgstr "Eliminant punt de restauració incomplet"
+
+#: systemback.module:1372
+msgid "Deleting old restore point(s)"
+msgstr ""
+
+#: systemback.module:1442
+msgid "Checking files and directories"
+msgstr "Comprovant arxius i directoris"
+
+#: systemback.module:1523
+msgid "Creating restore point"
+msgstr "Creant punt de restauració"
+
+#: systemback.module:1706
+msgid "Not enough free disk space to complete the process."
+msgstr ""
+
+#: systemback.module:1706
+msgid "Restore point creation is aborted!"
+msgstr ""
+
+#: systemback.module:1721
+msgid "There has been critical changes in the file system during this operation."
+msgstr ""
+

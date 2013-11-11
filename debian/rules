@@ -1,0 +1,44 @@
+#!/usr/bin/make -f
+
+build: build-stamp
+
+build-stamp:
+	cp -a gui gui-qt
+	sed -i s/gb.gtk/gb.qt4/g gui-qt/.project
+	gbc3 -a gui
+	gba3 gui
+	mv gui/gui.gambas gui/systembackgui
+	gbc3 -a gui-qt
+	gba3 gui-qt
+	mv gui-qt/gui-qt.gambas gui-qt/systembackgui
+	gbc3 -a cli
+	gba3 cli
+	mv cli/cli.gambas cli/systemback
+	touch build-stamp
+
+clean:
+	rm -rf build-stamp gui-qt
+	find . -name .action -print0 | xargs -0r rm -rf
+	find . -name .gambas -print0 | xargs -0r rm -rf
+	find . -name "*.gambas" -delete
+	find . -name .startup -delete
+	dh_clean
+
+binary-indep: build
+	dh_install
+	dh_installman debian/systemback.1 -p systemback
+	dh_link
+	dh_fixperms
+	find debian/systemback/etc/sudoers.d/99_sbscheduler ! -perm 440 -print0 | xargs -0r chmod 440
+	dh_installdeb
+	dh_gencontrol
+	dh_installdocs
+	dh_installchangelogs
+	dh_compress
+	dh_builddeb
+
+binary-arch: build
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary

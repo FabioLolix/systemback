@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+if [[ "${1}" = "install" ]] && grep "^timer=on" /etc/systemback.conf >/dev/null 2>&1
+then
+
+  echo "Disabling Systemback scheduler ..."
+  sed -i "s/^timer=on/timer=off/g" /etc/systemback.conf
+
+fi
+#DEBHELPER#

@@ -1,0 +1,1964 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,1392,2864)
+  #Scaled = False
+  #Translate = False
+  Font = Font["11"]
+  Text = "Systemback"
+  Icon = Picture["systemback.png"]
+  Persistent = True
+  Resizable = False
+  Border = False
+  { statuspanel Panel
+    Move(512,2664,402,161)
+    Visible = False
+    Background = Color.Foreground
+    NoTabFocus = True
+    { borderpicture3 PictureBox
+      Move(0,0,402,24)
+      NoTabFocus = True
+      Picture = Picture["border.png"]
+      Alignment = Align.Center
+    }
+    { function2 Label
+      Move(0,0,402,24)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Text = "Systemback"
+      Alignment = Align.Center
+    }
+    { substatuspanel Panel
+      Move(1,24,400,136)
+      Background = Color.Background
+      { interrupt Button
+        Move(248,96,144,32)
+        Visible = False
+        Foreground = &HFF0000&
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("! Interrupt !")
+      }
+      { interruptdisable Button
+        Move(248,96,144,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("! Interrupt !")
+      }
+      { processrun Label
+        Move(0,0,400,96)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Alignment = Align.Center
+      }
+      { progressbar ProgressBar
+        Move(8,96,144,32)
+        NoTabFocus = True
+        Label = False
+      }
+      { progressbartimer #Timer
+        #Move(176,88)
+        Delay = 750
+      }
+    }
+    { minimize2 Label
+      Move(1,1,22,22)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = "-"
+      Alignment = Align.Center
+    }
+  }
+  { dialogpanel Panel
+    Move(0,2664,506,201)
+    Visible = False
+    Background = Color.Foreground
+    { borderpicture2 PictureBox
+      Move(0,0,506,24)
+      NoTabFocus = True
+      Picture = Picture["border.png"]
+      Alignment = Align.Center
+    }
+    { subdialogpanel Panel
+      Move(1,24,504,176)
+      Background = Color.Background
+      { dialogtext TextLabel
+        Move(80,8,416,128)
+        NoTabFocus = True
+      }
+      { dialogtimer #Timer
+        #Move(0,128)
+      }
+      { dialogcancel Button
+        Move(264,136,112,32)
+        Visible = False
+        Mouse = Mouse.Pointing
+        Text = ("Cancel")
+      }
+      { dialogok Button
+        Move(384,136,112,32)
+        #Translate = False
+        Mouse = Mouse.Pointing
+        Text = "OK"
+      }
+      { dialognumber Label
+        Move(384,112,112,24)
+        #Translate = False
+        Visible = False
+        NoTabFocus = True
+        Text = "30s"
+        Alignment = Align.Center
+      }
+      { dialoginfo PictureBox
+        Move(0,0,80,80)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["dialoginfo.png"]
+        Alignment = Align.Center
+      }
+      { dialogquestion PictureBox
+        Move(0,0,80,80)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["dialogquestion.png"]
+        Alignment = Align.Center
+      }
+      { dialogerror PictureBox
+        Move(0,0,80,80)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["dialogerror.png"]
+        Alignment = Align.Center
+      }
+    }
+    { minimize3 Label
+      Move(1,1,22,22)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = "-"
+      Alignment = Align.Center
+    }
+    { function3 Label
+      Move(23,0,460,24)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Text = "Systemback"
+      Alignment = Align.Center
+    }
+    { close2 Label
+      Move(483,1,22,22)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = "x"
+      Alignment = Align.Center
+    }
+  }
+  { mainpanel Panel
+    Move(0,0,1392,2664)
+    Background = Color.Foreground
+    { systembackpanel Panel
+      Move(0,24,696,440)
+      Background = Color.Background
+      { Label7 Label
+        Move(424,0,272,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Storage directory")
+        Alignment = Align.Center
+      }
+      { Label22 Label
+        Move(0,0,648,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Highlighted restore points")
+        Alignment = Align.Center
+      }
+      { Label1 Label
+        Move(0,0,240,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Restore points")
+        Alignment = Align.Center
+      }
+      { Label4 Label
+        Move(424,64,272,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Function menu")
+        Alignment = Align.Center
+      }
+      { Label13 Label
+        Move(224,416,464,24)
+        #Translate = False
+        NoTabFocus = True
+        Text = "Kendek, GPLv3"
+        Alignment = Align.Right
+      }
+      { Label3 Label
+        Move(0,224,648,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Point operations")
+        Alignment = Align.Center
+      }
+      { point1 TextBox
+        Move(28,32,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 250
+      }
+      { point2 TextBox
+        Move(28,72,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point3 TextBox
+        Move(28,112,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point4 TextBox
+        Move(28,152,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point5 TextBox
+        Move(28,192,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point6 TextBox
+        Move(28,232,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point7 TextBox
+        Move(28,272,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point8 TextBox
+        Move(28,312,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point9 TextBox
+        Move(28,352,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point10 TextBox
+        Move(28,392,168,32)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point11 TextBox
+        Move(232,32,168,30)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point12 TextBox
+        Move(232,72,168,30)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point13 TextBox
+        Move(232,112,168,30)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point14 TextBox
+        Move(232,152,168,30)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { point15 TextBox
+        Move(232,192,168,30)
+        Enabled = False
+        NoTabFocus = True
+        Mouse = Mouse.Arrow
+        Text = ("empty")
+        Alignment = Align.Center
+        MaxLength = 255
+      }
+      { newrestorepoint Button
+        Move(232,256,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Create new")
+      }
+      { pointhighlight Button
+        Move(232,296,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Highlight")
+      }
+      { pointrename Button
+        Move(232,336,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Rename")
+      }
+      { pointdelete Button
+        Move(232,376,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Delete")
+      }
+      { Panel11 Panel
+        Move(196,72,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe2 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel12 Panel
+        Move(196,112,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe3 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel13 Panel
+        Move(196,152,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe4 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel14 Panel
+        Move(196,192,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe5 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel15 Panel
+        Move(196,232,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe6 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel16 Panel
+        Move(196,272,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe7 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel17 Panel
+        Move(196,312,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe8 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel18 Panel
+        Move(196,352,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe9 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel19 Panel
+        Move(196,392,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe10 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel20 Panel
+        Move(400,32,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe11 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel21 Panel
+        Move(400,72,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe12 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel22 Panel
+        Move(400,112,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe13 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel23 Panel
+        Move(400,152,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe14 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { Panel24 Panel
+        Move(400,192,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe15 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { functionmenu1 Panel
+        Move(448,96,224,272)
+        { restoremenu Button
+          Move(0,0,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("System restore")
+          Picture = Picture["next.png"]
+        }
+        { copymenu Button
+          Move(0,40,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("System copy")
+          Picture = Picture["next.png"]
+        }
+        { installmenu Button
+          Move(0,80,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("System install")
+          Picture = Picture["next.png"]
+        }
+        { livecreatemenu Button
+          Move(0,120,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("Live system create")
+          Picture = Picture["next.png"]
+        }
+        { repairmenu Button
+          Move(0,160,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("System repair")
+          Picture = Picture["next.png"]
+        }
+        { systemupgrade Button
+          Move(0,200,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("System upgrade")
+        }
+        { excludemenu Button
+          Move(0,240,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("Exclude")
+          Picture = Picture["next.png"]
+        }
+      }
+      { functionmenuback Button
+        Move(504,376,48,32)
+        Enabled = False
+        ToolTip = ("Back")
+        Picture = Picture["menuback.png"]
+      }
+      { functionmenunext Button
+        Move(568,376,48,32)
+        Mouse = Mouse.Pointing
+        ToolTip = ("Next")
+        Picture = Picture["menunext.png"]
+      }
+      { functionmenu2 Panel
+        Move(448,96,224,272)
+        Visible = False
+        { aboutmenu Button
+          Move(0,40,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("About")
+          Picture = Picture["next.png"]
+        }
+        { schedulemenu Button
+          Move(0,0,224,32)
+          Enabled = False
+          NoTabFocus = True
+          Text = ("Schedule")
+          Picture = Picture["next.png"]
+        }
+      }
+      { Panel1 Panel
+        Move(7,112,19,312)
+        Background = Color.Background
+        NoTabFocus = True
+        { pnumber3 RadioButton
+          Move(0,0,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+          Value = True
+        }
+        { pnumber4 RadioButton
+          Move(0,40,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+        }
+        { pnumber5 RadioButton
+          Move(0,80,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+        }
+        { pnumber6 RadioButton
+          Move(0,120,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+        }
+        { pnumber7 RadioButton
+          Move(0,160,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+        }
+        { pnumber8 RadioButton
+          Move(0,200,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+        }
+        { pnumber9 RadioButton
+          Move(0,240,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+        }
+        { pnumber10 RadioButton
+          Move(0,280,19,32)
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Maximum number of temporary restore points")
+        }
+      }
+      { Panel10 Panel
+        Move(196,32,19,32)
+        Background = Color.Background
+        NoTabFocus = True
+        Arrangement = Arrange.Fill
+        { pointpipe1 CheckBox
+          Move(0,4,19,24)
+          Enabled = False
+          NoTabFocus = True
+          ToolTip = ("Select restore point")
+        }
+      }
+      { storagedirarea DrawingArea
+        Move(440,32,240,32)
+        Background = Color.TextBackground
+        NoTabFocus = True
+        Border = Border.Sunken
+        { storagedir TextBox
+          Move(2,2,210,28)
+          NoTabFocus = True
+          Mouse = Mouse.Arrow
+          Alignment = Align.Left
+          ReadOnly = True
+          Border = False
+        }
+        { storagedirbutton Button
+          Move(214,2,24,28)
+          Font = Font["Bold"]
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Change path")
+          Text = ("...")
+          Border = False
+        }
+      }
+    }
+    { restorepanel Panel
+      Move(0,464,696,440)
+      Visible = False
+      Background = Color.Background
+      { restorenext Button
+        Move(544,392,136,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Next")
+        Picture = Picture["next.png"]
+      }
+      { restoreback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { Label5 Label
+        Move(0,0,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Restore type")
+        Alignment = Align.Center
+      }
+      { fullrestore RadioButton
+        Move(7,32,112,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Full restore")
+        Value = True
+      }
+      { systemrestore RadioButton
+        Move(7,64,168,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("System files restore")
+      }
+      { configurationfilesrestore RadioButton
+        Move(7,96,256,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("User(s) configuration files restore")
+      }
+      { keepfiles CheckBox
+        Move(23,128,296,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Keep newly installed configuration files")
+      }
+      { Label6 Label
+        Move(0,192,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Options")
+        Alignment = Align.Center
+      }
+      { autorestoreoptions CheckBox
+        Move(7,224,136,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Auto detection")
+        Value = CheckBox.True
+      }
+      { skipfstabrestore CheckBox
+        Move(7,256,192,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Do not restore fstab file")
+      }
+      { grubreinstallrestoretext Label
+        Move(9,288,200,32)
+        NoTabFocus = True
+        Text = ("Reinstall GRUB 2 bootloader:")
+        Alignment = Align.Left
+      }
+      { grubreinstallrestoredisable ComboBox
+        Move(216,288,112,32)
+        Visible = False
+        Enabled = False
+        NoTabFocus = True
+        ReadOnly = True
+        List = [("Disabled")]
+      }
+      { grubreinstallrestore ComboBox
+        Move(217,288,112,32)
+        Enabled = False
+        NoTabFocus = True
+        ReadOnly = True
+      }
+      { includeuserstext Label
+        Move(25,160,104,32)
+        NoTabFocus = True
+        Text = ("Include user(s):")
+        Alignment = Align.Left
+      }
+      { includeusers ComboBox
+        Move(136,160,112,32)
+        Enabled = False
+        NoTabFocus = True
+        ReadOnly = True
+      }
+    }
+    { copypanel Panel
+      Move(0,904,696,440)
+      Visible = False
+      Background = Color.Background
+      { filesystemtext Label
+        Move(552,128,144,32)
+        NoTabFocus = True
+        Text = ("Filesystem:")
+        Alignment = Align.Center
+      }
+      { mountpointtext Label
+        Move(552,64,144,32)
+        NoTabFocus = True
+        Text = ("Mount point:")
+        Alignment = Align.Center
+      }
+      { copynext Button
+        Move(544,392,136,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Next")
+        Picture = Picture["next.png"]
+      }
+      { copyback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { partitionsettingstext Label
+        Move(0,0,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Partition settings")
+        Alignment = Align.Center
+      }
+      { partitionsettings ColumnView
+        Move(8,32,542,240)
+        NoTabFocus = True
+        Resizable = True
+      }
+      { umount Button
+        Move(568,32,112,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Umount")
+      }
+      { mountpoint ComboBox
+        Move(568,96,112,32)
+        Enabled = False
+        NoTabFocus = True
+        MaxLength = 250
+      }
+      { filesystem ComboBox
+        Move(568,160,112,32)
+        Enabled = False
+        NoTabFocus = True
+        ReadOnly = True
+      }
+      { format CheckBox
+        Move(584,200,80,24)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Format")
+        Value = CheckBox.True
+      }
+      { partitionupdate Button
+        Move(568,232,48,40)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        ToolTip = ("Reset partitions settings")
+        Picture = Picture["update.png"]
+      }
+      { changepartition Button
+        Move(632,232,48,40)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("Change partition settings")
+        Picture = Picture["leftgreenarrow.png"]
+      }
+      { partitionoptionstext Label
+        Move(0,280,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Options")
+        Alignment = Align.Center
+      }
+      { usersettingscopy CheckBox
+        Move(7,312,248,32)
+        Visible = False
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Transfer user configuration files")
+        Value = CheckBox.True
+      }
+      { userdatafilescopy CheckBox
+        Move(7,312,168,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Copy user data files")
+      }
+      { grubinstalltext Label
+        Move(9,344,184,32)
+        NoTabFocus = True
+        Text = ("Install GRUB 2 bootloader:")
+        Alignment = Align.Left
+      }
+      { grubinstallcopydisable ComboBox
+        Move(200,344,112,32)
+        Visible = False
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        ReadOnly = True
+        List = [("Disabled")]
+      }
+      { grubinstallcopy ComboBox
+        Move(200,344,112,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        ReadOnly = True
+      }
+      { copyresize PictureBox
+        Move(686,430,10,10)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Picture = Picture["resize.png"]
+        Alignment = Align.Center
+      }
+      { pshadow ColumnView
+        Move(160,392,48,48)
+        Visible = False
+        Mode = Select.None
+      }
+      { mountsort ListBox
+        Move(208,392,48,48)
+        Visible = False
+        Mode = Select.None
+      }
+    }
+    { installpanel Panel
+      Move(0,1344,696,440)
+      Visible = False
+      Background = Color.Background
+      { fullname TextBox
+        Move(24,32,616,32)
+        Alignment = Align.Left
+      }
+      { username TextBox
+        Move(24,104,616,32)
+        Alignment = Align.Left
+        MaxLength = 32
+      }
+      { password1 TextBox
+        Move(24,176,304,32)
+        Alignment = Align.Left
+        Password = True
+      }
+      { password2 TextBox
+        Move(368,176,304,32)
+        Enabled = False
+        Alignment = Align.Left
+        Password = True
+      }
+      { rootpassword1 TextBox
+        Move(24,248,304,32)
+        Alignment = Align.Left
+        Password = True
+      }
+      { rootpassword2 TextBox
+        Move(368,248,304,32)
+        Enabled = False
+        Alignment = Align.Left
+        Password = True
+      }
+      { hostname TextBox
+        Move(24,320,616,32)
+        Alignment = Align.Left
+        MaxLength = 64
+      }
+      { installnext Button
+        Move(544,392,136,32)
+        Enabled = False
+        Text = ("Next")
+        Picture = Picture["next.png"]
+      }
+      { installback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { Label23 Label
+        Move(9,0,680,32)
+        NoTabFocus = True
+        Text = ("Full name of the new user:")
+        Alignment = Align.Left
+      }
+      { fullnameerror PictureBox
+        Move(640,32,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["error.png"]
+        Alignment = Align.Center
+      }
+      { fullnamepipe PictureBox
+        Move(640,32,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["ok.png"]
+        Alignment = Align.Center
+      }
+      { Label24 Label
+        Move(9,72,680,32)
+        NoTabFocus = True
+        Text = ("New user name to login:")
+        Alignment = Align.Left
+      }
+      { usernameerror PictureBox
+        Move(640,104,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["error.png"]
+        Alignment = Align.Center
+      }
+      { usernamepipe PictureBox
+        Move(640,104,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["ok.png"]
+        Alignment = Align.Center
+      }
+      { Label25 Label
+        Move(9,144,680,32)
+        NoTabFocus = True
+        Text = ("New user account password:")
+        Alignment = Align.Left
+      }
+      { passworderror PictureBox
+        Move(328,176,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["error.png"]
+        Alignment = Align.Center
+      }
+      { passwordpipe PictureBox
+        Move(328,176,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["ok.png"]
+        Alignment = Align.Center
+      }
+      { Label27 Label
+        Move(9,216,680,32)
+        NoTabFocus = True
+        Text = ("New root password (optional, not recommended for Ubuntu):")
+        Alignment = Align.Left
+      }
+      { rootpassworderror PictureBox
+        Move(328,248,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["error.png"]
+        Alignment = Align.Center
+      }
+      { rootpasswordpipe PictureBox
+        Move(328,248,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["ok.png"]
+        Alignment = Align.Center
+      }
+      { Label26 Label
+        Move(9,288,680,32)
+        NoTabFocus = True
+        Text = ("New hostname:")
+        Alignment = Align.Left
+      }
+      { hostnameerror PictureBox
+        Move(640,320,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["error.png"]
+        Alignment = Align.Center
+      }
+      { hostnamepipe PictureBox
+        Move(640,320,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["ok.png"]
+        Alignment = Align.Center
+      }
+    }
+    { livecreatepanel Panel
+      Move(0,1784,696,440)
+      Visible = False
+      Background = Color.Background
+      { Label36 Label
+        Move(160,416,528,24)
+        #Translate = False
+        NoTabFocus = True
+        Text = "Kendek, GPLv3"
+        Alignment = Align.Right
+      }
+      { Label19 Label
+        Move(464,208,232,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Live operations")
+        Alignment = Align.Center
+      }
+      { Label21 Label
+        Move(0,208,432,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Write target")
+        Alignment = Align.Center
+      }
+      { Label18 Label
+        Move(0,144,320,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Options")
+        Alignment = Align.Center
+      }
+      { Label29 Label
+        Move(0,72,320,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Name of Live system")
+        Alignment = Align.Center
+      }
+      { Label17 Label
+        Move(320,0,376,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Created Live images")
+        Alignment = Align.Center
+      }
+      { Label28 Label
+        Move(0,0,320,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Working directory")
+        Alignment = Align.Center
+      }
+      { livecreatenew Button
+        Move(488,240,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Create new")
+      }
+      { livecreateback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { livename TextBox
+        Move(9,104,271,32)
+        #Translate = False
+        Font = Font["Italic"]
+        NoTabFocus = True
+        Text = "auto"
+        Alignment = Align.Left
+        MaxLength = 32
+      }
+      { livenameerror PictureBox
+        Move(280,104,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["error.png"]
+        Alignment = Align.Center
+      }
+      { livenamepipe PictureBox
+        Move(280,104,40,32)
+        Visible = False
+        NoTabFocus = True
+        Picture = Picture["ok.png"]
+        Alignment = Align.Center
+      }
+      { userdatainclude CheckBox
+        Move(7,176,184,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Include user data files")
+      }
+      { livelist ListBox
+        Move(328,32,358,168)
+        NoTabFocus = True
+        Sorted = True
+      }
+      { liveconvert Button
+        Move(488,320,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Convert to ISO")
+      }
+      { livedevices ColumnView
+        Move(10,240,414,136)
+        NoTabFocus = True
+        Resizable = True
+      }
+      { livewritestart Button
+        Move(488,280,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Write to USB")
+      }
+      { livedevicesupdate Button
+        Move(432,284,40,48)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        ToolTip = ("Redetect devices")
+        Picture = Picture["update.png"]
+      }
+      { livedelete Button
+        Move(488,360,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Delete")
+      }
+      { liveworkdirarea DrawingArea
+        Move(10,32,302,32)
+        Background = Color.TextBackground
+        NoTabFocus = True
+        Border = Border.Sunken
+        { liveworkdir TextBox
+          Move(2,2,272,28)
+          NoTabFocus = True
+          Mouse = Mouse.Arrow
+          Alignment = Align.Left
+          ReadOnly = True
+          Border = False
+        }
+        { liveworkdirbutton Button
+          Move(276,2,24,28)
+          Font = Font["Bold"]
+          NoTabFocus = True
+          Mouse = Mouse.Pointing
+          ToolTip = ("Change path")
+          Text = ("...")
+          Border = False
+        }
+      }
+    }
+    { repairpanel Panel
+      Move(0,2224,696,440)
+      Visible = False
+      Background = Color.Background
+      { grubreinstallrepairdisable ComboBox
+        Move(216,320,112,32)
+        Visible = False
+        Enabled = False
+        NoTabFocus = True
+        ReadOnly = True
+        List = [("Disabled")]
+      }
+      { repairnext Button
+        Move(544,392,136,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Next")
+        Picture = Picture["next.png"]
+      }
+      { repairback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { TextLabel1 TextLabel
+        Move(0,0,696,48)
+        NoTabFocus = True
+        Text = ("Mount the faulty system partition(s) to '/mnt' directory according to the original structure.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)")
+        Alignment = Align.Center
+      }
+      { repairpartition ComboBox
+        Move(96,56,112,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        ReadOnly = True
+      }
+      { repairmountpoint ComboBox
+        Move(216,56,208,32)
+        NoTabFocus = True
+      }
+      { repairmount Button
+        Move(432,56,112,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Mount")
+      }
+      { partitionupdate2 Button
+        Move(552,52,48,40)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        ToolTip = ("Reset mounts")
+        Picture = Picture["update.png"]
+      }
+      { Label8 Label
+        Move(0,96,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Repair type")
+        Alignment = Align.Center
+      }
+      { systemrepair RadioButton
+        Move(7,128,160,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("System files repair")
+        Value = True
+      }
+      { fullrepair RadioButton
+        Move(7,160,104,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Full repair")
+      }
+      { grubrepair RadioButton
+        Move(7,192,128,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("GRUB 2 repair")
+      }
+      { Label30 Label
+        Move(0,224,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Options")
+        Alignment = Align.Center
+      }
+      { autorepairoptions CheckBox
+        Move(7,256,136,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Auto detection")
+        Value = CheckBox.True
+      }
+      { skipfstabrepair CheckBox
+        Move(7,288,184,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Do not repair fstab file")
+      }
+      { grubreinstallrepairtext Label
+        Move(9,320,200,32)
+        NoTabFocus = True
+        Text = ("Reinstall GRUB 2 bootloader:")
+        Alignment = Align.Left
+      }
+      { grubreinstallrepair ComboBox
+        Move(216,320,112,32)
+        Enabled = False
+        NoTabFocus = True
+        ReadOnly = True
+      }
+    }
+    { excludepanel Panel
+      Move(696,24,696,440)
+      Visible = False
+      Background = Color.Background
+      { additem Button
+        Move(324,176,48,48)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("Add item to exclusion list")
+        Picture = Picture["rightarrow.png"]
+      }
+      { excludedlist ListBox
+        Move(384,96,302,280)
+        NoTabFocus = True
+        Sorted = True
+      }
+      { removeitem Button
+        Move(324,248,48,48)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("Remove item from exclusion list")
+        Picture = Picture["leftarrow.png"]
+      }
+      { excludeback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { itemstext Label
+        Move(0,64,322,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Items")
+        Alignment = Align.Center
+      }
+      { excludedtext Label
+        Move(374,64,322,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Excluded items")
+        Alignment = Align.Center
+      }
+      { pointexclude RadioButton
+        Move(7,0,440,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Exclude hidden user files and directories from restore points")
+        Value = True
+      }
+      { liveexclude RadioButton
+        Move(7,32,408,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Exclude user data files and directories from Live system")
+      }
+      { kendektext Label
+        Move(224,416,464,24)
+        #Translate = False
+        NoTabFocus = True
+        Text = "Kendek, GPLv3"
+        Alignment = Align.Right
+      }
+      { excluderesize PictureBox
+        Move(686,430,10,10)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Picture = Picture["resize.png"]
+        Alignment = Align.Center
+      }
+      { itemslist TreeView
+        Move(10,96,302,280)
+        NoTabFocus = True
+        Sorted = True
+      }
+    }
+    { aboutpanel Panel
+      Move(696,904,696,440)
+      Visible = False
+      Background = Color.Background
+      { licensemenu Button
+        Move(168,392,136,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("License")
+        Picture = Picture["next.png"]
+      }
+      { aboutback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { Label9 Label
+        Move(9,0,680,32)
+        NoTabFocus = True
+        Text = ("Simple system backup and restore application with extra features")
+        Alignment = Align.Left
+      }
+      { Label10 Label
+        Move(9,32,680,32)
+        NoTabFocus = True
+        Text = ("Project homepage:")
+        Alignment = Align.Left
+      }
+      { homepage1 Label
+        Move(25,64,312,32)
+        #Translate = False
+        Font = Font["Underline"]
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = "https://sourceforge.net/projects/systemback"
+        Alignment = Align.Left
+      }
+      { homepage2 Label
+        Move(25,96,240,32)
+        #Translate = False
+        Font = Font["Underline"]
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = "https://launchpad.net/systemback"
+        Alignment = Align.Left
+      }
+      { Label11 Label
+        Move(9,128,680,32)
+        NoTabFocus = True
+        Text = ("Contact:")
+        Alignment = Align.Left
+      }
+      { email Label
+        Move(25,160,136,32)
+        #Translate = False
+        Font = Font["Underline"]
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = "nemh@freemail.hu"
+        Alignment = Align.Left
+      }
+      { Label2 Label
+        Move(9,192,408,32)
+        NoTabFocus = True
+        Text = ("Donate:")
+        Alignment = Align.Left
+      }
+      { donate Label
+        Move(25,224,56,32)
+        #Translate = False
+        Font = Font["Underline"]
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        ToolTip = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ"
+        Text = "PayPal"
+        Alignment = Align.Left
+      }
+      { Label12 Label
+        Move(9,256,408,32)
+        NoTabFocus = True
+        Text = ("Systemback version:")
+        Alignment = Align.Left
+      }
+      { systembackversion Label
+        Move(25,288,392,32)
+        NoTabFocus = True
+        Alignment = Align.Left
+      }
+      { logo PictureBox
+        Move(424,160,256,256)
+        NoTabFocus = True
+        Picture = Picture["logo.png"]
+        Alignment = Align.BottomRight
+      }
+      { Label14 Label
+        Move(312,416,376,24)
+        NoTabFocus = True
+        Text = ("(c) 2013, Krisztián Kende")
+        Alignment = Align.Right
+      }
+    }
+    { licensepanel Panel
+      Move(696,1344,696,440)
+      Visible = False
+      Background = Color.Background
+      { license TextArea
+        Move(9,8,677,368)
+        Background = Color.Background
+        NoTabFocus = True
+        Alignment = Align.Left
+        ReadOnly = True
+        Border = False
+      }
+      { licenseback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { Label15 Label
+        Move(160,416,528,24)
+        NoTabFocus = True
+        Text = ("(c) 2013, Krisztián Kende")
+        Alignment = Align.Right
+      }
+    }
+    { choosepanel Panel
+      Move(696,1784,696,440)
+      Visible = False
+      Background = Color.Background
+      { warning Label
+        Move(18,400,192,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Writable Linux filesystem!")
+        Alignment = Align.Left
+      }
+      { dirchooseok Button
+        Move(576,400,112,32)
+        #Translate = False
+        Mouse = Mouse.Pointing
+        Text = "OK"
+      }
+      { choosecancel Button
+        Move(456,400,112,32)
+        Mouse = Mouse.Pointing
+        Text = ("Cancel")
+      }
+      { chooseresize PictureBox
+        Move(686,430,10,10)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Picture = Picture["resize.png"]
+        Alignment = Align.Center
+      }
+      { dirchoose TreeView
+        Move(0,32,696,360)
+        #Translate = False
+        NoTabFocus = True
+        Sorted = True
+        Border = False
+      }
+      { dirpath Label
+        Move(9,0,648,32)
+        NoTabFocus = True
+      }
+      { dirrefresh Button
+        Move(664,0,32,32)
+        NoTabFocus = True
+        ToolTip = ("Re-read directories")
+        Picture = Picture["update.png"]
+        Border = False
+      }
+    }
+    { borderpicture1 PictureBox
+      Move(0,0,698,24)
+      Picture = Picture["border.png"]
+      Alignment = Align.Center
+    }
+    { function1 Label
+      Move(23,0,652,24)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      Text = "Systemback"
+      Alignment = Align.Center
+    }
+    { close1 Label
+      Move(675,1,22,22)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      Mouse = Mouse.Pointing
+      Text = "x"
+      Alignment = Align.Center
+    }
+    { minimize1 Label
+      Move(1,1,22,22)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      Mouse = Mouse.Pointing
+      Text = "-"
+      Alignment = Align.Center
+    }
+    { schedulepanel Panel
+      Move(696,464,696,440)
+      Visible = False
+      Background = Color.Background
+      { timerback Button
+        Move(16,392,136,32)
+        Mouse = Mouse.Pointing
+        Text = ("Back")
+        Picture = Picture["back.png"]
+      }
+      { schedulerstate Button
+        Move(128,8,136,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Disabled")
+      }
+      { schedulerstatetext Label
+        Move(9,8,112,32)
+        NoTabFocus = True
+        Text = ("Scheduler state:")
+        Alignment = Align.Left
+      }
+      { silentmode CheckBox
+        Move(7,304,144,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Use silent mode")
+      }
+      { Label40 Label
+        Move(0,272,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Options")
+        Alignment = Align.Center
+      }
+      { Label39 Label
+        Move(0,48,696,32)
+        Font = Font["Bold"]
+        NoTabFocus = True
+        Text = ("Timer settings")
+        Alignment = Align.Center
+      }
+      { Label38 Label
+        Move(9,80,680,32)
+        NoTabFocus = True
+        Text = ("Waiting time before creating a new restore point:")
+        Alignment = Align.Left
+      }
+      { Label42 Label
+        Move(160,416,528,24)
+        #Translate = False
+        NoTabFocus = True
+        Text = "Kendek, GPLv3"
+        Alignment = Align.Right
+      }
+      { schedulersecondtext Label
+        Move(9,212,168,32)
+        NoTabFocus = True
+        Text = ("Visible countdown time:")
+        Alignment = Align.Left
+      }
+      { seconddowntimer #Timer
+        #Move(648,368)
+        Delay = 500
+      }
+      { seconduptimer #Timer
+        #Move(600,368)
+        Delay = 500
+      }
+      { minutedowntimer #Timer
+        #Move(552,368)
+        Delay = 500
+      }
+      { minuteuptimer #Timer
+        #Move(504,368)
+        Delay = 500
+      }
+      { hourdowntimer #Timer
+        #Move(456,368)
+        Delay = 500
+      }
+      { houruptimer #Timer
+        #Move(408,368)
+        Delay = 500
+      }
+      { daydowntimer #Timer
+        #Move(360,368)
+        Delay = 500
+      }
+      { dayuptimer #Timer
+        #Move(312,368)
+        Delay = 500
+      }
+      { windowpositiontext Label
+        Move(9,336,240,32)
+        NoTabFocus = True
+        Text = ("Pop-up window position on screen:")
+        Alignment = Align.Left
+      }
+      { windowposition ComboBox
+        Move(256,336,112,32)
+        Enabled = False
+        NoTabFocus = True
+        ReadOnly = True
+        List = [("Top left"), ("Top right"), ("Center"), ("Bottom left"), ("Bottom right")]
+      }
+      { dayup Button
+        Move(176,112,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("More")
+        Picture = Picture["up.png"]
+      }
+      { daydown Button
+        Move(176,160,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("Less")
+        Picture = Picture["down.png"]
+      }
+      { Label37 Label
+        Move(280,136,16,24)
+        #Translate = False
+        NoTabFocus = True
+        Text = ":"
+        Alignment = Align.Center
+      }
+      { hourup Button
+        Move(296,112,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("More")
+        Picture = Picture["up.png"]
+      }
+      { hourdown Button
+        Move(296,160,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("Less")
+        Picture = Picture["down.png"]
+      }
+      { Label41 Label
+        Move(400,136,16,24)
+        #Translate = False
+        NoTabFocus = True
+        Text = ":"
+        Alignment = Align.Center
+      }
+      { minuteup Button
+        Move(416,112,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("More")
+        Picture = Picture["up.png"]
+      }
+      { minutedown Button
+        Move(416,160,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("Less")
+        Picture = Picture["down.png"]
+      }
+      { seconddown Button
+        Move(184,240,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("Less")
+        Picture = Picture["down.png"]
+      }
+      { secondup Button
+        Move(184,192,104,24)
+        Enabled = False
+        NoTabFocus = True
+        ToolTip = ("More")
+        Picture = Picture["up.png"]
+      }
+      { DrawingArea1 DrawingArea
+        Move(176,136,104,24)
+        Background = Color.TextBackground
+        NoTabFocus = True
+        Border = Border.Sunken
+        { schedulerday Label
+          Move(2,2,100,20)
+          #Translate = False
+          NoTabFocus = True
+          Alignment = Align.Center
+        }
+      }
+      { DrawingArea2 DrawingArea
+        Move(296,136,104,24)
+        Background = Color.TextBackground
+        NoTabFocus = True
+        Border = Border.Sunken
+        { schedulerhour Label
+          Move(2,2,100,20)
+          #Translate = False
+          NoTabFocus = True
+          Alignment = Align.Center
+        }
+      }
+      { DrawingArea3 DrawingArea
+        Move(416,136,104,24)
+        Background = Color.TextBackground
+        NoTabFocus = True
+        Border = Border.Sunken
+        { schedulerminute Label
+          Move(2,2,100,20)
+          #Translate = False
+          NoTabFocus = True
+          Alignment = Align.Center
+        }
+      }
+      { schedulersecondarea DrawingArea
+        Move(184,216,104,24)
+        Background = Color.TextBackground
+        NoTabFocus = True
+        Border = Border.Sunken
+        { schedulersecond Label
+          Move(2,2,100,20)
+          #Translate = False
+          NoTabFocus = True
+          Alignment = Align.Center
+        }
+      }
+    }
+  }
+  { unitimer #Timer
+    #Move(1328,2664)
+    Delay = 100
+  }
+  { points Label
+    Move(1328,2760,32,32)
+    Visible = False
+    Border = Border.Plain
+  }
+  { schedulerpanel Panel
+    Move(920,2664,402,161)
+    Visible = False
+    Background = Color.Foreground
+    NoTabFocus = True
+    { borderpicture4 PictureBox
+      Move(0,0,402,24)
+      NoTabFocus = True
+      Picture = Picture["border.png"]
+      Alignment = Align.Center
+    }
+    { subschedulerpanel Panel
+      Move(1,24,400,136)
+      Background = Color.Background
+      { schedulertext TextLabel
+        Move(80,8,312,88)
+        NoTabFocus = True
+        Text = ("Creates a scheduled restore point within few seconds.")
+      }
+      { schedulertimer #Timer
+        #Move(0,88)
+      }
+      { schedulerlater Button
+        Move(160,96,112,32)
+        NoTabFocus = True
+        Mouse = Mouse.Pointing
+        Text = ("Later")
+      }
+      { schedulerstart Button
+        Move(280,96,112,32)
+        Enabled = False
+        NoTabFocus = True
+        Text = ("Start")
+      }
+      { schedulernumber Label
+        Move(280,72,112,24)
+        #Translate = False
+        NoTabFocus = True
+        Alignment = Align.Center
+      }
+      { schedulerinfo PictureBox
+        Move(0,0,80,80)
+        NoTabFocus = True
+        Picture = Picture["dialoginfo.png"]
+        Alignment = Align.Center
+      }
+    }
+    { function4 Label
+      Move(0,0,402,24)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Text = "Systemback"
+      Alignment = Align.Center
+    }
+    { minimize4 Label
+      Move(1,1,22,22)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = "-"
+      Alignment = Align.Center
+    }
+  }
+  { windowsizeworkaround #Timer
+    #Move(1328,2712)
+    Enabled = True
+    Delay = 50
+  }
+}

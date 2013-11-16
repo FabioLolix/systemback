@@ -63,14 +63,13 @@
         Delay = 750
       }
     }
-    { minimize2 Label
-      Move(1,1,22,22)
+    { windowbutton3 Label
+      Move(378,0,24,24)
       #Translate = False
       Font = Font["Bold"]
       Foreground = Color.Background
       NoTabFocus = True
-      Mouse = Mouse.Pointing
-      Text = "-"
+      Text = ":::"
       Alignment = Align.Center
     }
   }
@@ -136,18 +135,8 @@
         Alignment = Align.Center
       }
     }
-    { minimize3 Label
-      Move(1,1,22,22)
-      #Translate = False
-      Font = Font["Bold"]
-      Foreground = Color.Background
-      NoTabFocus = True
-      Mouse = Mouse.Pointing
-      Text = "-"
-      Alignment = Align.Center
-    }
     { function3 Label
-      Move(23,0,460,24)
+      Move(0,0,506,24)
       #Translate = False
       Font = Font["Bold"]
       Foreground = Color.Background
@@ -155,14 +144,13 @@
       Text = "Systemback"
       Alignment = Align.Center
     }
-    { close2 Label
-      Move(483,1,22,22)
+    { windowbutton2 Label
+      Move(482,0,24,24)
       #Translate = False
       Font = Font["Bold"]
       Foreground = Color.Background
       NoTabFocus = True
-      Mouse = Mouse.Pointing
-      Text = "x"
+      Text = ":::"
       Alignment = Align.Center
     }
   }
@@ -1629,29 +1617,21 @@
       Alignment = Align.Center
     }
     { function1 Label
-      Move(23,0,652,24)
+      Move(0,0,698,24)
       #Translate = False
       Font = Font["Bold"]
       Foreground = Color.Background
+      NoTabFocus = True
       Text = "Systemback"
       Alignment = Align.Center
     }
-    { close1 Label
-      Move(675,1,22,22)
+    { windowbutton1 Label
+      Move(674,0,24,24)
       #Translate = False
       Font = Font["Bold"]
       Foreground = Color.Background
-      Mouse = Mouse.Pointing
-      Text = "x"
-      Alignment = Align.Center
-    }
-    { minimize1 Label
-      Move(1,1,22,22)
-      #Translate = False
-      Font = Font["Bold"]
-      Foreground = Color.Background
-      Mouse = Mouse.Pointing
-      Text = "-"
+      NoTabFocus = True
+      Text = ":::"
       Alignment = Align.Center
     }
     { schedulepanel Panel
@@ -1945,14 +1925,13 @@
       Text = "Systemback"
       Alignment = Align.Center
     }
-    { minimize4 Label
-      Move(1,1,22,22)
+    { windowbutton4 Label
+      Move(378,0,24,24)
       #Translate = False
       Font = Font["Bold"]
       Foreground = Color.Background
       NoTabFocus = True
-      Mouse = Mouse.Pointing
-      Text = "-"
+      Text = ":::"
       Alignment = Align.Center
     }
   }

@@ -228,6 +228,8 @@ Public Sub Form_Close()
 
   Endif
 
+  If windowbuttons.Closed = False Then windowbuttons.Close
+
 End
 
 Public Sub point1_Change()
@@ -1551,8 +1553,6 @@ Public Sub copymenu_Click()
   systembackpanel.Hide
   copypanel.Show
   function1.Text = ("System copy")
-  close1.Text = "□"
-  close1.Font.Name = "FreeSans"
   copyback.SetFocus
   Form_Resize
 
@@ -1709,8 +1709,6 @@ Public Sub excludemenu_Click()
   systembackpanel.Hide
   excludepanel.Show
   function1.Text = ("Exclude")
-  close1.Text = "□"
-  close1.Font.Name = "FreeSans"
   excludeback.SetFocus
   Form_Resize
 
@@ -1782,8 +1780,6 @@ Public Sub copyback_Click()
 
   Endif
 
-  close1.Text = "x"
-  close1.Font.Name = Null
   nwidth = 698
   nheight = 465
   windowmove
@@ -1822,8 +1818,6 @@ Public Sub excludeback_Click()
   excludepanel.Hide
   systembackpanel.Show
   function1.Text = "Systemback"
-  close1.Text = "x"
-  close1.Font.Name = Null
   functionmenunext.SetFocus
 
   nwidth = 698
@@ -2899,8 +2893,8 @@ Public Sub Form_Resize()
   If systembackgui.W > 1 And systembackgui.H > 1
 
     mainpanel.Resize(systembackgui.W, systembackgui.H)
-    function1.W = systembackgui.W - 46
-    close1.X = systembackgui.W - 23
+    function1.W = systembackgui.W
+    windowbutton1.X = systembackgui.W - 24
     borderpicture1.W = systembackgui.W
 
     If choosepanel.Visible = True
@@ -4938,14 +4932,18 @@ End
 
 Public Sub function1_MouseMove()
 
-  If Mouse.Left = True And close1.Text <> "▭" And wmove = False
+  With systembackgui
 
-    wmove = True
-    systembackgui.Move(Mouse.ScreenX - Mouse.StartX - 23, Mouse.ScreenY - Mouse.StartY)
-    Wait 0.02
-    wmove = False
+    If Mouse.Left = True And .W <> Screen.AvailableWidth And .H <> Screen.AvailableHeight And wmove = False
 
-  Endif
+      wmove = True
+      .Move(Mouse.ScreenX - Mouse.StartX, Mouse.ScreenY - Mouse.StartY)
+      Wait 0.02
+      wmove = False
+
+    Endif
+
+  End With
 
 End
 
@@ -4994,7 +4992,6 @@ Public Sub chooseresize_MouseMove()
       Else If Abs(mainw - .W) > 9
 
         .W = mainw
-        If close1.Text = "▭" Then close1.Text = "□"
 
       Endif
 
@@ -5009,7 +5006,6 @@ Public Sub chooseresize_MouseMove()
       Else If Abs(mainh - .H) > 9
 
         .H = mainh
-        If close1.Text = "▭" Then close1.Text = "□"
 
       Endif
 
@@ -5039,7 +5035,6 @@ Public Sub copyresize_MouseMove()
       Else If Abs(mainw - .W) > 9
 
         .W = mainw
-        If close1.Text = "▭" Then close1.Text = "□"
 
       Endif
 
@@ -5054,7 +5049,6 @@ Public Sub copyresize_MouseMove()
       Else If Abs(mainh - .H) > 9
 
         .H = mainh
-        If close1.Text = "▭" Then close1.Text = "□"
 
       Endif
 
@@ -5168,459 +5162,54 @@ Public Sub excluderesize_MouseUp()
 
 End
 
-Public Sub close1_MouseDown()
+Public Sub windowbutton1_Enter()
 
-  If Mouse.Left = True
-
-    With close1
-
-      If .Background = Color.Default Then .Background = Color.Background
-      .Foreground = Color.SelectedBackground
-
-    End With
-
-  Endif
+  windowbutton1_MouseDown
 
 End
 
-Public Sub close1_MouseUp()
+Public Sub windowbutton1_MouseDown()
 
-  If Mouse.Left = True
-
-    With close1
-
-      If .Background = Color.Background
-
-        If .Text = "x"
-
-          systembackgui.Close
-
-        Else If .Text = "□"
-
-          maxsize
-
-        Else
-
-          normalsize
-
-        Endif
-
-      Endif
-
-      .Foreground = Color.Background
-
-    End With
-
-  Endif
+  If copypanel.Visible = True Or excludepanel.Visible = True Or choosepanel.Visible = True Then windowbuttons.bts = 3 Else windowbuttons.bts = 2
+  windowbuttons.Show
 
 End
 
-Public Sub close1_Enter()
+Public Sub windowbutton2_Enter()
 
-  With close1
-
-    .Background = Color.Background
-    If .Foreground = Color.Background Then .Foreground = Color.Foreground
-
-  End With
+  windowbutton2_MouseDown
 
 End
 
-Public Sub close1_Leave()
+Public Sub windowbutton2_MouseDown()
 
-  With close1
-
-    .Background = Color.Default
-    If .Foreground = Color.Foreground Then .Foreground = Color.Background
-
-  End With
+  windowbuttons.bts = 2
+  windowbuttons.Show
 
 End
 
-Public Sub close1_MouseMove()
+Public Sub windowbutton3_Enter()
 
-  With close1
-
-    If Mouse.Inside(close1) = True
-
-      If .Background = Color.Default Then .Background = Color.Background
-
-    Else If .Background = Color.Background
-
-      .Background = Color.Default
-
-    Endif
-
-  End With
+  windowbutton3_MouseDown
 
 End
 
-Public Sub close2_MouseDown()
+Public Sub windowbutton3_MouseDown()
 
-  If Mouse.Left = True
-
-    With close2
-
-      If .Background = Color.Default Then .Background = Color.Background
-      .Foreground = Color.SelectedBackground
-
-    End With
-
-  Endif
+  windowbuttons.bts = 1
+  windowbuttons.Show
 
 End
 
-Public Sub close2_MouseUp()
+Public Sub windowbutton4_Enter()
 
-  If Mouse.Left = True
-
-    If close2.Background = Color.Background Then systembackgui.Close Else close2.Foreground = Color.Background
-
-  Endif
+  windowbutton3_MouseDown
 
 End
 
-Public Sub close2_Enter()
+Public Sub windowbutton4_MouseDown()
 
-  With close2
-
-    .Background = Color.Background
-    If .Foreground = Color.Background Then .Foreground = Color.Foreground
-
-  End With
-
-End
-
-Public Sub close2_Leave()
-
-  With close2
-
-    .Background = Color.Default
-    If .Foreground = Color.Foreground Then .Foreground = Color.Background
-
-  End With
-
-End
-
-Public Sub close2_MouseMove()
-
-  With close2
-
-    If Mouse.Inside(close2) = True
-
-      If .Background = Color.Default Then .Background = Color.Background
-
-    Else If .Background = Color.Background
-
-      .Background = Color.Default
-
-    Endif
-
-  End With
-
-End
-
-Public Sub minimize1_MouseDown()
-
-  If Mouse.Left = True
-
-    With minimize1
-
-      If .Background = Color.Default Then .Background = Color.Background
-      .Foreground = Color.SelectedBackground
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize1_MouseUp()
-
-  If Mouse.Left = True
-
-    With minimize1
-
-      If .Background = Color.Background
-
-        systembackgui.Minimized = True
-        .Background = Color.Default
-
-      Endif
-
-      .Foreground = Color.Background
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize1_Enter()
-
-  With minimize1
-
-    .Background = Color.Background
-    If .Foreground = Color.Background Then .Foreground = Color.Foreground
-
-  End With
-
-End
-
-Public Sub minimize1_Leave()
-
-  With minimize1
-
-    .Background = Color.Default
-    If .Foreground = Color.Foreground Then .Foreground = Color.Background
-
-  End With
-
-End
-
-Public Sub minimize1_MouseMove()
-
-  With minimize1
-
-    If Mouse.Inside(minimize1) = True
-
-      If .Background = Color.Default Then .Background = Color.Background
-
-    Else If .Background = Color.Background
-
-      .Background = Color.Default
-
-    Endif
-
-  End With
-
-End
-
-Public Sub minimize2_MouseDown()
-
-  If Mouse.Left = True
-
-    With minimize2
-
-      If .Background = Color.Default Then .Background = Color.Background
-      .Foreground = Color.SelectedBackground
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize2_MouseUp()
-
-  If Mouse.Left = True
-
-    With minimize2
-
-      If .Background = Color.Background
-
-        systembackgui.Minimized = True
-        .Background = Color.Default
-
-      Endif
-
-      .Foreground = Color.Background
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize2_Enter()
-
-  With minimize2
-
-    .Background = Color.Background
-    If .Foreground = Color.Background Then .Foreground = Color.Foreground
-
-  End With
-
-End
-
-Public Sub minimize2_Leave()
-
-  With minimize2
-
-    .Background = Color.Default
-    If .Foreground = Color.Foreground Then .Foreground = Color.Background
-
-  End With
-
-End
-
-Public Sub minimize2_MouseMove()
-
-  With minimize2
-
-    If Mouse.Inside(minimize2) = True
-
-      If .Background = Color.Default Then .Background = Color.Background
-
-    Else If .Background = Color.Background
-
-      .Background = Color.Default
-
-    Endif
-
-  End With
-
-End
-
-Public Sub minimize3_MouseDown()
-
-  If Mouse.Left = True
-
-    With minimize3
-
-      If .Background = Color.Default Then .Background = Color.Background
-      .Foreground = Color.SelectedBackground
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize3_MouseUp()
-
-  If Mouse.Left = True
-
-    With minimize3
-
-      If .Background = Color.Background
-
-        systembackgui.Minimized = True
-        .Background = Color.Default
-
-      Endif
-
-      .Foreground = Color.Background
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize3_Enter()
-
-  With minimize3
-
-    .Background = Color.Background
-    If .Foreground = Color.Background Then .Foreground = Color.Foreground
-
-  End With
-
-End
-
-Public Sub minimize3_Leave()
-
-  With minimize3
-
-    .Background = Color.Default
-    If .Foreground = Color.Foreground Then .Foreground = Color.Background
-
-  End With
-
-End
-
-Public Sub minimize3_MouseMove()
-
-  With minimize3
-
-    If Mouse.Inside(minimize3) = True
-
-      If .Background = Color.Default Then .Background = Color.Background
-
-    Else If .Background = Color.Background
-
-      .Background = Color.Default
-
-    Endif
-
-  End With
-
-End
-
-Public Sub minimize4_MouseDown()
-
-  If Mouse.Left = True
-
-    With minimize4
-
-      If .Background = Color.Default Then .Background = Color.Background
-      .Foreground = Color.SelectedBackground
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize4_MouseUp()
-
-  If Mouse.Left = True
-
-    With minimize4
-
-      If .Background = Color.Background
-
-        systembackgui.Minimized = True
-        .Background = Color.Default
-
-      Endif
-
-      .Foreground = Color.Background
-
-    End With
-
-  Endif
-
-End
-
-Public Sub minimize4_Enter()
-
-  With minimize4
-
-    .Background = Color.Background
-    If .Foreground = Color.Background Then .Foreground = Color.Foreground
-
-  End With
-
-End
-
-Public Sub minimize4_Leave()
-
-  With minimize4
-
-    .Background = Color.Default
-    If .Foreground = Color.Foreground Then .Foreground = Color.Background
-
-  End With
-
-End
-
-Public Sub minimize4_MouseMove()
-
-  With minimize4
-
-    If Mouse.Inside(minimize4) = True
-
-      If .Background = Color.Default Then .Background = Color.Background
-
-    Else If .Background = Color.Background
-
-      .Background = Color.Default
-
-    Endif
-
-  End With
+  windowbutton3_MouseDown
 
 End
 
@@ -5860,8 +5449,6 @@ Public Sub storagedirbutton_Click()
   systembackpanel.Hide
   choosepanel.Show
   function1.Text = ("Storage directory")
-  close1.Text = "□"
-  close1.Font.Name = "FreeSans"
   dirchooseok.SetFocus
   nwidth = 642
   nheight = 481
@@ -5987,8 +5574,6 @@ Public Sub dirchooseok_Click()
 
     Endif
 
-    close1.Text = "x"
-    close1.Font.Name = Null
     nwidth = 698
     nheight = 465
     windowmove
@@ -6029,8 +5614,6 @@ Public Sub choosecancel_Click()
 
     Endif
 
-    close1.Text = "x"
-    close1.Font.Name = Null
     nwidth = 698
     nheight = 465
     windowmove
@@ -8113,8 +7696,6 @@ Public Sub installnext_Click()
 
   installpanel.Hide
   copypanel.Show
-  close1.Text = "□"
-  close1.Font.Name = "FreeSans"
   copyback.SetFocus
   Form_Resize
 
@@ -8668,8 +8249,6 @@ End
 
 Public Sub copynext_Click()
 
-  close1.Text = "x"
-  close1.Font.Name = Null
   If function1.Text = ("System copy") Then dialog = 14 Else dialog = 15
   dialogopen
 
@@ -10049,8 +9628,6 @@ Public Sub liveworkdirbutton_Click()
   livecreatepanel.Hide
   choosepanel.Show
   function1.Text = ("Working directory")
-  close1.Text = "□"
-  close1.Font.Name = "FreeSans"
   dirchooseok.SetFocus
   nwidth = 642
   nheight = 481
@@ -13471,45 +13048,6 @@ End
 Public Sub dirchoose_KeyPress()
 
   If Key.Code = Key.F5 Then dirrefresh_Click
-
-End
-
-Sub maxsize()
-
-  With systembackgui
-
-    winx = .X
-    winy = .Y
-    winw = .W
-    winh = .H
-
-    .Move(0, 0, Screen.AvailableWidth, Screen.AvailableHeight)
-
-  End With
-
-  With close1
-
-    .Text = "▭"
-    If .Background = Color.Background Then .Background = Color.Default
-
-  End With
-
-End
-
-Sub normalsize()
-
-  systembackgui.Resize(1, 1)
-
-  Wait 0.15
-
-  systembackgui.Move(winx, winy, winw, winh)
-
-  With close1
-
-    .Text = "□"
-    If .Background = Color.Background Then .Background = Color.Default
-
-  End With
 
 End
 

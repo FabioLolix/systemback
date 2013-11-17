@@ -1680,7 +1680,7 @@ Public Sub systemupgrade_Click()
 
   If systembackgui.Closed = False
 
-    If Trim(File.Load("/usr/share/systemback/version")) = Left(systembackversion.Text, InStr(systembackversion.Text, "_") - 1)
+    If Trim(File.Load("/usr/share/systemback/version")) = Left(systembackversion.Text, RInStr(systembackversion.Text, "_") - 1)
 
       dlock = Lock "/var/lib/dpkg/lock"
 
@@ -1694,7 +1694,7 @@ Public Sub systemupgrade_Click()
     Else
 
       Unlock slock
-      Exec ["systembackgui"]
+      If Component.IsLoaded("gb.gtk") Then Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.gtk"] Else Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.qt4"]
       systembackgui.Close
 
     Endif
@@ -1857,7 +1857,7 @@ Sub dialogopen()
   If systembackgui.Closed = True
 
     File.Save(tmp & "dialog", dialog)
-    Exec ["systembackgui"]
+    If Component.IsLoaded("gb.gtk") Then Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.gtk"] Else Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.qt4"]
 
   Else
 

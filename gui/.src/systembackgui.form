@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,1392,2920)
+  Move(0,0,1392,2872)
   #Scaled = False
   #Translate = False
   Font = Font["11"]
@@ -1942,7 +1942,7 @@
     Delay = 50
   }
   { buttonspanel Panel
-    Move(512,2832,138,48)
+    Move(512,2824,138,48)
     Visible = False
     Background = Color.SelectedBackground
     { windowmaximize Label

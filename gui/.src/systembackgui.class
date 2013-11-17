@@ -5311,6 +5311,8 @@ Public Sub windowmaximize_MouseUp()
 
       If windowmaximize.Text = "□"
 
+        buttonspanel.Hide
+
         winx = .X
         winy = .Y
         winw = .W
@@ -5374,8 +5376,11 @@ Public Sub windowminimize_MouseUp()
 
   If windowminimize.Foreground = Color.SelectedBackground And buttonspanel.Visible = True
 
-    buttonspanel.Hide
     systembackgui.Minimized = True
+
+    Wait 0.3
+
+    If buttonspanel.Visible = True Then buttonspanel.Hide
 
   Endif
 
@@ -13415,7 +13420,24 @@ Public Sub windowsizeworkaround_Timer()
 
     If .W = 700 Or .W = 702 Or .W = 704 Or .W = 706 Or .W = 708 Or .W = 710 Or .W = 508 Or .W = 510 Or .W = 512 Or .W = 514 Or .W = 516 Or .W = 518 Or .W = 404 Or .W = 406 Or .W = 408 Or .W = 410 Or .W = 412 Or .W = 414
 
-      .X = .X - 1
+      If Component.IsLoaded("gb.gtk") = True
+
+        .X = .X - 1
+
+      Else If mainpanel.Visible = True
+
+        .Resize(698, 465)
+
+      Else If dialogpanel.Visible = True
+
+        .Resize(506, 201)
+
+      Else
+
+        .Resize(402, 161)
+
+      Endif
+
       windowsizeworkaround.Stop
 
     Else If wround = 30

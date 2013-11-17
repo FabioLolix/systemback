@@ -1298,16 +1298,16 @@ Sub scheduler()
 
                   Else
 
-                    If smode = "off" And Exist("/usr/bin/systembackgui")
+                    If smode = "off" And Exist("/usr/share/systemback/systembackgui")
 
                       If xauth = Null
 
-                        Exec ["systembackgui", "schedule", wpos] Wait
+                        Exec ["/usr/share/systemback/systembackgui", "schedule", wpos] Wait
 
                       Else
 
                         Copy xauth To "/tmp/sbXauthority-" & rnum
-                        Exec ["systembackgui", "schedule", wpos] With ["XAUTHORITY=/tmp/sbXauthority-" & rnum] Wait
+                        Exec ["/usr/share/systemback/systembackgui", "schedule", wpos] With ["XAUTHORITY=/tmp/sbXauthority-" & rnum] Wait
                         If Exist("/tmp/sbXauthority-" & rnum) Then Kill "/tmp/sbXauthority-" & rnum
 
                       Endif

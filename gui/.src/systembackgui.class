@@ -151,6 +151,7 @@ Public Sub Form_Open()
   Endif
 
   dialogpanel.Y = 0
+  buttonspanel.Y = 0
 
   If dialog <> 0
 
@@ -227,8 +228,6 @@ Public Sub Form_Close()
     Next
 
   Endif
-
-  If windowbuttons.Closed = False Then windowbuttons.Close
 
 End
 
@@ -5170,8 +5169,54 @@ End
 
 Public Sub windowbutton1_MouseDown()
 
-  If copypanel.Visible = True Or excludepanel.Visible = True Or choosepanel.Visible = True Then windowbuttons.bts = 3 Else windowbuttons.bts = 2
-  windowbuttons.Show
+  With buttonspanel
+
+    If windowminimize.Foreground = Color.SelectedBackground Then windowminimize.Foreground = Color.TextBackground
+
+    With windowclose
+
+      .Background = Color.TextBackground
+      .Foreground = Color.TextForeground
+      If .Visible = False Then .Show
+
+    End With
+
+    If copypanel.Visible = True Or excludepanel.Visible = True Or choosepanel.Visible = True
+
+      With windowmaximize
+
+        If systembackgui.W = Screen.AvailableWidth And systembackgui.H = Screen.AvailableHeight
+
+          If .Text = "□" Then .Text = "▭"
+
+        Else If .Text = "▭"
+
+          .Text = "□"
+
+        Endif
+
+        If .Foreground = Color.SelectedBackground Then .Foreground = Color.TextBackground
+        If .Visible = False Then .Show
+
+      End With
+
+      If windowminimize.X <> 47 Then windowminimize.X = 47
+      If windowclose.X <> 92 Then windowclose.X = 92
+      If .W <> 138 Then .W = 138
+
+    Else
+
+      If windowmaximize.Visible = True Then windowmaximize.Hide
+      If windowminimize.X <> 2 Then windowminimize.X = 2
+      If windowclose.X <> 47 Then windowclose.X = 47
+      If .W <> 93 Then .W = 93
+
+    Endif
+
+    .X = systembackgui.W - .W
+    .Visible = True
+
+  End With
 
 End
 
@@ -5183,8 +5228,31 @@ End
 
 Public Sub windowbutton2_MouseDown()
 
-  windowbuttons.bts = 2
-  windowbuttons.Show
+  With buttonspanel
+
+    If windowmaximize.Visible = True Then windowmaximize.Hide
+
+    With windowminimize
+
+      If .Foreground = Color.SelectedBackground Then .Foreground = Color.TextBackground
+      If .X <> 2 Then .X = 2
+
+    End With
+
+    With windowclose
+
+      .Background = Color.TextBackground
+      .Foreground = Color.TextForeground
+      If .Visible = False Then .Show
+      If .X <> 47 Then .X = 47
+
+    End With
+
+    If .W <> 93 Then .W = 93
+    .X = systembackgui.W - .W
+    .Visible = True
+
+  End With
 
 End
 
@@ -5196,8 +5264,24 @@ End
 
 Public Sub windowbutton3_MouseDown()
 
-  windowbuttons.bts = 1
-  windowbuttons.Show
+  With buttonspanel
+
+    If windowmaximize.Visible = True Then windowmaximize.Hide
+    If windowclose.Visible = True Then windowclose.Hide
+
+    With windowminimize
+
+      .Background = Color.TextBackground
+      .Foreground = Color.TextForeground
+      If .X <> 2 Then .X = 2
+
+    End With
+
+    If .W <> 48 Then .W = 48
+    .X = systembackgui.W - .W
+    .Visible = True
+
+  End With
 
 End
 
@@ -5210,6 +5294,174 @@ End
 Public Sub windowbutton4_MouseDown()
 
   windowbutton3_MouseDown
+
+End
+
+Public Sub windowmaximize_MouseDown()
+
+  If Mouse.Left = True Then windowmaximize.Foreground = Color.SelectedBackground
+
+End
+
+Public Sub windowmaximize_MouseUp()
+
+  If windowmaximize.Foreground = Color.SelectedBackground And buttonspanel.Visible = True
+
+    With systembackgui
+
+      If windowmaximize.Text = "□"
+
+        winx = .X
+        winy = .Y
+        winw = .W
+        winh = .H
+
+        .Move(0, 0, Screen.AvailableWidth, Screen.AvailableHeight)
+
+      Else
+
+        .Resize(1, 1)
+
+        Wait 0.15
+
+        .Move(winx, winy, winw, winh)
+
+      Endif
+
+    End With
+
+  Endif
+
+End
+
+Public Sub windowmaximize_Enter()
+
+  With windowmaximize
+
+    If .Background = Color.TextForeground
+
+      .Background = Color.TextBackground
+      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextForeground
+
+    Endif
+
+  End With
+
+End
+
+Public Sub windowmaximize_Leave()
+
+  With windowmaximize
+
+    If .Background = Color.TextBackground
+
+      .Background = Color.TextForeground
+      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextBackground
+
+    Endif
+
+  End With
+
+End
+
+Public Sub windowminimize_MouseDown()
+
+  If Mouse.Left = True Then windowminimize.Foreground = Color.SelectedBackground
+
+End
+
+Public Sub windowminimize_MouseUp()
+
+  If windowminimize.Foreground = Color.SelectedBackground And buttonspanel.Visible = True
+
+    buttonspanel.Hide
+    systembackgui.Minimized = True
+
+  Endif
+
+End
+
+Public Sub windowminimize_Enter()
+
+  With windowminimize
+
+    If .Background = Color.TextForeground
+
+      .Background = Color.TextBackground
+      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextForeground
+
+    Endif
+
+  End With
+
+End
+
+Public Sub windowminimize_Leave()
+
+  With windowminimize
+
+    If .Background = Color.TextBackground
+
+      .Background = Color.TextForeground
+      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextBackground
+
+    Endif
+
+  End With
+
+End
+
+Public Sub windowclose_MouseDown()
+
+  If Mouse.Left = True Then windowclose.Foreground = Color.SelectedBackground
+
+End
+
+Public Sub windowclose_MouseUp()
+
+  If windowclose.Foreground = Color.SelectedBackground And buttonspanel.Visible = True Then systembackgui.Close
+
+End
+
+Public Sub windowclose_Enter()
+
+  With windowclose
+
+    If .Background = Color.TextForeground
+
+      .Background = Color.TextBackground
+      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextForeground
+
+    Endif
+
+  End With
+
+End
+
+Public Sub windowclose_Leave()
+
+  With windowclose
+
+    If .Background = Color.TextBackground
+
+      .Background = Color.TextForeground
+      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextBackground
+
+    Endif
+
+  End With
+
+End
+
+Public Sub buttonspanel_Leave()
+
+  buttonspanel.Hide
+
+End
+
+Public Sub buttonspanel_LostFocus()
+
+  buttonspanel.Hide
 
 End
 
@@ -5762,7 +6014,7 @@ Sub restore()
     Endif
 
     If prun = Null Then Return
-    wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/bin/sbstart,/usr/share/systemback,/etc/systemback*,lost+found}"]
+    wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/share/systemback,/etc/systemback*,lost+found}"]
     wprocwait
     If prun = Null Then Return
 
@@ -7137,7 +7389,7 @@ Sub repair()
 
     If prun = Null Then Return
 
-    If Exist("/mnt/var/lib/dpkg/info/systemback.conffiles") And Exist("/mnt/var/lib/dpkg/info/systemback.list") And Exist("/mnt/var/lib/dpkg/info/systemback.md5sums") And Exist("/mnt/var/lib/dpkg/info/systemback.postinst") And Exist("/mnt/var/lib/dpkg/info/systemback.postrm") And Exist("/mnt/var/lib/dpkg/info/systemback.preinst") And Exist("/mnt/var/lib/dpkg/info/systemback.prerm") And Exist("/mnt/usr/bin/systemback") And Exist("/mnt/usr/bin/systembackgui") And Exist("/mnt/usr/bin/sbstart") And Exist("/mnt/usr/share/systemback/splash.png") And Exist("/mnt/usr/share/systemback/version") And Exist("/mnt/etc/sudoers.d/99_sbscheduler") And Exist("/mnt/etc/xdg/autostart/sbschedule.desktop")
+    If Exist("/mnt/var/lib/dpkg/info/systemback.conffiles") And Exist("/mnt/var/lib/dpkg/info/systemback.list") And Exist("/mnt/var/lib/dpkg/info/systemback.md5sums") And Exist("/mnt/var/lib/dpkg/info/systemback.postinst") And Exist("/mnt/var/lib/dpkg/info/systemback.postrm") And Exist("/mnt/var/lib/dpkg/info/systemback.preinst") And Exist("/mnt/var/lib/dpkg/info/systemback.prerm") And Exist("/mnt/usr/bin/sbsync") And Exist("/mnt/usr/bin/systemback") And Exist("/mnt/usr/share/systemback/sbstart") And Exist("/mnt/usr/share/systemback/version") And Exist("/mnt/etc/sudoers.d/99_sbscheduler") And Exist("/mnt/etc/xdg/autostart/sbschedule.desktop")
 
       wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & srcdir & "'/ /mnt --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/log/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/bin/sbstart,/etc/sudoers.d/99_sbscheduler,/usr/share/systemback,/etc/systemback*,lost+found}"]
 

@@ -1,0 +1,18 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=QSystemback
+Comment=Simple system backup and restore application with extra features.
+Exec=gksu systemback-qt4 --message "Systemback user authentication"
+Type=Application
+Icon=systemback
+Terminal=false
+NotShowIn=KDE;
+Categories=System;
+
+X-Ayatana-Desktop-Shortcuts=Systemupgrade
+
+[Systemupgrade Shortcut Group]
+Name=System upgrade
+Exec=gksu "xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n 'System upgrade' -T 'System upgrade' -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e 'systemback -u unity'" --message "Systemback user authentication"
+TargetEnvironment=Unity

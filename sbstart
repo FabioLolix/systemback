@@ -1,35 +1,32 @@
 #!/bin/bash
 
-if [[ "350" -le "$(gbr3 -V | sed "s+\.++g" | head -c 3)" ]]
+if [[ "351" -le "$(gbr3 -V | sed "s+\.++g" | head -c 3)" ]]
 then
 
   if [[ "${1}" = "schedulerdaemon" ]]
   then sudo -nH systemback schedulerdaemon ${XAUTHORITY}
-  elif [[ -s /usr/bin/systembackgui ]]
+  elif [[ "${0}" = "/usr/bin/systemback-gtk" ]]
   then
 
-    if grep "Component=gb.gtk" /usr/bin/systembackgui >/dev/null 2>&1
-    then
-
-      if [[ -e /usr/lib/gambas3/gb.gtk.so || -e /usr/local/lib/gambas3/gb.gtk.so ]]
-      then systembackgui
-      elif which zenity >/dev/null
-      then zenity --title="Systemback" --error --text="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
-      else kdialog --title="Systemback" --error="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
-      fi
-
-    elif grep "Component=gb.qt4" /usr/bin/systembackgui >/dev/null 2>&1
-    then
-
-      if [[ -e /usr/lib/gambas3/gb.qt4.so || -e /usr/local/lib/gambas3/gb.qt4.so ]]
-      then systembackgui
-      elif which zenity >/dev/null
-      then zenity --title="Systemback" --error --text="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
-      else kdialog --title="Systemback" --error="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
-      fi
-
+    if [[ -e /usr/lib/gambas3/gb.gtk.so || -e /usr/local/lib/gambas3/gb.gtk.so ]]
+    then GB_GUI="gb.gtk" /usr/share/systemback/systembackgui
+    elif which zenity >/dev/null
+    then zenity --title="Systemback" --error --text="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
+    else kdialog --title="Systemback" --error="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
     fi
 
+  elif [[ "${0}" = "/usr/bin/systemback-qt4" ]]
+  then
+
+    if [[ -e /usr/lib/gambas3/gb.qt4.so || -e /usr/local/lib/gambas3/gb.qt4.so ]]
+    then GB_GUI="gb.qt4" /usr/share/systemback/systembackgui
+    elif which zenity >/dev/null
+    then zenity --title="Systemback" --error --text="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
+    else kdialog --title="Systemback" --error="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
+    fi
+
+  elif [[ "${0}" = "/usr/bin/systembackgui" ]]
+  then /usr/share/systemback/systembackgui
   else systemback
   fi
 

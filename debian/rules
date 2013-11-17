@@ -3,21 +3,16 @@
 build: build-stamp
 
 build-stamp:
-	cp -a gui gui-qt
-	sed -i s/gb.gtk/gb.qt4/g gui-qt/.project
 	gbc3 -a gui
 	gba3 gui
 	mv gui/gui.gambas gui/systembackgui
-	gbc3 -a gui-qt
-	gba3 gui-qt
-	mv gui-qt/gui-qt.gambas gui-qt/systembackgui
 	gbc3 -a cli
 	gba3 cli
 	mv cli/cli.gambas cli/systemback
 	touch build-stamp
 
 clean:
-	rm -rf build-stamp gui-qt
+	rm -rf build-stamp
 	find . -name .action -print0 | xargs -0r rm -rf
 	find . -name .gambas -print0 | xargs -0r rm -rf
 	find . -name "*.gambas" -delete

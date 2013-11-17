@@ -2,14 +2,13 @@ Source: systemback
 Section: utils
 Priority: optional
 Maintainer: Kende Krisztián <nemh@freemail.hu>
-Build-Depends: debhelper (>= 9), gambas3-dev (>= 3.5.0), gambas3-gb-gtk (>= 3.5.0), gambas3-gb-image (>= 3.5.0), gambas3-gb-qt4 (>= 3.5.0), gambas3-runtime (>= 3.5.0)
+Build-Depends: debhelper (>= 9), gambas3-dev (>= 3.5.1), gambas3-gb-gtk (>= 3.5.1), gambas3-gb-image (>= 3.5.1), gambas3-gb-qt4 (>= 3.5.1), gambas3-runtime (>= 3.5.1)
 Standards-Version: 3.9.4.0
 
 Package: systemback
 Architecture: all
 Pre-Depends: bash (>= 4.1), coreutils (>= 7.4), grep (>= 2.5.4), procps, sed (>= 4.2.1)
-Depends: ${misc:Depends}, apt, base-files (>= 5.0), casper | live-boot, dosfstools, dpkg (>= 1.15.5), e2fsprogs (>= 1.41.11), fonts-freefont-ttf | ttf-freefont, gambas3-runtime (>= 3.5.0), genisoimage, mount (>= 2.17.2), ncurses-bin (>= 5.7), parted, passwd,
- rsync, squashfs-tools, syslinux, upstart | sysvinit (>= 2.88) | systemd, util-linux (>= 2.17.2), whois (>= 5.0.7) | mkpasswd
+Depends: ${misc:Depends}, apt, dpkg (>= 1.15.5), gambas3-runtime (>= 3.5.1), ncurses-bin (>= 5.7), rsync, upstart | sysvinit (>= 2.88) | systemd
 Recommends: systemback-gtk (= ${source:Version}) | systemback-qt4 (= ${source:Version})
 Conflicts: live-config, live-config-systemd
 Description: Simple system backup and restore application with extra features
@@ -17,19 +16,52 @@ Description: Simple system backup and restore application with extra features
  configuration files. In case of problems you can easily restore the
  previous state of the system. There are extra features like system
  copying, system installation and Live system creation.
+ .
+ This package contain a command line interface and base files.
+
+Package: systemback-gui-common
+Architecture: all
+Depends: ${misc:Depends}, gambas3-runtime (>= 3.5.1), gambas3-gb-image (>= 3.5.1), base-files (>= 5.0), casper | live-boot, dosfstools, e2fsprogs (>= 1.41.11), fonts-freefont-ttf | ttf-freefont, gksu | kdesudo, genisoimage, mount (>= 2.17.2), parted,
+ squashfs-tools, syslinux, util-linux (>= 2.17.2), whois (>= 5.0.7) | mkpasswd, xterm, zenity | kde-baseapps-bin | kdebase-bin
+Replaces: systemback (<< 0.7.4), systemback-gtk (<< 0.7.6), systemback-qt4 (<< 0.7.6)
+Description: Systemback graphical user interface - common files
+ Systemback makes it easy to create backups of system and users
+ configuration files. In case of problems you can easily restore the
+ previous state of the system. There are extra features like system
+ copying, system installation and Live system creation.
+ .
+ This package contain common files for Systemback graphical user
+ interface.
+
+Package: systemback-gui
+Architecture: all
+Depends: ${misc:Depends}, systemback-gtk (= ${source:Version}) | systemback-qt4 (= ${source:Version})
+Description: Systemback graphical user interface
+ Systemback makes it easy to create backups of system and users
+ configuration files. In case of problems you can easily restore the
+ previous state of the system. There are extra features like system
+ copying, system installation and Live system creation.
+ .
+ This package install a graphical user interface for Systemback.
 
 Package: systemback-gtk
 Architecture: all
-Depends: ${misc:Depends}, gambas3-gb-gtk (>= 3.5.0), gambas3-gb-image (>= 3.5.0), gambas3-runtime (>= 3.5.0), gksu | kdesudo, systemback (= ${source:Version}), xterm, zenity | kde-baseapps-bin | kdebase-bin
-Replaces: systemback (<< 0.7.4)
-Conflicts: systemback-qt4
+Depends: ${misc:Depends}, gambas3-gb-gtk (>= 3.5.1), systemback (= ${source:Version}), systemback-gui-common (= ${source:Version})
 Description: Systemback GTK+ interface
- This package contains a GTK+ graphical user interface for Systemback.
+ Systemback makes it easy to create backups of system and users
+ configuration files. In case of problems you can easily restore the
+ previous state of the system. There are extra features like system
+ copying, system installation and Live system creation.
+ .
+ This package contain a GTK+ graphical user interface for Systemback.
 
 Package: systemback-qt4
 Architecture: all
-Depends: ${misc:Depends}, gambas3-gb-qt4 (>= 3.5.0), gambas3-gb-image (>= 3.5.0), gambas3-runtime (>= 3.5.0), gksu | kdesudo, systemback (= ${source:Version}), xterm, zenity | kde-baseapps-bin | kdebase-bin
-Replaces: systemback (<< 0.7.4)
-Conflicts: systemback-gtk
+Depends: ${misc:Depends}, gambas3-gb-qt4 (>= 3.5.1), systemback (= ${source:Version}), systemback-gui-common (= ${source:Version})
 Description: Systemback Qt4 interface
- This package contains a Qt4 graphical user interface for Systemback.
+ Systemback makes it easy to create backups of system and users
+ configuration files. In case of problems you can easily restore the
+ previous state of the system. There are extra features like system
+ copying, system installation and Live system creation.
+ .
+ This package contain a Qt4 graphical user interface for Systemback.

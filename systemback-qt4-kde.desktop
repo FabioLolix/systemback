@@ -1,9 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
-Name=Systemback
+Name=QSystemback
 Comment=Simple system backup and restore application with extra features.
-Exec=kdesu sbstart --comment "Systemback user authentication"
+Exec=kdesu systemback-qt4 --comment "Systemback user authentication"
 Type=Application
 Icon=systemback
 Terminal=false

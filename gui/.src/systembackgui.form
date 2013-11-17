@@ -1,10 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,1392,2864)
+  Move(0,0,1392,2920)
   #Scaled = False
   #Translate = False
   Font = Font["11"]
+  NoTabFocus = True
   Text = "Systemback"
   Icon = Picture["systemback.png"]
   Persistent = True
@@ -1939,5 +1940,43 @@
     #Move(1328,2712)
     Enabled = True
     Delay = 50
+  }
+  { buttonspanel Panel
+    Move(512,2832,138,48)
+    Visible = False
+    Background = Color.SelectedBackground
+    { windowmaximize Label
+      Move(2,2,44,44)
+      #Translate = False
+      Font = Font["FreeSans,20"]
+      Background = Color.TextForeground
+      Foreground = Color.TextBackground
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = "□"
+      Alignment = Align.Center
+    }
+    { windowminimize Label
+      Move(47,2,44,44)
+      #Translate = False
+      Font = Font["20"]
+      Background = Color.TextForeground
+      Foreground = Color.TextBackground
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = "-"
+      Alignment = Align.Center
+    }
+    { windowclose Label
+      Move(92,2,44,44)
+      #Translate = False
+      Font = Font["20"]
+      Background = Color.TextForeground
+      Foreground = Color.TextBackground
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = "X"
+      Alignment = Align.Center
+    }
   }
 }

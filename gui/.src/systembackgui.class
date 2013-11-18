@@ -2905,7 +2905,12 @@ Public Sub Form_Resize()
       dirchooseok.Move(choosepanel.W - 120, choosepanel.H - 40)
       choosecancel.Move(choosepanel.W - 240, choosepanel.H - 40)
       warning.Y = choosepanel.H - 41
-      chooseresize.Move(choosepanel.W - 10, choosepanel.H - 10)
+
+      With chooseresize
+
+        .Move(choosepanel.W - .W, choosepanel.H - .H)
+
+      End With
 
     Else If copypanel.Visible
 
@@ -2929,7 +2934,12 @@ Public Sub Form_Resize()
       grubinstallcopydisable.Y = grubinstalltext.Y
       copyback.Y = copypanel.H - 48
       copynext.Move(copypanel.W - 152, copyback.Y)
-      copyresize.Move(copypanel.W - 10, copypanel.H - 10)
+
+      With copyresize
+
+        .Move(copypanel.W - .W, copypanel.H - .H)
+
+      End With
 
     Else
 
@@ -2944,7 +2954,12 @@ Public Sub Form_Resize()
       removeitem.Move(additem.X, 96 + itemslist.H / 2 + 12)
       excludeback.Y = excludepanel.H - 48
       kendektext.Move(excludepanel.W - 472, excludepanel.H - 24)
-      excluderesize.Move(excludepanel.W - 10, excludepanel.H - 10)
+
+      With excluderesize
+
+        .Move(excludepanel.W - .W, excludepanel.H - .H)
+
+      End With
 
     Endif
 
@@ -5111,6 +5126,36 @@ Public Sub function4_MouseUp()
 
 End
 
+Public Sub chooseresize_Enter()
+
+  With chooseresize
+
+    If .Picture = Picture["resize.png"]
+
+      .Picture = Picture["bigresize.png"]
+      .Move(.X - 20, .Y - 20, 30, 30)
+
+    Endif
+
+  End With
+
+End
+
+Public Sub chooseresize_Leave()
+
+  With chooseresize
+
+    If .Picture = Picture["bigresize.png"] And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(chooseresize) = False
+
+      .Picture = Picture["resize.png"]
+      .Move(.X + 20, .Y + 20, 10, 10)
+
+    Endif
+
+  End With
+
+End
+
 Public Sub chooseresize_MouseDown()
 
   If Mouse.Left = True
@@ -5135,6 +5180,38 @@ Public Sub chooseresize_MouseUp()
 
   Endif
 
+  If chooseresize.W = 30 Then chooseresize_Leave
+
+End
+
+Public Sub copyresize_Enter()
+
+  With copyresize
+
+    If .Picture = Picture["resize.png"]
+
+      .Picture = Picture["bigresize.png"]
+      .Move(.X - 20, .Y - 20, 30, 30)
+
+    Endif
+
+  End With
+
+End
+
+Public Sub copyresize_Leave()
+
+  With copyresize
+
+    If .Picture = Picture["bigresize.png"] And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(copyresize) = False
+
+      .Picture = Picture["resize.png"]
+      .Move(.X + 20, .Y + 20, 10, 10)
+
+    Endif
+
+  End With
+
 End
 
 Public Sub copyresize_MouseDown()
@@ -5146,6 +5223,37 @@ End
 Public Sub copyresize_MouseUp()
 
   chooseresize_MouseUp
+  If copyresize.W = 30 Then copyresize_Leave
+
+End
+
+Public Sub excluderesize_Enter()
+
+  With excluderesize
+
+    If .Picture = Picture["resize.png"]
+
+      .Picture = Picture["bigresize.png"]
+      .Move(.X - 20, .Y - 20, 30, 30)
+
+    Endif
+
+  End With
+
+End
+
+Public Sub excluderesize_Leave()
+
+  With excluderesize
+
+    If .Picture = Picture["bigresize.png"] And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(excluderesize) = False
+
+      .Picture = Picture["resize.png"]
+      .Move(.X + 20, .Y + 20, 10, 10)
+
+    Endif
+
+  End With
 
 End
 
@@ -5158,6 +5266,7 @@ End
 Public Sub excluderesize_MouseUp()
 
   chooseresize_MouseUp
+  If excluderesize.W = 30 Then excluderesize_Leave
 
 End
 

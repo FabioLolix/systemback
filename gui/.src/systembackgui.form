@@ -1860,6 +1860,16 @@
         }
       }
     }
+    { debugterminal Label
+      Move(0,0,28,24)
+      #Translate = False
+      Font = Font["Bold"]
+      Foreground = Color.Background
+      NoTabFocus = True
+      Mouse = Mouse.Pointing
+      Text = ">_"
+      Alignment = Align.Center
+    }
   }
   { unitimer #Timer
     #Move(1328,2664)

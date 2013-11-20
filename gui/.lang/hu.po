@@ -371,8 +371,8 @@ msgid "Enabled"
 msgstr "Engedélyezve"
 
 #: systembackgui.class:13669
-msgid "Welcome in Systemback debug output window"
-msgstr "Üdvözöl a Systemback hibakimeneti ablak"
+msgid "Welcome to the Systemback text output window!"
+msgstr "Üdvözöl a Systemback szöveges kimenetének az ablaka!"
 
 #: systembackgui.form:355
 msgid "! Interrupt !"
@@ -777,4 +777,3 @@ msgstr "Később"
 #: systembackgui.form:2484
 msgid "Start"
 msgstr "Indítás"
-

@@ -202,7 +202,7 @@ Public Sub Form_Open()
 
       systembackpanel.X = 1
       systembackgui.Move(Screen.W / 2 - 349, Screen.H / 2 - 232, 698, 465)
-      If Application.Args[1] = "nodebug" Then debugterminal.Visible = False
+      If Application.Args[1] = "notextoutput" Then textoutputwindow.Visible = False
 
     Endif
 
@@ -247,8 +247,8 @@ Public Sub Form_Activate()
     windowbutton1.Foreground = Color.Background
     windowbutton2.Foreground = Color.Background
     windowbutton3.Foreground = Color.Background
-    windowbutton3.Foreground = Color.Background
-    debugterminal.Foreground = Color.Background
+    windowbutton4.Foreground = Color.Background
+    textoutputwindow.Foreground = Color.Background
 
   Endif
 
@@ -270,7 +270,7 @@ Public Sub Form_Deactivate()
     windowbutton2.Foreground = Color.Darker(Color.Background)
     windowbutton3.Foreground = Color.Darker(Color.Background)
     windowbutton4.Foreground = Color.Darker(Color.Background)
-    debugterminal.Foreground = Color.Darker(Color.Background)
+    textoutputwindow.Foreground = Color.Darker(Color.Background)
 
   Endif
 
@@ -1764,17 +1764,17 @@ Public Sub systemupgrade_Click()
 
       Unlock slock
 
-      If debugterminal.Visible = True
+      If textoutputwindow.Visible = True
 
         If Component.IsLoaded("gb.gtk") Then Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.gtk"] Else Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.qt4"]
 
       Else If Component.IsLoaded("gb.gtk")
 
-        Exec ["/usr/share/systemback/systembackgui nodebug"] With ["GB_GUI=gb.gtk"]
+        Exec ["/usr/share/systemback/systembackgui notextoutput"] With ["GB_GUI=gb.gtk"]
 
       Else
 
-        Exec ["/usr/share/systemback/systembackgui nodebug"] With ["GB_GUI=gb.qt4"]
+        Exec ["/usr/share/systemback/systembackgui notextoutput"] With ["GB_GUI=gb.qt4"]
 
       Endif
 
@@ -5901,6 +5901,7 @@ End
 Public Sub storagedirbutton_Click()
 
   dirrefresh_Click
+  If textoutputwindow.Visible = True Then textoutputwindow.Hide
   systembackpanel.Hide
   choosepanel.Show
   function1.Text = ("Storage directory")
@@ -5958,6 +5959,7 @@ Public Sub dirchooseok_Click()
       Endif
 
       If Not Exist(fsdir & "/.sbschedule") Then File.Save(fsdir & "/.sbschedule", Null)
+      If Application.Args[1] <> "notextoutput" Then textoutputwindow.Show
       choosepanel.Hide
       systembackpanel.Show
       function1.Text = "Systemback"
@@ -6022,6 +6024,7 @@ Public Sub dirchooseok_Click()
 
       Endif
 
+      If Application.Args[1] <> "notextoutput" Then textoutputwindow.Show
       choosepanel.Hide
       livecreatepanel.Show
       function1.Text = ("Live system create")
@@ -6053,6 +6056,7 @@ Public Sub choosecancel_Click()
 
   If dirchooseok.Picture = Null
 
+    If Application.Args[1] <> "notextoutput" Then textoutputwindow.Show
     choosepanel.Hide
 
     If function1.Text = ("Storage directory")
@@ -10080,6 +10084,7 @@ End
 Public Sub liveworkdirbutton_Click()
 
   dirrefresh_Click
+  If textoutputwindow.Visible = True Then textoutputwindow.Hide
   livecreatepanel.Hide
   choosepanel.Show
   function1.Text = ("Working directory")
@@ -13658,36 +13663,34 @@ Public Sub windowsizeworkaround_Timer()
 
 End
 
-Public Sub debugterminal_MouseDown()
+Public Sub textoutputwindow_MouseDown()
 
-  If Mouse.Left Then debugterminal.Foreground = Color.SelectedBackground
+  If Mouse.Left Then textoutputwindow.Foreground = Color.SelectedBackground
 
 End
 
-Public Sub debugterminal_MouseUp()
+Public Sub textoutputwindow_MouseUp()
 
-  Dim wtext As String = ("Welcome in Systemback debug output window")
+  Dim wtext As String = ("Welcome to the Systemback text output window!")
 
-  If debugterminal.Foreground = Color.SelectedBackground
+  If textoutputwindow.Foreground = Color.SelectedBackground
 
     Unlock slock
     Unlock dlock
-
-    If Component.IsLoaded("gb.gtk") Then Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", "Systemback debug output", "-T", "Systemback debug output", "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "echo " & wtext & " ; echo -------------------------------------------------------------------------------- ; GB_GUI=gb.gtk /usr/share/systemback/systembackgui nodebug"] Else Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", "Systemback debug output", "-T", "Systemback debug output", "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "echo " & wtext & " ; echo -------------------------------------------------------------------------------- ; GB_GUI=gb.qt4 /usr/share/systemback/systembackgui nodebug"]
-
+    If Component.IsLoaded("gb.gtk") Then Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", "Systemback text output", "-T", "Systemback text output", "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "echo " & wtext & " ; echo -------------------------------------------------------------------------------- ; GB_GUI=gb.gtk /usr/share/systemback/systembackgui notextoutput"] Else Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", "Systemback text output", "-T", "Systemback text output", "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "echo " & wtext & " ; echo -------------------------------------------------------------------------------- ; GB_GUI=gb.qt4 /usr/share/systemback/systembackgui notextoutput"]
     systembackgui.Close
 
   Endif
 
 End
 
-Public Sub debugterminal_MouseMove()
+Public Sub textoutputwindow_MouseMove()
 
   If Mouse.Left = True
 
-    With debugterminal
+    With textoutputwindow
 
-      If Mouse.Inside(debugterminal) = True
+      If Mouse.Inside(textoutputwindow) = True
 
         If .Foreground = Color.Background Then .Foreground = Color.SelectedBackground
 

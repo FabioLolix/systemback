@@ -1860,7 +1860,7 @@
         }
       }
     }
-    { debugterminal Label
+    { textoutputwindow Label
       Move(0,0,28,24)
       #Translate = False
       Font = Font["Bold"]

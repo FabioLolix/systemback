@@ -36,6 +36,7 @@ Description: Systemback graphical user interface - common files
 Package: systemback-gui
 Architecture: all
 Depends: ${misc:Depends}, systemback-gtk (= ${source:Version}) | systemback-qt4 (= ${source:Version})
+Replaces: systemback (<< 0.7.4), systemback-gtk (<< 0.7.6), systemback-qt4 (<< 0.7.6)
 Description: Systemback graphical user interface
  Systemback makes it easy to create backups of system and users
  configuration files. In case of problems you can easily restore the

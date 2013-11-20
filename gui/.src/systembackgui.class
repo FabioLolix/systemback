@@ -13672,12 +13672,13 @@ End
 Public Sub textoutputwindow_MouseUp()
 
   Dim wtext As String = ("Welcome to the Systemback text output window!")
+  Dim ttext As String = ("Systemback text output")
 
   If textoutputwindow.Foreground = Color.SelectedBackground
 
     Unlock slock
     Unlock dlock
-    If Component.IsLoaded("gb.gtk") Then Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", "Systemback text output", "-T", "Systemback text output", "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "echo " & wtext & " ; echo -------------------------------------------------------------------------------- ; GB_GUI=gb.gtk /usr/share/systemback/systembackgui notextoutput"] Else Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", "Systemback text output", "-T", "Systemback text output", "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "echo " & wtext & " ; echo -------------------------------------------------------------------------------- ; GB_GUI=gb.qt4 /usr/share/systemback/systembackgui notextoutput"]
+    If Component.IsLoaded("gb.gtk") Then Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", ttext, "-T", ttext, "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "tput bold ; echo -e \"\n " & wtext & " \n\" ; tput sgr0 ; GB_GUI=gb.gtk /usr/share/systemback/systembackgui notextoutput"] Else Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", ttext, "-T", ttext, "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "tput bold ; echo -e \"\n " & wtext & " \n\" ; tput sgr0 ; GB_GUI=gb.qt4 /usr/share/systemback/systembackgui notextoutput"]
     systembackgui.Close
 
   Endif

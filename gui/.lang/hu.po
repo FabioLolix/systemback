@@ -338,41 +338,45 @@ msgstr "A rendszerfájlok visszaállítása"
 msgid "Restoring users configuration files"
 msgstr "A felhasználók beállításfájljainak visszaállítása"
 
-#: systembackgui.class:7466
+#: systembackgui.class:7470
 msgid "Repairing the GRUB 2"
 msgstr "A GRUB 2 javítása"
 
-#: systembackgui.class:11166
+#: systembackgui.class:11171
 msgid "Boot Live without xorg.conf file"
 msgstr "Live inditasa xorg.conf fajl nelkul"
 
-#: systembackgui.class:11540
+#: systembackgui.class:11545
 msgid "Boot Live in debug mode"
 msgstr "Live inditasa debug modban"
 
-#: systembackgui.class:11540
+#: systembackgui.class:11545
 msgid "Boot Live in safe graphics mode"
 msgstr "Live inditasa csokkentett grafikus modban"
 
-#: systembackgui.class:11540
+#: systembackgui.class:11545
 msgid "Boot Live system"
 msgstr "Live rendszer inditasa"
 
-#: systembackgui.class:11541
+#: systembackgui.class:11546
 msgid "Press 'E' key to edit"
 msgstr "Szerkeszteshez nyomja le az 'E' billentyut"
 
-#: systembackgui.class:11546
+#: systembackgui.class:11551
 msgid "Press TAB key to edit"
 msgstr "Szerkeszteshez nyomja le a TAB billentyut"
 
-#: systembackgui.class:12409
+#: systembackgui.class:12414
 msgid "Enabled"
 msgstr "Engedélyezve"
 
-#: systembackgui.class:13669
+#: systembackgui.class:13674
 msgid "Welcome to the Systemback text output window!"
 msgstr "Üdvözöl a Systemback szöveges kimenetének az ablaka!"
+
+#: systembackgui.class:13675
+msgid "Systemback text output"
+msgstr "Systemback szoveges kimenet"
 
 #: systembackgui.form:355
 msgid "! Interrupt !"
@@ -777,3 +781,4 @@ msgstr "Később"
 #: systembackgui.form:2484
 msgid "Start"
 msgstr "Indítás"
+

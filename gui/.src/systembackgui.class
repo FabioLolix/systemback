@@ -256,7 +256,7 @@ End
 
 Public Sub Form_Deactivate()
 
-  If systembackgui.W <> 1
+  If systembackgui.W <> 1 And Mouse.Inside(systembackgui) = False
 
     mainpanel.Background = Color.Darker(Color.Foreground)
     dialogpanel.Background = Color.Darker(Color.Foreground)

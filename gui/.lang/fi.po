@@ -15,711 +15,771 @@ msgstr ""
 msgid "systembackgui"
 msgstr "-"
 
-#: systembackgui.class:168
+#: systembackgui.class:170
 msgid "scheduler"
 msgstr "ajastin"
 
-#: systembackgui.class:1168
+#: systembackgui.class:1215
 msgid "Live image"
 msgstr "Live levykuva"
 
-#: systembackgui.class:1200
+#: systembackgui.class:1247
 msgid "Currently running system"
 msgstr "Tällä hetkellä käytössä järjestelmä"
 
-#: systembackgui.class:1454
+#: systembackgui.class:1501
 msgid "Everyone"
 msgstr "Jokainen"
 
-#: systembackgui.class:1670
+#: systembackgui.class:1743
 msgid "Upgrading the system"
 msgstr "Järjestelmän päivitys"
 
-#: systembackgui.class:1876
+#: systembackgui.class:1956
 msgid "Another Systemback process is currently running, please wait until it finishes."
 msgstr "Toinen Systemback prosessi on käynnissä, odota kunnes se päättyy."
 
-#: systembackgui.class:1882
+#: systembackgui.class:1962
 msgid "Unable to get exclusive lock!<p>First, close all package manager."
 msgstr "Ei saatu haluttua lukitusta!<p>Sulje kaikki pakettienhallintaohjelmaa."
 
-#: systembackgui.class:1888
+#: systembackgui.class:1968
 msgid "The specified name contains unsupported character(s)!<p>Please enter a new name!"
 msgstr "Nimi sisältää ei tuettuja merkkejä!<p>Anna uusi nimi!"
 
-#: systembackgui.class:1894
+#: systembackgui.class:1974
 msgid "Restore the system files to the following restore point:"
 msgstr "Palauta järjestelmän tiedostot seuraavaan palautuspisteen:"
 
-#: systembackgui.class:1901
+#: systembackgui.class:1981
 msgid "Repair the system files with the following restore point:"
 msgstr "Korjaa järjestelmätiedostot seuraavan palautuspisten avulla:"
 
-#: systembackgui.class:1908
+#: systembackgui.class:1988
 msgid "Repair the complete system with the following restore point:"
 msgstr "Täydellinen järjestelmän korjaus seuraavaan palautuspisteen:"
 
-#: systembackgui.class:1915
+#: systembackgui.class:1995
 msgid "Restore the complete user(s) configuration files to the following restore point:"
 msgstr "Täydellinen käyttäjä(t) asetustiedostojen palautus seuraavaan palautuspisteen:"
 
-#: systembackgui.class:1922
+#: systembackgui.class:2002
 msgid "Restore the user(s) configuration files to the following restore point:"
 msgstr "Palauttaa käyttäjä(t) asennustiedostot seuraavaan palautuspisteen:"
 
-#: systembackgui.class:1929
+#: systembackgui.class:2009
 msgid "User(s) configuration files full restoration are completed.<p>The X server will restart automatically within 30 seconds."
 msgstr "Käyttäjä(t) asetustiedostojen täysi palautuminen on valmis.<p>X palvelin käynnistyy automaattisesti 30 sekunnin kuluessa."
 
-#: systembackgui.class:1930
+#: systembackgui.class:2010
 msgid "X restart"
 msgstr "X restart"
 
-#: systembackgui.class:1938
+#: systembackgui.class:2018
 msgid "User(s) configuration files restoration are completed.<p>The X server will restart automatically within 30 seconds."
 msgstr "Käyttäjä(t) asennustiedostojen palauttaminen on valmis.<p>X palvelin käynnistyy automaattisesti 30 sekunnin kuluessa."
 
-#: systembackgui.class:1947
+#: systembackgui.class:2027
 msgid "System files repair are completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
 msgstr "Järjestelmän korjaus on valmis, mutta tapahtui GRUB:n asennusvirhe! Ei voi käynnistää käyttöjärjestelmää! (Yleisesti eri arkkitehtuurin syystä.)"
 
-#: systembackgui.class:1953
+#: systembackgui.class:2033
 msgid "Full system repair is completed."
 msgstr "Koko järjestelmän korjaus on valmis."
 
-#: systembackgui.class:1959
+#: systembackgui.class:2039
 msgid "System repair is completed."
 msgstr "Järjestelmän korjaus on valmis."
 
-#: systembackgui.class:1965
+#: systembackgui.class:2045
 msgid "Copy the system, using the following restore point:"
 msgstr "Kopioi järjestelmä, käyttäen palautuspisteen:"
 
-#: systembackgui.class:1972
+#: systembackgui.class:2052
 msgid "Install the system, using the following restore point:"
 msgstr "Asentaa järjestelmä, käyttäen palautuspisteen:"
 
-#: systembackgui.class:1979
+#: systembackgui.class:2059
 msgid "Restore point creation is aborted! Not enough free disk space to complete the process."
 msgstr "Palautuspisteen luominen on keskeytetty! Ei tarpeeksi vapaata levytilaa prosessin suorittamiseen."
 
-#: systembackgui.class:1985
+#: systembackgui.class:2065
 msgid "Root privileges are required for running Systemback!"
 msgstr "Systemback tarvitsee pääkäyttäjän oikeudet käynnistyäkseen!"
 
-#: systembackgui.class:1991
+#: systembackgui.class:2071
 msgid "Restore complete system to the following restore point:"
 msgstr "Täydellinen järjestelmän palauttaminen seuraavaan palautuspisteeseen:"
 
-#: systembackgui.class:1998
+#: systembackgui.class:2078
 msgid "System files restoration are completed.<p>The computer will restart automatically within 30 seconds."
 msgstr "Järjestelmätiedostojen palauttaminen on valmis.<p>Tietokone käynnistyy uudelleen automaattisesti 30 sekunnin kuluessa."
 
-#: systembackgui.class:1999
+#: systembackgui.class:2079
 msgid "Reboot"
 msgstr "Reboot"
 
-#: systembackgui.class:2007
+#: systembackgui.class:2087
 msgid "Full system restoration is completed.<p>The computer will restart automatically within 30 seconds."
 msgstr "Koko järjestelmän palauttaminen on valmis.<p>Tietokone käynnistyy uudelleen automaattisesti 30 sekunnin kuluessa."
 
-#: systembackgui.class:2016
+#: systembackgui.class:2096
 msgid "The specified partition(s) does not have enough free space to copy the system! The copied system will not function properly!"
 msgstr "Valitulla osiolla(osioilla) ei ole tarpeeksi tilaa järjestelmän kopioimiseen! Järjestelmä ei saata toimia kunnolla!"
 
-#: systembackgui.class:2022
+#: systembackgui.class:2102
 msgid "System copy is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
 msgstr "Järjestelmän kopiointi on valmis, mutta tapahtui virhe GRUB:n asennuksessa! Asenna käynnistyslatain manuaalisesti."
 
-#: systembackgui.class:2028
+#: systembackgui.class:2108
 msgid "An error occurred while reinstalling GRUB!"
 msgstr "GRUB:n uudelleen asennuksessa tapahtui virhe!"
 
-#: systembackgui.class:2034
+#: systembackgui.class:2114
 msgid "Full system repair is completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
 msgstr "Järjestelmän korjaus on valmis, mutta tapahtui virhe GRUB:n uudelleen asennuksessa! Järjestelmä ei saata käynnistyä! (Yleensä eri arkkitehtuurit aiheuttavat virheitä.)"
 
-#: systembackgui.class:2040
+#: systembackgui.class:2120
 msgid "System copy is completed."
 msgstr "Järjestelmän kopiointi on valmis."
 
-#: systembackgui.class:2046
+#: systembackgui.class:2126
 msgid "An error occurred while creating filesystem image!"
 msgstr "Virhe luotaessa tiedostojärjestelmän kuva!"
 
-#: systembackgui.class:2052
+#: systembackgui.class:2132
 msgid "An error occurred while creating container file!"
 msgstr ""
 
-#: systembackgui.class:2058
+#: systembackgui.class:2138
 msgid "Live system creation is completed.<p>The created .sblive file can be written to pendrive."
 msgstr ""
 
-#: systembackgui.class:2064
+#: systembackgui.class:2144
 msgid "The selected directory does not have enough free space to create Live system!"
 msgstr "Valitussa kansiossa ei ole tarpeeksi tilaa Live järjestelmän luomiseen!"
 
-#: systembackgui.class:2070
+#: systembackgui.class:2150
 msgid ", and write the following Live system image:"
 msgstr ""
 
-#: systembackgui.class:2070
+#: systembackgui.class:2150
 msgid "Format the"
 msgstr "Alusta"
 
-#: systembackgui.class:2077
+#: systembackgui.class:2157
 msgid "The specified partition could not be mounted!"
 msgstr "Valittua osiota ei voida liittää!"
 
-#: systembackgui.class:2091
+#: systembackgui.class:2171
 msgid "GRUB 2 repair is completed."
 msgstr "GRUB 2:n korjaus on valmis."
 
-#: systembackgui.class:2097
+#: systembackgui.class:2177
 msgid "System install is completed."
 msgstr "Järjestelmän asennus on valmis."
 
-#: systembackgui.class:2103
+#: systembackgui.class:2183
 msgid "System install is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
 msgstr "Järjestelmän asennus on valmis, mutta tapahtui virhe käynnistyslataaja GRUB:n asennuksessa! Käynnistyslatain pitää asentaa manuaalisesti."
 
-#: systembackgui.class:2109
+#: systembackgui.class:2189
 msgid "The specified partition(s) does not have enough free space to install the system! The installed system will not function properly!"
 msgstr "Osiolla ei ole tarpeeksi vapaata tilaa järjestelmän asentamiseen! Asennettu järjestelmä ei tule toimimaan oikein!"
 
-#: systembackgui.class:2115
+#: systembackgui.class:2195
 msgid "The specified partition could not be formatted (in use or unavailable)!"
 msgstr "Valitun osion alustaminen ei onnistunut (käytössä tai ei saatavilla)!"
 
-#: systembackgui.class:2129
+#: systembackgui.class:2209
 msgid "An error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
 msgstr "GRUB:n uudelleen asennuksessa tapahtui virhe! (Yleensä eri arkkitehtuurit aiheuttavat virheitä.)"
 
-#: systembackgui.class:2135
+#: systembackgui.class:2215
 msgid "Restore point creation is aborted! There has been critical changes in the file system during this operation."
 msgstr "Palautuspisteen luonti on keskeytetty! Toimenpiteen aikana tapahtui kriittisiä muutoksia tiedostojärjestelmään."
 
-#: systembackgui.class:2141
+#: systembackgui.class:2221
 msgid "System copying is aborted! There has been critical changes in the file system during this operation."
 msgstr "Järjestelmän kopiointi on keskeytetty! Toimenpiteen aikana tapahtui kriittisiä muutoksia tiedostojärjestelmään."
 
-#: systembackgui.class:2147
+#: systembackgui.class:2227
 msgid "System installation is aborted! There has been critical changes in the file system during this operation."
 msgstr "Järjestelmän asennus on keskeytetty! Toimenpiteen aikana tapahtui kriittisiä muutoksia tiedostojärjestelmään."
 
-#: systembackgui.class:2153
+#: systembackgui.class:2233
 msgid "Repair the GRUB 2 bootloader."
 msgstr "Korja GRUB 2 bootloader."
 
-#: systembackgui.class:2160
+#: systembackgui.class:2240
 msgid "The selected partition does not have enough space to write the Live system!"
 msgstr ""
 
-#: systembackgui.class:2166
+#: systembackgui.class:2246
 msgid "An error occurred while unpacking Live system files!"
-msgstr ""
+msgstr "Live-järjestelmän tiedostojen purkamisesta tapahtui virhe!"
 
-#: systembackgui.class:2172
+#: systembackgui.class:2252
 msgid "Live system image write is completed."
-msgstr ""
+msgstr "Live-järjestelmän luominen on valmis"
 
-#: systembackgui.class:2178
+#: systembackgui.class:2258
 msgid "An error occurred while renaming essential Live files!"
-msgstr ""
+msgstr "Tärkeiden Live-tiedostojen uudelleennimeämisessä tapahtui virhe!"
 
-#: systembackgui.class:2184
+#: systembackgui.class:2264
 msgid "An error occurred while creating .iso image!"
-msgstr ""
+msgstr ".iso kuvan luotaessa tapahtui virhe!"
 
-#: systembackgui.class:2190
+#: systembackgui.class:2270
 msgid "An error occurred while reading .sblive image!"
 msgstr ""
 
-#: systembackgui.class:2445
+#: systembackgui.class:2525
 msgid "not used"
-msgstr ""
+msgstr "ei käytetä"
 
-#: systembackgui.class:3167
+#: systembackgui.class:3262
 msgid "Deleting incomplete restore point"
 msgstr "Epätäydellinen palautuspisteen poistaminen"
 
-#: systembackgui.class:3192
+#: systembackgui.class:3287
 msgid "Deleting old restore point"
 msgstr "Poistetaan vanha(t) palautuspiste"
 
-#: systembackgui.class:3295
+#: systembackgui.class:3390
 msgid "Checking files and directories"
 msgstr "Tarkistetaan tiedostoja ja hakemistoja"
 
-#: systembackgui.class:3422
+#: systembackgui.class:3525
 msgid "Creating restore point"
 msgstr "Luodaan palautuspiste"
 
-#: systembackgui.class:3605
+#: systembackgui.class:3708
 msgid "Emptying cache"
 msgstr "Tyhjennetään välimuisti"
 
-#: systembackgui.class:3884
+#: systembackgui.class:3987
 msgid "day(s)"
 msgstr "päivä(ä)"
 
-#: systembackgui.class:3885
+#: systembackgui.class:3988
 msgid "hour(s)"
 msgstr "tunti(a)"
 
-#: systembackgui.class:3886
+#: systembackgui.class:3989
 msgid "minute(s)"
 msgstr "minuutti(a)"
 
-#: systembackgui.class:3887
+#: systembackgui.class:3990
 msgid "seconds"
 msgstr "sekunttia"
 
-#: systembackgui.class:3893
+#: systembackgui.class:3996
 msgid "Partition"
 msgstr "Osio"
 
-#: systembackgui.class:3894
+#: systembackgui.class:3997
 msgid "Current mount point"
 msgstr "Nykyinen liitoskohta"
 
-#: systembackgui.class:3895
+#: systembackgui.class:3998
 msgid "New mount point"
 msgstr "Uusi liitoskohta"
 
-#: systembackgui.class:3896
+#: systembackgui.class:3999
 msgid "Filesystem"
 msgstr "Tiedostojärjestelmä"
 
-#: systembackgui.class:3910
+#: systembackgui.class:4013
 msgid "Device"
-msgstr ""
+msgstr "Laite"
 
-#: systembackgui.class:4163
+#: systembackgui.class:4272
 msgid "Copying the system"
 msgstr "Järjestelmän kopiointi"
 
-#: systembackgui.class:4163
+#: systembackgui.class:4272
 msgid "Installing the system"
 msgstr "Asennetaan järjestelmää"
 
-#: systembackgui.class:4206
+#: systembackgui.class:4321
 msgid "Writing Live image to USB device"
-msgstr ""
+msgstr "Live imagen siirtäminen USB-tikulle"
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Converting Live system image"
 msgstr ""
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Creating Live system"
 msgstr "Luodaan Live järjestelmä"
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Deleting restore point"
 msgstr "Poistetaan palautuspiste"
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Repairing the full system"
 msgstr "Koko järjestelmän korjaus"
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Repairing the system files"
 msgstr "Korjataan järjestelmätiedot"
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Restoring the full system"
 msgstr "Palautetaan koko järjestelmä"
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Restoring the system files"
 msgstr "Palautetaan järjestelmätiedostot"
 
-#: systembackgui.class:4217
+#: systembackgui.class:4332
 msgid "Restoring users configuration files"
 msgstr "Palautetaan käyttäjien asetustiedostot"
 
-#: systembackgui.class:7400
+#: systembackgui.class:7470
 msgid "Repairing the GRUB 2"
 msgstr "GRUB 2:n korjaaminen"
 
-#: systembackgui.class:11082
+#: systembackgui.class:11171
 msgid "Boot Live without xorg.conf file"
-msgstr ""
+msgstr "Boot Live-järjestemä ilman xorg.conf tiedostoa"
 
-#: systembackgui.class:11448
+#: systembackgui.class:11545
 msgid "Boot Live in debug mode"
-msgstr ""
+msgstr "Boot Live:n debug-tilassa"
 
-#: systembackgui.class:11448
+#: systembackgui.class:11545
 msgid "Boot Live in safe graphics mode"
-msgstr ""
+msgstr "Boot Live:n turvallisessa grafiikkatilassa"
 
-#: systembackgui.class:11448
+#: systembackgui.class:11545
 msgid "Boot Live system"
-msgstr ""
+msgstr "Boot Live-järjestelmä"
 
-#: systembackgui.class:11449
+#: systembackgui.class:11546
 msgid "Press 'E' key to edit"
 msgstr ""
 
-#: systembackgui.class:11454
+#: systembackgui.class:11551
 msgid "Press TAB key to edit"
 msgstr ""
 
-#: systembackgui.class:12299
+#: systembackgui.class:12414
 msgid "Enabled"
 msgstr ""
 
-#: systembackgui.form:350
+#: systembackgui.class:13674
+msgid "Welcome to the Systemback text output window!"
+msgstr ""
+
+#: systembackgui.class:13675
+msgid "Systemback text output"
+msgstr ""
+
+#: systembackgui.form:355
 msgid "! Interrupt !"
 msgstr "! Keskeytys !"
 
-#: systembackgui.form:417
+#: systembackgui.form:421
 msgid "Cancel"
 msgstr "Keskeytä"
 
-#: systembackgui.form:501
+#: systembackgui.form:494
 msgid "Storage directory"
 msgstr "Tietohakemisto"
 
-#: systembackgui.form:509
+#: systembackgui.form:502
 msgid "Highlighted restore points"
 msgstr "Korostetut palautuspisteet"
 
-#: systembackgui.form:517
+#: systembackgui.form:510
 msgid "Restore points"
 msgstr "Palautuspisteet"
 
-#: systembackgui.form:525
+#: systembackgui.form:518
 msgid "Function menu"
 msgstr "Toimintovalikko"
 
-#: systembackgui.form:540
+#: systembackgui.form:533
 msgid "Point operations"
 msgstr "Palautuspiste toiminnot"
 
-#: systembackgui.form:549
+#: systembackgui.form:542
 msgid "empty"
 msgstr "tyhjä"
 
-#: systembackgui.form:698
+#: systembackgui.form:691
 msgid "Create new"
 msgstr "Luo uusi"
 
-#: systembackgui.form:705
+#: systembackgui.form:698
 msgid "Highlight"
 msgstr "Korosta"
 
-#: systembackgui.form:712
+#: systembackgui.form:705
 msgid "Rename"
 msgstr "Nimeä uudelleen"
 
-#: systembackgui.form:719
+#: systembackgui.form:712
 msgid "Delete"
 msgstr "Poista"
 
-#: systembackgui.form:911
+#: systembackgui.form:725
+msgid "Select restore point"
+msgstr "Valitse palautuspiste"
+
+#: systembackgui.form:918
 msgid "System restore"
 msgstr "Järjestelmän palautus"
 
-#: systembackgui.form:919
+#: systembackgui.form:926
 msgid "System copy"
 msgstr "Kopio järjestelmästä"
 
-#: systembackgui.form:927
+#: systembackgui.form:934
 msgid "System install"
 msgstr "Järjestelmän asennus"
 
-#: systembackgui.form:935
+#: systembackgui.form:942
 msgid "Live system create"
 msgstr "Luo Live järjestelmä"
 
-#: systembackgui.form:943
+#: systembackgui.form:950
 msgid "System repair"
 msgstr "Järjestelmän korjaus"
 
-#: systembackgui.form:951
+#: systembackgui.form:958
 msgid "System upgrade"
 msgstr "Järjestelmän päivitys"
 
-#: systembackgui.form:958
+#: systembackgui.form:965
 msgid "Exclude"
 msgstr "Ohita"
 
-#: systembackgui.form:983
-msgid "About"
-msgstr "Tietoja"
-
-#: systembackgui.form:991
-msgid "Schedule"
-msgstr "Ajastin"
-
-#: systembackgui.form:1099
-msgid "Next"
-msgstr "Seuraava"
-
-#: systembackgui.form:1106
+#: systembackgui.form:973
 msgid "Back"
 msgstr "Edellinen"
 
-#: systembackgui.form:1114
+#: systembackgui.form:980
+msgid "Next"
+msgstr "Seuraava"
+
+#: systembackgui.form:992
+msgid "About"
+msgstr "Tietoja"
+
+#: systembackgui.form:1000
+msgid "Schedule"
+msgstr "Ajastin"
+
+#: systembackgui.form:1014
+msgid "Maximum number of temporary restore points"
+msgstr "Väliaikaisen palautuspisteiden enimmäismäärä"
+
+#: systembackgui.form:1102
+msgid "Change path"
+msgstr "Muuta polku"
+
+#: systembackgui.form:1103
+msgid "..."
+msgstr ""
+
+#: systembackgui.form:1133
 msgid "Restore type"
 msgstr "Palautuksen tapa"
 
-#: systembackgui.form:1122
+#: systembackgui.form:1141
 msgid "Full restore"
 msgstr "Koko järjestelmän palautus"
 
-#: systembackgui.form:1130
+#: systembackgui.form:1149
 msgid "System files restore"
 msgstr "Järjestelmän tiedostojen palauttaminen"
 
-#: systembackgui.form:1137
+#: systembackgui.form:1156
 msgid "User(s) configuration files restore"
 msgstr ""
 
-#: systembackgui.form:1144
+#: systembackgui.form:1163
 msgid "Keep newly installed configuration files"
 msgstr "Pidä  uudet asennustiedostot"
 
-#: systembackgui.form:1151
+#: systembackgui.form:1170
 msgid "Options"
 msgstr "Asetukset"
 
-#: systembackgui.form:1159
+#: systembackgui.form:1178
 msgid "Auto detection"
 msgstr "Automaattinen tunnistus"
 
-#: systembackgui.form:1167
+#: systembackgui.form:1186
 msgid "Do not restore fstab file"
 msgstr "Älä palauta fstab:a"
 
-#: systembackgui.form:1173
+#: systembackgui.form:1192
 msgid "Reinstall GRUB 2 bootloader:"
 msgstr "GRUB 2:n uudelleen asennus:"
 
-#: systembackgui.form:1183
+#: systembackgui.form:1202
 msgid "Disabled"
 msgstr "Poistettu käytöstä"
 
-#: systembackgui.form:1196
+#: systembackgui.form:1215
 msgid "Include user(s):"
 msgstr "Sisällytä käyttäjä(t)"
 
-#: systembackgui.form:1216
+#: systembackgui.form:1235
 msgid "Filesystem:"
 msgstr "Tiedostojärjestelmä:"
 
-#: systembackgui.form:1223
+#: systembackgui.form:1242
 msgid "Mount point:"
 msgstr "Liitoskohta:"
 
-#: systembackgui.form:1246
+#: systembackgui.form:1265
 msgid "Partition settings"
 msgstr "Osion asetukset"
 
-#: systembackgui.form:1260
+#: systembackgui.form:1279
 msgid "Umount"
 msgstr "Irrota"
 
-#: systembackgui.form:1281
+#: systembackgui.form:1300
 msgid "Format"
 msgstr "Alusta"
 
-#: systembackgui.form:1312
+#: systembackgui.form:1308
+msgid "Reset partitions settings"
+msgstr ""
+
+#: systembackgui.form:1316
+msgid "Change partition settings"
+msgstr ""
+
+#: systembackgui.form:1333
 msgid "Transfer user configuration files"
 msgstr "Siirrä käyttäjän asetustiedostot"
 
-#: systembackgui.form:1320
+#: systembackgui.form:1341
 msgid "Copy user data files"
 msgstr "Kopioi käyttäjän tiedostot"
 
-#: systembackgui.form:1326
+#: systembackgui.form:1347
 msgid "Install GRUB 2 bootloader:"
 msgstr "Asenna Grub 2 käynnistyslatain:"
 
-#: systembackgui.form:1432
+#: systembackgui.form:1453
 msgid "Full name of the new user:"
 msgstr "Uuden käyttäjän koko nimi:"
 
-#: systembackgui.form:1455
+#: systembackgui.form:1476
 msgid "New user name to login:"
 msgstr "Uusi käyttäjätunnus:"
 
-#: systembackgui.form:1478
+#: systembackgui.form:1499
 msgid "New user account password:"
 msgstr "Uuden käyttäjän salasana:"
 
-#: systembackgui.form:1501
+#: systembackgui.form:1522
 msgid "New root password (optional, not recommended for Ubuntu):"
 msgstr "Uusi root käyttäjän salasana (valinnainen, ei suositella Ubuntuun):"
 
-#: systembackgui.form:1524
+#: systembackgui.form:1545
 msgid "New hostname:"
 msgstr "Uusi hostname:"
 
-#: systembackgui.form:1561
+#: systembackgui.form:1582
 msgid "Live operations"
 msgstr ""
 
-#: systembackgui.form:1569
+#: systembackgui.form:1590
 msgid "Write target"
 msgstr "Kirjoita kohde"
 
-#: systembackgui.form:1585
+#: systembackgui.form:1606
 msgid "Name of Live system"
 msgstr "Live järjestelmän nimi"
 
-#: systembackgui.form:1593
+#: systembackgui.form:1614
 msgid "Created Live images"
-msgstr ""
+msgstr "Valmistettu Live-kuvat"
 
-#: systembackgui.form:1601
+#: systembackgui.form:1622
 msgid "Working directory"
 msgstr "Työkansio"
 
-#: systembackgui.form:1648
+#: systembackgui.form:1669
 msgid "Include user data files"
 msgstr ""
 
-#: systembackgui.form:1661
+#: systembackgui.form:1682
 msgid "Convert to ISO"
-msgstr ""
+msgstr "Muutta ISO muotoon"
 
-#: systembackgui.form:1674
+#: systembackgui.form:1695
 msgid "Write to USB"
-msgstr ""
+msgstr "Luo USB asennustikun"
 
-#: systembackgui.form:1749
+#: systembackgui.form:1702
+msgid "Redetect devices"
+msgstr "Tunnista laitteet uudelleen"
+
+#: systembackgui.form:1772
 msgid "Mount the faulty system partition(s) to '/mnt' directory according to the original structure.<br>('/' -> '/mnt', '/home' -> '/mnt/home', etc.)"
 msgstr "Liitta viallinen järjestelmaosio '/mnt' kansioon alkuperäinen rakennen mukaan .<br>('/' -> '/mnt', '/home' -> '/mnt/home', jne.)"
 
-#: systembackgui.form:1769
+#: systembackgui.form:1792
 msgid "Mount"
 msgstr "Liitä"
 
-#: systembackgui.form:1783
+#: systembackgui.form:1799
+msgid "Reset mounts"
+msgstr "Nollata liitoskohdat"
+
+#: systembackgui.form:1807
 msgid "Repair type"
 msgstr "Korjaus tyyppi"
 
-#: systembackgui.form:1791
+#: systembackgui.form:1815
 msgid "System files repair"
 msgstr "Järjestelmätiedostojen korjaus"
 
-#: systembackgui.form:1799
+#: systembackgui.form:1823
 msgid "Full repair"
 msgstr "Täydellinen korjaus"
 
-#: systembackgui.form:1806
+#: systembackgui.form:1830
 msgid "GRUB 2 repair"
 msgstr "GRUB 2:n korjaus"
 
-#: systembackgui.form:1829
+#: systembackgui.form:1853
 msgid "Do not repair fstab file"
 msgstr "Älä korjaa fstab:a"
 
-#: systembackgui.form:1883
+#: systembackgui.form:1880
+msgid "Add item to exclusion list"
+msgstr ""
+
+#: systembackgui.form:1894
+msgid "Remove item from exclusion list"
+msgstr ""
+
+#: systembackgui.form:1909
 msgid "Items"
 msgstr "Kohteet"
 
-#: systembackgui.form:1891
+#: systembackgui.form:1917
 msgid "Excluded items"
 msgstr "Ohitetut kohteet"
 
-#: systembackgui.form:1899
+#: systembackgui.form:1925
 msgid "Exclude hidden user files and directories from restore points"
 msgstr "Ohita käyttäjien piilotetut tiedostot ja kansiot palautuspisteistä"
 
-#: systembackgui.form:1907
+#: systembackgui.form:1933
 msgid "Exclude user data files and directories from Live system"
 msgstr ""
 
-#: systembackgui.form:1941
+#: systembackgui.form:1967
 msgid "License"
 msgstr "Lisenssi"
 
-#: systembackgui.form:1955
+#: systembackgui.form:1981
 msgid "Simple system backup and restore application with extra features"
 msgstr "Yksinkertainen järjestelmän varmuuskopiointi ja palautussovellus joka sisältää lisäominaisuuksia"
 
-#: systembackgui.form:1962
+#: systembackgui.form:1988
 msgid "Project homepage:"
 msgstr "Projektin kotisivu:"
 
-#: systembackgui.form:1987
+#: systembackgui.form:2013
 msgid "Contact:"
 msgstr "Yhteystiedot:"
 
-#: systembackgui.form:2003
+#: systembackgui.form:2029
 msgid "Donate:"
 msgstr "Lahjoita:"
 
-#: systembackgui.form:2020
+#: systembackgui.form:2046
 msgid "Systemback version:"
 msgstr "Systemback versio:"
 
-#: systembackgui.form:2040
+#: systembackgui.form:2066
 msgid "(c) 2013, Krisztián Kende"
 msgstr "-"
 
-#: systembackgui.form:2083
+#: systembackgui.form:2109
 msgid "Writable Linux filesystem!"
 msgstr "Kirjoitettava Linux tiedostojärjestelmä!"
 
-#: systembackgui.form:2181
+#: systembackgui.form:2148
+msgid "Re-read directories"
+msgstr ""
+
+#: systembackgui.form:2200
 msgid "Scheduler state:"
 msgstr ""
 
-#: systembackgui.form:2189
+#: systembackgui.form:2208
 msgid "Use silent mode"
 msgstr ""
 
-#: systembackgui.form:2204
+#: systembackgui.form:2223
 msgid "Timer settings"
 msgstr "Ajastimen asetukset"
 
-#: systembackgui.form:2211
+#: systembackgui.form:2230
 msgid "Waiting time before creating a new restore point:"
 msgstr "Odotusaika ennen uuden palautuspisteen luomista:"
 
-#: systembackgui.form:2225
+#: systembackgui.form:2244
 msgid "Visible countdown time:"
 msgstr ""
 
-#: systembackgui.form:2264
+#: systembackgui.form:2283
 msgid "Pop-up window position on screen:"
 msgstr "Pop-up ikkunan sijainti:"
 
-#: systembackgui.form:2273
+#: systembackgui.form:2292
 msgid "Bottom left"
 msgstr "Vasen alareuna"
 
-#: systembackgui.form:2273
+#: systembackgui.form:2292
 msgid "Bottom right"
 msgstr "Oikea alareuna"
 
-#: systembackgui.form:2273
+#: systembackgui.form:2292
 msgid "Center"
 msgstr "Keskellä"
 
-#: systembackgui.form:2273
+#: systembackgui.form:2292
 msgid "Top left"
 msgstr "Vasen yläreuna"
 
-#: systembackgui.form:2273
+#: systembackgui.form:2292
 msgid "Top right"
 msgstr "Oikea yläreuna"
 
-#: systembackgui.form:2430
+#: systembackgui.form:2299
+msgid "More"
+msgstr "Lisää"
+
+#: systembackgui.form:2307
+msgid "Less"
+msgstr "Vähemmän"
+
+#: systembackgui.form:2467
 msgid "Creates a scheduled restore point within few seconds."
 msgstr ""
 
-#: systembackgui.form:2440
+#: systembackgui.form:2477
 msgid "Later"
 msgstr "Myöhemmin"
 
-#: systembackgui.form:2447
+#: systembackgui.form:2484
 msgid "Start"
 msgstr "Aloita"
 

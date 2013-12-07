@@ -1,14 +1,62 @@
 ' Gambas class file
 
+Public slock As Stream
+Public tmp As String
 Public hash As String
 Public wround As Byte
 
 Public Sub Form_Open()
 
+  Dim ctrl As Control
   Dim ofile As File
   Dim cline, usr As String
+  Dim fheight As Short
 
-  If Application.Args.Count = 4 And Application.Args[1] = "authorization" And Application.Args[2] <> "root"
+  If IsDir("/run/shm")
+
+    tmp = "/run/shm/dacc5b5f4502_sb"
+
+  Else If IsDir("/dev/shm")
+
+    tmp = "/dev/shm/dacc5b5f4502_sb"
+
+  Else
+
+    tmp = "/tmp/dacc5b5f4502_sb"
+
+  Endif
+
+  Try slock = Lock Left(tmp, RInStr(tmp, "/")) & "systembacklock"
+
+  If Error
+
+    systembackgui.dialog = 1
+    authorization.Close
+    systembackgui.Show
+
+  Else If Application.Args.Count = 4 And Application.Args[1] = "authorization" And Application.Args[2] <> "root"
+
+    If Application.Font.Name <> "Ubuntu" And Application.Font.Name <> "FreeSans"
+
+      For Each ctrl In authorization.Controls
+
+        ctrl.Font.Name = "FreeSans"
+
+      Next
+
+    Endif
+
+    If Desktop.Resolution <> 96
+
+      fheight = 187 / userstext.Font.Height
+
+      For Each ctrl In authorization.Controls
+
+        If ctrl.Name = "titletext" Then ctrl.Font.Size = Round(fheight * 118.18 / 100) Else ctrl.Font.Size = fheight
+
+      Next
+
+    Endif
 
     ofile = Open "/etc/group" For Input
     While Not Eof(ofile)
@@ -86,7 +134,7 @@ Public Sub Form_Open()
     End With
 
     PictureBox1.Picture = Picture.Load("/usr/share/icons/hicolor/64x64/apps/systemback.png")
-    authorization.Center
+    authorization.Move(Screen.W / 2 - 188, Screen.H / 2 - 112)
 
   Else
 
@@ -132,6 +180,8 @@ End
 
 Public Sub password_Change()
 
+  Dim ipasswd As String = password.Text
+
   If password.Length = 0
 
     With inputok
@@ -161,24 +211,30 @@ Public Sub password_Change()
 
   Else If Crypt.Check(password.Text, hash) = 0
 
-    With inputok
+    Wait 0.3
 
-      If .Enabled = False
+    If ipasswd = password.Text
 
-        .Enabled = True
-        .Mouse = Mouse.Pointing
+      With inputok
 
-      Endif
+        If .Enabled = False
 
-    End With
+          .Enabled = True
+          .Mouse = Mouse.Pointing
 
-    If passworderror.Visible = True Then passworderror.Hide
-    If passwordpipe.Visible = False Then passwordpipe.Show
-    password.Enabled = False
-    password.Mouse = Mouse.Arrow
-    users.Enabled = False
-    users.Mouse = Mouse.Arrow
-    inputok.SetFocus
+        Endif
+
+      End With
+
+      If passworderror.Visible = True Then passworderror.Hide
+      If passwordpipe.Visible = False Then passwordpipe.Show
+      password.Enabled = False
+      password.Mouse = Mouse.Arrow
+      users.Enabled = False
+      users.Mouse = Mouse.Arrow
+      inputok.SetFocus
+
+    Endif
 
   Else
 

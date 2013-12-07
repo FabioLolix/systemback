@@ -54,6 +54,7 @@ Public wround As Byte
 Public sbstart As Boolean = True
 Public wmove As Boolean
 Public sstart As Boolean
+Public ickernel As Boolean
 
 Public Sub Form_Open()
 
@@ -97,54 +98,58 @@ Public Sub Form_Open()
 
   Endif
 
-  If Application.Args.Count = 3 And Application.Args[1] = "schedule"
+  If dialog = 0
 
-    sstart = True
+    If Application.Args.Count = 3 And Application.Args[1] = "schedule"
 
-    For Each item In Dir(Left(tmp, RInStr(tmp, "/") - 1), "dacc5b5f4502_sb*", gb.File)
+      sstart = True
 
-      Kill Left(tmp, RInStr(tmp, "/")) & item
+      For Each item In Dir(Left(tmp, RInStr(tmp, "/") - 1), "dacc5b5f4502_sb*", gb.File)
 
-    Next
+        Kill Left(tmp, RInStr(tmp, "/")) & item
 
-  Else
+      Next
 
-    If Exist(tmp & "dialog")
+    Else
 
-      dialog = File.Load(tmp & "dialog")
-      Kill tmp & "dialog"
+      If Exist(tmp & "dialog")
 
-    Else If User.Name = "root"
+        dialog = File.Load(tmp & "dialog")
+        Kill tmp & "dialog"
 
-      Try slock = Lock Left(tmp, RInStr(tmp, "/")) & "systembacklock"
+      Else If User.Name = "root"
 
-      If Not Error
-
-        Try dlock = Lock "/var/lib/dpkg/lock"
+        Try slock = Lock Left(tmp, RInStr(tmp, "/")) & "systembacklock"
 
         If Not Error
 
-          For Each item In Dir(Left(tmp, RInStr(tmp, "/") - 1), "dacc5b5f4502_sb*", gb.File)
+          Try dlock = Lock "/var/lib/dpkg/lock"
 
-            Kill Left(tmp, RInStr(tmp, "/")) & item
+          If Not Error
 
-          Next
+            For Each item In Dir(Left(tmp, RInStr(tmp, "/") - 1), "dacc5b5f4502_sb*", gb.File)
+
+              Kill Left(tmp, RInStr(tmp, "/")) & item
+
+            Next
+
+          Else
+
+            dialog = 2
+
+          Endif
 
         Else
 
-          dialog = 2
+          dialog = 1
 
         Endif
 
       Else
 
-        dialog = 1
+        dialog = 17
 
       Endif
-
-    Else
-
-      dialog = 17
 
     Endif
 
@@ -3783,6 +3788,7 @@ End
 
 Public Sub unitimer_Timer()
 
+  Dim com As Process
   Dim ofile As File
   Dim cline, cval, cperc, item As String
   Dim cfupdt As Boolean
@@ -4197,6 +4203,38 @@ Public Sub unitimer_Timer()
 
     Endif
 
+    com = Exec ["modprobe", "-n", "overlayfs"] Wait For Read
+
+    If com.Value = 0
+
+      ickernel = True
+
+    Else
+
+      com = Exec ["modprobe", "-n", "aufs"] Wait For Read
+
+      If com.Value = 0
+
+        ickernel = True
+
+      Else
+
+        com = Exec ["modprobe", "-n", "unionfs"] Wait For Read
+
+        If com.Value = 0
+
+          ickernel = True
+
+        Else If Exist("/bin/unionfs-fuse")
+
+          ickernel = True
+
+        Endif
+
+      Endif
+
+    Endif
+
     Dec Application.Busy
 
   Else If statuspanel.Visible = True
@@ -4485,16 +4523,20 @@ Public Sub unitimer_Timer()
 
           Endif
 
-          With livecreatenew
+          If ickernel = True
 
-            If .Enabled = False
+            With livecreatenew
 
-              .Enabled = True
-              .Mouse = Mouse.Pointing
+              If .Enabled = False
 
-            Endif
+                .Enabled = True
+                .Mouse = Mouse.Pointing
 
-          End With
+              Endif
+
+            End With
+
+          Endif
 
           If livelist.Enabled = False
 

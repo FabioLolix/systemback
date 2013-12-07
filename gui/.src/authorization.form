@@ -12,12 +12,17 @@
   Resizable = False
   Border = False
   Stacking = Window.Above
-  SkipTaskbar = True
   { password TextBox
     Move(88,128,248,32)
     #Translate = False
     Alignment = Align.Left
     Password = True
+  }
+  { users ComboBox
+    Move(120,80,112,32)
+    Mouse = Mouse.Pointing
+    ReadOnly = True
+    Sorted = True
   }
   { startcancel Button
     Move(136,184,112,32)
@@ -42,7 +47,7 @@
     NoTabFocus = True
     Alignment = Align.Center
   }
-  { TextLabel1 TextLabel
+  { titletext TextLabel
     Move(88,16,280,56)
     Font = Font["Bold,13"]
     NoTabFocus = True
@@ -72,12 +77,5 @@
     #Move(0,176)
     Enabled = True
     Delay = 50
-  }
-  { users ComboBox
-    Move(120,80,112,32)
-    NoTabFocus = True
-    Mouse = Mouse.Pointing
-    ReadOnly = True
-    Sorted = True
   }
 }

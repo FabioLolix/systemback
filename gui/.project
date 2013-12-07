@@ -1,10 +1,11 @@
 # Gambas Project File 3.0
 # Compiled with Gambas 3.5.1
 Title=systembackgui
-Startup=systembackgui
-Version=0.7.6
+Startup=authorization
+Version=0.7.7
 Component=gb.image
 Component=gb.gui
+Component=gb.crypt
 Authors="Krisztián Kende"
 TabSize=2
 Translate=1

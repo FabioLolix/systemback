@@ -2,7 +2,7 @@
 # Compiled with Gambas 3.5.1
 Title=systemback
 Startup=systemback
-Version=0.7.6
+Version=0.7.7
 Authors="Krisztián Kende"
 TabSize=2
 Translate=1

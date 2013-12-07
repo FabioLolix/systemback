@@ -2,24 +2,11 @@
 Encoding=UTF-8
 Version=1.0
 Name=Systemback Qt
-Comment=Simple system backup and restore application with extra features.
-Comment[hu]=Egyszerű rendszermentő és visszaállító alkalmazás további extra funkciókkal.
-Exec=kdesu systemback-qt4 --comment "Systemback user authentication"
+Comment=Simple system backup and restore application with extra features
+Comment[hu]=Egyszerű rendszermentő és visszaállító alkalmazás további extra funkciókkal
+Exec=systemback-qt4 authorization
 Type=Application
 Icon=systemback
 Terminal=false
 OnlyShowIn=KDE;
 Categories=System;
-Actions=Systemupgrade;Textoutput;
-
-[Desktop Action Systemupgrade]
-Name=System upgrade
-Name[hu]=Rendszerfrissítés
-Exec=kdesu "xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n 'System upgrade' -T 'System upgrade' -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e 'systemback -u unity'" --message "Systemback user authentication"
-Exec[hu]=kdesu "xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n 'Rendszerfrissites' -T 'Rendszerfrissites' -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e 'systemback -u unity'" --message "Systemback user authentication"
-
-[Desktop Action Textoutput]
-Name=Open with text output window
-Name[hu]=Megnyitás szöveges kimeneti ablakkal
-Exec=kdesu "xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n 'Systemback text output' -T 'Systemback text output' -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e 'tput bold ; echo -e \"\n Welcome to the Systemback text output window!\n\" ; tput sgr0 ; GB_GUI=gb.qt4 /usr/share/systemback/systembackgui notextoutput'" --message "Systemback user authentication"
-Exec[hu]=kdesu "xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n 'Systemback szoveges kimenet' -T 'Systemback szoveges kimenet' -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e 'tput bold ; echo -e \"\n Üdvözöl a Systemback szöveges kimenetének az ablaka!\n\" ; tput sgr0 ; GB_GUI=gb.qt4 /usr/share/systemback/systembackgui notextoutput'" --message "Systemback user authentication"

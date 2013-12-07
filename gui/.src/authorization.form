@@ -1,0 +1,83 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,376,224)
+  #Scaled = False
+  #Translate = False
+  Font = Font["11"]
+  Background = Color.Background
+  NoTabFocus = True
+  Text = "Systemback"
+  Icon = Picture["systemback.png"]
+  Resizable = False
+  Border = False
+  Stacking = Window.Above
+  SkipTaskbar = True
+  { password TextBox
+    Move(88,128,248,32)
+    #Translate = False
+    Alignment = Align.Left
+    Password = True
+  }
+  { startcancel Button
+    Move(136,184,112,32)
+    Mouse = Mouse.Pointing
+    Text = ("Cancel")
+  }
+  { inputok Button
+    Move(256,184,112,32)
+    #Translate = False
+    Enabled = False
+    Text = "OK"
+  }
+  { passworderror PictureBox
+    Move(336,128,40,32)
+    Visible = False
+    NoTabFocus = True
+    Picture = Picture["error.png"]
+    Alignment = Align.Center
+  }
+  { PictureBox1 PictureBox
+    Move(0,0,80,72)
+    NoTabFocus = True
+    Alignment = Align.Center
+  }
+  { TextLabel1 TextLabel
+    Move(88,16,280,56)
+    Font = Font["Bold,13"]
+    NoTabFocus = True
+    Text = ("Systemback user authentication")
+    Alignment = Align.TopLeft
+  }
+  { passwordtext Label
+    Move(9,128,72,32)
+    NoTabFocus = True
+    Text = ("Password:")
+    Alignment = Align.Left
+  }
+  { passwordpipe PictureBox
+    Move(336,128,40,32)
+    Visible = False
+    NoTabFocus = True
+    Picture = Picture["ok.png"]
+    Alignment = Align.Center
+  }
+  { userstext Label
+    Move(9,80,104,32)
+    NoTabFocus = True
+    Text = ("Administrator:")
+    Alignment = Align.Left
+  }
+  { windowsizeworkaround #Timer
+    #Move(0,176)
+    Enabled = True
+    Delay = 50
+  }
+  { users ComboBox
+    Move(120,80,112,32)
+    NoTabFocus = True
+    Mouse = Mouse.Pointing
+    ReadOnly = True
+    Sorted = True
+  }
+}

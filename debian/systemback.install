@@ -1,5 +1,5 @@
 cli/systemback usr/bin
-99_sbscheduler etc/sudoers.d
+99_systemback etc/sudoers.d
 sbschedule.desktop etc/xdg/autostart
 sbstart usr/share/systemback
 version usr/share/systemback

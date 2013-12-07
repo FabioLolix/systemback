@@ -5,29 +5,107 @@ then
 
   if [[ "${1}" = "schedulerdaemon" ]]
   then sudo -nH systemback schedulerdaemon ${XAUTHORITY}
+  elif [[ ! -e /usr/lib/gambas3/gb.crypt.so && ! -e /usr/local/lib/gambas3/gb.crypt.so ]]
+  then
+
+    if which zenity >/dev/null
+    then zenity --title="Systemback" --error --text="Required <b>gb.crypt</b> component was not found!\n\nPlease install the <b>gambas3-gb-cypt</b> package."
+    else kdialog --title="Systemback" --error="Required <b>gb.crypt</b> component was not found!\n\nPlease install the <b>gambas3-gb-cypt</b> package."
+    fi
+
+    if [[ "${?}" != "0" ]]
+    then
+
+      tput reset
+      tput bold
+      tput setaf 1
+      echo -e "\n Required gb.crypt component was not found!\n\n Please install the gambas3-gb-gtk package.\n"
+      tput sgr0
+      exit 4
+
+    fi
+
   elif [[ "${0}" = "/usr/bin/systemback-gtk" ]]
   then
 
     if [[ -e /usr/lib/gambas3/gb.gtk.so || -e /usr/local/lib/gambas3/gb.gtk.so ]]
-    then GB_GUI="gb.gtk" /usr/share/systemback/systembackgui
+    then 
+
+      if [[ "${1}" = "authorization" && "${USER}" != "root" ]]
+      then
+
+	rnum="${RANDOM}${RANDOM}"
+	cp -a "${XAUTHORITY}" "/tmp/sbXauthority-${rnum}"
+	XAUTHORITY="/tmp/sbXauthority-${rnum}"
+	sudo -nH /usr/share/systemback/systembackgui authorization ${USER} gtk
+	rm -rf "/tmp/sbXauthority-${rnum}"
+
+      else GB_GUI="gb.gtk" /usr/share/systemback/systembackgui
+      fi
+
     elif which zenity >/dev/null
-    then zenity --title="Systemback" --error --text="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
-    else kdialog --title="Systemback" --error="Required gb.gtk component was not found!\n\nPlease install the gambas3-gb-gtk package."
+    then zenity --title="Systemback" --error --text="Required <b>gb.gtk</b> component was not found!\n\nPlease install the <b>gambas3-gb-gtk</b> package."
+    else kdialog --title="Systemback" --error="Required <b>gb.gtk</b> component was not found!\n\nPlease install the <b>gambas3-gb-gtk</b> package."
+    fi
+
+    if [[ "${?}" != "0" ]]
+    then
+
+      tput reset
+      tput bold
+      tput setaf 1
+      echo -e "\n Required gb.gtk component was not found!\n\n Please install the gambas3-gb-gtk package.\n"
+      tput sgr0
+      exit 3
+
     fi
 
   elif [[ "${0}" = "/usr/bin/systemback-qt4" ]]
   then
 
     if [[ -e /usr/lib/gambas3/gb.qt4.so || -e /usr/local/lib/gambas3/gb.qt4.so ]]
-    then GB_GUI="gb.qt4" /usr/share/systemback/systembackgui
+    then
+
+      if [[ "${1}" = "authorization" && "${USER}" != "root" ]]
+      then
+
+	rnum="${RANDOM}${RANDOM}"
+	cp -a "${XAUTHORITY}" "/tmp/sbXauthority-${rnum}"
+	XAUTHORITY="/tmp/sbXauthority-${rnum}"
+	sudo -nH /usr/share/systemback/systembackgui authorization ${USER} qt4
+	rm -rf "/tmp/sbXauthority-${rnum}"
+
+      else GB_GUI="gb.qt4" /usr/share/systemback/systembackgui
+      fi
+
     elif which zenity >/dev/null
-    then zenity --title="Systemback" --error --text="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
-    else kdialog --title="Systemback" --error="Required gb.qt4 component was not found!\n\nPlease install the gambas3-gb-qt4 package."
+    then zenity --title="Systemback" --error --text="Required <b>gb.qt4</b> component was not found!\n\nPlease install the <b>gambas3-gb-qt4</b> package."
+    else kdialog --title="Systemback" --error="Required <b>gb.qt4</b> component was not found!\n\nPlease install the <b>gambas3-gb-qt4</b> package."
+    fi
+
+    if [[ "${?}" != "0" ]]
+    then
+
+      tput reset
+      tput bold
+      tput setaf 1
+      echo -e "\n Required gb.qt4 component was not found!\n\n Please install the gambas3-gb-qt4 package.\n"
+      tput sgr0
+      exit 3
+
     fi
 
   elif [[ "${0}" = "/usr/bin/systembackgui" ]]
   then /usr/share/systemback/systembackgui
-  else systemback
+  else
+
+    tput reset
+    tput bold
+    tput setaf 1
+    echo -e "\n Incorrect parameters!\n"
+    tput sgr0
+    exit 2
+
   fi
 
 else

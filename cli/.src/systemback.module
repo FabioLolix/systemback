@@ -1024,7 +1024,7 @@ Sub restore()
 
       Endif
 
-      wproc = Exec ["bash", "-c", "sbsync -a --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/bin/sbstart,/usr/share/systemback,/etc/systemback*,lost+found}"] For Read
+      wproc = Exec ["bash", "-c", "sbsync -a --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/sudoers.d/99_systemback,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/bin/sbstart,/usr/share/systemback,/etc/systemback*,lost+found}"] For Read
       wprocwait
 
       If fsave = 1 And Exist("/tmp/sbrestorefstab")

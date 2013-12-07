@@ -2,7 +2,7 @@ Source: systemback
 Section: utils
 Priority: optional
 Maintainer: Kende Krisztián <nemh@freemail.hu>
-Build-Depends: debhelper (>= 9), gambas3-dev (>= 3.5.1), gambas3-gb-gtk (>= 3.5.1), gambas3-gb-image (>= 3.5.1), gambas3-gb-qt4 (>= 3.5.1), gambas3-runtime (>= 3.5.1)
+Build-Depends: debhelper (>= 9), gambas3-dev (>= 3.5.1), gambas3-gb-crypt (>= 3.5.1), gambas3-gb-gtk (>= 3.5.1), gambas3-gb-image (>= 3.5.1), gambas3-gb-qt4 (>= 3.5.1), gambas3-runtime (>= 3.5.1)
 Standards-Version: 3.9.4.0
 
 Package: systemback
@@ -21,7 +21,7 @@ Description: Simple system backup and restore application with extra features
 
 Package: systemback-gui-common
 Architecture: all
-Depends: ${misc:Depends}, gambas3-runtime (>= 3.5.1), gambas3-gb-image (>= 3.5.1), base-files (>= 5.0), casper | live-boot, dosfstools, e2fsprogs (>= 1.41.11), fonts-freefont-ttf | ttf-freefont, gksu | kdesudo, genisoimage, mount (>= 2.17.2), parted,
+Depends: ${misc:Depends}, gambas3-gb-crypt (>= 3.5.1), gambas3-gb-image (>= 3.5.1), gambas3-runtime (>= 3.5.1), base-files (>= 5.0), casper | live-boot, dosfstools, e2fsprogs (>= 1.41.11), fonts-freefont-ttf | ttf-freefont, genisoimage, mount (>= 2.17.2), parted,
  squashfs-tools, syslinux, util-linux (>= 2.17.2), whois (>= 5.0.7) | mkpasswd, xterm, zenity | kde-baseapps-bin | kdebase-bin
 Breaks: systemback (<< 0.7.4), systemback-gtk (<< 0.7.6), systemback-qt4 (<< 0.7.6)
 Replaces: systemback (<< 0.7.4), systemback-gtk (<< 0.7.6), systemback-qt4 (<< 0.7.6)

@@ -202,7 +202,20 @@ Public Sub Form_Open()
 
       systembackpanel.X = 1
       systembackgui.Move(Screen.W / 2 - 349, Screen.H / 2 - 232, 698, 465)
-      If Application.Args[1] = "notextoutput" Then textoutputwindow.Visible = False
+
+      If Application.Args[1] = "notextoutput"
+
+        textoutputwindow.Visible = False
+
+        If Application.Args[2] = "welcometext"
+
+          Exec ["tput", "bold"] Wait
+          Print "\n " & ("Welcome to the Systemback text output window!") & "\n"
+          Exec ["tput", "sgr0"] Wait
+
+        Endif
+
+      Endif
 
     Endif
 
@@ -1770,11 +1783,11 @@ Public Sub systemupgrade_Click()
 
       Else If Component.IsLoaded("gb.gtk")
 
-        Exec ["/usr/share/systemback/systembackgui notextoutput"] With ["GB_GUI=gb.gtk"]
+        Exec ["/usr/share/systemback/systembackgui", "notextoutput"] With ["GB_GUI=gb.gtk"]
 
       Else
 
-        Exec ["/usr/share/systemback/systembackgui notextoutput"] With ["GB_GUI=gb.qt4"]
+        Exec ["/usr/share/systemback/systembackgui", "notextoutput"] With ["GB_GUI=gb.qt4"]
 
       Endif
 
@@ -4416,7 +4429,20 @@ Public Sub unitimer_Timer()
 
     Endif
 
-    If installpanel.Visible = True
+    If copypanel.Visible = True
+
+      With copyresize
+
+        If .W = 30 And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(copyresize) = False
+
+          .Picture = Picture["resize.png"]
+          .Move(.X + 20, .Y + 20, 10, 10)
+
+        Endif
+
+      End With
+
+    Else If installpanel.Visible = True
 
       If fullnamepipe.Visible = True And usernamepipe.Visible = True And hostnamepipe.Visible = True And passwordpipe.Visible = True And If rootpassword1.Length = 0 Or rootpasswordpipe.Visible = True
 
@@ -4614,6 +4640,32 @@ Public Sub unitimer_Timer()
             .Mouse = Mouse.Default
 
           Endif
+
+        Endif
+
+      End With
+
+    Else If excludepanel.Visible = True
+
+      With excluderesize
+
+        If .W = 30 And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(excluderesize) = False
+
+          .Picture = Picture["resize.png"]
+          .Move(.X + 20, .Y + 20, 10, 10)
+
+        Endif
+
+      End With
+
+    Else If choosepanel.Visible = True
+
+      With chooseresize
+
+        If .W = 30 And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(chooseresize) = False
+
+          .Picture = Picture["resize.png"]
+          .Move(.X + 20, .Y + 20, 10, 10)
 
         Endif
 
@@ -5035,7 +5087,9 @@ Public Sub function1_MouseMove()
 
       wmove = True
       .Move(Mouse.ScreenX - Mouse.StartX, Mouse.ScreenY - Mouse.StartY)
+
       Wait 0.02
+
       wmove = False
 
     Endif
@@ -5050,7 +5104,9 @@ Public Sub function2_MouseMove()
 
     wmove = True
     systembackgui.Move(Mouse.ScreenX - Mouse.StartX, Mouse.ScreenY - Mouse.StartY)
+
     Wait 0.02
+
     wmove = False
 
   Endif
@@ -5213,7 +5269,7 @@ Public Sub chooseresize_Enter()
 
   With chooseresize
 
-    If .Picture = Picture["resize.png"]
+    If .W = 10
 
       .Picture = Picture["bigresize.png"]
       .Move(.X - 20, .Y - 20, 30, 30)
@@ -5228,7 +5284,7 @@ Public Sub chooseresize_Leave()
 
   With chooseresize
 
-    If .Picture = Picture["bigresize.png"] And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(chooseresize) = False
+    If .W = 30 And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(chooseresize) = False
 
       .Picture = Picture["resize.png"]
       .Move(.X + 20, .Y + 20, 10, 10)
@@ -5247,6 +5303,15 @@ Public Sub chooseresize_MouseDown()
     copyresize.Mouse = Mouse.Default
     excluderesize.Mouse = Mouse.Default
     systembackgui.Mouse = Mouse.SizeNWSE
+
+    With systembackgui
+
+      winx = .X
+      winy = .Y
+      winw = .W
+      winh = .H
+
+    End With
 
   Endif
 
@@ -5271,7 +5336,7 @@ Public Sub copyresize_Enter()
 
   With copyresize
 
-    If .Picture = Picture["resize.png"]
+    If .W = 10
 
       .Picture = Picture["bigresize.png"]
       .Move(.X - 20, .Y - 20, 30, 30)
@@ -5286,7 +5351,7 @@ Public Sub copyresize_Leave()
 
   With copyresize
 
-    If .Picture = Picture["bigresize.png"] And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(copyresize) = False
+    If .W = 30 And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(copyresize) = False
 
       .Picture = Picture["resize.png"]
       .Move(.X + 20, .Y + 20, 10, 10)
@@ -5314,7 +5379,7 @@ Public Sub excluderesize_Enter()
 
   With excluderesize
 
-    If .Picture = Picture["resize.png"]
+    If .W = 10
 
       .Picture = Picture["bigresize.png"]
       .Move(.X - 20, .Y - 20, 30, 30)
@@ -5329,7 +5394,7 @@ Public Sub excluderesize_Leave()
 
   With excluderesize
 
-    If .Picture = Picture["bigresize.png"] And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(excluderesize) = False
+    If .W = 30 And systembackgui.Mouse <> Mouse.SizeNWSE And Mouse.Inside(excluderesize) = False
 
       .Picture = Picture["resize.png"]
       .Move(.X + 20, .Y + 20, 10, 10)
@@ -5364,14 +5429,14 @@ Public Sub windowbutton1_MouseDown()
   With windowminimize
 
     If .Background = Color.TextBackground Then .Background = Color.TextForeground
-    If .Foreground = Color.SelectedBackground Then .Foreground = Color.TextBackground
+    If .Foreground <> Color.TextBackground Then .Foreground = Color.TextBackground
 
   End With
 
   With windowclose
 
-    .Background = Color.TextBackground
-    .Foreground = Color.TextForeground
+    If .Background = Color.TextForeground Then .Background = Color.TextBackground
+    If .Foreground <> Color.TextForeground Then .Foreground = Color.TextForeground
     If .Visible = False Then .Show
 
   End With
@@ -5392,7 +5457,8 @@ Public Sub windowbutton1_MouseDown()
 
         Endif
 
-        If .Foreground = Color.SelectedBackground Then .Foreground = Color.TextBackground
+        If .Background = Color.TextBackground Then .Background = Color.TextForeground
+        If .Foreground <> Color.TextBackground Then .Foreground = Color.TextBackground
         If .Visible = False Then .Show
 
       End With
@@ -5410,8 +5476,9 @@ Public Sub windowbutton1_MouseDown()
 
     Endif
 
-    .X = systembackgui.W - .W
+    If .X <> systembackgui.W - .W Then .X = systembackgui.W - .W
     .Visible = True
+    buttonstimer.Start
 
   End With
 
@@ -5425,20 +5492,20 @@ End
 
 Public Sub windowbutton2_MouseDown()
 
-  If windowminimize.Background = Color.TextBackground Then windowminimize.Background = Color.TextForeground
   If windowmaximize.Visible = True Then windowmaximize.Hide
 
   With windowminimize
 
-    If .Foreground = Color.SelectedBackground Then .Foreground = Color.TextBackground
+    If .Background = Color.TextBackground Then .Background = Color.TextForeground
+    If .Foreground <> Color.TextBackground Then .Foreground = Color.TextBackground
     If .X <> 2 Then .X = 2
 
   End With
 
   With windowclose
 
-    .Background = Color.TextBackground
-    .Foreground = Color.TextForeground
+    If .Background = Color.TextForeground Then .Background = Color.TextBackground
+    If .Foreground <> Color.TextForeground Then .Foreground = Color.TextForeground
     If .Visible = False Then .Show
     If .X <> 47 Then .X = 47
 
@@ -5447,8 +5514,9 @@ Public Sub windowbutton2_MouseDown()
   With buttonspanel
 
     If .W <> 93 Then .W = 93
-    .X = systembackgui.W - .W
+    If .X <> systembackgui.W - .W Then .X = systembackgui.W - .W
     .Visible = True
+    buttonstimer.Start
 
   End With
 
@@ -5467,8 +5535,8 @@ Public Sub windowbutton3_MouseDown()
 
   With windowminimize
 
-    .Background = Color.TextBackground
-    .Foreground = Color.TextForeground
+    If .Background = Color.TextForeground Then .Background = Color.TextBackground
+    If .Foreground <> Color.TextForeground Then .Foreground = Color.TextForeground
     If .X <> 2 Then .X = 2
 
   End With
@@ -5476,8 +5544,9 @@ Public Sub windowbutton3_MouseDown()
   With buttonspanel
 
     If .W <> 48 Then .W = 48
-    .X = systembackgui.W - .W
+    If .X <> systembackgui.W - .W Then .X = systembackgui.W - .W
     .Visible = True
+    buttonstimer.Start
 
   End With
 
@@ -5510,6 +5579,7 @@ Public Sub windowmaximize_MouseUp()
       If windowmaximize.Text = "□"
 
         buttonspanel.Hide
+        buttonstimer.Stop
 
         winx = .X
         winy = .Y
@@ -5541,7 +5611,7 @@ Public Sub windowmaximize_Enter()
     If .Background = Color.TextForeground
 
       .Background = Color.TextBackground
-      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextForeground
+      .Foreground = Color.TextForeground
 
     Endif
 
@@ -5556,7 +5626,7 @@ Public Sub windowmaximize_Leave()
     If .Background = Color.TextBackground
 
       .Background = Color.TextForeground
-      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextBackground
+      .Foreground = Color.TextBackground
 
     Endif
 
@@ -5578,7 +5648,12 @@ Public Sub windowminimize_MouseUp()
 
     Wait 0.3
 
-    If buttonspanel.Visible = True Then buttonspanel.Hide
+    If buttonspanel.Visible = True
+
+      buttonspanel.Hide
+      buttonstimer.Stop
+
+    Endif
 
   Endif
 
@@ -5591,7 +5666,7 @@ Public Sub windowminimize_Enter()
     If .Background = Color.TextForeground
 
       .Background = Color.TextBackground
-      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextForeground
+      .Foreground = Color.TextForeground
 
     Endif
 
@@ -5606,7 +5681,7 @@ Public Sub windowminimize_Leave()
     If .Background = Color.TextBackground
 
       .Background = Color.TextForeground
-      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextBackground
+      .Foreground = Color.TextBackground
 
     Endif
 
@@ -5633,7 +5708,7 @@ Public Sub windowclose_Enter()
     If .Background = Color.TextForeground
 
       .Background = Color.TextBackground
-      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextForeground
+      .Foreground = Color.TextForeground
 
     Endif
 
@@ -5648,7 +5723,7 @@ Public Sub windowclose_Leave()
     If .Background = Color.TextBackground
 
       .Background = Color.TextForeground
-      If .Foreground <> Color.SelectedBackground Then .Foreground = Color.TextBackground
+      .Foreground = Color.TextBackground
 
     Endif
 
@@ -5659,12 +5734,14 @@ End
 Public Sub buttonspanel_Leave()
 
   buttonspanel.Hide
+  buttonstimer.Stop
 
 End
 
 Public Sub buttonspanel_LostFocus()
 
   buttonspanel.Hide
+  buttonstimer.Stop
 
 End
 
@@ -6221,7 +6298,7 @@ Sub restore()
     Endif
 
     If prun = Null Then Return
-    wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/share/systemback,/etc/systemback*,lost+found}"]
+    wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/sudoers.d/99_systemback,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/share/systemback,/etc/systemback*,lost+found}"]
     wprocwait
     If prun = Null Then Return
 
@@ -7596,9 +7673,9 @@ Sub repair()
 
     If prun = Null Then Return
 
-    If Exist("/mnt/var/lib/dpkg/info/systemback.conffiles") And Exist("/mnt/var/lib/dpkg/info/systemback.list") And Exist("/mnt/var/lib/dpkg/info/systemback.md5sums") And Exist("/mnt/var/lib/dpkg/info/systemback.postinst") And Exist("/mnt/var/lib/dpkg/info/systemback.postrm") And Exist("/mnt/var/lib/dpkg/info/systemback.preinst") And Exist("/mnt/var/lib/dpkg/info/systemback.prerm") And Exist("/mnt/usr/bin/sbsync") And Exist("/mnt/usr/bin/systemback") And Exist("/mnt/usr/share/systemback/sbstart") And Exist("/mnt/usr/share/systemback/version") And Exist("/mnt/etc/sudoers.d/99_sbscheduler") And Exist("/mnt/etc/xdg/autostart/sbschedule.desktop")
+    If Exist("/mnt/var/lib/dpkg/info/systemback.conffiles") And Exist("/mnt/var/lib/dpkg/info/systemback.list") And Exist("/mnt/var/lib/dpkg/info/systemback.md5sums") And Exist("/mnt/var/lib/dpkg/info/systemback.postinst") And Exist("/mnt/var/lib/dpkg/info/systemback.postrm") And Exist("/mnt/var/lib/dpkg/info/systemback.preinst") And Exist("/mnt/var/lib/dpkg/info/systemback.prerm") And Exist("/mnt/usr/bin/sbsync") And Exist("/mnt/usr/bin/systemback") And Exist("/mnt/usr/share/systemback/sbstart") And Exist("/mnt/usr/share/systemback/version") And Exist("/mnt/etc/sudoers.d/99_systemback") And Exist("/mnt/etc/xdg/autostart/sbschedule.desktop")
 
-      wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & srcdir & "'/ /mnt --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/log/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/bin/sbstart,/etc/sudoers.d/99_sbscheduler,/usr/share/systemback,/etc/systemback*,lost+found}"]
+      wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & srcdir & "'/ /mnt --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/log/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/sudoers.d/99_systemback,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/bin/sbstart,/usr/share/systemback,/etc/systemback*,lost+found}"]
 
     Else
 
@@ -13623,6 +13700,137 @@ Public Sub excludedlist_KeyPress()
 
 End
 
+Public Sub textoutputwindow_MouseDown()
+
+  If Mouse.Left Then textoutputwindow.Foreground = Color.SelectedBackground
+
+End
+
+Public Sub textoutputwindow_MouseUp()
+
+  If textoutputwindow.Foreground = Color.SelectedBackground
+
+    Unlock slock
+    Unlock dlock
+    If Component.IsLoaded("gb.gtk") Then Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", ("Systemback text output"), "-T", ("Systemback text output"), "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "GB_GUI=gb.gtk /usr/share/systemback/systembackgui notextoutput welcometext"] Else Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", ("Systemback text output"), "-T", ("Systemback text output"), "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "GB_GUI=gb.qt4 /usr/share/systemback/systembackgui notextoutput welcometext"]
+    systembackgui.Close
+
+  Endif
+
+End
+
+Public Sub textoutputwindow_MouseMove()
+
+  If Mouse.Left = True
+
+    With textoutputwindow
+
+      If Mouse.Inside(textoutputwindow) = True
+
+        If .Foreground = Color.Background Then .Foreground = Color.SelectedBackground
+
+      Else If .Foreground = Color.SelectedBackground
+
+        .Foreground = Color.Background
+
+      Endif
+
+    End With
+
+  Endif
+
+End
+
+Public Sub function1_DblClick()
+
+  If copypanel.Visible = True Or excludepanel.Visible = True Or choosepanel.Visible = True And If Mouse.Left = True
+
+    With systembackgui
+
+      If systembackgui.W = Screen.AvailableWidth And systembackgui.H = Screen.AvailableHeight
+
+        .Resize(1, 1)
+
+        Wait 0.15
+
+        .Move(winx, winy, winw, winh)
+
+      Else
+
+        winx = .X
+        winy = .Y
+        winw = .W
+        winh = .H
+
+        .Move(0, 0, Screen.AvailableWidth, Screen.AvailableHeight)
+
+      Endif
+
+    End With
+
+  Endif
+
+End
+
+Public Sub buttonstimer_Timer()
+
+  If Mouse.Inside(buttonspanel) = True
+
+    With windowmaximize
+
+      If .Visible = True
+
+        If Mouse.Inside(windowmaximize) = True
+
+          If .Background = Color.TextForeground Then windowmaximize_Enter
+
+        Else If .Background = Color.TextBackground
+
+          windowmaximize_Leave
+
+        Endif
+
+      Endif
+
+    End With
+
+    If Mouse.Inside(windowminimize) = True
+
+      If windowminimize.Background = Color.TextForeground Then windowminimize_Enter
+
+    Else If windowminimize.Background = Color.TextBackground
+
+      windowminimize_Leave
+
+    Endif
+
+    With windowclose
+
+      If .Visible = True
+
+        If Mouse.Inside(windowclose) = True
+
+          If .Background = Color.TextForeground Then windowclose_Enter
+
+        Else If .Background = Color.TextBackground
+
+          windowclose_Leave
+
+        Endif
+
+      Endif
+
+    End With
+
+  Else
+
+    buttonspanel.Hide
+    buttonstimer.Stop
+
+  Endif
+
+End
+
 Public Sub windowsizeworkaround_Timer()
 
   With systembackgui
@@ -13660,49 +13868,5 @@ Public Sub windowsizeworkaround_Timer()
     Endif
 
   End With
-
-End
-
-Public Sub textoutputwindow_MouseDown()
-
-  If Mouse.Left Then textoutputwindow.Foreground = Color.SelectedBackground
-
-End
-
-Public Sub textoutputwindow_MouseUp()
-
-  Dim wtext As String = ("Welcome to the Systemback text output window!")
-  Dim ttext As String = ("Systemback text output")
-
-  If textoutputwindow.Foreground = Color.SelectedBackground
-
-    Unlock slock
-    Unlock dlock
-    If Component.IsLoaded("gb.gtk") Then Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", ttext, "-T", ttext, "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "tput bold ; echo -e \"\n " & wtext & " \n\" ; tput sgr0 ; GB_GUI=gb.gtk /usr/share/systemback/systembackgui notextoutput"] Else Exec ["xterm", "+sb", "-bg", "grey85", "-fg", "grey25", "-fa", "a", "-fs", "9", "-geometry", "80x24+80+70", "-n", ttext, "-T", ttext, "-cr", "grey40", "-selbg", "grey86", "-bw", "0", "-bc", "-bcf", "500", "-bcn", "500", "-e", "tput bold ; echo -e \"\n " & wtext & " \n\" ; tput sgr0 ; GB_GUI=gb.qt4 /usr/share/systemback/systembackgui notextoutput"]
-    systembackgui.Close
-
-  Endif
-
-End
-
-Public Sub textoutputwindow_MouseMove()
-
-  If Mouse.Left = True
-
-    With textoutputwindow
-
-      If Mouse.Inside(textoutputwindow) = True
-
-        If .Foreground = Color.Background Then .Foreground = Color.SelectedBackground
-
-      Else If .Foreground = Color.SelectedBackground
-
-        .Foreground = Color.Background
-
-      Endif
-
-    End With
-
-  Endif
 
 End

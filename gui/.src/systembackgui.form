@@ -70,6 +70,7 @@
       Font = Font["Bold"]
       Foreground = Color.Background
       NoTabFocus = True
+      Mouse = Mouse.Pointing
       Text = ":::"
       Alignment = Align.Center
     }
@@ -90,6 +91,7 @@
       { dialogtext TextLabel
         Move(80,8,416,128)
         NoTabFocus = True
+        Alignment = Align.TopLeft
       }
       { dialogtimer #Timer
         #Move(0,128)
@@ -151,6 +153,7 @@
       Font = Font["Bold"]
       Foreground = Color.Background
       NoTabFocus = True
+      Mouse = Mouse.Pointing
       Text = ":::"
       Alignment = Align.Center
     }
@@ -1632,6 +1635,7 @@
       Font = Font["Bold"]
       Foreground = Color.Background
       NoTabFocus = True
+      Mouse = Mouse.Pointing
       Text = ":::"
       Alignment = Align.Center
     }
@@ -1898,6 +1902,7 @@
         Move(80,8,312,88)
         NoTabFocus = True
         Text = ("Creates a scheduled restore point within few seconds.")
+        Alignment = Align.TopLeft
       }
       { schedulertimer #Timer
         #Move(0,88)
@@ -1942,6 +1947,7 @@
       Font = Font["Bold"]
       Foreground = Color.Background
       NoTabFocus = True
+      Mouse = Mouse.Pointing
       Text = ":::"
       Alignment = Align.Center
     }
@@ -1988,5 +1994,9 @@
       Text = "X"
       Alignment = Align.Center
     }
+  }
+  { buttonstimer #Timer
+    #Move(656,2824)
+    Delay = 100
   }
 }

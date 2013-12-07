@@ -1,0 +1,244 @@
+' Gambas class file
+
+Public hash As String
+Public wround As Byte
+
+Public Sub Form_Open()
+
+  Dim ofile As File
+  Dim cline, usr As String
+
+  If Application.Args.Count = 4 And Application.Args[1] = "authorization" And Application.Args[2] <> "root"
+
+    ofile = Open "/etc/group" For Input
+    While Not Eof(ofile)
+      Line Input #ofile, cline
+
+      If InStr(cline, "sudo:") = 1
+
+        For Each usr In Split(Right(cline, - RInStr(cline, ":")), ",")
+
+          users.Add(usr)
+
+        Next
+
+        Break
+
+      Endif
+
+    Wend
+    Close #ofile
+
+    If users.Count = 0 Then users.Add("root")
+
+    If users.Find(Application.Args[2]) <> -1
+
+      ofile = Open "/etc/shadow" For Input
+      While Not Eof(ofile)
+        Line Input #ofile, cline
+
+        If InStr(cline, Application.Args[2] & ":") = 1
+
+          hash = Right(cline, - InStr(cline, ":"))
+          hash = Left(hash, InStr(hash, ":") - 1)
+          Break
+
+        Endif
+
+      Wend
+      Close #ofile
+
+      If users.Text <> Application.Args[2] Then users.Index = users.Find(Application.Args[2])
+
+    Endif
+
+    With userstext
+
+      .W = .Font.TextWidth(.Text) + 1
+      users.X = .W + 15
+
+      For Each usr In users.List
+
+        If .Font.TextWidth(usr) + 32 > users.W
+
+          If .Font.TextWidth(usr) + 32 < 352 - userstext.W
+
+            users.W = .Font.TextWidth(usr) + 32
+
+          Else If users.W < 352 - userstext.W
+
+            users.W = 352 - userstext.W
+
+          Endif
+
+        Endif
+
+      Next
+
+    End With
+
+    With passwordtext
+
+      .W = .Font.TextWidth(.Text) + 1
+      password.X = .W + 15
+      password.W = 336 - password.X
+
+    End With
+
+    PictureBox1.Picture = Picture.Load("/usr/share/icons/hicolor/64x64/apps/systemback.png")
+    authorization.Center
+
+  Else
+
+    authorization.Close
+    systembackgui.Show
+
+  Endif
+
+End
+
+Public Sub startcancel_Click()
+
+  authorization.Close
+
+End
+
+Public Sub users_Click()
+
+  Dim ofile As File
+  Dim cline As String
+
+  If hash <> Null Then hash = Null
+
+  ofile = Open "/etc/shadow" For Input
+  While Not Eof(ofile)
+    Line Input #ofile, cline
+
+    If InStr(cline, users.Text & ":") = 1
+
+      hash = Right(cline, - InStr(cline, ":"))
+      hash = Left(hash, InStr(hash, ":") - 1)
+      Break
+
+    Endif
+
+  Wend
+  Close #ofile
+
+  If password.Length > 0 Then password.Clear
+  password.SetFocus
+
+End
+
+Public Sub password_Change()
+
+  If password.Length = 0
+
+    With inputok
+
+      If .Enabled = True
+
+        .Enabled = False
+        .Mouse = Mouse.Default
+
+      Endif
+
+    End With
+
+    If passwordpipe.Visible = True
+
+      passwordpipe.Hide
+
+    Else If passworderror.Visible = True
+
+      passworderror.Hide
+
+    Endif
+
+  Else If hash = Null
+
+    If passworderror.Visible = False Then passworderror.Show
+
+  Else If Crypt.Check(password.Text, hash) = 0
+
+    With inputok
+
+      If .Enabled = False
+
+        .Enabled = True
+        .Mouse = Mouse.Pointing
+
+      Endif
+
+    End With
+
+    If passworderror.Visible = True Then passworderror.Hide
+    If passwordpipe.Visible = False Then passwordpipe.Show
+    password.Enabled = False
+    password.Mouse = Mouse.Arrow
+    users.Enabled = False
+    users.Mouse = Mouse.Arrow
+    inputok.SetFocus
+
+  Else
+
+    With inputok
+
+      If .Enabled = True
+
+        .Enabled = False
+        .Mouse = Mouse.Default
+
+      Endif
+
+    End With
+
+    If passwordpipe.Visible = True Then passwordpipe.Hide
+    If passworderror.Visible = False Then passworderror.Show
+
+  Endif
+
+End
+
+Public Sub inputok_Click()
+
+  authorization.Close
+
+  If Application.Args[3] = "gtk"
+
+    If Component.IsLoaded("gb.gtk") = True Then systembackgui.Show Else Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.gtk"]
+
+  Else If Component.IsLoaded("gb.qt4") = True
+
+    systembackgui.Show
+
+  Else
+
+    Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb.qt4"]
+
+  Endif
+
+End
+
+Public Sub windowsizeworkaround_Timer()
+
+  With authorization
+
+    If .W > 376
+
+      If Component.IsLoaded("gb.gtk") = True Then .X = .X - 1 Else .Resize(376, 224)
+      windowsizeworkaround.Stop
+
+    Else If wround = 30
+
+      windowsizeworkaround.Stop
+
+    Else
+
+      wround = wround + 1
+
+    Endif
+
+  End With
+
+End

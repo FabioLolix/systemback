@@ -1,0 +1,2 @@
+ALL ALL=(ALL) NOPASSWD: /usr/share/systemback/systembackgui authorization *
+ALL ALL=(ALL) NOPASSWD: /usr/bin/systemback schedulerdaemon *

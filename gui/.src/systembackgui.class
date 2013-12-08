@@ -6229,7 +6229,31 @@ Public Sub dirchooseok_Click()
 
             With Stat(lwdir & "/" & item)
 
-              If Len(item) > 7 And .Size > 0 And .Type <> gb.Link Then livelist.Add(Left(item, -7))
+              If Len(item) > 7 And .Size > 0 And .Type <> gb.Link
+
+                If Exist(lwdir & "/" & Left(item, -7) & ".iso")
+
+                  With Stat(lwdir & "/" & Left(item, -7) & ".iso")
+
+                    If Len(item) > 7 And .Size > 0 And .Type <> gb.Link
+
+                      livelist.Add(Left(item, -7) & " (sblive+iso)")
+
+                    Else
+
+                      livelist.Add(Left(item, -7) & " (sblive)")
+
+                    Endif
+
+                  End With
+
+                Else
+
+                  livelist.Add(Left(item, -7) & " (sblive)")
+
+                Endif
+
+              Endif
 
             End With
 
@@ -10351,7 +10375,31 @@ Public Sub livedelete_Click()
 
       With Stat(lwdir & "/" & item)
 
-        If Len(item) > 7 And .Size > 0 And .Type <> gb.Link Then livelist.Add(Left(item, -7))
+        If Len(item) > 7 And .Size > 0 And .Type <> gb.Link
+
+          If Exist(lwdir & "/" & Left(item, -7) & ".iso")
+
+            With Stat(lwdir & "/" & Left(item, -7) & ".iso")
+
+              If Len(item) > 7 And .Size > 0 And .Type <> gb.Link
+
+                livelist.Add(Left(item, -7) & " (sblive+iso)")
+
+              Else
+
+                livelist.Add(Left(item, -7) & " (sblive)")
+
+              Endif
+
+            End With
+
+          Else
+
+            livelist.Add(Left(item, -7) & " (sblive)")
+
+          Endif
+
+        Endif
 
       End With
 

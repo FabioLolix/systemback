@@ -2426,12 +2426,12 @@ Sub statusstart()
   If systembackgui.Stacking = 1 Then systembackgui.Stacking = 0
   If mainpanel.Visible = True Then mainpanel.Hide
   If dialogpanel.Visible = True Then dialogpanel.Hide
-  If schedulerpanel.Visible = True Then schedulerpanel.Hide
 
   statuspanel.Show
   nwidth = statuspanel.W
   nheight = statuspanel.H
-  If sstart = False Then windowmove
+  If sstart = False Then windowmove Else schedulerpanel.Hide
+  focusworkaround.SetFocus
 
 End
 
@@ -10693,7 +10693,11 @@ Public Sub interrupt_Click()
     If pointpipe15.Value = True Then pointpipe15.Value = False
     statuspanel.Hide
 
-    If livecreatepanel.Visible = False
+    If livecreatepanel.Visible = True
+
+      livecreateback.SetFocus
+
+    Else
 
       If systembackpanel.Visible = False
 
@@ -14093,11 +14097,11 @@ Public Sub passwordinputok_Click()
     passwordpanel.Hide
     mainpanel.Show
     systembackpanel.X = 1
-    systembackgui.Hide
-    systembackgui.Move(Screen.W / 2 - 349, Screen.H / 2 - 232, 698, 465)
-    systembackgui.Show
     systembackgui.Stacking = 0
-    windowsizeworkaround.Start
+    functionmenunext.SetFocus
+    nwidth = 698
+    nheight = 465
+    windowmove
 
   Else
 

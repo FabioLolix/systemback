@@ -1882,7 +1882,7 @@
     Delay = 100
   }
   { points Label
-    Move(696,2864,32,32)
+    Move(728,2864,32,32)
     Visible = False
     Border = Border.Plain
   }
@@ -2013,6 +2013,7 @@
     }
     { admins ComboBox
       Move(120,80,112,32)
+      NoTabFocus = True
       Mouse = Mouse.Pointing
       ReadOnly = True
       Sorted = True
@@ -2066,5 +2067,10 @@
       Text = ("Administrator:")
       Alignment = Align.Left
     }
+  }
+  { focusworkaround Button
+    Move(696,2864,32,32)
+    #Translate = False
+    NoTabFocus = True
   }
 }

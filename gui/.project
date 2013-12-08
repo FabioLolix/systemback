@@ -1,7 +1,7 @@
 # Gambas Project File 3.0
 # Compiled with Gambas 3.5.1
 Title=systembackgui
-Startup=authorization
+Startup=systembackgui
 Version=0.7.7
 Component=gb.image
 Component=gb.gui

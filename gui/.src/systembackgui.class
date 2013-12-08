@@ -40,6 +40,7 @@ Public ssds As String
 Public smode As String
 Public wpos As String
 Public grub As String = "pc"
+Public hash As String
 Public nwidth As Short
 Public nheight As Short
 Public winx As Short
@@ -59,7 +60,8 @@ Public ickernel As Boolean
 Public Sub Form_Open()
 
   Dim ctrl As Control
-  Dim item As String
+  Dim ofile As File
+  Dim cline, item, usr As String
   Dim fheight As Short
 
   If IsDir("/run/shm")
@@ -88,11 +90,11 @@ Public Sub Form_Open()
 
   If Desktop.Resolution <> 96
 
-    fheight = 187 / Label1.Font.Height
+    fheight = Round(187 / Label1.Font.Height)
 
     For Each ctrl In systembackgui.Controls
 
-      ctrl.Font.Size = fheight
+      If ctrl.Name = "passwordtitletext" Then ctrl.Font.Size = Round(fheight * 118.18 / 100) Else ctrl.Font.Size = fheight
 
     Next
 
@@ -155,12 +157,97 @@ Public Sub Form_Open()
 
   Endif
 
-  dialogpanel.Y = 0
+  dialogpanel.Move(0, 0)
   buttonspanel.Y = 0
 
   If dialog <> 0
 
     dialogopen
+
+  Else If Application.Args.Count = 4 And Application.Args[1] = "authorization" And Application.Args[2] <> "root"
+
+    ofile = Open "/etc/group" For Input
+    While Not Eof(ofile)
+      Line Input #ofile, cline
+
+      If InStr(cline, "sudo:") = 1
+
+        For Each usr In Split(Right(cline, - RInStr(cline, ":")), ",")
+
+          admins.Add(usr)
+
+        Next
+
+        Break
+
+      Endif
+
+    Wend
+    Close #ofile
+
+    If admins.Count = 0 Then admins.Add("root")
+
+    If admins.Find(Application.Args[2]) <> -1
+
+      ofile = Open "/etc/shadow" For Input
+      While Not Eof(ofile)
+        Line Input #ofile, cline
+
+        If InStr(cline, Application.Args[2] & ":") = 1
+
+          hash = Right(cline, - InStr(cline, ":"))
+          hash = Left(hash, InStr(hash, ":") - 1)
+          Break
+
+        Endif
+
+      Wend
+      Close #ofile
+
+      With admins
+
+        If .Text <> Application.Args[2] Then .Index = .Find(Application.Args[2])
+
+      End With
+
+    Endif
+
+    With adminstext
+
+      .W = .Font.TextWidth(.Text) + 1
+      admins.X = .W + 15
+
+      For Each usr In admins.List
+
+        If .Font.TextWidth(usr) + 32 > admins.W
+
+          If .Font.TextWidth(usr) + 32 < 352 - adminstext.W
+
+            admins.W = .Font.TextWidth(usr) + 32
+
+          Else If admins.W < 352 - adminstext.W
+
+            admins.W = 352 - adminstext.W
+
+          Endif
+
+        Endif
+
+      Next
+
+    End With
+
+    With adminpasswordtext
+
+      .W = .Font.TextWidth(.Text) + 1
+      adminpassword.X = .W + 15
+      adminpassword.W = 336 - adminpassword.X
+
+    End With
+
+    passwordpicture.Picture = Picture.Load("/usr/share/icons/hicolor/64x64/apps/systemback.png")
+    passwordpanel.Move(0, 0)
+    systembackgui.Move(Screen.W / 2 - 188, Screen.H / 2 - 112, 376, 224)
 
   Else
 
@@ -169,8 +256,8 @@ Public Sub Form_Open()
 
     If sstart = True
 
-      schedulerpanel.Move(0, 0)
-      mainpanel.Hide
+      schedulerpanel.Y = 0
+      passwordpanel.Hide
       schedulerpanel.Show
       function4.Text &= " " & ("scheduler")
 
@@ -205,7 +292,10 @@ Public Sub Form_Open()
 
     Else
 
+      passwordpanel.Hide
+      mainpanel.Show
       systembackpanel.X = 1
+      systembackgui.Stacking = 0
       systembackgui.Move(Screen.W / 2 - 349, Screen.H / 2 - 232, 698, 465)
 
       If Application.Args[1] = "notextoutput"
@@ -291,6 +381,12 @@ Public Sub Form_Deactivate()
     textoutputwindow.Foreground = Color.Darker(Color.Background)
 
   Endif
+
+End
+
+Public Sub Form_KeyPress()
+
+  If passwordpanel.Visible = True And Key.Code = Key.Esc Then systembackgui.Close
 
 End
 
@@ -3987,7 +4083,7 @@ Public Sub unitimer_Timer()
 
     If cfupdt = True Then configfileupdate
     fsdir = sdir & "/Systemback"
-    statuspanel.Move(0, 0)
+    statuspanel.Y = 0
 
     If sstart = False
 
@@ -4225,7 +4321,7 @@ Public Sub unitimer_Timer()
 
           ickernel = True
 
-        Else If Exist("/bin/unionfs-fuse")
+        Else If Exist("/usr/bin/unionfs-fuse")
 
           ickernel = True
 
@@ -13873,11 +13969,152 @@ Public Sub buttonstimer_Timer()
 
 End
 
+Public Sub startcancel_Click()
+
+  systembackgui.Close
+
+End
+
+Public Sub admins_Click()
+
+  Dim ofile As File
+  Dim cline As String
+
+  If hash <> Null Then hash = Null
+
+  ofile = Open "/etc/shadow" For Input
+  While Not Eof(ofile)
+    Line Input #ofile, cline
+
+    If InStr(cline, admins.Text & ":") = 1
+
+      hash = Right(cline, - InStr(cline, ":"))
+      hash = Left(hash, InStr(hash, ":") - 1)
+      Break
+
+    Endif
+
+  Wend
+  Close #ofile
+
+  With adminpassword
+
+    If .Length > 0 Then .Clear
+    .SetFocus
+
+  End With
+
+End
+
+Public Sub adminpassword_Change()
+
+  Dim ipasswd As String = adminpassword.Text
+
+  If adminpassword.Length = 0
+
+    With passwordinputok
+
+      If .Enabled = True
+
+        .Enabled = False
+        .Mouse = Mouse.Default
+
+      Endif
+
+    End With
+
+    If adminpasswordpipe.Visible = True
+
+      adminpasswordpipe.Hide
+
+    Else If adminpassworderror.Visible = True
+
+      adminpassworderror.Hide
+
+    Endif
+
+  Else If hash = Null
+
+    If adminpassworderror.Visible = False Then adminpassworderror.Show
+
+  Else If Crypt.Check(adminpassword.Text, hash) = 0
+
+    Wait 0.3
+
+    If ipasswd = adminpassword.Text
+
+      With passwordinputok
+
+        If .Enabled = False
+
+          .Enabled = True
+          .Mouse = Mouse.Pointing
+
+        Endif
+
+      End With
+
+      If adminpassworderror.Visible = True Then adminpassworderror.Hide
+      If adminpasswordpipe.Visible = False Then adminpasswordpipe.Show
+      adminpassword.Enabled = False
+      adminpassword.Mouse = Mouse.Arrow
+      admins.Enabled = False
+      admins.Mouse = Mouse.Arrow
+      passwordinputok.SetFocus
+
+    Endif
+
+  Else
+
+    With passwordinputok
+
+      If .Enabled = True
+
+        .Enabled = False
+        .Mouse = Mouse.Default
+
+      Endif
+
+    End With
+
+    If adminpasswordpipe.Visible = True Then adminpasswordpipe.Hide
+    If adminpassworderror.Visible = False Then adminpassworderror.Show
+
+  Endif
+
+End
+
+Public Sub passwordinputok_Click()
+
+  If Application.Args[3] = "gtk" And Component.IsLoaded("gb.gtk") = True Or If Application.Args[3] = "qt4" And Component.IsLoaded("gb.qt4") = True
+
+    Inc Application.Busy
+    unitimer.Start
+    passwordpanel.Hide
+    mainpanel.Show
+    systembackpanel.X = 1
+    systembackgui.Hide
+    systembackgui.Move(Screen.W / 2 - 349, Screen.H / 2 - 232, 698, 465)
+    systembackgui.Show
+    systembackgui.Stacking = 0
+    windowsizeworkaround.Start
+
+  Else
+
+    Unlock slock
+    Unlock dlock
+    Exec ["/usr/share/systemback/systembackgui"] With ["GB_GUI=gb." & Application.Args[3]]
+    systembackgui.Close
+
+  Endif
+
+End
+
 Public Sub windowsizeworkaround_Timer()
 
   With systembackgui
 
-    If .W = 700 Or .W = 702 Or .W = 704 Or .W = 706 Or .W = 708 Or .W = 710 Or .W = 508 Or .W = 510 Or .W = 512 Or .W = 514 Or .W = 516 Or .W = 518 Or .W = 404 Or .W = 406 Or .W = 408 Or .W = 410 Or .W = 412 Or .W = 414
+    If .W = 700 Or .W = 702 Or .W = 704 Or .W = 706 Or .W = 708 Or .W = 710 Or .W = 508 Or .W = 510 Or .W = 512 Or .W = 514 Or .W = 516 Or .W = 518 Or .W = 404 Or .W = 406 Or .W = 408 Or .W = 410 Or .W = 412 Or .W = 414 Or .W = 378 Or .W = 380 Or .W = 382 Or .W = 384 Or .W = 386 Or .W = 388
 
       If Component.IsLoaded("gb.gtk") = True
 
@@ -13891,9 +14128,13 @@ Public Sub windowsizeworkaround_Timer()
 
         .Resize(506, 201)
 
-      Else
+      Else If schedulepanel.Visible = True
 
         .Resize(402, 161)
+
+      Else
+
+        .Resize(376, 224)
 
       Endif
 

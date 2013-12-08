@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,1392,2872)
+  Move(0,0,1392,2984)
   #Scaled = False
   #Translate = False
   Font = Font["11"]
@@ -11,8 +11,9 @@
   Persistent = True
   Resizable = False
   Border = False
+  Stacking = Window.Above
   { statuspanel Panel
-    Move(512,2664,402,161)
+    Move(0,2664,402,161)
     Visible = False
     Background = Color.Foreground
     NoTabFocus = True
@@ -76,7 +77,7 @@
     }
   }
   { dialogpanel Panel
-    Move(0,2664,506,201)
+    Move(408,2664,506,201)
     Visible = False
     Background = Color.Foreground
     { borderpicture2 PictureBox
@@ -160,6 +161,7 @@
   }
   { mainpanel Panel
     Move(0,0,1392,2664)
+    Visible = False
     Background = Color.Foreground
     { systembackpanel Panel
       Move(0,24,696,440)
@@ -1876,16 +1878,16 @@
     }
   }
   { unitimer #Timer
-    #Move(1328,2664)
+    #Move(600,2864)
     Delay = 100
   }
   { points Label
-    Move(1328,2760,32,32)
+    Move(696,2864,32,32)
     Visible = False
     Border = Border.Plain
   }
   { schedulerpanel Panel
-    Move(920,2664,402,161)
+    Move(0,2824,402,161)
     Visible = False
     Background = Color.Foreground
     NoTabFocus = True
@@ -1953,12 +1955,12 @@
     }
   }
   { windowsizeworkaround #Timer
-    #Move(1328,2712)
+    #Move(648,2864)
     Enabled = True
     Delay = 50
   }
   { buttonspanel Panel
-    Move(512,2824,138,48)
+    Move(408,2864,138,48)
     Visible = False
     Background = Color.SelectedBackground
     { windowmaximize Label
@@ -1996,7 +1998,73 @@
     }
   }
   { buttonstimer #Timer
-    #Move(656,2824)
+    #Move(552,2864)
     Delay = 100
+  }
+  { passwordpanel Panel
+    Move(920,2664,376,224)
+    Background = Color.Background
+    Border = Border.Raised
+    { adminpassword TextBox
+      Move(88,128,248,32)
+      #Translate = False
+      Alignment = Align.Left
+      Password = True
+    }
+    { admins ComboBox
+      Move(120,80,112,32)
+      Mouse = Mouse.Pointing
+      ReadOnly = True
+      Sorted = True
+    }
+    { startcancel Button
+      Move(136,184,112,32)
+      Mouse = Mouse.Pointing
+      Text = ("Cancel")
+    }
+    { passwordinputok Button
+      Move(256,184,112,32)
+      #Translate = False
+      Enabled = False
+      Text = "OK"
+    }
+    { adminpassworderror PictureBox
+      Move(336,128,40,32)
+      Visible = False
+      NoTabFocus = True
+      Picture = Picture["error.png"]
+      Alignment = Align.Center
+    }
+    { passwordpicture PictureBox
+      Move(0,0,80,72)
+      NoTabFocus = True
+      Alignment = Align.Center
+    }
+    { passwordtitletext TextLabel
+      Move(88,16,280,56)
+      Font = Font["Bold,13"]
+      NoTabFocus = True
+      Text = ("Systemback user authentication")
+      Alignment = Align.TopLeft
+    }
+    { adminpasswordtext Label
+      Move(9,128,72,32)
+      NoTabFocus = True
+      Text = ("Password:")
+      Alignment = Align.Left
+    }
+    { adminpasswordpipe PictureBox
+      Move(336,128,40,32)
+      Visible = False
+      NoTabFocus = True
+      Picture = Picture["ok.png"]
+      Alignment = Align.Center
+    }
+    { adminstext Label
+      Move(9,80,104,32)
+      NoTabFocus = True
+      Text = ("Administrator:")
+      Alignment = Align.Left
+    }
   }
 }

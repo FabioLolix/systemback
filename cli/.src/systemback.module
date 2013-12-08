@@ -155,18 +155,8 @@ Public Sub Main()
               Exec ["tput", "bold"] Wait
               Exec ["tput", "setaf", "1"] Wait
               Error "\n " & ("Unable to get exclusive lock!") & "\n " & ("First, close all package manager.") & "\n"
-
-              If Application.Args[2] = "unity"
-
-                Exec ["tput", "civis"] Wait
-                Wait 10
-
-              Else
-
-                Exec ["tput", "sgr0"] Wait
-                Quit 4
-
-              Endif
+              Exec ["tput", "sgr0"] Wait
+              Quit 4
 
             Endif
 
@@ -180,18 +170,8 @@ Public Sub Main()
             Exec ["tput", "bold"] Wait
             Exec ["tput", "setaf", "1"] Wait
             Error "\n " & ("Another Systemback process is currently running, please wait until it\n finishes.") & "\n"
-
-            If Application.Args[2] = "unity"
-
-              Exec ["tput", "civis"] Wait
-              Wait 10
-
-            Else
-
-              Exec ["tput", "sgr0"] Wait
-              Quit 3
-
-            Endif
+            Exec ["tput", "sgr0"] Wait
+            Quit 3
 
           Endif
 

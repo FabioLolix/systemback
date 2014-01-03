@@ -9,30 +9,41 @@ build-stamp:
 	gbc3 -a cli
 	gba3 cli
 	mv cli/cli.gambas cli/systemback
+	gcc -fPIC -c tsync.c
+	gcc -shared -Wl,-soname,tsync.so -o tsync.so tsync.o
+	strip --strip-unneeded tsync.so
 	touch build-stamp
 
 clean:
-	rm -rf build-stamp
-	find . -name .action -print0 | xargs -0r rm -rf
+	rm -rf build-stamp gui/systembackgui cli/systemback tsync.o tsync.so
 	find . -name .gambas -print0 | xargs -0r rm -rf
-	find . -name "*.gambas" -delete
 	find . -name .startup -delete
 	dh_clean
 
 binary-indep: build
-	dh_install
-	dh_installman debian/systemback.1 -p systemback
-	dh_link
-	dh_fixperms
-	find debian/systemback/etc/sudoers.d/99_sbscheduler ! -perm 440 -print0 | xargs -0r chmod 440
-	dh_installdeb
-	dh_gencontrol
-	dh_installdocs
-	dh_installchangelogs
-	dh_compress
-	dh_builddeb
+	dh_install -i
+	dh_link -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_installdocs -i
+	dh_installchangelogs -i
+	dh_compress -i
+	dh_builddeb -i
 
 binary-arch: build
+	dh_install -a
+	dh_installman debian/systemback.1 -p systemback -a
+	dh_link -a
+	dh_fixperms -a
+	find debian/systemback/etc/sudoers.d/99_systemback ! -perm 440 -print0 | xargs -0r chmod 440 -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_installdocs -a
+	dh_installchangelogs -a
+	dh_compress -a
+	dh_builddeb -a
 
 binary: binary-indep binary-arch
 

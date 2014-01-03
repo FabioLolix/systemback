@@ -2,8 +2,8 @@
 # Compiled with Gambas 3.5.1
 Title=systemback
 Startup=systemback
-Version=0.7.7
-Authors="Krisztián Kende"
+Version=0.8.0
+Authors="Krisztián Kende <nemh@freemail.hu>"
 TabSize=2
 Translate=1
 Language=en

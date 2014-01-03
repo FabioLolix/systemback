@@ -1,130 +1,121 @@
 #!/bin/bash
+# Systemback GUI startup script
+#
+# Copyright(C) 2014, Krisztián Kende <nemh@freemail.hu>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-if [[ "351" -le "$(gbr3 -V | sed "s+\.++g" | head -c 3)" ]]
-then
+gbver="351" # Required Gambas version
 
-  if [[ "${1}" = "schedulerdaemon" ]]
-  then sudo -nH systemback schedulerdaemon ${XAUTHORITY}
-  elif [[ ! -e /usr/lib/gambas3/gb.crypt.so && ! -e /usr/local/lib/gambas3/gb.crypt.so ]]
+compcheck()
+{
+
+  if [[ "$gbver" -le "$(gbr3 -V | sed "s+\.++g" | head -c 3)" ]]
   then
+
+    for comp in gui $1
+    do
+
+      if [[ ! -e "/usr/lib/gambas3/gb.$comp.so" && ! -e "/usr/local/lib/gambas3/gb.$comp.so" ]]
+      then
+
+	if which zenity >/dev/null
+	then zenity --title="Systemback" --error --text="Required <b>gb.$comp</b> component was not found!\n\nPlease install the <b>gambas3-gb-$comp</b> package."
+	else kdialog --title="Systemback" --error="Required <b>gb.$comp</b> component was not found!\n\nPlease install the <b>gambas3-gb-$comp</b> package."
+	fi
+
+	if [[ "$?" != "0" ]]
+	then
+
+	  tput reset
+	  tput bold
+	  tput setaf 1
+	  echo -e "\n Required gb.$comp component was not found!\n\n Please install the gambas3-gb-$comp package.\n"
+	  tput sgr0
+
+	fi
+
+	exit 3
+
+      fi
+
+    done
+
+  else
 
     if which zenity >/dev/null
-    then zenity --title="Systemback" --error --text="Required <b>gb.crypt</b> component was not found!\n\nPlease install the <b>gambas3-gb-cypt</b> package."
-    else kdialog --title="Systemback" --error="Required <b>gb.crypt</b> component was not found!\n\nPlease install the <b>gambas3-gb-cypt</b> package."
+    then zenity --title="Systemback" --error --text="Gambas runtime version is too old!\n\nPlease upgrade your system."
+    else kdialog --title="Systemback" --error="Gambas runtime version is too old!\n\nPlease upgrade your system."
     fi
 
-    if [[ "${?}" != "0" ]]
+    if [[ "$?" != "0" ]]
     then
 
       tput reset
       tput bold
       tput setaf 1
-      echo -e "\n Required gb.crypt component was not found!\n\n Please install the gambas3-gb-gtk package.\n"
+      echo -e "\n Gambas runtime version is too old!\n\n Please upgrade your system.\n"
       tput sgr0
-      exit 4
 
     fi
 
-  elif [[ "${0}" = "/usr/bin/systemback-gtk" ]]
+    exit 2
+
+  fi
+
+}
+
+guistart()
+{
+
+  if [[ "$2" = "authorization" && "$USER" != "root" ]]
   then
 
-    if [[ -e /usr/lib/gambas3/gb.gtk.so || -e /usr/local/lib/gambas3/gb.gtk.so ]]
-    then 
+    tmpxauth="/tmp/sbXauthority-$RANDOM$RANDOM"
+    cp -a "$XAUTHORITY" "$tmpxauth"
+    XAUTHORITY="$tmpxauth" sudo -nH /usr/share/systemback/systembackgui authorization $USER $1
+    rm -rf "$tmpxauth"
 
-      if [[ "${1}" = "authorization" && "${USER}" != "root" ]]
-      then
+  else GB_GUI="gb.$1" /usr/share/systemback/systembackgui
+  fi
 
-	rnum="${RANDOM}${RANDOM}"
-	cp -a "${XAUTHORITY}" "/tmp/sbXauthority-${rnum}"
-	XAUTHORITY="/tmp/sbXauthority-${rnum}"
-	sudo -nH /usr/share/systemback/systembackgui authorization ${USER} gtk
-	rm -rf "/tmp/sbXauthority-${rnum}"
+}
 
-      else GB_GUI="gb.gtk" /usr/share/systemback/systembackgui
-      fi
+case "$0" in
 
-    elif which zenity >/dev/null
-    then zenity --title="Systemback" --error --text="Required <b>gb.gtk</b> component was not found!\n\nPlease install the <b>gambas3-gb-gtk</b> package."
-    else kdialog --title="Systemback" --error="Required <b>gb.gtk</b> component was not found!\n\nPlease install the <b>gambas3-gb-gtk</b> package."
-    fi
+  /usr/bin/systemback-gtk)
 
-    if [[ "${?}" != "0" ]]
-    then
+    compcheck gtk && guistart gtk $1
+    ;;
 
-      tput reset
-      tput bold
-      tput setaf 1
-      echo -e "\n Required gb.gtk component was not found!\n\n Please install the gambas3-gb-gtk package.\n"
-      tput sgr0
-      exit 3
+  /usr/bin/systemback-qt4)
 
-    fi
+    compcheck qt4 && guistart qt4 $1
+    ;;
 
-  elif [[ "${0}" = "/usr/bin/systemback-qt4" ]]
-  then
+  /usr/bin/systembackgui)
 
-    if [[ -e /usr/lib/gambas3/gb.qt4.so || -e /usr/local/lib/gambas3/gb.qt4.so ]]
-    then
+    compcheck && /usr/share/systemback/systembackgui
+    ;;
 
-      if [[ "${1}" = "authorization" && "${USER}" != "root" ]]
-      then
-
-	rnum="${RANDOM}${RANDOM}"
-	cp -a "${XAUTHORITY}" "/tmp/sbXauthority-${rnum}"
-	XAUTHORITY="/tmp/sbXauthority-${rnum}"
-	sudo -nH /usr/share/systemback/systembackgui authorization ${USER} qt4
-	rm -rf "/tmp/sbXauthority-${rnum}"
-
-      else GB_GUI="gb.qt4" /usr/share/systemback/systembackgui
-      fi
-
-    elif which zenity >/dev/null
-    then zenity --title="Systemback" --error --text="Required <b>gb.qt4</b> component was not found!\n\nPlease install the <b>gambas3-gb-qt4</b> package."
-    else kdialog --title="Systemback" --error="Required <b>gb.qt4</b> component was not found!\n\nPlease install the <b>gambas3-gb-qt4</b> package."
-    fi
-
-    if [[ "${?}" != "0" ]]
-    then
-
-      tput reset
-      tput bold
-      tput setaf 1
-      echo -e "\n Required gb.qt4 component was not found!\n\n Please install the gambas3-gb-qt4 package.\n"
-      tput sgr0
-      exit 3
-
-    fi
-
-  elif [[ "${0}" = "/usr/bin/systembackgui" ]]
-  then /usr/share/systemback/systembackgui
-  else
+  *)
 
     tput reset
     tput bold
     tput setaf 1
     echo -e "\n Incorrect parameters!\n"
     tput sgr0
-    exit 2
-
-  fi
-
-else
-
-  if which zenity >/dev/null
-  then zenity --title="Systemback" --error --text="Gambas runtime version is too old!\n\nPlease upgrade your system."
-  else kdialog --title="Systemback" --error="Gambas runtime version is too old!\n\nPlease upgrade your system."
-  fi
-
-  if [[ "${?}" != "0" ]]
-  then
-
-    tput reset
-    tput bold
-    tput setaf 1
-    echo -e "\n Gambas runtime version is too old!\n\n Please upgrade your system.\n"
-    tput sgr0
     exit 1
 
-  fi
-
-fi
+esac

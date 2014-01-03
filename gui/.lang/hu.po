@@ -22,359 +22,359 @@ msgstr "ütemező"
 msgid "Welcome to the Systemback text output window!"
 msgstr "Üdvözöl a Systemback szöveges kimenetének az ablaka!"
 
-#: systembackgui.class:1329
+#: systembackgui.class:1888
 msgid "Live image"
 msgstr "Live rendszerkép"
 
-#: systembackgui.class:1361
+#: systembackgui.class:1920
 msgid "Currently running system"
 msgstr "Jelenleg futó rendszer"
 
-#: systembackgui.class:1615
+#: systembackgui.class:2183
 msgid "Everyone"
 msgstr "Mindenki"
 
-#: systembackgui.class:1857
+#: systembackgui.class:2425
 msgid "Upgrading the system"
 msgstr "A rendszer frissítése"
 
-#: systembackgui.class:2070
+#: systembackgui.class:2667
 msgid "Another Systemback process is currently running, please wait until it finishes."
 msgstr "Egy másik Systemback folyamat is fut, kérlek várd meg amíg az befejeződik."
 
-#: systembackgui.class:2076
+#: systembackgui.class:2673
 msgid "Unable to get exclusive lock!<p>First, close all package manager."
 msgstr "Nem sikerült kizárólagos zárat szerezni!<p>Előbb zárj be minden csomagkezelőt."
 
-#: systembackgui.class:2082
+#: systembackgui.class:2679
 msgid "The specified name contains unsupported character(s)!<p>Please enter a new name!"
 msgstr "A megadott név nem támogatott karakter(eke)t tartalmaz!<p>Kérlek, adj meg egy új nevet!"
 
-#: systembackgui.class:2088
+#: systembackgui.class:2685
 msgid "Restore the system files to the following restore point:"
 msgstr "A rendszerfájlok visszaállítása a következő visszaállítási pontra:"
 
-#: systembackgui.class:2095
+#: systembackgui.class:2692
 msgid "Repair the system files with the following restore point:"
 msgstr "A rendszerfájlok javítása a következő visszaállítási ponttal:"
 
-#: systembackgui.class:2102
+#: systembackgui.class:2699
 msgid "Repair the complete system with the following restore point:"
 msgstr "A rendszer teljes javítása a következő visszaállítási ponttal:"
 
-#: systembackgui.class:2109
+#: systembackgui.class:2706
 msgid "Restore the complete user(s) configuration files to the following restore point:"
 msgstr "A felhasználó(k) beállításfájljainak teljes visszaállítása a következő visszaállítási pontra:"
 
-#: systembackgui.class:2116
+#: systembackgui.class:2713
 msgid "Restore the user(s) configuration files to the following restore point:"
 msgstr "A felhasználó(k) beállításfájljainak visszaállítása a következő visszaállítási pontra:"
 
-#: systembackgui.class:2123
+#: systembackgui.class:2720
 msgid "User(s) configuration files full restoration are completed.<p>The X server will restart automatically within 30 seconds."
 msgstr "A felhasználó(k) beállításfájljainak teljes visszaállítása kész.<p>Az X kiszolgáló automatikusan újraindul 30 másodpercen belül."
 
-#: systembackgui.class:2124
+#: systembackgui.class:2721
 msgid "X restart"
 msgstr "X újraindítás"
 
-#: systembackgui.class:2132
+#: systembackgui.class:2729
 msgid "User(s) configuration files restoration are completed.<p>The X server will restart automatically within 30 seconds."
 msgstr "A felhasználó(k) beállításfájljainak visszaállítása kész.<p>Az X kiszolgáló automatikusan újraindul 30 másodpercen belül."
 
-#: systembackgui.class:2141
+#: systembackgui.class:2738
 msgid "System files repair are completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
 msgstr "A rendszerfájlok javítása kész, de a GRUB telepítése közben hiba történt! A rendszer indíthatósága nem biztosított! (Általában az eltérő architectúra okozza a problémát.)"
 
-#: systembackgui.class:2147
+#: systembackgui.class:2744
 msgid "Full system repair is completed."
 msgstr "A rendszer teljes javítása befejeződött."
 
-#: systembackgui.class:2153
+#: systembackgui.class:2750
 msgid "System repair is completed."
 msgstr "A rendszer javítása befejeződött."
 
-#: systembackgui.class:2159
+#: systembackgui.class:2756
 msgid "Copy the system, using the following restore point:"
 msgstr "A rendszer másolása a következő visszaállítási pontot használva:"
 
-#: systembackgui.class:2166
+#: systembackgui.class:2763
 msgid "Install the system, using the following restore point:"
 msgstr "A rendszer telepítése a következő visszaállítási pontot használva:"
 
-#: systembackgui.class:2173
+#: systembackgui.class:2770
 msgid "Restore point creation is aborted! Not enough free disk space to complete the process."
 msgstr "A visszaállítási pont készítése megszakítva! Nincs elég szabad tárhely a folyamat befejezéséhez."
 
-#: systembackgui.class:2179
+#: systembackgui.class:2776
 msgid "Root privileges are required for running Systemback!"
 msgstr "A Systemback futtatásához root jogosultság szükséges!"
 
-#: systembackgui.class:2185
+#: systembackgui.class:2782
 msgid "Restore complete system to the following restore point:"
 msgstr "A rendszer teljes visszaállítása a következő visszaállítási pontra:"
 
-#: systembackgui.class:2192
+#: systembackgui.class:2789
 msgid "System files restoration are completed.<p>The computer will restart automatically within 30 seconds."
 msgstr "A rendszerfájlok visszaállítása kész.<p>A számítógép automatikusan újraindul 30 másodpercen belül."
 
-#: systembackgui.class:2193
+#: systembackgui.class:2790
 msgid "Reboot"
 msgstr "Újraindítás"
 
-#: systembackgui.class:2201
+#: systembackgui.class:2798
 msgid "Full system restoration is completed.<p>The computer will restart automatically within 30 seconds."
 msgstr "A rendszer teljes visszaállítása kész.<p>A számítógép automatikusan újraindul 30 másodpercen belül."
 
-#: systembackgui.class:2210
+#: systembackgui.class:2807
 msgid "The specified partition(s) does not have enough free space to copy the system! The copied system will not function properly!"
 msgstr "A rendszer teljes átmásolásához nincs elegendő szabad tárhely a megadott partíció(ko)n! Az átmásolt rendszer nem fog megfelelően működni!"
 
-#: systembackgui.class:2216
+#: systembackgui.class:2813
 msgid "System copy is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
 msgstr "A rendszer átmásolása befejezve, de a GRUB telepítése közben hiba történt! A rendszer indításához telepítsél kézzel egy rendszerbetöltőt."
 
-#: systembackgui.class:2222
+#: systembackgui.class:2819
 msgid "An error occurred while reinstalling GRUB!"
 msgstr "A GRUB újratelepítése közben hiba történt!"
 
-#: systembackgui.class:2228
+#: systembackgui.class:2825
 msgid "Full system repair is completed, but an error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
 msgstr "A rendszer teljes javítása befejeződött, de a GRUB újratelepítése közben hiba történt! A javított rendszer indíthatósága nem biztosított! (Általában az eltérő architectúra okozza a problémát.)"
 
-#: systembackgui.class:2234
+#: systembackgui.class:2831
 msgid "System copy is completed."
 msgstr "A rendszer másolása befejeződött."
 
-#: systembackgui.class:2240
+#: systembackgui.class:2837
 msgid "An error occurred while creating filesystem image!"
 msgstr "A rendszerkép készítése közben hiba törént!"
 
-#: systembackgui.class:2246
+#: systembackgui.class:2843
 msgid "An error occurred while creating container file!"
 msgstr "A konténerfájl készítése közben hiba történt!"
 
-#: systembackgui.class:2252
+#: systembackgui.class:2849
 msgid "Live system creation is completed.<p>The created .sblive file can be written to pendrive."
 msgstr "A Live rendszer készítése befejeződött.<p>A létrehozott .sblive fájl pendrive-ra írható."
 
-#: systembackgui.class:2258
+#: systembackgui.class:2855
 msgid "The selected directory does not have enough free space to create Live system!"
 msgstr "A beállított könyvtárban nincs elegendő szabad tárhely a Live rendszer elkészítéséhez!"
 
-#: systembackgui.class:2264
+#: systembackgui.class:2861
 msgid ", and write the following Live system image:"
 msgstr " formázása, és a következő Live rendszerkép kiírása:"
 
-#: systembackgui.class:2264
+#: systembackgui.class:2861
 msgid "Format the"
 msgstr "A"
 
-#: systembackgui.class:2271
+#: systembackgui.class:2868
 msgid "The specified partition could not be mounted!"
 msgstr "Az alábbi partíciót nem sikerűlt csatolni!"
 
-#: systembackgui.class:2285
+#: systembackgui.class:2882
 msgid "GRUB 2 repair is completed."
 msgstr "A GRUB 2 javítása befejeződött."
 
-#: systembackgui.class:2291
+#: systembackgui.class:2888
 msgid "System install is completed."
 msgstr "A rendszer telepítése befejeződött."
 
-#: systembackgui.class:2297
+#: systembackgui.class:2894
 msgid "System install is completed, but an error occurred while installing GRUB! Need to manually install a bootloader."
 msgstr "A rendszer telepítése befejezve, de a GRUB telepítése közben hiba történt! A rendszer indításához telepítsél kézzel egy rendszerbetöltőt."
 
-#: systembackgui.class:2303
+#: systembackgui.class:2900
 msgid "The specified partition(s) does not have enough free space to install the system! The installed system will not function properly!"
 msgstr "A rendszer teljes telepítéséhez nincs elegendő szabad tárhely a megadott partíció(ko)n! A telepített rendszer nem fog megfelelően működni!"
 
-#: systembackgui.class:2309
+#: systembackgui.class:2906
 msgid "The specified partition could not be formatted (in use or unavailable)!"
 msgstr "Az alábbi partíciót nem sikerűlt a megadott fájlrendszerre formázni (használatban van vagy nem elérhető)!"
 
-#: systembackgui.class:2323
+#: systembackgui.class:2920
 msgid "An error occurred while reinstalling GRUB! System may not bootable! (In general, the different architecture is causing the problem.)"
 msgstr "A GRUB újratelepítése közben hiba történt! (Általában az eltérő architectúra okozza a problémát.)"
 
-#: systembackgui.class:2329
+#: systembackgui.class:2926
 msgid "Restore point creation is aborted! There has been critical changes in the file system during this operation."
 msgstr "A visszaállítási pont készítése megszakítva! A folyamat közben kritikus változások következtek be a fájlrendszerben."
 
-#: systembackgui.class:2335
+#: systembackgui.class:2932
 msgid "System copying is aborted! There has been critical changes in the file system during this operation."
 msgstr "A rendszer másolása megszakítva! A folyamat közben kritikus változások következtek be a fájlrendszerben."
 
-#: systembackgui.class:2341
+#: systembackgui.class:2938
 msgid "System installation is aborted! There has been critical changes in the file system during this operation."
 msgstr "A rendszer telepítése megszakítva! A folyamat közben kritikus változások következtek be a fájlrendszerben."
 
-#: systembackgui.class:2347
+#: systembackgui.class:2944
 msgid "Repair the GRUB 2 bootloader."
 msgstr "A GRUB 2 rendszerbetöltő javítása."
 
-#: systembackgui.class:2354
+#: systembackgui.class:2951
 msgid "The selected partition does not have enough space to write the Live system!"
 msgstr "A választott USB eszközön nincs elegendő tárhely a Live rendszer kiírásához!"
 
-#: systembackgui.class:2360
+#: systembackgui.class:2957
 msgid "An error occurred while unpacking Live system files!"
 msgstr "A Live rendszerfájlok kicsomagolása közben hiba történt!"
 
-#: systembackgui.class:2366
+#: systembackgui.class:2963
 msgid "Live system image write is completed."
 msgstr "A Live rendszerkép kiírása befejeződött."
 
-#: systembackgui.class:2372
+#: systembackgui.class:2969
 msgid "An error occurred while renaming essential Live files!"
 msgstr "A fájlok szükséges átnvezése közben hiba történt!"
 
-#: systembackgui.class:2378
+#: systembackgui.class:2975
 msgid "An error occurred while creating .iso image!"
 msgstr "A .iso képfájl készítése közben hiba történt!"
 
-#: systembackgui.class:2384
+#: systembackgui.class:2981
 msgid "An error occurred while reading .sblive image!"
 msgstr "A .sblive képfájl olvasása közben hiba történt!"
 
-#: systembackgui.class:2639
+#: systembackgui.class:3241
 msgid "not used"
 msgstr "nem használt"
 
-#: systembackgui.class:3376
+#: systembackgui.class:3996
 msgid "Deleting incomplete restore point"
 msgstr "Befejezetlen visszaállítási pont törlése"
 
-#: systembackgui.class:3401
+#: systembackgui.class:4021
 msgid "Deleting old restore point"
 msgstr "Elöregedett visszaállítási pont törlése"
 
-#: systembackgui.class:3504
+#: systembackgui.class:4124
 msgid "Checking files and directories"
 msgstr "Fájlok és könyvtárak ellenőrzése"
 
-#: systembackgui.class:3639
+#: systembackgui.class:4259
 msgid "Creating restore point"
 msgstr "Új visszaállítási pont készítése"
 
-#: systembackgui.class:3822
+#: systembackgui.class:4442
 msgid "Emptying cache"
 msgstr "Gyorsítótár ürítése"
 
-#: systembackgui.class:4102
+#: systembackgui.class:4725
 msgid "day(s)"
 msgstr "nap"
 
-#: systembackgui.class:4103
+#: systembackgui.class:4726
 msgid "hour(s)"
 msgstr "óra"
 
-#: systembackgui.class:4104
+#: systembackgui.class:4727
 msgid "minute(s)"
 msgstr "perc"
 
-#: systembackgui.class:4105
+#: systembackgui.class:4728
 msgid "seconds"
 msgstr "másodperc"
 
-#: systembackgui.class:4111
+#: systembackgui.class:4734
 msgid "Partition"
 msgstr "Partíció"
 
-#: systembackgui.class:4112
+#: systembackgui.class:4735
 msgid "Current mount point"
 msgstr "Jelenlegi csatolási pont"
 
-#: systembackgui.class:4113
+#: systembackgui.class:4736
 msgid "New mount point"
 msgstr "Új csatolási pont"
 
-#: systembackgui.class:4114
+#: systembackgui.class:4737
 msgid "Filesystem"
 msgstr "Fájlrendszer"
 
-#: systembackgui.class:4128
+#: systembackgui.class:4751
 msgid "Device"
 msgstr "Eszköz"
 
-#: systembackgui.class:4419
+#: systembackgui.class:5063
 msgid "Copying the system"
 msgstr "A rendszer másolása"
 
-#: systembackgui.class:4419
+#: systembackgui.class:5063
 msgid "Installing the system"
 msgstr "A rendszer telepítése"
 
-#: systembackgui.class:4468
+#: systembackgui.class:5112
 msgid "Writing Live image to USB device"
 msgstr "Live rendszerkép kiírása USB eszközre"
 
-#: systembackgui.class:4479
-msgid "Converting Live system image"
-msgstr "Live rendszerkép konvertálása"
-
-#: systembackgui.class:4479
+#: systembackgui.class:5123
 msgid "Creating Live system"
 msgstr "Live rendszer készítése"
 
-#: systembackgui.class:4479
+#: systembackgui.class:5141
+msgid "Converting Live system image"
+msgstr "Live rendszerkép konvertálása"
+
+#: systembackgui.class:5141
 msgid "Deleting restore point"
 msgstr "Visszaállítási pont törlése"
 
-#: systembackgui.class:4479
+#: systembackgui.class:5141
 msgid "Repairing the full system"
 msgstr "A rendszer teljes javítása"
 
-#: systembackgui.class:4479
+#: systembackgui.class:5141
 msgid "Repairing the system files"
 msgstr "Rendszerfájlok javítása"
 
-#: systembackgui.class:4479
+#: systembackgui.class:5141
 msgid "Restoring the full system"
 msgstr "A rendszer teljes visszaállítása"
 
-#: systembackgui.class:4479
+#: systembackgui.class:5141
 msgid "Restoring the system files"
 msgstr "A rendszerfájlok visszaállítása"
 
-#: systembackgui.class:4479
+#: systembackgui.class:5141
 msgid "Restoring users configuration files"
 msgstr "A felhasználók beállításfájljainak visszaállítása"
 
-#: systembackgui.class:7685
+#: systembackgui.class:8461
 msgid "Repairing the GRUB 2"
 msgstr "A GRUB 2 javítása"
 
-#: systembackgui.class:11390
+#: systembackgui.class:12276
 msgid "Boot Live without xorg.conf file"
 msgstr "Live inditasa xorg.conf fajl nelkul"
 
-#: systembackgui.class:11764
+#: systembackgui.class:12644
 msgid "Boot Live in debug mode"
 msgstr "Live inditasa debug modban"
 
-#: systembackgui.class:11764
+#: systembackgui.class:12644
 msgid "Boot Live in safe graphics mode"
 msgstr "Live inditasa csokkentett grafikus modban"
 
-#: systembackgui.class:11764
+#: systembackgui.class:12644
 msgid "Boot Live system"
 msgstr "Live rendszer inditasa"
 
-#: systembackgui.class:11765
+#: systembackgui.class:12645
 msgid "Press 'E' key to edit"
 msgstr "Szerkeszteshez nyomja le az 'E' billentyut"
 
-#: systembackgui.class:11770
+#: systembackgui.class:12650
 msgid "Press TAB key to edit"
 msgstr "Szerkeszteshez nyomja le a TAB billentyut"
 
-#: systembackgui.class:12633
+#: systembackgui.class:13527
 msgid "Enabled"
 msgstr "Engedélyezve"
 
-#: systembackgui.class:13857
+#: systembackgui.class:14767
 msgid "Systemback text output"
 msgstr "Systemback szoveges kimenet"
 
@@ -707,89 +707,89 @@ msgid "Systemback version:"
 msgstr "Systemback verziója:"
 
 #: systembackgui.form:2084
-msgid "(c) 2013, Krisztián Kende"
-msgstr "(c) 2013, Kende Krisztián"
+msgid "(c) 2014, Krisztián Kende"
+msgstr "(c) 2014, Kende Krisztián"
 
 #: systembackgui.form:2127
 msgid "Writable Linux filesystem!"
 msgstr "Írható Linux fájlrendszer!"
 
-#: systembackgui.form:2166
+#: systembackgui.form:2167
 msgid "Re-read directories"
 msgstr "Könyvtárak újraolvasása"
 
-#: systembackgui.form:2219
+#: systembackgui.form:2220
 msgid "Scheduler state:"
 msgstr "Ütemező állapota:"
 
-#: systembackgui.form:2227
+#: systembackgui.form:2228
 msgid "Use silent mode"
 msgstr "Csendes mód engedélyezése"
 
-#: systembackgui.form:2242
+#: systembackgui.form:2243
 msgid "Timer settings"
 msgstr "Időzítő beállítások"
 
-#: systembackgui.form:2249
+#: systembackgui.form:2250
 msgid "Waiting time before creating a new restore point:"
 msgstr "Várakozási idő új visszaállítási pont készítése előtt:"
 
-#: systembackgui.form:2263
+#: systembackgui.form:2264
 msgid "Visible countdown time:"
 msgstr "Látható visszaszámlálási idő:"
 
-#: systembackgui.form:2302
+#: systembackgui.form:2303
 msgid "Pop-up window position on screen:"
 msgstr "Felugró ablak elhelyezkedése a képernyőn:"
 
-#: systembackgui.form:2311
+#: systembackgui.form:2312
 msgid "Bottom left"
 msgstr "Balra lent"
 
-#: systembackgui.form:2311
+#: systembackgui.form:2312
 msgid "Bottom right"
 msgstr "Jobbra lent"
 
-#: systembackgui.form:2311
+#: systembackgui.form:2312
 msgid "Center"
 msgstr "Középen"
 
-#: systembackgui.form:2311
+#: systembackgui.form:2312
 msgid "Top left"
 msgstr "Balra fent"
 
-#: systembackgui.form:2311
+#: systembackgui.form:2312
 msgid "Top right"
 msgstr "Jobbra fent"
 
-#: systembackgui.form:2318
+#: systembackgui.form:2319
 msgid "More"
 msgstr "Több"
 
-#: systembackgui.form:2326
+#: systembackgui.form:2327
 msgid "Less"
 msgstr "Kevesebb"
 
-#: systembackgui.form:2486
+#: systembackgui.form:2487
 msgid "Creates a scheduled restore point within few seconds."
 msgstr "Ütemezett visszaállítási pont készítése néhány másodpercen belül."
 
-#: systembackgui.form:2497
+#: systembackgui.form:2498
 msgid "Later"
 msgstr "Később"
 
-#: systembackgui.form:2504
+#: systembackgui.form:2505
 msgid "Start"
 msgstr "Indítás"
 
-#: systembackgui.form:2638
+#: systembackgui.form:2640
 msgid "Systemback user authentication"
 msgstr "Systemback felhasználó hitelesítés"
 
-#: systembackgui.form:2645
+#: systembackgui.form:2647
 msgid "Password:"
 msgstr "Jelszó:"
 
-#: systembackgui.form:2660
+#: systembackgui.form:2662
 msgid "Administrator:"
 msgstr "Adminisztrátor:"

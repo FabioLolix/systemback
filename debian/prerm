@@ -7,13 +7,13 @@ then tmp="/dev/shm"
 else tmp="/tmp"
 fi
 
-if [[ "${1}" = "remove" && -e ${tmp}/sbschedulerlock && -s /tmp/sbschedulerid ]]
+if [[ "$1" = "remove" && -e $tmp/sbschedulerlock && -s /tmp/sbschedulerid ]]
 then
 
   echo "Stopping Systemback scheduler daemon ..."
 
   if kill $(cat /tmp/sbschedulerid) >/dev/null 2>&1
-  then rm ${tmp}/sbschedulerlock /tmp/sbschedulerid
+  then rm $tmp/sbschedulerlock /tmp/sbschedulerid
   fi
 
 fi

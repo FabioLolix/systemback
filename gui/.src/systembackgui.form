@@ -215,7 +215,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 250
+        MaxLength = 125
       }
       { point2 TextBox
         Move(28,72,168,32)
@@ -224,7 +224,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point3 TextBox
         Move(28,112,168,32)
@@ -233,7 +233,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point4 TextBox
         Move(28,152,168,32)
@@ -242,7 +242,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point5 TextBox
         Move(28,192,168,32)
@@ -251,7 +251,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point6 TextBox
         Move(28,232,168,32)
@@ -260,7 +260,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point7 TextBox
         Move(28,272,168,32)
@@ -269,7 +269,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point8 TextBox
         Move(28,312,168,32)
@@ -278,7 +278,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point9 TextBox
         Move(28,352,168,32)
@@ -287,7 +287,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point10 TextBox
         Move(28,392,168,32)
@@ -296,7 +296,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point11 TextBox
         Move(232,32,168,30)
@@ -305,7 +305,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point12 TextBox
         Move(232,72,168,30)
@@ -314,7 +314,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point13 TextBox
         Move(232,112,168,30)
@@ -323,7 +323,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point14 TextBox
         Move(232,152,168,30)
@@ -332,7 +332,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { point15 TextBox
         Move(232,192,168,30)
@@ -341,7 +341,7 @@
         Mouse = Mouse.Arrow
         Text = ("empty")
         Alignment = Align.Center
-        MaxLength = 255
+        MaxLength = 125
       }
       { newrestorepoint Button
         Move(232,256,184,32)
@@ -1540,7 +1540,7 @@
       { Label14 Label
         Move(312,416,376,24)
         NoTabFocus = True
-        Text = ("(c) 2013, Krisztián Kende")
+        Text = ("(c) 2014, Krisztián Kende")
         Alignment = Align.Right
       }
     }
@@ -1565,7 +1565,7 @@
       { Label15 Label
         Move(160,416,528,24)
         NoTabFocus = True
-        Text = ("(c) 2013, Krisztián Kende")
+        Text = ("(c) 2014, Krisztián Kende")
         Alignment = Align.Right
       }
     }
@@ -1608,6 +1608,7 @@
       { dirpath Label
         Move(9,0,648,32)
         NoTabFocus = True
+        Alignment = Align.Left
       }
       { dirrefresh Button
         Move(664,0,32,32)
@@ -2036,9 +2037,10 @@
       Picture = Picture["error.png"]
       Alignment = Align.Center
     }
-    { passwordpicture PictureBox
+    { PictureBox1 PictureBox
       Move(0,0,80,72)
       NoTabFocus = True
+      Picture = Picture["passwordpicture.png"]
       Alignment = Align.Center
     }
     { passwordtitletext TextLabel

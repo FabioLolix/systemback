@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=Systemback scheduler daemon
-Exec=/usr/share/systemback/sbstart schedulerdaemon
+Exec=sudo -nH systemback schedulerdaemon
 Type=Application
 Icon=systemback
 Terminal=false

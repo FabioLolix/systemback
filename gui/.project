@@ -2,11 +2,10 @@
 # Compiled with Gambas 3.5.1
 Title=systembackgui
 Startup=systembackgui
-Version=0.7.7
+Version=0.8.0
 Component=gb.image
 Component=gb.gui
-Component=gb.crypt
-Authors="Krisztián Kende"
+Authors="Krisztián Kende <nemh@freemail.hu>"
 TabSize=2
 Translate=1
 Language=en

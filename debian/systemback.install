@@ -1,4 +1,5 @@
 cli/systemback usr/bin
+tsync.so usr/lib/systemback
 99_systemback etc/sudoers.d
 sbschedule.desktop etc/xdg/autostart
 sbstart usr/share/systemback

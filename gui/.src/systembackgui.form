@@ -61,8 +61,18 @@
         Label = False
       }
       { progressbartimer #Timer
-        #Move(176,88)
+        #Move(152,88)
         Delay = 750
+      }
+      { calculatingbar ProgressBar
+        Move(8,97,33,32)
+        Visible = False
+        NoTabFocus = True
+        Label = False
+      }
+      { calculatingbartimer #Timer
+        #Move(200,88)
+        Delay = 50
       }
     }
     { windowbutton3 Label
@@ -954,6 +964,7 @@
       { fullname TextBox
         Move(24,32,616,32)
         Alignment = Align.Left
+        MaxLength = 80
       }
       { username TextBox
         Move(24,104,616,32)
@@ -964,23 +975,27 @@
         Move(24,176,304,32)
         Alignment = Align.Left
         Password = True
+        MaxLength = 35
       }
       { password2 TextBox
         Move(368,176,304,32)
         Enabled = False
         Alignment = Align.Left
         Password = True
+        MaxLength = 35
       }
       { rootpassword1 TextBox
         Move(24,248,304,32)
         Alignment = Align.Left
         Password = True
+        MaxLength = 35
       }
       { rootpassword2 TextBox
         Move(368,248,304,32)
         Enabled = False
         Alignment = Align.Left
         Password = True
+        MaxLength = 35
       }
       { hostname TextBox
         Move(24,320,616,32)

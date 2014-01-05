@@ -16,7 +16,7 @@
 ' along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Private Extern Hlink(oldpath As String, newpath As String) In "libc:6" Exec "link"
-Private Extern Tsync(sourcefile As String, newfile As String) In "/usr/lib/systemback/tsync" Exec "tsync"
+Private Extern Ipcopy(sourceitem As String, newitem As String) In "/usr/lib/systemback/ipcopy" Exec "ipcopy"
 Private ptimer As New Timer As "progress"
 Private slock As Stream
 Private dlock As Stream
@@ -54,160 +54,208 @@ Private pbar As String
 Private pnumber As Byte
 Private cfupdt As Boolean
 
+Private Function Dclean(dirpath As String, Optional removeroot As Boolean = True)
+
+  Dim item As String
+
+  If IsDir(dirpath)
+
+    For Each item In RDir(dirpath).Sort(gb.Descent)
+
+      If Exist(dirpath & "/" & item)
+
+        With Stat(dirpath & "/" & item)
+
+          Select Case True
+
+            Case .Type = gb.File Or .Type = gb.Link
+
+              Try Kill dirpath & "/" & item
+
+            Case .Type = gb.Directory
+
+              Try Rmdir dirpath & "/" & item
+
+          End Select
+
+        End With
+
+      Endif
+
+    Next
+
+    If removeroot = True Then Try Rmdir dirpath
+
+  Endif
+
+End
+
 Public Sub Main()
 
   Dim help As String = ("\n Usage: systemback [option]\n\n Options:\n\n  -n, --newbackup          create a new restore point\n\n  -s, --storagedir <path>  get or set restore points storage directory path\n\n  -u, --upgrade            upgrade current system\n                           remove unnecessary files and packages\n\n  -v, --version            output Systemback version number\n\n  -h, --help               show this help\n")
 
-  If IsDir("/run/shm")
-
-    tmp = "/run/shm/dacc5b5f4502_sb"
-
-  Else If IsDir("/dev/shm")
-
-    tmp = "/dev/shm/dacc5b5f4502_sb"
-
-  Else
-
-    tmp = "/tmp/dacc5b5f4502_sb"
-
-  Endif
-
   With Application
 
-    If .Args[1] Like "-{h,-help}"
+    If .Args.Count = 3 And .Args[1] = "rmdir"
 
-      Exec ["tput", "bold"] Wait
-      Print help
-      Exec ["tput", "sgr0"] Wait
+      Dclean(.Args[2])
 
-    Else If User.Name = "root"
+    Else
 
-      ptimer.Delay = 2000
+      If IsDir("/run/shm")
 
-      If .Args[1] = "schedulerdaemon"
+        tmp = "/run/shm/dacc5b5f4502_sb"
 
-        scheduler
+      Else If IsDir("/dev/shm")
+
+        tmp = "/dev/shm/dacc5b5f4502_sb"
 
       Else
 
-        configread
+        tmp = "/tmp/dacc5b5f4502_sb"
 
-        If .Args.Count = 3 And .Args[1] = "rpsync"
+      Endif
 
-          rpsync
+      If .Args[1] Like "-{h,-help}"
 
-        Else If .Args[1] = "copysize"
+        Exec ["tput", "bold"] Wait
+        Print help
+        Exec ["tput", "sgr0"] Wait
 
-          copysize
+      Else If User.Name = "root"
+
+        ptimer.Delay = 2000
+
+        If .Args[1] = "schedulerdaemon"
+
+          scheduler
 
         Else
 
-          Try slock = Lock Left(tmp, RInStr(tmp, "/")) & "systembacklock"
+          configread
 
-          If Not Error
+          If .Args.Count = 3 And .Args[1] = "rpsync"
 
-            Try dlock = Lock "/var/lib/dpkg/lock"
+            rpsync
 
-            If Error
+          Else If .Args.Count = 5 And .Args[1] = "srsync" And .Args[2] Like "[123456]"
+
+            srsync
+
+          Else If .Args[1] = "copysize"
+
+            copysize
+
+          Else
+
+            Try slock = Lock Left(tmp, RInStr(tmp, "/")) & "systembacklock"
+
+            If Not Error
+
+              Try dlock = Lock "/var/lib/dpkg/lock"
+
+              If Error
+
+                Exec ["tput", "reset"] Wait
+                Exec ["tput", "bold"] Wait
+                Exec ["tput", "setaf", "1"] Wait
+                Error "\n " & ("Unable to get exclusive lock!") & "\n " & ("First, close all package manager.") & "\n"
+                Exec ["tput", "sgr0"] Wait
+                Quit 4
+
+              Else
+
+                If cfupdt Then configfileupdate
+
+                Select Case True
+
+                  Case .Args.Count = 1
+
+                    clistart
+
+                  Case .Args[1] Like "-{n,-newrestorepoint}"
+
+                    Exec ["tput", "reset"] Wait
+
+                    If IsDir(fsdir) And Access(fsdir, gb.Write)
+
+                      Exec ["tput", "civis"] Wait
+                      ptimer.Trigger
+                      ptimer.Start
+                      pointupgrade
+                      newrestorepoint
+                      ptimer.Stop
+                      Wait 0.1
+                      Exec ["tput", "reset"] Wait
+                      Quit
+
+                    Else
+
+                      Exec ["tput", "bold"] Wait
+                      Exec ["tput", "setaf", "1"] Wait
+                      Error "\n " & ("Restore points storage directory is not available or not writable!") & "\n"
+                      Exec ["tput", "sgr0"] Wait
+                      Quit 10
+
+                    Endif
+
+                  Case .Args[1] Like "-{s,-storagedir}"
+
+                    storagedir
+
+                  Case .Args[1] Like "-{u,-upgrade}"
+
+                    Unlock dlock
+                    systemupgrade
+
+                  Case .Args[1] Like "-{v,-version}"
+
+                    Exec ["tput", "bold"] Wait
+                    Print "\n " & Trim(File.Load("/usr/share/systemback/version")) & "\n"
+                    Exec ["tput", "sgr0"] Wait
+
+                  Case Else
+
+                    Exec ["tput", "reset"] Wait
+                    Exec ["tput", "bold"] Wait
+                    Exec ["tput", "setaf", "1"] Wait
+                    Error help
+                    Exec ["tput", "sgr0"] Wait
+                    Quit 1
+
+                End Select
+
+              Endif
+
+            Else If .Args[1] = "2Y4d1b5T6b8A"
+
+              systemupgrade
+
+            Else
 
               Exec ["tput", "reset"] Wait
               Exec ["tput", "bold"] Wait
               Exec ["tput", "setaf", "1"] Wait
-              Error "\n " & ("Unable to get exclusive lock!") & "\n " & ("First, close all package manager.") & "\n"
+              Error "\n " & ("Another Systemback process is currently running, please wait until it\n finishes.") & "\n"
               Exec ["tput", "sgr0"] Wait
-              Quit 4
-
-            Else
-
-              If cfupdt Then configfileupdate
-
-              Select Case True
-
-                Case .Args.Count = 1
-
-                  clistart
-
-                Case .Args[1] Like "-{n,-newrestorepoint}"
-
-                  Exec ["tput", "reset"] Wait
-
-                  If IsDir(fsdir) And Access(fsdir, gb.Write)
-
-                    Exec ["tput", "civis"] Wait
-                    ptimer.Trigger
-                    ptimer.Start
-                    pointupgrade
-                    newrestorepoint
-                    ptimer.Stop
-                    Wait 0.1
-                    Exec ["tput", "reset"] Wait
-                    Quit
-
-                  Else
-
-                    Exec ["tput", "bold"] Wait
-                    Exec ["tput", "setaf", "1"] Wait
-                    Error "\n " & ("Restore points storage directory is not available or not writable!") & "\n"
-                    Exec ["tput", "sgr0"] Wait
-                    Quit 10
-
-                  Endif
-
-                Case .Args[1] Like "-{s,-storagedir}"
-
-                  storagedir
-
-                Case .Args[1] Like "-{u,-upgrade}"
-
-                  Unlock dlock
-                  systemupgrade
-
-                Case .Args[1] Like "-{v,-version}"
-
-                  Exec ["tput", "bold"] Wait
-                  Print "\n " & Trim(File.Load("/usr/share/systemback/version")) & "\n"
-                  Exec ["tput", "sgr0"] Wait
-
-                Case Else
-
-                  Exec ["tput", "reset"] Wait
-                  Exec ["tput", "bold"] Wait
-                  Exec ["tput", "setaf", "1"] Wait
-                  Error help
-                  Exec ["tput", "sgr0"] Wait
-                  Quit 1
-
-              End Select
+              Quit 3
 
             Endif
-
-          Else If .Args[1] = "2Y4d1b5T6b8A"
-
-            systemupgrade
-
-          Else
-
-            Exec ["tput", "reset"] Wait
-            Exec ["tput", "bold"] Wait
-            Exec ["tput", "setaf", "1"] Wait
-            Error "\n " & ("Another Systemback process is currently running, please wait until it\n finishes.") & "\n"
-            Exec ["tput", "sgr0"] Wait
-            Quit 3
 
           Endif
 
         Endif
 
+      Else
+
+        Exec ["tput", "reset"] Wait
+        Exec ["tput", "bold"] Wait
+        Exec ["tput", "setaf", "1"] Wait
+        Error "\n " & ("Root privileges are required for running Systemback!") & "\n"
+        Exec ["tput", "sgr0"] Wait
+        Quit 2
+
       Endif
-
-    Else
-
-      Exec ["tput", "reset"] Wait
-      Exec ["tput", "bold"] Wait
-      Exec ["tput", "setaf", "1"] Wait
-      Error "\n " & ("Root privileges are required for running Systemback!") & "\n"
-      Exec ["tput", "sgr0"] Wait
-      Quit 2
 
     Endif
 
@@ -500,7 +548,7 @@ Private Sub pointdelete()
   ptimer.Start
 
   Move fsdir & "/" & cpoint & "_" & pname To fsdir & "/.DELETED_" & pname
-  wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname] For Read
+  wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname] For Read
   wprocwait
 
   prun = ("Emptying cache")
@@ -665,7 +713,7 @@ Private Sub systemupgrade()
               kernel = Left(vmlinuz, InStr(vmlinuz, "-") - 1)
               kver = Mid(vmlinuz, Len(kernel) + 2, InStr(vmlinuz, "-", Len(kernel) + 2) - Len(kernel) - 2)
 
-              If IsInteger(kver) And Left(vmlinuz, Len(kernel) + Len(kver) + 2) = kernel & "-" & kver & "-"
+              If IsInteger(kver) And vmlinuz Begins kernel & "-" & kver & "-"
 
                 If rklist Not Like "*linux-image-" & kernel & "-" & kver & "-*"
 
@@ -675,7 +723,7 @@ Private Sub systemupgrade()
 
                     For Each item In Dir("/boot", "vmlinuz-*", gb.File)
 
-                      If Left(item, Len("vmlinuz-" & subk & "-")) = "vmlinuz-" & subk & "-"
+                      If item Begins "vmlinuz-" & subk & "-"
 
                         rklist &= " " & subk & "-*"
 
@@ -715,7 +763,7 @@ Private Sub systemupgrade()
 
               For Each item In Dir("/lib/modules", "[^.]*", gb.Directory)
 
-                If Not Exist("/boot/vmlinuz-" & item) Then Exec ["rm", "-rf", "/lib/modules/" & item]
+                If Not Exist("/boot/vmlinuz-" & item) Then Dclean("/lib/modules/" & item)
 
               Next
 
@@ -765,9 +813,8 @@ End
 Private Sub restore()
 
   Dim ofile As File
-  Dim cline, choice, fstab1, fstab2, elist, usr, mntdev As String
-  Dim rtmp As String = ".dacc5b5f4502_sbrestore"
-  Dim greinst, fsave, rstart, rmode As Byte
+  Dim cline, choice, fstab1, fstab2, mntdev As String
+  Dim greinst, fsave, rstart, rmode, mthd As Byte
 
   Exec ["tput", "reset"] Wait
   Exec ["tput", "bold"] Wait
@@ -965,16 +1012,21 @@ Private Sub restore()
 
   If rstart = 1
 
+    If Exist(tmp & "restorepercent") Then Kill tmp & "restorepercent"
+
     If rmode = 1
 
+      mthd = 1
       prun = ("Restoring the full system")
 
     Else If rmode = 2
 
+      mthd = 2
       prun = ("Restoring the system files")
 
     Else
 
+      If rmode = 3 Then mthd = 5 Else mthd = 3
       prun = ("Restoring users configuration files")
 
     Endif
@@ -985,72 +1037,24 @@ Private Sub restore()
     ptimer.Trigger
     ptimer.Start
 
-    If rmode = 1 Or rmode = 2
+    If fsave = 1
 
-      If fsave = 1
-
-        Exec ["sha1sum", "/etc/fstab"] To fstab1
-        fstab1 = Left(fstab1, InStr(fstab1, " ") - 1)
-        Exec ["sha1sum", fsdir & "/" & cpoint & "_" & pname & "/etc/fstab"] To fstab2
-        fstab2 = Left(fstab2, InStr(fstab2, " ") - 1)
-        If fstab1 <> fstab2 Then Try Copy "/etc/fstab" To "/tmp/sbrestorefstab"
-
-      Endif
-
-      wproc = Exec ["bash", "-c", "sbsync -a --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/sudoers.d/99_systemback,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/bin/sbstart,/usr/share/systemback,/etc/systemback*,lost+found}"] For Read
-      wprocwait
-
-      If fsave = 1 And Exist("/tmp/sbrestorefstab")
-
-        Try Kill "/etc/fstab"
-        Copy "/tmp/sbrestorefstab" To "/etc/fstab"
-        Kill "/tmp/sbrestorefstab"
-
-      Endif
-
-      wproc = Exec ["sbsync", "-ax", "--delete", fsdir & "/" & cpoint & "_" & pname & "/media", "/"] For Read
-      wprocwait
+      Exec ["sha1sum", "/etc/fstab"] To fstab1
+      fstab1 = Left(fstab1, InStr(fstab1, " ") - 1)
+      Exec ["sha1sum", fsdir & "/" & cpoint & "_" & pname & "/etc/fstab"] To fstab2
+      fstab2 = Left(fstab2, InStr(fstab2, " ") - 1)
+      If fstab1 <> fstab2 Then Try Copy "/etc/fstab" To "/tmp/sbrestorefstab"
 
     Endif
 
-    If rmode = 1 Or rmode = 3
+    wproc = Exec ["systemback", "srsync", mthd, "Everyone", cpoint & "_" & pname]
+    wprocwait
 
-      elist = "/" & rtmp & ",/.gvfs,/.cache/gvfs,/.local/share/Trash/files/*,/.local/share/Trash/info/*,/.Xauthority"
+    If fsave = 1 And Exist("/tmp/sbrestorefstab")
 
-      ofile = Open fsdir & "/" & cpoint & "_" & pname & "/.excludes" For Read
-      While Not Eof(ofile)
-        Line Input #ofile, cline
-
-        If Left(cline, 1) = "." Then elist &= ",'/" & cline & "'"
-
-      Wend
-      Close #ofile
-
-      For Each usr In Dir(fsdir & "/" & cpoint & "_" & pname & "/home", "*", gb.Directory)
-
-        If IsDir("/home/" & usr)
-
-          wproc = Exec ["bash", "-c", "sbsync -rptgoD --delete --min-size=8MB --link-dest=../ /home/" & usr & "/ /home/" & usr & "/" & rtmp & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -a --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/home/" & usr & "/ /home/" & usr & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -am --link-dest=" & rtmp & "/ /home/" & usr & "/" & rtmp & "/ /home/" & usr] For Read
-          wprocwait
-
-          Exec ["rm", "-rf", "/home/" & usr & "/" & rtmp] Wait
-
-        Endif
-
-      Next
-
-      wproc = Exec ["bash", "-c", "sbsync -rptgoD --delete --min-size=8MB --link-dest=../ /root/ /root/" & rtmp & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -a --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/root/ /root --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -am --link-dest=" & rtmp & "/ /root/" & rtmp & "/ /root"] For Read
-      wprocwait
-
-      Exec ["rm", "-rf", "/root/" & rtmp] Wait
-
-    Else If rmode = 4
-
-      wproc = Exec ["sbsync", "-a", fsdir & "/" & cpoint & "_" & pname & "/home/", "/home"] For Read
-      wprocwait
-
-      wproc = Exec ["sbsync", "-a", fsdir & "/" & cpoint & "_" & pname & "/root/", "/root"] For Read
-      wprocwait
+      Try Kill "/etc/fstab"
+      Try Copy "/tmp/sbrestorefstab" To "/etc/fstab"
+      Try Kill "/tmp/sbrestorefstab"
 
     Endif
 
@@ -1182,7 +1186,7 @@ Private Sub restore()
 
 End
 
-Public Sub progress_Timer()
+Private Sub progpercent()
 
   Dim cperc As String
 
@@ -1194,6 +1198,24 @@ Public Sub progress_Timer()
       If cperc <> Null Then pbar = " (" & cperc & "%)"
       Kill tmp & "pointpercent"
 
+    Else If pbar = Null Or pbar Like " ([ ?]%)"
+
+      If pbar = " (?%)" Then pbar = " ( %)" Else pbar = " (?%)"
+
+    Endif
+
+  Else If prun = ("Restoring the full system") Or prun = ("Restoring the system files") Or prun = ("Restoring users configuration files")
+
+    If Exist(tmp & "restorepercent")
+
+      cperc = File.Load(tmp & "restorepercent")
+      If cperc <> Null Then pbar = " (" & cperc & "%)"
+      Kill tmp & "restorepercent"
+
+    Else If pbar = Null Or pbar Like " ([ ?]%)"
+
+      If pbar = " (?%)" Then pbar = " ( %)" Else pbar = " (?%)"
+
     Endif
 
   Else If pbar <> Null
@@ -1202,6 +1224,12 @@ Public Sub progress_Timer()
 
   Endif
 
+End
+
+Public Sub progress_Timer()
+
+  progpercent
+
   Exec ["tput", "sgr0"] Wait
   Exec ["tput", "bold"] Wait
   Print "                                        \n    Systemback\n                                        \n " & prun & pbar & "                                        \n                                        \n                                        \n                                        "
@@ -1209,6 +1237,7 @@ Public Sub progress_Timer()
 
   Wait 0.5
   If Not ptimer.Enabled Then Return
+  progpercent
 
   Exec ["tput", "cup", "0", "0"] Wait
   Exec ["tput", "sgr0"] Wait
@@ -1218,6 +1247,7 @@ Public Sub progress_Timer()
 
   Wait 0.5
   If Not ptimer.Enabled Then Return
+  progpercent
 
   Exec ["tput", "cup", "0", "0"] Wait
   Exec ["tput", "sgr0"] Wait
@@ -1227,6 +1257,7 @@ Public Sub progress_Timer()
 
   Wait 0.5
   If Not ptimer.Enabled Then Return
+  progpercent
 
   Exec ["tput", "cup", "0", "0"] Wait
   Exec ["tput", "sgr0"] Wait
@@ -1348,10 +1379,10 @@ Private Sub newrestorepoint()
 
   For Each item In Dir(fsdir, ".*", gb.Directory)
 
-    If Left(item, 9) = ".DELETED_" Or Left(item, 5) = ".S00_"
+    If item Like ".{DELETED,S00}_*"
 
       If prun <> ("Deleting incomplete restore point") Then prun = ("Deleting incomplete restore point")
-      wproc = Exec ["rm", "-rf", fsdir & "/" & item] For Read
+      wproc = Exec ["systemback", "rmdir", fsdir & "/" & item] For Read
       wprocwait
 
     Endif
@@ -1362,7 +1393,7 @@ Private Sub newrestorepoint()
 
     prun = ("Deleting old restore point(s)")
     Move fsdir & "/S10_" & pname10 To fsdir & "/.DELETED_" & pname10
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname10] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname10] For Read
     wprocwait
 
   Endif
@@ -1371,7 +1402,7 @@ Private Sub newrestorepoint()
 
     If prun <> ("Deleting old restore point(s)") Then prun = ("Deleting old restore point(s)")
     Move fsdir & "/S09_" & pname9 To fsdir & "/.DELETED_" & pname9
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname9] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname9] For Read
     wprocwait
 
   Endif
@@ -1380,7 +1411,7 @@ Private Sub newrestorepoint()
 
     If prun <> ("Deleting old restore point(s)") Then prun = ("Deleting old restore point(s)")
     Move fsdir & "/S08_" & pname8 To fsdir & "/.DELETED_" & pname8
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname8] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname8] For Read
     wprocwait
 
   Endif
@@ -1389,7 +1420,7 @@ Private Sub newrestorepoint()
 
     If prun <> ("Deleting old restore point(s)") Then prun = ("Deleting old restore point(s)")
     Move fsdir & "/S07_" & pname7 To fsdir & "/.DELETED_" & pname7
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname7] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname7] For Read
     wprocwait
 
   Endif
@@ -1398,7 +1429,7 @@ Private Sub newrestorepoint()
 
     If prun <> ("Deleting old restore point(s)") Then prun = ("Deleting old restore point(s)")
     Move fsdir & "/S06_" & pname6 To fsdir & "/.DELETED_" & pname6
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname6] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname6] For Read
     wprocwait
 
   Endif
@@ -1407,7 +1438,7 @@ Private Sub newrestorepoint()
 
     If prun <> ("Deleting old restore point(s)") Then prun = ("Deleting old restore point(s)")
     Move fsdir & "/S05_" & pname5 To fsdir & "/.DELETED_" & pname5
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname5] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname5] For Read
     wprocwait
 
   Endif
@@ -1416,7 +1447,7 @@ Private Sub newrestorepoint()
 
     If prun <> ("Deleting old restore point(s)") Then prun = ("Deleting old restore point(s)")
     Move fsdir & "/S04_" & pname4 To fsdir & "/.DELETED_" & pname4
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname4] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname4] For Read
     wprocwait
 
   Endif
@@ -1425,23 +1456,15 @@ Private Sub newrestorepoint()
 
     If prun <> ("Deleting old restore point(s)") Then prun = ("Deleting old restore point(s)")
     Move fsdir & "/S03_" & pname3 To fsdir & "/.DELETED_" & pname3
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname3] For Read
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname3] For Read
     wprocwait
 
   Endif
 
-  prun = ("Checking files and directories")
   If Exist(tmp & "pointpercent") Then Kill tmp & "pointpercent"
+  prun = ("Creating restore point")
   dtime = Year(Now) & "-" & Right("0" & Month(Now), 2) & "-" & Right("0" & Day(Now), 2) & "," & Right("0" & Hour(Now), 2) & "." & Right("0" & Minute(Now), 2) & "." & Right("0" & Second(Now), 2)
   wproc = Exec ["systemback", "rpsync", dtime]
-
-  While wproc.State = Process.Running And Not Exist(tmp & "pointpercent")
-
-    Wait 0.1
-
-  Wend
-
-  prun = ("Creating restore point")
   wprocwait
 
   If wproc.Value = 0
@@ -1967,20 +1990,18 @@ Private Sub rpsync()
 
   dtime = Application.Args[2]
   Mkdir fsdir & "/.S00_" & dtime
-  Mkdir fsdir & "/.S00_" & dtime & "/home"
 
-  With Stat("/home")
+  If IsDir("/home")
 
-    Chmod fsdir & "/.S00_" & dtime & "/home" To .Auth
-    Chown fsdir & "/.S00_" & dtime & "/home" To .User
-    Chgrp fsdir & "/.S00_" & dtime & "/home" To .Group
+    Mkdir fsdir & "/.S00_" & dtime & "/home"
+    Ipcopy("/home", fsdir & "/.S00_" & dtime & "/home")
 
-  End With
+  Endif
 
   With elist
 
-    .Add(".gvfs")
     .Add(".cache/gvfs")
+    .Add(".gvfs")
     .Add(".local/share/Trash/files/")
     .Add(".local/share/Trash/info/")
     .Add(".Xauthority")
@@ -1989,7 +2010,7 @@ Private Sub rpsync()
     While Not Eof(ofile)
       Line Input #ofile, cline
 
-      If Left(cline, 1) = "." Then .Add(cline)
+      If cline Begins "." Then .Add(cline)
 
     Wend
     Close #ofile
@@ -2007,14 +2028,7 @@ Private Sub rpsync()
       If IsDir("/home/" & usr)
 
         Mkdir fsdir & "/.S00_" & dtime & "/home/" & usr
-
-        With Stat("/home/" & usr)
-
-          Chmod fsdir & "/.S00_" & dtime & "/home/" & usr To .Auth
-          Chown fsdir & "/.S00_" & dtime & "/home/" & usr To .User
-          Chgrp fsdir & "/.S00_" & dtime & "/home/" & usr To .Group
-
-        End With
+        Ipcopy("/home/" & usr, fsdir & "/.S00_" & dtime & "/home/" & usr)
 
         For Each item In RDir("/home/" & usr, ".*")
 
@@ -2096,7 +2110,6 @@ Private Sub rpsync()
                     Else
 
                       Copy "/home/" & usr & "/" & item To fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item
-                      Tsync("/home/" & usr & "/" & item, fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
 
                     Endif
 
@@ -2104,9 +2117,7 @@ Private Sub rpsync()
 
               End Select
 
-              Try Chmod fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item To .Auth
-              Try Chown fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item To .User
-              Try Chgrp fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item To .Group
+              Ipcopy("/home/" & usr & "/" & item, fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
 
             End With
 
@@ -2124,14 +2135,7 @@ Private Sub rpsync()
   If IsDir("/root")
 
     Mkdir fsdir & "/.S00_" & dtime & "/root"
-
-    With Stat("/root")
-
-      Chmod fsdir & "/.S00_" & dtime & "/root" To .Auth
-      Chown fsdir & "/.S00_" & dtime & "/root" To .User
-      Chgrp fsdir & "/.S00_" & dtime & "/root" To .Group
-
-    End With
+    Ipcopy("/root", fsdir & "/.S00_" & dtime & "/root")
 
     For Each item In RDir("/root", ".*")
 
@@ -2213,7 +2217,6 @@ Private Sub rpsync()
                 Else
 
                   Copy "/root/" & item To fsdir & "/.S00_" & dtime & "/root/" & item
-                  Tsync("/root/" & item, fsdir & "/.S00_" & dtime & "/root/" & item)
 
                 Endif
 
@@ -2221,9 +2224,7 @@ Private Sub rpsync()
 
           End Select
 
-          Try Chmod fsdir & "/.S00_" & dtime & "/root/" & item To .Auth
-          Try Chown fsdir & "/.S00_" & dtime & "/root/" & item To .User
-          Try Chgrp fsdir & "/.S00_" & dtime & "/root/" & item To .Group
+          Ipcopy("/root/" & item, fsdir & "/.S00_" & dtime & "/root/" & item)
 
         End With
 
@@ -2233,50 +2234,41 @@ Private Sub rpsync()
 
   Endif
 
-  For Each item In Dir("/", "*", gb.Link)
+  For Each item In Dir("/", "{initrd.img,vmlinuz}*", gb.Link)
 
-    If item Begins "initrd.img" Or item Begins "vmlinuz" Then Link Stat("/" & item).Link To fsdir & "/.S00_" & dtime & "/" & item
+    With Stat("/" & item)
+
+      If .Type = gb.Link Then Link .Link To fsdir & "/.S00_" & dtime & "/" & item
+
+    End With
 
   Next
 
-  For Each cdir In ["/proc", "/run", "/sys", "/media", "/mnt", "/dev", "/tmp", "/cdrom"]
+  For Each cdir In ["/cdrom", "/dev", "/media", "/mnt", "/proc", "/run", "/sys", "/tmp"]
 
     If IsDir(cdir)
 
       Mkdir fsdir & "/.S00_" & dtime & cdir
-
-      With Stat(cdir)
-
-        Chmod fsdir & "/.S00_" & dtime & cdir To .Auth
-        Chown fsdir & "/.S00_" & dtime & cdir To .User
-        Chgrp fsdir & "/.S00_" & dtime & cdir To .Group
-
-      End With
+      Ipcopy(cdir, fsdir & "/.S00_" & dtime & cdir)
 
     Endif
 
   Next
 
   elist.Clear
+  elist.Add("/etc/mtab")
+  elist.Add("/var/lib/udisks/mtab")
   elist.Add("/var/lib/ureadahead/")
   elist.Add("/var/log/")
-  elist.Add("/var/tmp/")
   elist.Add("/var/run/")
-  elist.Add("/etc/mtab")
+  elist.Add("/var/tmp/")
 
   For Each cdir In ["/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"]
 
     If IsDir(cdir)
 
       Mkdir fsdir & "/.S00_" & dtime & cdir
-
-      With Stat(cdir)
-
-        Chmod fsdir & "/.S00_" & dtime & cdir To .Auth
-        Chown fsdir & "/.S00_" & dtime & cdir To .User
-        Chgrp fsdir & "/.S00_" & dtime & cdir To .Group
-
-      End With
+      Ipcopy(cdir, fsdir & "/.S00_" & dtime & cdir)
 
       For Each item In RDir(cdir)
 
@@ -2294,7 +2286,7 @@ Private Sub rpsync()
 
         For Each excl In elist
 
-          If cdir & "/" & item Begins excl Or cdir & "/" & item Like "/var/cache/apt/*.bin" Or cdir & "/" & item Like "/var/cache/apt/*.bin.*" Or cdir & "/" & item Like "/var/cache/apt/archives/*.deb" Or item Like "*{~,.dpkg-old}"
+          If cdir & "/" & item Begins excl Or cdir & "/" & item Like "/var/cache/apt/*.bin" Or cdir & "/" & item Like "/var/cache/apt/*.bin.*" Or cdir & "/" & item Like "/var/cache/apt/archives/*.deb" Or item Like "*{~,.dpkg-old,lost+found}" Or item Like "*lost+found*"
 
             nxt = True
             Break
@@ -2352,15 +2344,12 @@ Private Sub rpsync()
                 Else
 
                   Copy cdir & "/" & item To fsdir & "/.S00_" & dtime & cdir & "/" & item
-                  Tsync(cdir & "/" & item, fsdir & "/.S00_" & dtime & cdir & "/" & item)
 
                 Endif
 
             End Select
 
-            Try Chmod fsdir & "/.S00_" & dtime & cdir & "/" & item To .Auth
-            Try Chown fsdir & "/.S00_" & dtime & cdir & "/" & item To .User
-            Try Chgrp fsdir & "/.S00_" & dtime & cdir & "/" & item To .Group
+            Ipcopy(cdir & "/" & item, fsdir & "/.S00_" & dtime & cdir & "/" & item)
 
           End With
 
@@ -2380,25 +2369,25 @@ Private Sub rpsync()
       While Not Eof(ofile)
         Line Input #ofile, cline
 
-        If Left(cline) <> "#" And If Replace(cline, "\\040", " ") Like "*[ \t]/media/" & item & "[ \t]*" Or Replace(cline, "\\040", " ") Like "*[ \t]/media/" & item & "/*"
+        If cline Not Begins "#" And If Replace(cline, "\\040", " ") Like "*[ \t]/media/" & item & "[ \t]*" Or Replace(cline, "\\040", " ") Like "*[ \t]/media/" & item & "/*"
 
           If fdir <> Null Then fdir = Null
           If nxt = True Then nxt = False
 
-          For Each cdir In Split(Right(cline, - (InStr(cline, "/media/") + 6)), "/")
+          For Each cdir In Split(Right(cline, - InStr(cline, "/media/") - 6), "/")
 
             If cdir <> Null
 
               If cdir Like "* *"
 
-                If Left(cdir) = " " Then Break Else cdir = Left(cdir, InStr(cdir, " ") - 1)
+                If cdir Begins " " Then Break Else cdir = Left(cdir, InStr(cdir, " ") - 1)
                 nxt = True
 
               Endif
 
               If cdir Like "*\t*"
 
-                If Left(cdir) = "\t" Then Break Else cdir = Left(cdir, InStr(cdir, "\t") - 1)
+                If cdir Begins "\t" Then Break Else cdir = Left(cdir, InStr(cdir, "\t") - 1)
                 If nxt = False Then nxt = True
 
               Endif
@@ -2408,14 +2397,7 @@ Private Sub rpsync()
               If Not IsDir(fsdir & "/.S00_" & dtime & "/media/" & fdir)
 
                 Mkdir fsdir & "/.S00_" & dtime & "/media/" & fdir
-
-                With Stat("/media/" & fdir)
-
-                  Chmod fsdir & "/.S00_" & dtime & "/media/" & fdir To .Auth
-                  Chown fsdir & "/.S00_" & dtime & "/media/" & fdir To .User
-                  Chgrp fsdir & "/.S00_" & dtime & "/media/" & fdir To .Group
-
-                End With
+                Ipcopy("/media/" & fdir, fsdir & "/.S00_" & dtime & "/media/" & fdir)
 
               Endif
 
@@ -2442,21 +2424,674 @@ Private Sub rpsync()
 
         Mkdir fsdir & "/.S00_" & dtime & "/var/log/" & item
 
-      Else If .Type = gb.File And Right(item, 2) <> ".0" And Right(item, 2) <> ".1" And Right(item, 3) <> ".gz" And Right(item, 4) <> ".old"
+      Else If .Type = gb.File And item Not Like "*.{0,1,gz,old}"
 
         File.Save(fsdir & "/.S00_" & dtime & "/var/log/" & item, Null)
 
       Endif
 
-      Try Chmod fsdir & "/.S00_" & dtime & "/var/log/" & item To .Auth
-      Try Chown fsdir & "/.S00_" & dtime & "/var/log/" & item To .User
-      Try Chgrp fsdir & "/.S00_" & dtime & "/var/log/" & item To .Group
+      Ipcopy("/var/log/" & item, fsdir & "/.S00_" & dtime & "/var/log/" & item)
 
     End With
 
   Next
 
   If Dfree(fsdir) < 104857600 Then Quit 1
+
+End
+
+Private Sub srsync()
+
+  Dim ofile As File
+  Dim olmod As Date
+  Dim elist As New String[]
+  Dim uname As String = Application.Args[3]
+  Dim usr, cline, item, cdir, excl, olnk As String
+  Dim osize As Long
+  Dim anum, cnum As Integer
+  Dim mthd As Byte = Application.Args[2]
+  Dim cperc, pperc As Byte
+  Dim nxt As Boolean
+
+  pname = Application.Args[4]
+
+  If mthd <> 2
+
+    If IsDir(fsdir & "/" & pname & "/home")
+
+      For Each usr In Dir(fsdir & "/" & pname & "/home", "*", gb.Directory)
+
+        If uname = usr Or If mthd <> 4 And mthd <> 6
+
+          If IsDir("/home/" & usr) Then anum = anum + RDir("/home/" & usr, ".*").Count
+          anum = anum + RDir(fsdir & "/" & pname & "/home").Count - Dir(fsdir & "/" & pname & "/home").Count
+
+        Endif
+
+      Next
+
+    Endif
+
+    If IsDir(fsdir & "/" & pname & "/root")
+
+      If uname = "root" Or If mthd <> 4 And mthd <> 6
+
+        If IsDir("/root") Then anum = anum + RDir("/root", ".*").Count
+        anum = anum + RDir(fsdir & "/" & pname & "/root").Count
+
+      Endif
+
+    Endif
+
+  Endif
+
+  If mthd = 1 Or mthd = 2
+
+    If IsDir("/bin") Then anum = anum + RDir("/bin").Count
+    If IsDir("/boot") Then anum = anum + RDir("/boot").Count
+    If IsDir("/etc") Then anum = anum + RDir("/etc").Count
+    If IsDir("/lib") Then anum = anum + RDir("/lib").Count
+    If IsDir("/lib32") Then anum = anum + RDir("/lib32").Count
+    If IsDir("/lib64") Then anum = anum + RDir("/lib64").Count
+    If IsDir("/opt") Then anum = anum + RDir("/opt").Count
+    If IsDir("/sbin") Then anum = anum + RDir("/sbin").Count
+    If IsDir("/selinux") Then anum = anum + RDir("/selinux").Count
+    If IsDir("/srv") Then anum = anum + RDir("/srv").Count
+    If IsDir("/usr") Then anum = anum + RDir("/usr").Count
+    If IsDir("/var") Then anum = anum + RDir("/var").Count
+    If IsDir(fsdir & "/" & pname & "/bin") Then anum = anum + RDir(fsdir & "/" & pname & "/bin").Count
+    If IsDir(fsdir & "/" & pname & "/boot") Then anum = anum + RDir(fsdir & "/" & pname & "/boot").Count
+    If IsDir(fsdir & "/" & pname & "/etc") Then anum = anum + RDir(fsdir & "/" & pname & "/etc").Count
+    If IsDir(fsdir & "/" & pname & "/lib") Then anum = anum + RDir(fsdir & "/" & pname & "/lib").Count
+    If IsDir(fsdir & "/" & pname & "/lib32") Then anum = anum + RDir(fsdir & "/" & pname & "/lib32").Count
+    If IsDir(fsdir & "/" & pname & "/lib64") Then anum = anum + RDir(fsdir & "/" & pname & "/lib64").Count
+    If IsDir(fsdir & "/" & pname & "/opt") Then anum = anum + RDir(fsdir & "/" & pname & "/opt").Count
+    If IsDir(fsdir & "/" & pname & "/sbin") Then anum = anum + RDir(fsdir & "/" & pname & "/sbin").Count
+    If IsDir(fsdir & "/" & pname & "/selinux") Then anum = anum + RDir(fsdir & "/" & pname & "/selinux").Count
+    If IsDir(fsdir & "/" & pname & "/srv") Then anum = anum + RDir(fsdir & "/" & pname & "/srv").Count
+    If IsDir(fsdir & "/" & pname & "/usr") Then anum = anum + RDir(fsdir & "/" & pname & "/usr").Count
+    If IsDir(fsdir & "/" & pname & "/var") Then anum = anum + RDir(fsdir & "/" & pname & "/var").Count
+
+    File.Save(tmp & "restorepercent", 0)
+    elist.Add("/etc/mtab")
+    elist.Add("/var/lib/udisks/mtab")
+    elist.Add("/var/tmp/")
+    elist.Add("/var/run/")
+    elist.Add("/usr/bin/systemback")
+    elist.Add("/usr/bin/sbstart")
+    elist.Add("/etc/systemback")
+    elist.Add("/etc/sudoers.d/99_systemback")
+    elist.Add("/etc/xdg/autostart/sbschedule.desktop")
+    elist.Add("/usr/lib/systemback")
+    elist.Add("/usr/share/systemback")
+    elist.Add("/var/lib/dpkg/info/systemback")
+
+    For Each cdir In ["/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"]
+
+      If IsDir(cdir)
+
+        For Each item In RDir(cdir).Sort(gb.Descent)
+
+          cnum = cnum + 1
+          cperc = Int(cnum / anum * 100)
+
+          If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+            File.Save(tmp & "restorepercent", cperc)
+            pperc = cperc
+
+          Endif
+
+          If Exist(cdir & "/" & item)
+
+            If nxt = True Then nxt = False
+
+            For Each excl In elist
+
+              If cdir & "/" & item Begins excl Or item Like "*lost+found*"
+
+                nxt = True
+                Break
+
+              Endif
+
+            Next
+
+            If nxt = False
+
+              With Stat(cdir & "/" & item)
+
+                Select Case True
+
+                  Case .Type = gb.Link
+
+                    If Exist(fsdir & "/" & pname & "/" & cdir & "/" & item)
+
+                      olnk = .Link
+
+                      With Stat(fsdir & "/" & pname & "/" & cdir & "/" & item)
+
+                        If .Type = gb.Link
+
+                          If .Link = olnk Then Continue
+
+                        Endif
+
+                      End With
+
+                    Endif
+
+                    Try Kill cdir & "/" & item
+
+                  Case .Type = gb.Directory
+
+                    If Exist(fsdir & "/" & pname & "/" & cdir & "/" & item)
+
+                      If Stat(fsdir & "/" & pname & "/" & cdir & "/" & item).Type = gb.Directory Then Continue
+
+                    Endif
+
+                    Try Rmdir cdir & "/" & item
+
+                  Case .Type = gb.File
+
+                    If Exist(fsdir & "/" & pname & "/" & cdir & "/" & item)
+
+                      osize = .Size
+                      olmod = .LastModified
+
+                      With Stat(fsdir & "/" & pname & "/" & cdir & "/" & item)
+
+                        If .Type = gb.File
+
+                          If .Size = osize And .LastModified = olmod Then Continue
+
+                        Endif
+
+                      End With
+
+                    Endif
+
+                    Try Kill cdir & "/" & item
+
+                End Select
+
+              End With
+
+            Endif
+
+          Endif
+
+        Next
+
+      Endif
+
+    Next
+
+    For Each cdir In [fsdir & "/" & pname & "/cdrom", fsdir & "/" & pname & "/dev", fsdir & "/" & pname & "/home", fsdir & "/" & pname & "/media", fsdir & "/" & pname & "/mnt", fsdir & "/" & pname & "/root", fsdir & "/" & pname & "/proc", fsdir & "/" & pname & "/run", fsdir & "/" & pname & "/sys", fsdir & "/" & pname & "/tmp"]
+
+      If IsDir(cdir)
+
+        If Exist(Right(cdir, - RInStr(cdir, "/") + 1))
+
+          If Not IsDir(Right(cdir, - RInStr(cdir, "/") + 1))
+
+            Try Kill Right(cdir, - RInStr(cdir, "/") + 1)
+            Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1)
+
+          Endif
+
+        Else
+
+          Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1)
+
+        Endif
+
+        Ipcopy(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
+
+      Else If Exist(Right(cdir, - RInStr(cdir, "/") + 1))
+
+        If Stat(Right(cdir, - RInStr(cdir, "/") + 1)).Type = gb.Directory Then Dclean(Right(cdir, - RInStr(cdir, "/") + 1)) Else Try Kill Right(cdir, - RInStr(cdir, "/") + 1)
+
+      Endif
+
+    Next
+
+    For Each cdir In [fsdir & "/" & pname & "/bin", fsdir & "/" & pname & "/boot", fsdir & "/" & pname & "/etc", fsdir & "/" & pname & "/lib", fsdir & "/" & pname & "/lib32", fsdir & "/" & pname & "/lib64", fsdir & "/" & pname & "/opt", fsdir & "/" & pname & "/sbin", fsdir & "/" & pname & "/selinux", fsdir & "/" & pname & "/srv", fsdir & "/" & pname & "/usr", fsdir & "/" & pname & "/var"]
+
+      If IsDir(cdir)
+
+        If Exist(Right(cdir, - RInStr(cdir, "/") + 1))
+
+          If Not IsDir(Right(cdir, - RInStr(cdir, "/") + 1))
+
+            Try Kill Right(cdir, - RInStr(cdir, "/") + 1)
+            Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1)
+
+          Endif
+
+        Else
+
+          Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1)
+
+        Endif
+
+        Ipcopy(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
+
+        For Each item In RDir(cdir)
+
+          cnum = cnum + 1
+          cperc = Int(cnum / anum * 100)
+
+          If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+            File.Save(tmp & "restorepercent", cperc)
+            pperc = cperc
+
+          Endif
+
+          If Not Exist(Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
+
+            With Stat(cdir & "/" & item)
+
+              Select Case True
+
+                Case .Type = gb.Link
+
+                  Try Link .Link To Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item
+                  Continue
+
+                Case .Type = gb.Directory
+
+                  Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item
+
+                Case .Type = gb.File
+
+                  Try Copy cdir & "/" & item To Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item
+
+              End Select
+
+            End With
+
+          Endif
+
+          Ipcopy(cdir & "/" & item, Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
+
+        Next
+
+      Else If Exist(Right(cdir, - RInStr(cdir, "/") + 1))
+
+        If Stat(Right(cdir, - RInStr(cdir, "/") + 1)).Type = gb.Directory Then Dclean(Right(cdir, - RInStr(cdir, "/") + 1)) Else Try Kill Right(cdir, - RInStr(cdir, "/") + 1)
+
+      Endif
+
+    Next
+
+    For Each item In Dir("/media", "[^.]*", gb.Directory)
+
+      If Not Exist(fsdir & "/" & pname & "/media/" & item) And File.Load("/proc/self/mounts") Not Like "*/media/" & item & "*" Then Dclean("/media/" & item)
+
+    Next
+
+    For Each item In RDir(fsdir & "/" & pname & "/media")
+
+      If Exist("/media/" & item)
+
+        If Stat("/media/" & item).Type <> gb.Directory
+
+          Try Kill "/media/" & item
+          Try Mkdir "/media/" & item
+
+        Endif
+
+      Else
+
+        Try Mkdir "/media/" & item
+
+      Endif
+
+      Ipcopy(fsdir & "/" & pname & "/media/" & item, "/media/" & item)
+
+    Next
+
+  Endif
+
+  If mthd <> 2
+
+    With elist
+
+      .Clear
+      .Add(".cache/gvfs")
+      .Add(".gvfs")
+      .Add(".local/share/Trash/files/")
+      .Add(".local/share/Trash/info/")
+      .Add(".Xauthority")
+
+      ofile = Open "/etc/systemback.excludes" For Read
+      While Not Eof(ofile)
+        Line Input #ofile, cline
+
+        If cline Begins "." Then .Add(cline)
+
+      Wend
+      Close #ofile
+
+    End With
+
+    If IsDir(fsdir & "/" & pname & "/home")
+
+      For Each usr In Dir(fsdir & "/" & pname & "/home", "*", gb.Directory)
+
+        If uname = usr Or If mthd <> 4 And mthd <> 6
+
+          If IsDir("/home/" & usr)
+
+            For Each item In RDir("/home/" & usr, ".*").Sort(gb.Descent)
+
+              cnum = cnum + 1
+              cperc = Int(cnum / anum * 100)
+
+              If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+                File.Save(tmp & "restorepercent", cperc)
+                pperc = cperc
+
+              Endif
+
+              If nxt = True Then nxt = False
+
+              For Each excl In elist
+
+                If item Begins excl Or item Ends "~"
+
+                  nxt = True
+                  Break
+
+                Endif
+
+              Next
+
+              If nxt = False
+
+                With Stat("/home/" & usr & "/" & item)
+
+                  Select Case True
+
+                    Case .Type = gb.Link
+
+                      If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
+
+                        olnk = .Link
+
+                        With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
+
+                          If .Type = gb.Link
+
+                            If .Link <> olnk Then Try Kill "/home/" & usr & "/" & item
+
+                          Endif
+
+                        End With
+
+                      Else If mthd <> 3 And mthd <> 4
+
+                        Try Kill "/home/" & usr & "/" & item
+
+                      Endif
+
+                    Case .Type = gb.Directory
+
+                      If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
+
+                        If Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item).Type <> gb.Directory Then Try Rmdir "/home/" & usr & "/" & item
+
+                      Else If mthd <> 3 And mthd <> 4
+
+                        Try Rmdir "/home/" & usr & "/" & item
+
+                      Endif
+
+                    Case .Type = gb.File
+
+                      If .Size <= 8000000
+
+                        If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
+
+                          osize = .Size
+                          olmod = .LastModified
+
+                          With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
+
+                            If .Type = gb.File
+
+                              If .Size <> osize Or .LastModified <> olmod Then Try Kill "/home/" & usr & "/" & item
+
+                            Endif
+
+                          End With
+
+                        Else If mthd <> 3 And mthd <> 4
+
+                          Try Kill "/home/" & usr & "/" & item
+
+                        Endif
+
+                      Endif
+
+                  End Select
+
+                End With
+
+              Endif
+
+            Next
+
+          Else If Exist("/home/" & usr)
+
+            Try Kill "/home/" & usr
+            Try Mkdir "/home/" & usr
+
+          Endif
+
+          Ipcopy(fsdir & "/" & pname & "/home/" & usr, "/home/" & usr)
+
+          For Each item In RDir(fsdir & "/" & pname & "/home/" & usr)
+
+            cnum = cnum + 1
+            cperc = Int(cnum / anum * 100)
+
+            If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+              File.Save(tmp & "restorepercent", cperc)
+              pperc = cperc
+
+            Endif
+
+            If Not Exist("/home/" & usr & "/" & item)
+
+              With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
+
+                Select Case True
+
+                  Case .Type = gb.Link
+
+                    Try Link .Link To "/home/" & usr & "/" & item
+                    Continue
+
+                  Case .Type = gb.Directory
+
+                    Try Mkdir "/home/" & usr & "/" & item
+
+                  Case .Type = gb.File
+
+                    Try Copy fsdir & "/" & pname & "/home/" & usr & "/" & item To "/home/" & usr & "/" & item
+
+                End Select
+
+              End With
+
+            Endif
+
+            Ipcopy(fsdir & "/" & pname & "/home/" & usr & "/" & item, "/home/" & usr & "/" & item)
+
+          Next
+
+        Endif
+
+      Next
+
+    Endif
+
+    If IsDir(fsdir & "/" & pname & "/root")
+
+      If uname = "root" Or If mthd <> 4 And mthd <> 6
+
+        For Each item In RDir("/root", ".*").Sort(gb.Descent)
+
+          cnum = cnum + 1
+          cperc = Int(cnum / anum * 100)
+
+          If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+            File.Save(tmp & "restorepercent", cperc)
+            pperc = cperc
+
+          Endif
+
+          If nxt = True Then nxt = False
+
+          For Each excl In elist
+
+            If item Begins excl Or item Ends "~"
+
+              nxt = True
+              Break
+
+            Endif
+
+          Next
+
+          If nxt = False
+
+            With Stat("/root/" & item)
+
+              Select Case True
+
+                Case .Type = gb.Link
+
+                  If Exist(fsdir & "/" & pname & "/root/" & item)
+
+                    olnk = .Link
+
+                    With Stat(fsdir & "/" & pname & "/root/" & item)
+
+                      If .Type = gb.Link
+
+                        If .Link <> olnk Then Try Kill "/root/" & item
+
+                      Endif
+
+                    End With
+
+                  Else If mthd <> 3 And mthd <> 4
+
+                    Try Kill "/root/" & item
+
+                  Endif
+
+                Case .Type = gb.Directory
+
+                  If Exist(fsdir & "/" & pname & "/root/" & item)
+
+                    If Stat(fsdir & "/" & pname & "/root/" & item).Type <> gb.Directory Then Try Rmdir "/root/" & item
+
+                  Else If mthd <> 3 And mthd <> 4
+
+                    Try Rmdir "/root/" & item
+
+                  Endif
+
+                Case .Type = gb.File
+
+                  If .Size <= 8000000
+
+                    If Exist(fsdir & "/" & pname & "/root/" & item)
+
+                      osize = .Size
+                      olmod = .LastModified
+
+                      With Stat(fsdir & "/" & pname & "/root/" & item)
+
+                        If .Type = gb.File
+
+                          If .Size <> osize Or .LastModified <> olmod Then Try Kill "/root/" & item
+
+                        Endif
+
+                      End With
+
+                    Else If mthd <> 3 And mthd <> 4
+
+                      Try Kill "/root/" & item
+
+                    Endif
+
+                  Endif
+
+              End Select
+
+            End With
+
+          Endif
+
+        Next
+
+        For Each item In RDir(fsdir & "/" & pname & "/root")
+
+          cnum = cnum + 1
+          cperc = Int(cnum / anum * 100)
+
+          If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+            File.Save(tmp & "restorepercent", cperc)
+            pperc = cperc
+
+          Endif
+
+          If Not Exist("/root/" & item)
+
+            With Stat(fsdir & "/" & pname & "/root/" & item)
+
+              Select Case True
+
+                Case .Type = gb.Link
+
+                  Try Link .Link To "/root/" & item
+                  Continue
+
+                Case .Type = gb.Directory
+
+                  Try Mkdir "/root/" & item
+
+                Case .Type = gb.File
+
+                  Try Copy fsdir & "/" & pname & "/root/" & item To "/root/" & item
+
+              End Select
+
+            End With
+
+          Endif
+
+          Ipcopy(fsdir & "/" & pname & "/root/" & item, "/root/" & item)
+
+        Next
+
+      Endif
+
+    Endif
+
+  Endif
 
 End
 

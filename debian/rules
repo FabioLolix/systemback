@@ -9,13 +9,13 @@ build-stamp:
 	gbc3 -a cli
 	gba3 cli
 	mv cli/cli.gambas cli/systemback
-	gcc -fPIC -c tsync.c
-	gcc -shared -Wl,-soname,tsync.so -o tsync.so tsync.o
-	strip --strip-unneeded tsync.so
+	gcc -fPIC -c ipcopy.c
+	gcc -shared -Wl,-soname,ipcopy.so -o ipcopy.so ipcopy.o
+	strip --strip-unneeded ipcopy.so
 	touch build-stamp
 
 clean:
-	rm -rf build-stamp gui/systembackgui cli/systemback tsync.o tsync.so
+	rm -rf build-stamp gui/systembackgui cli/systemback ipcopy.o ipcopy.so
 	find . -name .gambas -print0 | xargs -0r rm -rf
 	find . -name .startup -delete
 	dh_clean

@@ -75,6 +75,8 @@ Private wmove As Boolean
 Private sstart As Boolean
 Private ickernel As Boolean
 Private irfsc As Boolean
+Private cbrun As Boolean
+Private cway As Boolean
 
 Public Sub Form_Open()
 
@@ -3990,10 +3992,10 @@ Public Sub newrestorepoint_Click()
 
   For Each item In Dir(fsdir, ".*", gb.Directory)
 
-    If Left(item, 9) = ".DELETED_" Or Left(item, 5) = ".S00_"
+    If item Like ".{DELETED,S00}_*"
 
       If prun <> ("Deleting incomplete restore point") Then prun = ("Deleting incomplete restore point")
-      wproc = Exec ["rm", "-rf", fsdir & "/" & item]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/" & item]
       wprocwait
       If prun = Null Then Return
 
@@ -4021,7 +4023,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S10_" & pname10 To fsdir & "/.DELETED_" & pname10
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname10]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname10]
       wprocwait
       If prun = Null Then Return
 
@@ -4034,7 +4036,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S09_" & pname9 To fsdir & "/.DELETED_" & pname9
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname9]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname9]
       wprocwait
       If prun = Null Then Return
 
@@ -4047,7 +4049,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S08_" & pname8 To fsdir & "/.DELETED_" & pname8
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname8]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname8]
       wprocwait
       If prun = Null Then Return
 
@@ -4060,7 +4062,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S07_" & pname7 To fsdir & "/.DELETED_" & pname7
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname7]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname7]
       wprocwait
       If prun = Null Then Return
 
@@ -4073,7 +4075,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S06_" & pname6 To fsdir & "/.DELETED_" & pname6
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname6]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname6]
       wprocwait
       If prun = Null Then Return
 
@@ -4086,7 +4088,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S05_" & pname5 To fsdir & "/.DELETED_" & pname5
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname5]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname5]
       wprocwait
       If prun = Null Then Return
 
@@ -4099,7 +4101,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S04_" & pname4 To fsdir & "/.DELETED_" & pname4
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname4]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname4]
       wprocwait
       If prun = Null Then Return
 
@@ -4112,7 +4114,7 @@ Public Sub newrestorepoint_Click()
       Move fsdir & "/S03_" & pname3 To fsdir & "/.DELETED_" & pname3
 
       If prun = Null Then Return
-      wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname3]
+      wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname3]
       wprocwait
       If prun = Null Then Return
 
@@ -4120,8 +4122,9 @@ Public Sub newrestorepoint_Click()
 
   Endif
 
-  prun = ("Checking files and directories")
+  cbrun = True
   If Exist(tmp & "pointpercent") Then Kill tmp & "pointpercent"
+  prun = ("Creating restore point")
   dtime = Year(Now) & "-" & Right("0" & Month(Now), 2) & "-" & Right("0" & Day(Now), 2) & "," & Right("0" & Hour(Now), 2) & "." & Right("0" & Minute(Now), 2) & "." & Right("0" & Second(Now), 2)
   wproc = Exec ["systemback", "rpsync", dtime]
 
@@ -4132,7 +4135,7 @@ Public Sub newrestorepoint_Click()
   Wend
 
   If prun = Null Then Return
-  prun = ("Creating restore point")
+  cbrun = False
   wprocwait
   If prun = Null Then Return
 
@@ -4726,6 +4729,7 @@ Public Sub unitimer_Timer()
 
     Endif
 
+    calculatingbar.Value = 1
     Dec Application.Busy
 
   Else If statuspanel.Visible
@@ -4764,127 +4768,9 @@ Public Sub unitimer_Timer()
 
     Endif
 
-    If prun = ("Creating restore point")
+    Select Case True
 
-      If Not interrupt.Visible
-
-        interruptdisable.Hide
-        interrupt.Show
-
-      Endif
-
-      With progressbar
-
-        If progressbartimer.Enabled
-
-          progressbartimer.Stop
-          If .Value = 1 Then .Value = 0
-
-        Endif
-
-        If Exist(tmp & "pointpercent")
-
-          cperc = File.Load(tmp & "pointpercent")
-
-          If cperc <> Null
-
-            If cperc <> 0
-
-              .Value = cperc / 100
-
-            Else If .Value <> 0.01
-
-              .Value = 0.01
-
-            Endif
-
-          Endif
-
-          Kill tmp & "pointpercent"
-
-        Endif
-
-      End With
-
-    Else If prun = ("Copying the system") Or prun = ("Installing the system")
-
-      If Not interrupt.Visible
-
-        interruptdisable.Hide
-        interrupt.Show
-
-      Endif
-
-      With progressbar
-
-        If progressbartimer.Enabled
-
-          progressbartimer.Stop
-          If .Value = 1 Then .Value = 0
-
-        Endif
-
-        If Exist(tmp & "copysize")
-
-          cperc = File.Load(tmp & "copysize")
-
-          If cperc <> Null
-
-            cperc = Round(cperc / cssize, -2)
-
-            If cperc < "0.03"
-
-              If .Value = 0.03 Then .Value = 0 Else .Value = 0.03
-
-            Else If cperc <= "0.99"
-
-              If cperc > CStr(.Value) Or .Value = 1 Then .Value = cperc
-
-            Else
-
-              .Value = 1
-              If cproc.State = Process.Running Then cproc.Kill
-
-            Endif
-
-          Endif
-
-          Kill tmp & "copysize"
-
-        Endif
-
-      End With
-
-    Else If prun = ("Writing Live image to USB device")
-
-      If Not interrupt.Visible
-
-        interruptdisable.Hide
-        interrupt.Show
-
-      Endif
-
-    Else
-
-      If prun = ("Creating Live system")
-
-        If irfsc
-
-          If Not interruptdisable.Visible
-
-            interrupt.Hide
-            interruptdisable.Show
-
-          Endif
-
-        Else If Not interrupt.Visible
-
-          interruptdisable.Hide
-          interrupt.Show
-
-        Endif
-
-      Else If prun Begins ("Deleting old restore point") Or prun = ("Creating restore point") Or prun Begins ("Deleting restore point") Or prun = ("Restoring the full system") Or prun = ("Restoring users configuration files") Or prun = ("Restoring the system files") Or prun = ("Repairing the system files") Or prun = ("Repairing the full system") Or prun = ("Deleting incomplete restore point") Or prun = ("Converting Live system image") Or prun = ("Checking files and directories")
+      Case prun = ("Creating restore point")
 
         If Not interrupt.Visible
 
@@ -4893,16 +4779,182 @@ Public Sub unitimer_Timer()
 
         Endif
 
-      Else If Not interruptdisable.Visible
+        With progressbar
 
-        interrupt.Hide
-        interruptdisable.Show
+          If progressbartimer.Enabled Then progressbartimer.Stop
 
-      Endif
+          If cbrun = True
 
-      If Not progressbartimer.Enabled Then progressbartimer.Start
+            If Not calculatingbar.Visible
 
-    Endif
+              If progressbar.Value > 0 Then progressbar.Value = 0
+              calculatingbar.Show
+              calculatingbartimer.Start
+
+            Endif
+
+          Else
+
+            If calculatingbar.Visible
+
+              calculatingbar.Hide
+              calculatingbartimer.Stop
+
+            Endif
+
+            If Exist(tmp & "pointpercent")
+
+              cperc = File.Load(tmp & "pointpercent")
+              If cperc <> Null Then .Value = cperc / 100
+              Kill tmp & "pointpercent"
+
+            Endif
+
+          Endif
+
+        End With
+
+      Case prun = ("Copying the system") Or prun = ("Installing the system")
+
+        If Not interrupt.Visible
+
+          interruptdisable.Hide
+          interrupt.Show
+
+        Endif
+
+        With progressbar
+
+          If progressbartimer.Enabled
+
+            progressbartimer.Stop
+            If .Value = 1 Then .Value = 0
+
+          Endif
+
+          If Exist(tmp & "copysize")
+
+            cperc = File.Load(tmp & "copysize")
+
+            If cperc <> Null
+
+              cperc = Round(cperc / cssize, -2)
+
+              If cperc < "0.03"
+
+                If .Value = 0.03 Then .Value = 0 Else .Value = 0.03
+
+              Else If cperc <= "0.99"
+
+                If cperc > CStr(.Value) Or .Value = 1 Then .Value = cperc
+
+              Else
+
+                .Value = 1
+                If cproc.State = Process.Running Then cproc.Kill
+
+              Endif
+
+            Endif
+
+            Kill tmp & "copysize"
+
+          Endif
+
+        End With
+
+      Case prun = ("Restoring the full system") Or prun = ("Restoring the system files") Or prun = ("Restoring user(s) configuration files")
+
+        If Not interrupt.Visible
+
+          interruptdisable.Hide
+          interrupt.Show
+
+        Endif
+
+        With progressbar
+
+          If progressbartimer.Enabled Then progressbartimer.Stop
+
+          If cbrun = True
+
+            If Not calculatingbar.Visible
+
+              If progressbar.Value > 0 Then progressbar.Value = 0
+              calculatingbar.Show
+              calculatingbartimer.Start
+
+            Endif
+
+          Else
+
+            If calculatingbar.Visible
+
+              calculatingbar.Hide
+              calculatingbartimer.Stop
+
+            Endif
+
+            If Exist(tmp & "restorepercent")
+
+              cperc = File.Load(tmp & "restorepercent")
+              If cperc <> Null Then .Value = cperc / 100
+              Kill tmp & "restorepercent"
+
+            Endif
+
+          Endif
+
+        End With
+
+      Case prun = ("Writing Live image to USB device")
+
+        If Not interrupt.Visible
+
+          interruptdisable.Hide
+          interrupt.Show
+
+        Endif
+
+      Case Else
+
+        If prun = ("Creating Live system")
+
+          If irfsc
+
+            If Not interruptdisable.Visible
+
+              interrupt.Hide
+              interruptdisable.Show
+
+            Endif
+
+          Else If Not interrupt.Visible
+
+            interruptdisable.Hide
+            interrupt.Show
+
+          Endif
+
+        Else If prun Begins ("Deleting old restore point") Or prun = ("Creating restore point") Or prun Begins ("Deleting restore point") Or prun = ("Repairing the system files") Or prun = ("Repairing the full system") Or prun = ("Deleting incomplete restore point") Or prun = ("Converting Live system image")
+
+          If Not interrupt.Visible
+
+            interruptdisable.Hide
+            interrupt.Show
+
+          Endif
+
+        Else If Not interruptdisable.Visible
+
+          interrupt.Hide
+          interruptdisable.Show
+
+        Endif
+
+        If Not progressbartimer.Enabled Then progressbartimer.Start
+
+    End Select
 
   Else
 
@@ -5225,7 +5277,23 @@ Public Sub unitimer_Timer()
     If processrun.Text <> Null Then processrun.Text = Null
     If points.Text <> Null Then points.Text = Null
     If progressbartimer.Enabled Then progressbartimer.Stop
-    If progressbar.Value <> 0 Then progressbar.Value = 0
+    If progressbar.Value > 0 Then progressbar.Value = 0
+
+    With calculatingbar
+
+      If .Visible
+
+        .Hide
+        calculatingbartimer.Stop
+        cbrun = False
+
+      Endif
+
+      If .X > 8 Then .X = 8
+
+    End With
+
+    If cway Then cway = False
 
     If Not interruptdisable.Visible
 
@@ -5240,15 +5308,41 @@ End
 
 Public Sub progressbartimer_Timer()
 
-  With progressbar
+  If cbrun = False
 
-    If prun Ends "/" & ppipe And Len(prun) = InStr(prun, "/" & ppipe) + Len("/" & ppipe) - 1
+    With progressbar
 
-      If .Value = 0 Then .Value = Round(dnum / ppipe, -2) Else .Value = 0
+      If prun Ends "/" & ppipe And Len(prun) = InStr(prun, "/" & ppipe) + Len("/" & ppipe) - 1
+
+        If .Value = 0 Then .Value = Round(dnum / ppipe, -2) Else .Value = 0
+
+      Else
+
+        If .Value = 0 Then .Value = 1 Else .Value = 0
+
+      Endif
+
+    End With
+
+  Endif
+
+End
+
+Public Sub calculatingbartimer_Timer()
+
+  With calculatingbar
+
+    If cway
+
+      If .X > 8 Then .X = .X - 10 Else cway = False
+
+    Else If .X < 118
+
+      .X = .X + 10
 
     Else
 
-      If .Value = 0 Then .Value = 1 Else .Value = 0
+      cway = True
 
     Endif
 
@@ -6305,7 +6399,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S10_" & pname10 To fsdir & "/.DELETED_" & pname10
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname10]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname10]
     wprocwait
     If prun = Null Then Return
 
@@ -6317,7 +6411,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S09_" & pname9 To fsdir & "/.DELETED_" & pname9
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname9]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname9]
     wprocwait
     If prun = Null Then Return
 
@@ -6329,7 +6423,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S08_" & pname8 To fsdir & "/.DELETED_" & pname8
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname8]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname8]
     wprocwait
     If prun = Null Then Return
 
@@ -6341,7 +6435,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S07_" & pname7 To fsdir & "/.DELETED_" & pname7
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname7]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname7]
     wprocwait
     If prun = Null Then Return
 
@@ -6353,7 +6447,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S06_" & pname6 To fsdir & "/.DELETED_" & pname6
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname6]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname6]
     wprocwait
     If prun = Null Then Return
 
@@ -6365,7 +6459,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S05_" & pname5 To fsdir & "/.DELETED_" & pname5
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname5]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname5]
     wprocwait
     If prun = Null Then Return
 
@@ -6377,7 +6471,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S04_" & pname4 To fsdir & "/.DELETED_" & pname4
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname4]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname4]
     wprocwait
     If prun = Null Then Return
 
@@ -6389,7 +6483,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S03_" & pname3 To fsdir & "/.DELETED_" & pname3
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname3]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname3]
     wprocwait
     If prun = Null Then Return
 
@@ -6401,7 +6495,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S02_" & pname2 To fsdir & "/.DELETED_" & pname2
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname2]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname2]
     wprocwait
     If prun = Null Then Return
 
@@ -6413,7 +6507,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/S01_" & pname1 To fsdir & "/.DELETED_" & pname1
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname1]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname1]
     wprocwait
     If prun = Null Then Return
 
@@ -6425,7 +6519,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/H01_" & pname11 To fsdir & "/.DELETED_" & pname11
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname11]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname11]
     wprocwait
     If prun = Null Then Return
 
@@ -6437,7 +6531,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/H02_" & pname12 To fsdir & "/.DELETED_" & pname12
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname12]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname12]
     wprocwait
     If prun = Null Then Return
 
@@ -6449,7 +6543,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/H03_" & pname13 To fsdir & "/.DELETED_" & pname13
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname13]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname13]
     wprocwait
     If prun = Null Then Return
 
@@ -6461,7 +6555,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/H04_" & pname14 To fsdir & "/.DELETED_" & pname14
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname14]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname14]
     wprocwait
     If prun = Null Then Return
 
@@ -6473,7 +6567,7 @@ Public Sub pointdelete_Click()
     prun = ("Deleting restore point") & " " & dnum & "/" & ppipe
     Move fsdir & "/H05_" & pname15 To fsdir & "/.DELETED_" & pname15
 
-    wproc = Exec ["rm", "-rf", fsdir & "/.DELETED_" & pname15]
+    wproc = Exec ["systemback", "rmdir", fsdir & "/.DELETED_" & pname15]
     wprocwait
     If prun = Null Then Return
 
@@ -6865,15 +6959,52 @@ End
 Private Sub restore()
 
   Dim ofile As File
-  Dim cline, fstab1, fstab2, elist, usr, mntdev As String
+  Dim cline, fstab1, fstab2, mntdev As String
+  Dim mthd As Byte
 
   statusstart
 
   If dialog = 23 Then dialog = 0
+  cbrun = True
+  If Exist(tmp & "restorepercent") Then Kill tmp & "restorepercent"
 
-  If fullrestore.Value Or systemrestore.Value
+  If fullrestore.Value
 
-    If fullrestore.Value Then prun = ("Restoring the full system") Else prun = ("Restoring the system files")
+    mthd = 1
+    prun = ("Restoring the full system")
+
+  Else If systemrestore.Value
+
+    mthd = 2
+    prun = ("Restoring the system files")
+
+  Else
+
+    Select Case True
+
+      Case keepfiles.Value And includeusers.Index = 0
+
+        mthd = 3
+
+      Case keepfiles.Value
+
+        mthd = 4
+
+      Case includeusers.Index = 0
+
+        mthd = 5
+
+      Case Else
+
+        mthd = 6
+
+    End Select
+
+    prun = ("Restoring user(s) configuration files")
+
+  Endif
+
+  If mthd = 1 Or mthd = 2
 
     If autorestoreoptions.Value
 
@@ -6893,115 +7024,33 @@ Private Sub restore()
 
     Endif
 
-    If prun = Null Then Return
-    wproc = Exec ["bash", "-c", "sbsync -rlptgo --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/ / --include=/{bin,boot,cdrom,dev,etc,home,lib,lib32,lib64,mnt,opt,proc,run,root,sbin,selinux,srv,sys,tmp,usr,var,initrd*,vmlinuz*} --exclude={/*,/home/*,/proc/*,/run/*,/sys/*,/mnt/*,/dev/*,/tmp/*,/cdrom/*,/root/*,/var/tmp/*,/var/run/*,/etc/mtab,/etc/sudoers.d/99_systemback,/etc/xdg/autostart/sbschedule.desktop,/var/lib/udisks/mtab,/var/lib/dpkg/info/systemback*,/usr/bin/systemback*,/usr/bin/sbsync,/usr/share/systemback,/etc/systemback*,lost+found}"]
-    wprocwait
-    If prun = Null Then Return
+  Endif
 
-    If Exist("/tmp/sbrestorefstab") And If autorestoreoptions.Value Or skipfstabrestore.Value
+  If prun = Null Then Return
+  wproc = Exec ["systemback", "srsync", mthd, includeusers.Text, cpoint & "_" & pname]
 
-      Try Kill "/etc/fstab"
-      Copy "/tmp/sbrestorefstab" To "/etc/fstab"
-      Kill "/tmp/sbrestorefstab"
+  While wproc.State = Process.Running And Not Exist(tmp & "restorepercent")
 
-    Endif
+    Wait 0.1
 
-    If prun = Null Then Return
-    wproc = Exec ["sbsync", "-ax", "--delete", fsdir & "/" & cpoint & "_" & pname & "/media", "/"]
-    wprocwait
-    If prun = Null Then Return
+  Wend
+
+  If prun = Null Then Return
+  cbrun = False
+  wprocwait
+  If prun = Null Then Return
+
+  If mthd = 1 Or mthd = 2 And If Exist("/tmp/sbrestorefstab") And If autorestoreoptions.Value Or skipfstabrestore.Value
+
+    Try Kill "/etc/fstab"
+    Try Copy "/tmp/sbrestorefstab" To "/etc/fstab"
+    Try Kill "/tmp/sbrestorefstab"
 
   Endif
 
-  If fullrestore.Value Or configurationfilesrestore.Value
+  If mthd = 1 Or mthd = 2
 
-    If Not keepfiles.Enabled Or Not keepfiles.Value
-
-      If configurationfilesrestore.Value Then prun = ("Restoring users configuration files")
-
-      elist = "/" & rtmp & ",/.gvfs,/.cache/gvfs,/.local/share/Trash/files/*,/.local/share/Trash/info/*,/.Xauthority"
-
-      ofile = Open fsdir & "/" & cpoint & "_" & pname & "/.excludes" For Read
-      While Not Eof(ofile)
-        Line Input #ofile, cline
-
-        If Left(cline) = "." Then elist &= ",'/" & cline & "'"
-
-      Wend
-      Close #ofile
-
-      For Each usr In Dir(fsdir & "/" & cpoint & "_" & pname & "/home", "*", gb.Directory)
-
-        If Not includeusers.Enabled Or includeusers.Index = 0 Or includeusers.Text = usr
-
-          If Not IsDir("/home/" & usr)
-
-            Try Mkdir "/home/" & usr
-
-            If Error
-
-              Move "/home/" & usr To "/home/" & usr & "_" & Int(Rnd(1000000000, 9999999999))
-              Mkdir "/home/" & usr
-
-            Endif
-
-          Endif
-
-          If prun = Null Then Return
-          wproc = Exec ["bash", "-c", "sbsync -rptgoD --delete --min-size=8MB --link-dest=../ /home/" & usr & "/ /home/" & usr & "/" & rtmp & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgo --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/home/" & usr & "/ /home/" & usr & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgom --link-dest=" & rtmp & "/ /home/" & usr & "/" & rtmp & "/ /home/" & usr]
-          wprocwait
-          If prun = Null Then Return
-          wproc = Exec ["rm", "-rf", "/home/" & usr & "/" & rtmp]
-          wprocwait
-
-        Endif
-
-      Next
-
-      If Not includeusers.Enabled Or includeusers.Index < 2
-
-        If prun = Null Then Return
-        wproc = Exec ["bash", "-c", "sbsync -rptgoD --delete --min-size=8MB --link-dest=../ /root/ /root/" & rtmp & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgo --delete '" & fsdir & "'/" & cpoint & "_" & pname & "/root/ /root --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgom --link-dest=" & rtmp & "/ /root/" & rtmp & "/ /root"]
-        wprocwait
-        If prun = Null Then Return
-        wproc = Exec ["rm", "-rf", "/root/" & rtmp]
-        wprocwait
-        If prun = Null Then Return
-
-      Endif
-
-    Else
-
-      prun = ("Restoring users configuration files")
-
-      If includeusers.Index < 2
-
-        If includeusers.Index = 0
-
-          wproc = Exec ["sbsync", "-rlptgo", fsdir & "/" & cpoint & "_" & pname & "/home/", "/home"]
-          wprocwait
-          If prun = Null Then Return
-
-        Endif
-
-        wproc = Exec ["sbsync", "-rlptgo", fsdir & "/" & cpoint & "_" & pname & "/root/", "/root"]
-
-      Else
-
-        wproc = Exec ["sbsync", "-rlptgo", fsdir & "/" & cpoint & "_" & pname & "/home/" & includeusers.Text & "/", "/home/" & includeusers.Text]
-
-      Endif
-
-      wprocwait
-      If prun = Null Then Return
-
-    Endif
-
-  Endif
-
-  If fullrestore.Value Or systemrestore.Value
-
-    If grubreinstallrestore.Visible
+    If grubreinstallrestore.Visible And grubreinstallrestore.Text <> ("Disabled")
 
       If prun = Null Then Return
 
@@ -7062,19 +7111,25 @@ Private Sub restore()
 
   If dialog <> 23
 
-    If fullrestore.Value
+    Select Case True
 
-      dialog = 20
+      Case mthd = 1
 
-    Else If systemrestore.Value
+        dialog = 20
 
-      dialog = 19
+      Case mthd = 2
 
-    Else If configurationfilesrestore.Value
+        dialog = 19
 
-      If keepfiles.Value Then dialog = 10 Else dialog = 9
+      Case keepfiles.Value
 
-    Endif
+        dialog = 10
+
+      Case Else
+
+        dialog = 9
+
+    End Select
 
   Endif
 
@@ -8377,7 +8432,7 @@ Private Sub repair()
       While Not Eof(ofile)
         Line Input #ofile, cline
 
-        If Left(cline) = "." Then elist &= ",'/" & cline & "'"
+        If cline Begins "." Then elist &= ",'/" & cline & "'"
 
       Wend
       Close #ofile
@@ -8390,7 +8445,7 @@ Private Sub repair()
           wproc = Exec ["bash", "-c", "sbsync -rptgoD --delete --min-size=8MB --link-dest=../ /mnt/home/" & usr & "/ /mnt/home/" & usr & "/" & rtmp & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgo --delete '" & srcdir & "'/home/" & usr & "/ /mnt/home/" & usr & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgom --link-dest=" & rtmp & "/ /mnt/home/" & usr & "/" & rtmp & "/ /mnt/home/" & usr]
           wprocwait
           If prun = Null Then Return
-          wproc = Exec ["rm", "-rf", "/mnt/home/" & usr & "/" & rtmp]
+          wproc = Exec ["systemback", "rmdir", "/mnt/home/" & usr & "/" & rtmp]
           wprocwait
 
         Else
@@ -8408,7 +8463,7 @@ Private Sub repair()
             While Not Eof(ofile)
               Line Input #ofile, cline
 
-              If Left(cline) <> "#" And cline Like "*$HOME*" Then Try Mkdir "/mnt/home/" & usr & "/" & Left(Right(cline, - InStr(cline, "/")), -1)
+              If cline Not Begins "#" And cline Like "*$HOME*" Then Try Mkdir "/mnt/home/" & usr & "/" & Left(Right(cline, - InStr(cline, "/")), -1)
 
             Wend
             Close #ofile
@@ -8425,7 +8480,7 @@ Private Sub repair()
         wproc = Exec ["bash", "-c", "sbsync -rptgoD --delete --min-size=8MB --link-dest=../ /mnt/root/ /mnt/root/" & rtmp & " --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgo --delete '" & srcdir & "'/root/ /mnt/root --exclude={" & elist & "} --include=/.* --exclude=/* ; sbsync -rlptgom --link-dest=" & rtmp & "/ /mnt/root/" & rtmp & "/ /mnt/root"]
         wprocwait
         If prun = Null Then Return
-        wproc = Exec ["rm", "-rf", "/mnt/root/" & rtmp]
+        wproc = Exec ["systemback", "rmdir", "/mnt/root/" & rtmp]
 
       Else
 
@@ -8439,7 +8494,7 @@ Private Sub repair()
 
     Endif
 
-    If grubreinstallrepair.Visible
+    If grubreinstallrepair.Visible And grubreinstallrepair.Text <> ("Disabled")
 
       If autorepairoptions.Value Or grubreinstallrepair.Text = "Auto"
 
@@ -9525,7 +9580,7 @@ Private Sub systemcopy()
 
           Try Mkdir "/var/log/" & btmp & "/" & item
 
-        Else If .Type = gb.File And Right(item, 2) <> ".0" And Right(item, 2) <> ".1" And Right(item, 3) <> ".gz" And Right(item, 4) <> ".old"
+        Else If .Type = gb.File And item Not Like "*.{0,1,gz,old}"
 
           Try File.Save("/var/log/" & btmp & "/" & item, Null)
 
@@ -9893,7 +9948,7 @@ Private Sub systemcopy()
           While Not Eof(ofile)
             Line Input #ofile, cline
 
-            If Left(cline) <> "#" And cline Like "*$HOME*"
+            If cline Not Begins "#" And cline Like "*$HOME*"
 
               Try Mkdir "/.sbsystemcopy/home/" & username.Text & "/" & Left(Right(cline, - InStr(cline, "/")), -1)
 
@@ -9911,7 +9966,7 @@ Private Sub systemcopy()
       wprocwait
       If prun = Null Then Return
 
-      Exec ["rm", "-rf", "/media/" & btmp, "/var/log/" & btmp]
+      Exec ["systemback", "rmdir", "/media/" & btmp, "/var/log/" & btmp]
 
       If wproc.Value = 0
 
@@ -10050,7 +10105,7 @@ Private Sub systemcopy()
           While Not Eof(ofile)
             Line Input #ofile, cline
 
-            If Left(cline) <> "#" And cline Like "*$HOME*"
+            If cline Not Begins "#" And cline Like "*$HOME*"
 
               Try Mkdir "/.sbsystemcopy/home/" & username.Text & "/" & Left(Right(cline, - InStr(cline, "/")), -1)
 
@@ -10135,7 +10190,7 @@ Private Sub systemcopy()
             While Not Eof(ofile)
               Line Input #ofile, cline
 
-              If Left(cline) <> "#" And cline Like "*$HOME*"
+              If cline Not Begins "#" And cline Like "*$HOME*"
 
                 Try Mkdir "/.sbsystemcopy/home/" & username.Text & "/" & Left(Right(cline, - InStr(cline, "/")), -1)
 
@@ -10219,7 +10274,7 @@ Private Sub systemcopy()
           While Not Eof(ofile)
             Line Input #ofile, cline
 
-            If Left(cline) <> "#" And cline Like "*$HOME*"
+            If cline Not Begins "#" And cline Like "*$HOME*"
 
               Try Mkdir "/.sbsystemcopy/home/" & username.Text & "/" & Left(Right(cline, - InStr(cline, "/")), -1)
 
@@ -10322,7 +10377,7 @@ Private Sub systemcopy()
       While Len(pfix) < 16
 
         char = Mid(chars, Int(Rnd(1, 62)), 1)
-        If Right(pfix) <> char Then pfix &= char
+        If pfix Not Ends char Then pfix &= char
 
       Wend
 
@@ -10353,7 +10408,7 @@ Private Sub systemcopy()
         While Len(pfix) < 16
 
           char = Mid(chars, Int(Rnd(1, 62)), 1)
-          If Right(pfix) <> char Then pfix &= char
+          If pfix Not Ends char Then pfix &= char
 
         Wend
 
@@ -11086,7 +11141,7 @@ Public Sub removeitem_Click()
 
         For Each item In Dir("/home/" & usr)
 
-          If Left(item) = "." And pointexclude.Value Or If Left(item) <> "." And liveexclude.Value
+          If item Begins "." And pointexclude.Value Or If item Not Begins "." And liveexclude.Value
 
             If excludedlist.Find(item) = -1 And item Not Like ".{gvfs,Xauthority}"
 
@@ -11147,7 +11202,7 @@ Public Sub removeitem_Click()
 
   For Each item In Dir("/root")
 
-    If Left(item) = "." And pointexclude.Value Or If Left(item) <> "." And liveexclude.Value
+    If item Begins "." And pointexclude.Value Or If item Not Begins "." And liveexclude.Value
 
       If excludedlist.Find(item) = -1 And item Not Like ".{gvfs,Xauthority}"
 
@@ -11922,7 +11977,7 @@ Public Sub livecreatenew_Click()
   If Exist(lwdir & "/.sblivesystemcreate")
 
     If prun = Null Then Return
-    wproc = Exec ["rm", "-rf", lwdir & "/.sblivesystemcreate"]
+    wproc = Exec ["systemback", "rmdir", lwdir & "/.sblivesystemcreate"]
     wprocwait
     If prun = Null Then Return
 
@@ -11989,13 +12044,7 @@ Public Sub livecreatenew_Click()
 
     For Each item In Dir("/usr/share/initramfs-tools/scripts/casper-bottom", "[^.]*", gb.File)
 
-      If Right(item, -2) <> "integrity_check" And Right(item, -2) <> "mountpoints" And Right(item, -2) <> "fstab" And Right(item, -2) <> "swap" And Right(item, -2) <> "xconfig" And Right(item, -2) <> "networking" And Right(item, -2) <> "preseed" And Right(item, -2) <> "disable_update_notifier" And Right(item, -2) <> "disable_hibernation" And Right(item, -2) <> "disable_kde_services" And Right(item, -2) <> "fix_language_selector" And Right(item, -2) <> "disable_trackerd" And Right(item, -2) <> "disable_updateinitramfs" And Right(item, -2) <> "kubuntu_disable_restart_notifications" And Right(item, -2) <> "kubuntu_mobile_session" Then Chmod "/usr/share/initramfs-tools/scripts/casper-bottom/" & item To "rw-r--r--"
-
-    Next
-
-    For Each item In Dir("/usr/share/initramfs-tools/scripts/casper-bottom", "[^.]*", gb.File)
-
-      If Right(item, -2) <> "integrity_check" And Right(item, -2) <> "mountpoints" And Right(item, -2) <> "fstab" And Right(item, -2) <> "swap" And Right(item, -2) <> "xconfig" And Right(item, -2) <> "networking" And Right(item, -2) <> "preseed" And Right(item, -2) <> "disable_update_notifier" And Right(item, -2) <> "disable_hibernation" And Right(item, -2) <> "disable_kde_services" And Right(item, -2) <> "fix_language_selector" And Right(item, -2) <> "disable_trackerd" And Right(item, -2) <> "disable_updateinitramfs" And Right(item, -2) <> "kubuntu_disable_restart_notifications" And Right(item, -2) <> "kubuntu_mobile_session" Then Chmod "/usr/share/initramfs-tools/scripts/casper-bottom/" & item To "rw-r--r--"
+      If item Not Like "*{integrity_check,mountpoints,fstab,swap,xconfig,networking,preseed,disable_update_notifier,disable_hibernation,disable_kde_services,fix_language_selector,disable_trackerd,disable_updateinitramfs,kubuntu_disable_restart_notifications,kubuntu_mobile_session}" Then Chmod "/usr/share/initramfs-tools/scripts/casper-bottom/" & item To "rw-r--r--"
 
     Next
 
@@ -12033,7 +12082,7 @@ Public Sub livecreatenew_Click()
 
     For Each item In Dir("/usr/share/initramfs-tools/scripts/casper-bottom", "[^.]*", gb.File)
 
-      If Right(item, -2) <> "integrity_check" And Right(item, -2) <> "mountpoints" And Right(item, -2) <> "fstab" And Right(item, -2) <> "swap" And Right(item, -2) <> "xconfig" And Right(item, -2) <> "networking" And Right(item, -2) <> "preseed" And Right(item, -2) <> "disable_update_notifier" And Right(item, -2) <> "disable_hibernation" And Right(item, -2) <> "disable_kde_services" And Right(item, -2) <> "fix_language_selector" And Right(item, -2) <> "disable_trackerd" And Right(item, -2) <> "disable_updateinitramfs" And Right(item, -2) <> "kubuntu_disable_restart_notifications" And Right(item, -2) <> "kubuntu_mobile_session" Then Chmod "/usr/share/initramfs-tools/scripts/casper-bottom/" & item To "rwxr-xr-x"
+      If item Not Like "*{integrity_check,mountpoints,fstab,swap,xconfig,networking,preseed,disable_update_notifier,disable_hibernation,disable_kde_services,fix_language_selector,disable_trackerd,disable_updateinitramfs,kubuntu_disable_restart_notifications,kubuntu_mobile_session}" Then Chmod "/usr/share/initramfs-tools/scripts/casper-bottom/" & item To "rwxr-xr-x"
 
     Next
 
@@ -12079,7 +12128,7 @@ Public Sub livecreatenew_Click()
   If Exist("/var/" & btmp)
 
     If prun = Null Then Return
-    wproc = Exec ["rm", "-rf", "/var/" & btmp]
+    wproc = Exec ["systemback", "rmdir", "/var/" & btmp]
     wprocwait
     If prun = Null Then Return
 
@@ -12100,7 +12149,7 @@ Public Sub livecreatenew_Click()
 
         Try Mkdir "/var/" & btmp & "/var/log/" & item
 
-      Else If .Type = gb.File And Right(item, 2) <> ".0" And Right(item, 2) <> ".1" And Right(item, 3) <> ".gz" And Right(item, 4) <> ".old"
+      Else If .Type = gb.File And item Not Like "*.{0,1,gz,old}"
 
         Try File.Save("/var/" & btmp & "/var/log/" & item, Null)
 
@@ -12138,7 +12187,7 @@ Public Sub livecreatenew_Click()
 
   If prun = Null Then Return
 
-  rproc = Exec ["rm", "-rf", "/" & btmp, "/media/" & btmp, "/var/" & btmp]
+  rproc = Exec ["systemback", "rmdir", "/" & btmp, "/media/" & btmp, "/var/" & btmp]
 
   While rproc.State = Process.Running
 
@@ -12217,7 +12266,7 @@ Public Sub livecreatenew_Click()
 
         If Exist("/home/" & btmp)
 
-          wproc = Exec ["rm", "-rf", "/home/" & btmp]
+          wproc = Exec ["systemback", "rmdir", "/home/" & btmp]
           wprocwait
           If prun = Null Then Return
 
@@ -12228,7 +12277,7 @@ Public Sub livecreatenew_Click()
 
         If Exist("/root/" & btmp)
 
-          wproc = Exec ["rm", "-rf", "/root/" & btmp]
+          wproc = Exec ["systemback", "rmdir", "/root/" & btmp]
           wprocwait
           If prun = Null Then Return
 
@@ -12251,7 +12300,7 @@ Public Sub livecreatenew_Click()
       While Not Eof(ofile)
         Line Input #ofile, cline
 
-        If Left(cline) = "."
+        If cline Begins "."
 
           elist &= ",'/" & cline & "'"
 
@@ -12360,7 +12409,7 @@ Public Sub livecreatenew_Click()
 
       If Exist("/home/" & btmp)
 
-        rproc = Exec ["rm", "-rf", "/home/" & btmp, "/root/" & btmp]
+        rproc = Exec ["systemback", "rmdir", "/home/" & btmp, "/root/" & btmp]
 
         While rproc.State = Process.Running
 
@@ -12394,7 +12443,7 @@ Public Sub livecreatenew_Click()
           File.Save(lwdir & "/.sblivesystemcreate/syslinux/syslinux.cfg", "default vesamenu.c32\nprompt 0\ntimeout 100\n\nmenu title Systemback Live (" & ifname & ")\nmenu tabmsg " & ("Press TAB key to edit") & "\nmenu background splash.png\n\nlabel live\n  menu label " & ("Boot Live system") & "\n  kernel /" & lvtype & "/vmlinuz\n  append" & rpart & "boot=" & lvtype & " initrd=/" & lvtype & "/initrd.gz quiet splash\n\nlabel safe\n  menu label " & ("Boot Live in safe graphics mode") & "\n  kernel /" & lvtype & "/vmlinuz\n  append" & rpart & "boot=" & lvtype & " initrd=/" & lvtype & "/initrd.gz xforcevesa nomodeset quiet splash\n\n" & srxorg & "label debug\n  menu label " & ("Boot Live in debug mode") & "\n  kernel /" & lvtype & "/vmlinuz\n  append" & rpart & "boot=" & lvtype & " initrd=/" & lvtype & "/initrd.gz\n")
 
           If prun = Null Then Return
-          wproc = Exec ["rm", "-rf", lwdir & "/.sblivesystemcreate/.systemback"]
+          wproc = Exec ["systemback", "rmdir", lwdir & "/.sblivesystemcreate/.systemback"]
           wprocwait
           If prun = Null Then Return
 
@@ -12404,7 +12453,7 @@ Public Sub livecreatenew_Click()
           If Exist(lwdir & "/.sblivesystemcreate/usersettings")
 
             If prun = Null Then Return
-            wproc = Exec ["rm", "-rf", lwdir & "/.sblivesystemcreate/usersettings"]
+            wproc = Exec ["systemback", "rmdir", lwdir & "/.sblivesystemcreate/usersettings"]
             wprocwait
 
           Endif
@@ -12451,7 +12500,7 @@ Public Sub livecreatenew_Click()
 
   Endif
 
-  Exec ["rm", "-rf", lwdir & "/.sblivesystemcreate"]
+  Exec ["systemback", "rmdir", lwdir & "/.sblivesystemcreate"]
 
   dialogopen
 
@@ -12662,7 +12711,7 @@ Public Sub pointexclude_Click()
     While Not Eof(ofile)
       Line Input #ofile, cline
 
-      If Left(cline) = "."
+      If cline Begins "."
 
         If pointexclude.Value Then excludedlist.Add(cline)
 
@@ -12693,7 +12742,7 @@ Public Sub pointexclude_Click()
 
         For Each item In Dir("/home/" & usr)
 
-          If Left(item) = "." And pointexclude.Value Or If Left(item) <> "." And liveexclude.Value
+          If item Begins "." And pointexclude.Value Or If item Not Begins "." And liveexclude.Value
 
             If excludedlist.Find(item) = -1 And item Not Like ".{gvfs,Xauthority}"
 
@@ -12754,7 +12803,7 @@ Public Sub pointexclude_Click()
 
   For Each item In Dir("/root")
 
-    If Left(item) = "." And pointexclude.Value Or If Left(item) <> "." And liveexclude.Value
+    If item Begins "." And pointexclude.Value Or If item Not Begins "." And liveexclude.Value
 
       If excludedlist.Find(item) = -1 And item Not Like ".{gvfs,Xauthority}"
 
@@ -13108,7 +13157,7 @@ Public Sub liveconvert_Click()
   If Exist(lwdir & "/.sblivesystemconvert")
 
     If prun = Null Then Return
-    wproc = Exec ["rm", "-rf", lwdir & "/.sblivesystemconvert"]
+    wproc = Exec ["systemback", "rmdir", lwdir & "/.sblivesystemconvert"]
     wprocwait
     If prun = Null Then Return
 
@@ -13182,7 +13231,7 @@ Public Sub liveconvert_Click()
 
   End With
 
-  wproc = Exec ["rm", "-rf", lwdir & "/.sblivesystemconvert"]
+  wproc = Exec ["systemback", "rmdir", lwdir & "/.sblivesystemconvert"]
   wprocwait
   If prun = Null Then Return
 
@@ -14694,7 +14743,7 @@ Public Sub admins_Click()
     While Len(pfix) < 16
 
       char = Mid(chars, Int(Rnd(1, 62)), 1)
-      If Right(pfix) <> char Then pfix &= char
+      If pfix Not Ends char Then pfix &= char
 
     Wend
 

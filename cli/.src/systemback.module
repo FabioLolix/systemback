@@ -15,8 +15,10 @@
 ' You should have received a copy of the GNU General Public License
 ' along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Private Extern Hlink(oldpath As String, newpath As String) In "libc:6" Exec "link"
-Private Extern Ipcopy(sourceitem As String, newitem As String) In "/usr/lib/systemback/ipcopy" Exec "ipcopy"
+Private Extern Sync() In "libc:6" Exec "sync"
+Private Extern Hlink(oldpath As String, newpath As String) As Boolean In "libc:6" Exec "link"
+Private Extern Cpertime(sourceitem As String, newitem As String) As Boolean In "/usr/lib/systemback/systemback" Exec "cpertime"
+Private Extern Cpdir(sourcedir As String, newdir As String) As Boolean In "/usr/lib/systemback/systemback" Exec "cpdir"
 Private ptimer As New Timer As "progress"
 Private slock As Stream
 Private dlock As Stream
@@ -96,7 +98,11 @@ Public Sub Main()
 
   With Application
 
-    If .Args.Count = 3 And .Args[1] = "rmdir"
+    If .Args.Count = 2 And .Args[1] = "sync"
+
+      Sync()
+
+    Else If .Args.Count = 3 And .Args[1] = "rmdir"
 
       Dclean(.Args[2])
 
@@ -122,7 +128,7 @@ Public Sub Main()
         Print help
         Exec ["tput", "sgr0"] Wait
 
-      Else If User.Name = "root"
+      Else If User.Id = 0
 
         ptimer.Delay = 2000
 
@@ -552,7 +558,7 @@ Private Sub pointdelete()
   wprocwait
 
   prun = ("Emptying cache")
-  wproc = Exec ["sync"]
+  wproc = Exec ["systemback", "sync"] For Read
   wprocwait
   File.Save("/proc/sys/vm/drop_caches", "3")
 
@@ -1528,7 +1534,7 @@ Private Sub newrestorepoint()
     File.Save(fsdir & "/.sbschedule", Null)
 
     prun = ("Emptying cache")
-    wproc = Exec ["sync"] For Read
+    wproc = Exec ["systemback", "sync"] For Read
     wprocwait
     File.Save("/proc/sys/vm/drop_caches", "3")
 
@@ -1948,55 +1954,84 @@ Private Sub rpsync()
 
   Dim ofile As File
   Dim elmod As Date
-  Dim elist As New String[]
-  Dim usr, cline, item, cdir, fdir, exitem, dtime, eusr, egrp, eauth, excl As String
+  Dim usrs, cditms, home1itms, home2itms, home3itms, home4itms, home5itms, rootitms, binitms, bootitms, etcitms, libitms, lib32itms, lib64itms, optitms, sbinitms, selinuxitms, srvitms, usritms, varitms, elist As New String[]
+  Dim dtime As String = Application.Args[2]
+  Dim usr, cline, item, cdir, fdir, exitem, eusr, egrp, eauth, excl As String
   Dim esize As Long
   Dim anum, cnum As Integer
   Dim cperc, pperc As Byte
   Dim nxt As Boolean
 
-  ofile = Open "/etc/passwd" For Read
-  While Not Eof(ofile)
-    Line Input #ofile, cline
-
-    If cline Like "*:/home/*"
-
-      usr = Left(cline, InStr(cline, ":") - 1)
-
-      If IsDir("/home/" & usr)
-
-        anum = anum + RDir("/home/" & usr, ".*").Count
-
-      Endif
-
-    Endif
-
-  Wend
-
-  If IsDir("/root") Then anum = anum + RDir("/root", ".*").Count
-  If IsDir("/bin") Then anum = anum + RDir("/bin").Count
-  If IsDir("/boot") Then anum = anum + RDir("/boot").Count
-  If IsDir("/etc") Then anum = anum + RDir("/etc").Count
-  If IsDir("/lib") Then anum = anum + RDir("/lib").Count
-  If IsDir("/lib32") Then anum = anum + RDir("/lib32").Count
-  If IsDir("/lib64") Then anum = anum + RDir("/lib64").Count
-  If IsDir("/opt") Then anum = anum + RDir("/opt").Count
-  If IsDir("/sbin") Then anum = anum + RDir("/sbin").Count
-  If IsDir("/selinux") Then anum = anum + RDir("/selinux").Count
-  If IsDir("/srv") Then anum = anum + RDir("/srv").Count
-  If IsDir("/usr") Then anum = anum + RDir("/usr").Count
-  If IsDir("/var") Then anum = anum + RDir("/var").Count
-  File.Save(tmp & "pointpercent", 0)
-
-  dtime = Application.Args[2]
   Mkdir fsdir & "/.S00_" & dtime
 
   If IsDir("/home")
 
-    Mkdir fsdir & "/.S00_" & dtime & "/home"
-    Ipcopy("/home", fsdir & "/.S00_" & dtime & "/home")
+    If Cpdir("/home", fsdir & "/.S00_" & dtime & "/home") Then Quit 1
+
+    ofile = Open "/etc/passwd" For Read
+    While Not Eof(ofile)
+      Line Input #ofile, cline
+
+      If cline Like "*:/home/*"
+
+        usr = Left(cline, InStr(cline, ":") - 1)
+
+        If IsDir("/home/" & usr)
+
+          usrs.Add(usr)
+
+          Select Case usrs.Count
+
+            Case 1
+
+              home1itms = RDir("/home/" & usr, ".*")
+
+            Case 2
+
+              home2itms = RDir("/home/" & usr, ".*")
+
+            Case 3
+
+              home3itms = RDir("/home/" & usr, ".*")
+
+            Case 4
+
+              home4itms = RDir("/home/" & usr, ".*")
+
+            Case 5
+
+              home5itms = RDir("/home/" & usr, ".*")
+
+            Case Else
+
+              anum = anum + RDir("/home/" & usr, ".*").Count
+
+          End Select
+
+        Endif
+
+      Endif
+
+    Wend
+    Close #ofile
 
   Endif
+
+  If IsDir("/root") Then rootitms = RDir("/root", ".*")
+  If IsDir("/bin") Then binitms = RDir("/bin")
+  If IsDir("/boot") Then bootitms = RDir("/boot")
+  If IsDir("/etc") Then etcitms = RDir("/etc")
+  If IsDir("/lib") Then libitms = RDir("/lib")
+  If IsDir("/lib32") Then lib32itms = RDir("/lib32")
+  If IsDir("/lib64") Then lib64itms = RDir("/lib64")
+  If IsDir("/opt") Then optitms = RDir("/opt")
+  If IsDir("/sbin") Then sbinitms = RDir("/sbin")
+  If IsDir("/selinux") Then selinuxitms = RDir("/selinux")
+  If IsDir("/srv") Then srvitms = RDir("/srv")
+  If IsDir("/usr") Then usritms = RDir("/usr")
+  If IsDir("/var") Then varitms = RDir("/var")
+  anum = anum + home1itms.Count + home2itms.Count + home3itms.Count + home4itms.Count + home5itms.Count + rootitms.Count + binitms.Count + bootitms.Count + etcitms.Count + libitms.Count + lib32itms.Count + lib64itms.Count + optitms.Count + sbinitms.Count + selinuxitms.Count + srvitms.Count + usritms.Count + varitms.Count
+  File.Save(tmp & "pointpercent", 0)
 
   With elist
 
@@ -2017,127 +2052,39 @@ Private Sub rpsync()
 
   End With
 
-  ofile = Open "/etc/passwd" For Read
-  While Not Eof(ofile)
-    Line Input #ofile, cline
+  For Each usr In usrs
 
-    If cline Like "*:/home/*"
+    If Cpdir("/home/" & usr, fsdir & "/.S00_" & dtime & "/home/" & usr) Then Quit 1
 
-      usr = Left(cline, InStr(cline, ":") - 1)
+    Select Case usrs.Find(usr)
 
-      If IsDir("/home/" & usr)
+      Case 0
 
-        Mkdir fsdir & "/.S00_" & dtime & "/home/" & usr
-        Ipcopy("/home/" & usr, fsdir & "/.S00_" & dtime & "/home/" & usr)
+        cditms = home1itms
 
-        For Each item In RDir("/home/" & usr, ".*")
+      Case 1
 
-          cnum = cnum + 1
-          cperc = Int(cnum / anum * 100)
+        cditms = home2itms
 
-          If Not Exist(tmp & "pointpercent") And cperc > pperc
+      Case 2
 
-            File.Save(tmp & "pointpercent", cperc)
-            pperc = cperc
+        cditms = home3itms
 
-          Endif
+      Case 3
 
-          If nxt = True Then nxt = False
+        cditms = home4itms
 
-          For Each excl In elist
+      Case 4
 
-            If item Begins excl Or item Ends "~"
+        cditms = home5itms
 
-              nxt = True
-              Break
+      Case Else
 
-            Endif
+        cditms = RDir("/home/" & usr, ".*")
 
-          Next
+    End Select
 
-          If nxt = False
-
-            With Stat("/home/" & usr & "/" & item)
-
-              Select Case True
-
-                Case .Type = gb.Link
-
-                  Link .Link To fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item
-                  Continue
-
-                Case .Type = gb.Directory
-
-                  Mkdir fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item
-
-                Case .Type = gb.File
-
-                  If .Size > 8000000
-
-                    Continue
-
-                  Else
-
-                    For Each exitem In Dir(fsdir, "[SH][01][0-9]_*", gb.Directory)
-
-                      If Exist(fsdir & "/" & exitem & "/home/" & usr & "/" & item)
-
-                        With Stat(fsdir & "/" & exitem & "/home/" & usr & "/" & item)
-
-                          esize = .Size
-                          elmod = .LastModified
-                          eusr = .User
-                          egrp = .Group
-                          eauth = .Auth
-
-                        End With
-
-                        If esize = .Size And elmod = .LastModified And eusr = .User And egrp = .Group And eauth = .Auth
-
-                          Hlink(fsdir & "/" & exitem & "/home/" & usr & "/" & item, fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
-                          Break
-
-                        Endif
-
-                      Endif
-
-                    Next
-
-                    If Exist(fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
-
-                      Continue
-
-                    Else
-
-                      Copy "/home/" & usr & "/" & item To fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item
-
-                    Endif
-
-                  Endif
-
-              End Select
-
-              Ipcopy("/home/" & usr & "/" & item, fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
-
-            End With
-
-          Endif
-
-        Next
-
-      Endif
-
-    Endif
-
-  Wend
-  Close #ofile
-
-  If IsDir("/root")
-
-    Mkdir fsdir & "/.S00_" & dtime & "/root"
-    Ipcopy("/root", fsdir & "/.S00_" & dtime & "/root")
-
-    For Each item In RDir("/root", ".*")
+    For Each item In cditms
 
       cnum = cnum + 1
       cperc = Int(cnum / anum * 100)
@@ -2164,69 +2111,158 @@ Private Sub rpsync()
 
       If nxt = False
 
-        With Stat("/root/" & item)
+        If Exist("/home/" & usr & "/" & item)
 
-          Select Case True
+          With Stat("/home/" & usr & "/" & item)
 
-            Case .Type = gb.Link
+            Select Case .Type
 
-              Link .Link To fsdir & "/.S00_" & dtime & "/root/" & item
-              Continue
+              Case gb.Link
 
-            Case .Type = gb.Directory
+                Link .Link To fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item
 
-              Mkdir fsdir & "/.S00_" & dtime & "/root/" & item
+              Case gb.Directory
 
-            Case .Type = gb.File
+                If Cpdir("/home/" & usr & "/" & item, fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item) Then Quit 1
 
-              If .Size > 8000000
+              Case gb.File
 
-                Continue
+                If .Size <= 8000000
 
-              Else
+                  For Each exitem In Dir(fsdir, "[SH][01][0-9]_*", gb.Directory)
 
-                For Each exitem In Dir(fsdir, "[SH][01][0-9]_*", gb.Directory)
+                    If Exist(fsdir & "/" & exitem & "/home/" & usr & "/" & item)
 
-                  If Exist(fsdir & "/" & exitem & "/root/" & item)
+                      With Stat(fsdir & "/" & exitem & "/home/" & usr & "/" & item)
 
-                    With Stat(fsdir & "/" & exitem & "/root/" & item)
+                        esize = .Size
+                        elmod = .LastModified
+                        eusr = .User
+                        egrp = .Group
+                        eauth = .Auth
 
-                      esize = .Size
-                      elmod = .LastModified
-                      eusr = .User
-                      egrp = .Group
-                      eauth = .Auth
+                      End With
 
-                    End With
+                      If esize = .Size And elmod = .LastModified And eusr = .User And egrp = .Group And eauth = .Auth
 
-                    If esize = .Size And elmod = .LastModified And eusr = .User And egrp = .Group And eauth = .Auth
+                        Hlink(fsdir & "/" & exitem & "/home/" & usr & "/" & item, fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
+                        Break
 
-                      Hlink(fsdir & "/" & exitem & "/root/" & item, fsdir & "/.S00_" & dtime & "/root/" & item)
-                      Break
+                      Endif
 
                     Endif
 
+                  Next
+
+                  If Not Exist(fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
+
+                    Copy "/home/" & usr & "/" & item To fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item
+                    Cpertime("/home/" & usr & "/" & item, fsdir & "/.S00_" & dtime & "/home/" & usr & "/" & item)
+
                   Endif
-
-                Next
-
-                If Exist(fsdir & "/.S00_" & dtime & "/root/" & item)
-
-                  Continue
-
-                Else
-
-                  Copy "/root/" & item To fsdir & "/.S00_" & dtime & "/root/" & item
 
                 Endif
 
-              Endif
+            End Select
 
-          End Select
+          End With
 
-          Ipcopy("/root/" & item, fsdir & "/.S00_" & dtime & "/root/" & item)
+        Endif
 
-        End With
+      Endif
+
+    Next
+
+  Next
+
+  If IsDir("/root")
+
+    If Cpdir("/root", fsdir & "/.S00_" & dtime & "/root") Then Quit 1
+
+    For Each item In rootitms
+
+      cnum = cnum + 1
+      cperc = Int(cnum / anum * 100)
+
+      If Not Exist(tmp & "pointpercent") And cperc > pperc
+
+        File.Save(tmp & "pointpercent", cperc)
+        pperc = cperc
+
+      Endif
+
+      If nxt = True Then nxt = False
+
+      For Each excl In elist
+
+        If item Begins excl Or item Ends "~"
+
+          nxt = True
+          Break
+
+        Endif
+
+      Next
+
+      If nxt = False
+
+        If Exist("/root/" & item)
+
+          With Stat("/root/" & item)
+
+            Select Case .Type
+
+              Case gb.Link
+
+                Link .Link To fsdir & "/.S00_" & dtime & "/root/" & item
+
+              Case gb.Directory
+
+                If Cpdir("/root/" & item, fsdir & "/.S00_" & dtime & "/root/" & item) Then Quit 1
+
+              Case gb.File
+
+                If .Size <= 8000000
+
+                  For Each exitem In Dir(fsdir, "[SH][01][0-9]_*", gb.Directory)
+
+                    If Exist(fsdir & "/" & exitem & "/root/" & item)
+
+                      With Stat(fsdir & "/" & exitem & "/root/" & item)
+
+                        esize = .Size
+                        elmod = .LastModified
+                        eusr = .User
+                        egrp = .Group
+                        eauth = .Auth
+
+                      End With
+
+                      If esize = .Size And elmod = .LastModified And eusr = .User And egrp = .Group And eauth = .Auth
+
+                        Hlink(fsdir & "/" & exitem & "/root/" & item, fsdir & "/.S00_" & dtime & "/root/" & item)
+                        Break
+
+                      Endif
+
+                    Endif
+
+                  Next
+
+                  If Not Exist(fsdir & "/.S00_" & dtime & "/root/" & item)
+
+                    Copy "/root/" & item To fsdir & "/.S00_" & dtime & "/root/" & item
+                    Cpertime("/root/" & item, fsdir & "/.S00_" & dtime & "/root/" & item)
+
+                  Endif
+
+                Endif
+
+            End Select
+
+          End With
+
+        Endif
 
       Endif
 
@@ -2236,11 +2272,7 @@ Private Sub rpsync()
 
   For Each item In Dir("/", "{initrd.img,vmlinuz}*", gb.Link)
 
-    With Stat("/" & item)
-
-      If .Type = gb.Link Then Link .Link To fsdir & "/.S00_" & dtime & "/" & item
-
-    End With
+    Link Stat("/" & item).Link To fsdir & "/.S00_" & dtime & "/" & item
 
   Next
 
@@ -2248,8 +2280,7 @@ Private Sub rpsync()
 
     If IsDir(cdir)
 
-      Mkdir fsdir & "/.S00_" & dtime & cdir
-      Ipcopy(cdir, fsdir & "/.S00_" & dtime & cdir)
+      If Cpdir(cdir, fsdir & "/.S00_" & dtime & cdir) Then Quit 1
 
     Endif
 
@@ -2267,10 +2298,61 @@ Private Sub rpsync()
 
     If IsDir(cdir)
 
-      Mkdir fsdir & "/.S00_" & dtime & cdir
-      Ipcopy(cdir, fsdir & "/.S00_" & dtime & cdir)
+      If Cpdir(cdir, fsdir & "/.S00_" & dtime & cdir) Then Quit 1
 
-      For Each item In RDir(cdir)
+      Select Case cdir
+
+        Case "/bin"
+
+          cditms = binitms
+
+        Case "/boot"
+
+          cditms = bootitms
+
+        Case "/etc"
+
+          cditms = etcitms
+
+        Case "/lib"
+
+          cditms = libitms
+
+        Case "/lib32"
+
+          cditms = lib32itms
+
+        Case "/lib64"
+
+          cditms = lib64itms
+
+        Case "/opt"
+
+          cditms = optitms
+
+        Case "/sbin"
+
+          cditms = sbinitms
+
+        Case "/selinux"
+
+          cditms = selinuxitms
+
+        Case "/srv"
+
+          cditms = srvitms
+
+        Case "/usr"
+
+          cditms = usritms
+
+        Case "/var"
+
+          cditms = varitms
+
+      End Select
+
+      For Each item In cditms
 
         cnum = cnum + 1
         cperc = Int(cnum / anum * 100)
@@ -2299,18 +2381,17 @@ Private Sub rpsync()
 
           With Stat(cdir & "/" & item)
 
-            Select Case True
+            Select Case .Type
 
-              Case .Type = gb.Link
+              Case gb.Link
 
                 Link .Link To fsdir & "/.S00_" & dtime & cdir & "/" & item
-                Continue
 
-              Case .Type = gb.Directory
+              Case gb.Directory
 
-                Mkdir fsdir & "/.S00_" & dtime & cdir & "/" & item
+                If Cpdir(cdir & "/" & item, fsdir & "/.S00_" & dtime & cdir & "/" & item) Then Quit 1
 
-              Case .Type = gb.File
+              Case gb.File
 
                 For Each exitem In Dir(fsdir, "[SH][01][0-9]_*", gb.Directory)
 
@@ -2337,19 +2418,14 @@ Private Sub rpsync()
 
                 Next
 
-                If Exist(fsdir & "/.S00_" & dtime & cdir & "/" & item)
-
-                  Continue
-
-                Else
+                If Not Exist(fsdir & "/.S00_" & dtime & cdir & "/" & item)
 
                   Copy cdir & "/" & item To fsdir & "/.S00_" & dtime & cdir & "/" & item
+                  Cpertime(cdir & "/" & item, fsdir & "/.S00_" & dtime & cdir & "/" & item)
 
                 Endif
 
             End Select
-
-            Ipcopy(cdir & "/" & item, fsdir & "/.S00_" & dtime & cdir & "/" & item)
 
           End With
 
@@ -2396,8 +2472,7 @@ Private Sub rpsync()
 
               If Not IsDir(fsdir & "/.S00_" & dtime & "/media/" & fdir)
 
-                Mkdir fsdir & "/.S00_" & dtime & "/media/" & fdir
-                Ipcopy("/media/" & fdir, fsdir & "/.S00_" & dtime & "/media/" & fdir)
+                If Cpdir("/media/" & fdir, fsdir & "/.S00_" & dtime & "/media/" & fdir) Then Quit 1
 
               Endif
 
@@ -2422,21 +2497,20 @@ Private Sub rpsync()
 
       If .Type = gb.Directory
 
-        Mkdir fsdir & "/.S00_" & dtime & "/var/log/" & item
+        If Cpdir("/var/log/" & item, fsdir & "/.S00_" & dtime & "/var/log/" & item) Then Quit 1
 
       Else If .Type = gb.File And item Not Like "*.{0,1,gz,old}"
 
         File.Save(fsdir & "/.S00_" & dtime & "/var/log/" & item, Null)
+        Cpertime("/var/log/" & item, fsdir & "/.S00_" & dtime & "/var/log/" & item)
 
       Endif
-
-      Ipcopy("/var/log/" & item, fsdir & "/.S00_" & dtime & "/var/log/" & item)
 
     End With
 
   Next
 
-  If Dfree(fsdir) < 104857600 Then Quit 1
+  If Dfree(fsdir) < 104857600 Then Quit 2
 
 End
 
@@ -2444,7 +2518,7 @@ Private Sub srsync()
 
   Dim ofile As File
   Dim olmod As Date
-  Dim elist As New String[]
+  Dim usrs, cditms, home1itms, rphome1itms, home2itms, rphome2itms, home3itms, rphome3itms, home4itms, rphome4itms, home5itms, rphome5itms, rootitms, rprootitms, binitms, rpbinitms, bootitms, rpbootitms, etcitms, rpetcitms, libitms, rplibitms, lib32itms, rplib32itms, lib64itms, rplib64itms, optitms, rpoptitms, sbinitms, rpsbinitms, selinuxitms, rpselinuxitms, srvitms, rpsrvitms, usritms, rpusritms, varitms, rpvaritms, elist As New String[]
   Dim uname As String = Application.Args[3]
   Dim usr, cline, item, cdir, excl, olnk As String
   Dim osize As Long
@@ -2463,8 +2537,41 @@ Private Sub srsync()
 
         If uname = usr Or If mthd <> 4 And mthd <> 6
 
-          If IsDir("/home/" & usr) Then anum = anum + RDir("/home/" & usr, ".*").Count
-          anum = anum + RDir(fsdir & "/" & pname & "/home").Count - Dir(fsdir & "/" & pname & "/home").Count
+          usrs.Add(usr)
+
+          Select Case usrs.Count
+
+            Case 1
+
+              If IsDir("/home/" & usr) Then home1itms = RDir("/home/" & usr, ".*")
+              rphome1itms = RDir(fsdir & "/" & pname & "/home/" & usr)
+
+            Case 2
+
+              If IsDir("/home/" & usr) Then home2itms = RDir("/home/" & usr, ".*")
+              rphome2itms = RDir(fsdir & "/" & pname & "/home/" & usr)
+
+            Case 3
+
+              If IsDir("/home/" & usr) Then home3itms = RDir("/home/" & usr, ".*")
+              rphome3itms = RDir(fsdir & "/" & pname & "/home/" & usr)
+
+            Case 4
+
+              If IsDir("/home/" & usr) Then home4itms = RDir("/home/" & usr, ".*")
+              rphome4itms = RDir(fsdir & "/" & pname & "/home/" & usr)
+
+            Case 5
+
+              If IsDir("/home/" & usr) Then home5itms = RDir("/home/" & usr, ".*")
+              rphome5itms = RDir(fsdir & "/" & pname & "/home/" & usr)
+
+            Case Else
+
+              If IsDir("/home/" & usr) Then anum = anum + RDir("/home/" & usr, ".*").Count
+              anum = anum + RDir(fsdir & "/" & pname & "/home/" & usr).Count
+
+          End Select
 
         Endif
 
@@ -2476,49 +2583,51 @@ Private Sub srsync()
 
       If uname = "root" Or If mthd <> 4 And mthd <> 6
 
-        If IsDir("/root") Then anum = anum + RDir("/root", ".*").Count
-        anum = anum + RDir(fsdir & "/" & pname & "/root").Count
+        If IsDir("/root") Then rootitms = RDir("/root", ".*")
+        rprootitms = RDir(fsdir & "/" & pname & "/root")
 
       Endif
 
     Endif
 
+    anum = anum + home1itms.Count + rphome1itms.Count + home2itms.Count + rphome2itms.Count + home3itms.Count + rphome3itms.Count + home4itms.Count + rphome4itms.Count + home5itms.Count + rphome5itms.Count + rootitms.Count + rprootitms.Count
+
   Endif
 
   If mthd = 1 Or mthd = 2
 
-    If IsDir("/bin") Then anum = anum + RDir("/bin").Count
-    If IsDir("/boot") Then anum = anum + RDir("/boot").Count
-    If IsDir("/etc") Then anum = anum + RDir("/etc").Count
-    If IsDir("/lib") Then anum = anum + RDir("/lib").Count
-    If IsDir("/lib32") Then anum = anum + RDir("/lib32").Count
-    If IsDir("/lib64") Then anum = anum + RDir("/lib64").Count
-    If IsDir("/opt") Then anum = anum + RDir("/opt").Count
-    If IsDir("/sbin") Then anum = anum + RDir("/sbin").Count
-    If IsDir("/selinux") Then anum = anum + RDir("/selinux").Count
-    If IsDir("/srv") Then anum = anum + RDir("/srv").Count
-    If IsDir("/usr") Then anum = anum + RDir("/usr").Count
-    If IsDir("/var") Then anum = anum + RDir("/var").Count
-    If IsDir(fsdir & "/" & pname & "/bin") Then anum = anum + RDir(fsdir & "/" & pname & "/bin").Count
-    If IsDir(fsdir & "/" & pname & "/boot") Then anum = anum + RDir(fsdir & "/" & pname & "/boot").Count
-    If IsDir(fsdir & "/" & pname & "/etc") Then anum = anum + RDir(fsdir & "/" & pname & "/etc").Count
-    If IsDir(fsdir & "/" & pname & "/lib") Then anum = anum + RDir(fsdir & "/" & pname & "/lib").Count
-    If IsDir(fsdir & "/" & pname & "/lib32") Then anum = anum + RDir(fsdir & "/" & pname & "/lib32").Count
-    If IsDir(fsdir & "/" & pname & "/lib64") Then anum = anum + RDir(fsdir & "/" & pname & "/lib64").Count
-    If IsDir(fsdir & "/" & pname & "/opt") Then anum = anum + RDir(fsdir & "/" & pname & "/opt").Count
-    If IsDir(fsdir & "/" & pname & "/sbin") Then anum = anum + RDir(fsdir & "/" & pname & "/sbin").Count
-    If IsDir(fsdir & "/" & pname & "/selinux") Then anum = anum + RDir(fsdir & "/" & pname & "/selinux").Count
-    If IsDir(fsdir & "/" & pname & "/srv") Then anum = anum + RDir(fsdir & "/" & pname & "/srv").Count
-    If IsDir(fsdir & "/" & pname & "/usr") Then anum = anum + RDir(fsdir & "/" & pname & "/usr").Count
-    If IsDir(fsdir & "/" & pname & "/var") Then anum = anum + RDir(fsdir & "/" & pname & "/var").Count
-
+    If IsDir("/bin") Then binitms = RDir("/bin")
+    If IsDir("/boot") Then bootitms = RDir("/boot")
+    If IsDir("/etc") Then etcitms = RDir("/etc")
+    If IsDir("/lib") Then libitms = RDir("/lib")
+    If IsDir("/lib32") Then lib32itms = RDir("/lib32")
+    If IsDir("/lib64") Then lib64itms = RDir("/lib64")
+    If IsDir("/opt") Then optitms = RDir("/opt")
+    If IsDir("/sbin") Then sbinitms = RDir("/sbin")
+    If IsDir("/selinux") Then selinuxitms = RDir("/selinux")
+    If IsDir("/srv") Then srvitms = RDir("/srv")
+    If IsDir("/usr") Then usritms = RDir("/usr")
+    If IsDir("/var") Then varitms = RDir("/var")
+    If IsDir(fsdir & "/" & pname & "/bin") Then rpbinitms = RDir(fsdir & "/" & pname & "/bin")
+    If IsDir(fsdir & "/" & pname & "/boot") Then rpbootitms = RDir(fsdir & "/" & pname & "/boot")
+    If IsDir(fsdir & "/" & pname & "/etc") Then rpetcitms = RDir(fsdir & "/" & pname & "/etc")
+    If IsDir(fsdir & "/" & pname & "/lib") Then rplibitms = RDir(fsdir & "/" & pname & "/lib")
+    If IsDir(fsdir & "/" & pname & "/lib32") Then rplib32itms = RDir(fsdir & "/" & pname & "/lib32")
+    If IsDir(fsdir & "/" & pname & "/lib64") Then rplib64itms = RDir(fsdir & "/" & pname & "/lib64")
+    If IsDir(fsdir & "/" & pname & "/opt") Then rpoptitms = RDir(fsdir & "/" & pname & "/opt")
+    If IsDir(fsdir & "/" & pname & "/sbin") Then rpsbinitms = RDir(fsdir & "/" & pname & "/sbin")
+    If IsDir(fsdir & "/" & pname & "/selinux") Then rpselinuxitms = RDir(fsdir & "/" & pname & "/selinux")
+    If IsDir(fsdir & "/" & pname & "/srv") Then rpsrvitms = RDir(fsdir & "/" & pname & "/srv")
+    If IsDir(fsdir & "/" & pname & "/usr") Then rpusritms = RDir(fsdir & "/" & pname & "/usr")
+    If IsDir(fsdir & "/" & pname & "/var") Then rpvaritms = RDir(fsdir & "/" & pname & "/var")
+    anum = anum + binitms.Count + rpbinitms.Count + bootitms.Count + rpbootitms.Count + etcitms.Count + rpetcitms.Count + libitms.Count + rplibitms.Count + lib32itms.Count + rplib32itms.Count + lib64itms.Count + rplib64itms.Count + optitms.Count + rpoptitms.Count + sbinitms.Count + rpsbinitms.Count + selinuxitms.Count + rpselinuxitms.Count + srvitms.Count + rpsrvitms.Count + usritms.Count + rpusritms.Count + varitms.Count + rpvaritms.Count
     File.Save(tmp & "restorepercent", 0)
+
     elist.Add("/etc/mtab")
     elist.Add("/var/lib/udisks/mtab")
     elist.Add("/var/tmp/")
     elist.Add("/var/run/")
     elist.Add("/usr/bin/systemback")
-    elist.Add("/usr/bin/sbstart")
     elist.Add("/etc/systemback")
     elist.Add("/etc/sudoers.d/99_systemback")
     elist.Add("/etc/xdg/autostart/sbschedule.desktop")
@@ -2530,7 +2639,59 @@ Private Sub srsync()
 
       If IsDir(cdir)
 
-        For Each item In RDir(cdir).Sort(gb.Descent)
+        Select Case cdir
+
+          Case "/bin"
+
+            cditms = binitms
+
+          Case "/boot"
+
+            cditms = bootitms
+
+          Case "/etc"
+
+            cditms = etcitms
+
+          Case "/lib"
+
+            cditms = libitms
+
+          Case "/lib32"
+
+            cditms = lib32itms
+
+          Case "/lib64"
+
+            cditms = lib64itms
+
+          Case "/opt"
+
+            cditms = optitms
+
+          Case "/sbin"
+
+            cditms = sbinitms
+
+          Case "/selinux"
+
+            cditms = selinuxitms
+
+          Case "/srv"
+
+            cditms = srvitms
+
+          Case "/usr"
+
+            cditms = usritms
+
+          Case "/var"
+
+            cditms = varitms
+
+        End Select
+
+        For Each item In cditms.Sort(gb.Descent)
 
           cnum = cnum + 1
           cperc = Int(cnum / anum * 100)
@@ -2561,9 +2722,9 @@ Private Sub srsync()
 
               With Stat(cdir & "/" & item)
 
-                Select Case True
+                Select Case .Type
 
-                  Case .Type = gb.Link
+                  Case gb.Link
 
                     If Exist(fsdir & "/" & pname & "/" & cdir & "/" & item)
 
@@ -2583,7 +2744,7 @@ Private Sub srsync()
 
                     Try Kill cdir & "/" & item
 
-                  Case .Type = gb.Directory
+                  Case gb.Directory
 
                     If Exist(fsdir & "/" & pname & "/" & cdir & "/" & item)
 
@@ -2593,7 +2754,7 @@ Private Sub srsync()
 
                     Try Rmdir cdir & "/" & item
 
-                  Case .Type = gb.File
+                  Case gb.File
 
                     If Exist(fsdir & "/" & pname & "/" & cdir & "/" & item)
 
@@ -2641,13 +2802,13 @@ Private Sub srsync()
 
           Endif
 
+          Cpertime(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
+
         Else
 
-          Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1)
+          Cpdir(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
 
         Endif
-
-        Ipcopy(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
 
       Else If Exist(Right(cdir, - RInStr(cdir, "/") + 1))
 
@@ -2670,15 +2831,67 @@ Private Sub srsync()
 
           Endif
 
+          Cpertime(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
+
         Else
 
-          Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1)
+          Cpdir(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
 
         Endif
 
-        Ipcopy(cdir, Right(cdir, - RInStr(cdir, "/") + 1))
+        Select Case Right(cdir, - RInStr(cdir, "/") + 1)
 
-        For Each item In RDir(cdir)
+          Case "/bin"
+
+            cditms = rpbinitms
+
+          Case "/boot"
+
+            cditms = rpbootitms
+
+          Case "/etc"
+
+            cditms = rpetcitms
+
+          Case "/lib"
+
+            cditms = rplibitms
+
+          Case "/lib32"
+
+            cditms = rplib32itms
+
+          Case "/lib64"
+
+            cditms = rplib64itms
+
+          Case "/opt"
+
+            cditms = rpoptitms
+
+          Case "/sbin"
+
+            cditms = rpsbinitms
+
+          Case "/selinux"
+
+            cditms = rpselinuxitms
+
+          Case "/srv"
+
+            cditms = rpsrvitms
+
+          Case "/usr"
+
+            cditms = rpusritms
+
+          Case "/var"
+
+            cditms = rpvaritms
+
+        End Select
+
+        For Each item In cditms
 
           cnum = cnum + 1
           cperc = Int(cnum / anum * 100)
@@ -2690,32 +2903,34 @@ Private Sub srsync()
 
           Endif
 
-          If Not Exist(Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
+          If Exist(Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
+
+            Cpertime(cdir & "/" & item, Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
+
+          Else
 
             With Stat(cdir & "/" & item)
 
-              Select Case True
+              Select Case .Type
 
-                Case .Type = gb.Link
+                Case gb.Link
 
                   Try Link .Link To Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item
-                  Continue
 
-                Case .Type = gb.Directory
+                Case gb.Directory
 
-                  Try Mkdir Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item
+                  Cpdir(cdir & "/" & item, Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
 
-                Case .Type = gb.File
+                Case gb.File
 
                   Try Copy cdir & "/" & item To Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item
+                  Cpertime(cdir & "/" & item, Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
 
               End Select
 
             End With
 
           Endif
-
-          Ipcopy(cdir & "/" & item, Right(cdir, - RInStr(cdir, "/") + 1) & "/" & item)
 
         Next
 
@@ -2744,15 +2959,19 @@ Private Sub srsync()
 
         Endif
 
+        Cpertime(fsdir & "/" & pname & "/media/" & item, "/media/" & item)
+
       Else
 
-        Try Mkdir "/media/" & item
+        Cpdir(fsdir & "/" & pname & "/media/" & item, "/media/" & item)
 
       Endif
 
-      Ipcopy(fsdir & "/" & pname & "/media/" & item, "/media/" & item)
-
     Next
+
+  Else
+
+    File.Save(tmp & "restorepercent", 0)
 
   Endif
 
@@ -2778,175 +2997,39 @@ Private Sub srsync()
 
     End With
 
-    If IsDir(fsdir & "/" & pname & "/home")
+    For Each usr In usrs
 
-      For Each usr In Dir(fsdir & "/" & pname & "/home", "*", gb.Directory)
+      If IsDir("/home/" & usr)
 
-        If uname = usr Or If mthd <> 4 And mthd <> 6
+        Select Case usrs.Find(usr)
 
-          If IsDir("/home/" & usr)
+          Case 0
 
-            For Each item In RDir("/home/" & usr, ".*").Sort(gb.Descent)
+            cditms = home1itms
 
-              cnum = cnum + 1
-              cperc = Int(cnum / anum * 100)
+          Case 1
 
-              If Not Exist(tmp & "restorepercent") And cperc > pperc
+            cditms = home2itms
 
-                File.Save(tmp & "restorepercent", cperc)
-                pperc = cperc
+          Case 2
 
-              Endif
+            cditms = home3itms
 
-              If nxt = True Then nxt = False
+          Case 3
 
-              For Each excl In elist
+            cditms = home4itms
 
-                If item Begins excl Or item Ends "~"
+          Case 4
 
-                  nxt = True
-                  Break
+            cditms = home5itms
 
-                Endif
+          Case Else
 
-              Next
+            cditms = RDir("/home/" & usr, ".*")
 
-              If nxt = False
+        End Select
 
-                With Stat("/home/" & usr & "/" & item)
-
-                  Select Case True
-
-                    Case .Type = gb.Link
-
-                      If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
-
-                        olnk = .Link
-
-                        With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
-
-                          If .Type = gb.Link
-
-                            If .Link <> olnk Then Try Kill "/home/" & usr & "/" & item
-
-                          Endif
-
-                        End With
-
-                      Else If mthd <> 3 And mthd <> 4
-
-                        Try Kill "/home/" & usr & "/" & item
-
-                      Endif
-
-                    Case .Type = gb.Directory
-
-                      If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
-
-                        If Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item).Type <> gb.Directory Then Try Rmdir "/home/" & usr & "/" & item
-
-                      Else If mthd <> 3 And mthd <> 4
-
-                        Try Rmdir "/home/" & usr & "/" & item
-
-                      Endif
-
-                    Case .Type = gb.File
-
-                      If .Size <= 8000000
-
-                        If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
-
-                          osize = .Size
-                          olmod = .LastModified
-
-                          With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
-
-                            If .Type = gb.File
-
-                              If .Size <> osize Or .LastModified <> olmod Then Try Kill "/home/" & usr & "/" & item
-
-                            Endif
-
-                          End With
-
-                        Else If mthd <> 3 And mthd <> 4
-
-                          Try Kill "/home/" & usr & "/" & item
-
-                        Endif
-
-                      Endif
-
-                  End Select
-
-                End With
-
-              Endif
-
-            Next
-
-          Else If Exist("/home/" & usr)
-
-            Try Kill "/home/" & usr
-            Try Mkdir "/home/" & usr
-
-          Endif
-
-          Ipcopy(fsdir & "/" & pname & "/home/" & usr, "/home/" & usr)
-
-          For Each item In RDir(fsdir & "/" & pname & "/home/" & usr)
-
-            cnum = cnum + 1
-            cperc = Int(cnum / anum * 100)
-
-            If Not Exist(tmp & "restorepercent") And cperc > pperc
-
-              File.Save(tmp & "restorepercent", cperc)
-              pperc = cperc
-
-            Endif
-
-            If Not Exist("/home/" & usr & "/" & item)
-
-              With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
-
-                Select Case True
-
-                  Case .Type = gb.Link
-
-                    Try Link .Link To "/home/" & usr & "/" & item
-                    Continue
-
-                  Case .Type = gb.Directory
-
-                    Try Mkdir "/home/" & usr & "/" & item
-
-                  Case .Type = gb.File
-
-                    Try Copy fsdir & "/" & pname & "/home/" & usr & "/" & item To "/home/" & usr & "/" & item
-
-                End Select
-
-              End With
-
-            Endif
-
-            Ipcopy(fsdir & "/" & pname & "/home/" & usr & "/" & item, "/home/" & usr & "/" & item)
-
-          Next
-
-        Endif
-
-      Next
-
-    Endif
-
-    If IsDir(fsdir & "/" & pname & "/root")
-
-      If uname = "root" Or If mthd <> 4 And mthd <> 6
-
-        For Each item In RDir("/root", ".*").Sort(gb.Descent)
+        For Each item In cditms.Sort(gb.Descent)
 
           cnum = cnum + 1
           cperc = Int(cnum / anum * 100)
@@ -2973,21 +3056,21 @@ Private Sub srsync()
 
           If nxt = False
 
-            With Stat("/root/" & item)
+            With Stat("/home/" & usr & "/" & item)
 
-              Select Case True
+              Select Case .Type
 
-                Case .Type = gb.Link
+                Case gb.Link
 
-                  If Exist(fsdir & "/" & pname & "/root/" & item)
+                  If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
 
                     olnk = .Link
 
-                    With Stat(fsdir & "/" & pname & "/root/" & item)
+                    With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
 
                       If .Type = gb.Link
 
-                        If .Link <> olnk Then Try Kill "/root/" & item
+                        If .Link <> olnk Then Try Kill "/home/" & usr & "/" & item
 
                       Endif
 
@@ -2995,36 +3078,36 @@ Private Sub srsync()
 
                   Else If mthd <> 3 And mthd <> 4
 
-                    Try Kill "/root/" & item
+                    Try Kill "/home/" & usr & "/" & item
 
                   Endif
 
-                Case .Type = gb.Directory
+                Case gb.Directory
 
-                  If Exist(fsdir & "/" & pname & "/root/" & item)
+                  If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
 
-                    If Stat(fsdir & "/" & pname & "/root/" & item).Type <> gb.Directory Then Try Rmdir "/root/" & item
+                    If Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item).Type <> gb.Directory Then Try Rmdir "/home/" & usr & "/" & item
 
                   Else If mthd <> 3 And mthd <> 4
 
-                    Try Rmdir "/root/" & item
+                    Try Rmdir "/home/" & usr & "/" & item
 
                   Endif
 
-                Case .Type = gb.File
+                Case gb.File
 
                   If .Size <= 8000000
 
-                    If Exist(fsdir & "/" & pname & "/root/" & item)
+                    If Exist(fsdir & "/" & pname & "/home/" & usr & "/" & item)
 
                       osize = .Size
                       olmod = .LastModified
 
-                      With Stat(fsdir & "/" & pname & "/root/" & item)
+                      With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
 
                         If .Type = gb.File
 
-                          If .Size <> osize Or .LastModified <> olmod Then Try Kill "/root/" & item
+                          If .Size <> osize Or .LastModified <> olmod Then Try Kill "/home/" & usr & "/" & item
 
                         Endif
 
@@ -3032,7 +3115,7 @@ Private Sub srsync()
 
                     Else If mthd <> 3 And mthd <> 4
 
-                      Try Kill "/root/" & item
+                      Try Kill "/home/" & usr & "/" & item
 
                     Endif
 
@@ -3046,50 +3129,230 @@ Private Sub srsync()
 
         Next
 
-        For Each item In RDir(fsdir & "/" & pname & "/root")
+      Else If Exist("/home/" & usr)
 
-          cnum = cnum + 1
-          cperc = Int(cnum / anum * 100)
-
-          If Not Exist(tmp & "restorepercent") And cperc > pperc
-
-            File.Save(tmp & "restorepercent", cperc)
-            pperc = cperc
-
-          Endif
-
-          If Not Exist("/root/" & item)
-
-            With Stat(fsdir & "/" & pname & "/root/" & item)
-
-              Select Case True
-
-                Case .Type = gb.Link
-
-                  Try Link .Link To "/root/" & item
-                  Continue
-
-                Case .Type = gb.Directory
-
-                  Try Mkdir "/root/" & item
-
-                Case .Type = gb.File
-
-                  Try Copy fsdir & "/" & pname & "/root/" & item To "/root/" & item
-
-              End Select
-
-            End With
-
-          Endif
-
-          Ipcopy(fsdir & "/" & pname & "/root/" & item, "/root/" & item)
-
-        Next
+        Try Kill "/home/" & usr
+        Try Mkdir "/home/" & usr
 
       Endif
 
-    Endif
+      Cpertime(fsdir & "/" & pname & "/home/" & usr, "/home/" & usr)
+
+      Select Case usrs.Find(usr)
+
+        Case 0
+
+          cditms = rphome1itms
+
+        Case 1
+
+          cditms = rphome2itms
+
+        Case 2
+
+          cditms = rphome3itms
+
+        Case 3
+
+          cditms = rphome4itms
+
+        Case 4
+
+          cditms = rphome5itms
+
+        Case Else
+
+          cditms = RDir(fsdir & "/" & pname & "/home/" & usr)
+
+      End Select
+
+      For Each item In cditms
+
+        cnum = cnum + 1
+        cperc = Int(cnum / anum * 100)
+
+        If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+          File.Save(tmp & "restorepercent", cperc)
+          pperc = cperc
+
+        Endif
+
+        If Exist("/home/" & usr & "/" & item)
+
+          Cpertime(fsdir & "/" & pname & "/home/" & usr & "/" & item, "/home/" & usr & "/" & item)
+
+        Else
+
+          With Stat(fsdir & "/" & pname & "/home/" & usr & "/" & item)
+
+            Select Case .Type
+
+              Case gb.Link
+
+                Try Link .Link To "/home/" & usr & "/" & item
+
+              Case gb.Directory
+
+                Cpdir(fsdir & "/" & pname & "/home/" & usr & "/" & item, "/home/" & usr & "/" & item)
+
+              Case gb.File
+
+                Try Copy fsdir & "/" & pname & "/home/" & usr & "/" & item To "/home/" & usr & "/" & item
+                Cpertime(fsdir & "/" & pname & "/home/" & usr & "/" & item, "/home/" & usr & "/" & item)
+
+            End Select
+
+          End With
+
+        Endif
+
+      Next
+
+    Next
+
+    For Each item In rootitms.Sort(gb.Descent)
+
+      cnum = cnum + 1
+      cperc = Int(cnum / anum * 100)
+
+      If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+        File.Save(tmp & "restorepercent", cperc)
+        pperc = cperc
+
+      Endif
+
+      If nxt = True Then nxt = False
+
+      For Each excl In elist
+
+        If item Begins excl Or item Ends "~"
+
+          nxt = True
+          Break
+
+        Endif
+
+      Next
+
+      If nxt = False
+
+        With Stat("/root/" & item)
+
+          Select Case .Type
+
+            Case gb.Link
+
+              If Exist(fsdir & "/" & pname & "/root/" & item)
+
+                olnk = .Link
+
+                With Stat(fsdir & "/" & pname & "/root/" & item)
+
+                  If .Type = gb.Link
+
+                    If .Link <> olnk Then Try Kill "/root/" & item
+
+                  Endif
+
+                End With
+
+              Else If mthd <> 3 And mthd <> 4
+
+                Try Kill "/root/" & item
+
+              Endif
+
+            Case gb.Directory
+
+              If Exist(fsdir & "/" & pname & "/root/" & item)
+
+                If Stat(fsdir & "/" & pname & "/root/" & item).Type <> gb.Directory Then Try Rmdir "/root/" & item
+
+              Else If mthd <> 3 And mthd <> 4
+
+                Try Rmdir "/root/" & item
+
+              Endif
+
+            Case gb.File
+
+              If .Size <= 8000000
+
+                If Exist(fsdir & "/" & pname & "/root/" & item)
+
+                  osize = .Size
+                  olmod = .LastModified
+
+                  With Stat(fsdir & "/" & pname & "/root/" & item)
+
+                    If .Type = gb.File
+
+                      If .Size <> osize Or .LastModified <> olmod Then Try Kill "/root/" & item
+
+                    Endif
+
+                  End With
+
+                Else If mthd <> 3 And mthd <> 4
+
+                  Try Kill "/root/" & item
+
+                Endif
+
+              Endif
+
+          End Select
+
+        End With
+
+      Endif
+
+    Next
+
+    For Each item In rprootitms
+
+      cnum = cnum + 1
+      cperc = Int(cnum / anum * 100)
+
+      If Not Exist(tmp & "restorepercent") And cperc > pperc
+
+        File.Save(tmp & "restorepercent", cperc)
+        pperc = cperc
+
+      Endif
+
+      If Exist("/root/" & item)
+
+        Cpertime(fsdir & "/" & pname & "/root/" & item, "/root/" & item)
+
+      Else
+
+        With Stat(fsdir & "/" & pname & "/root/" & item)
+
+          Select Case .Type
+
+            Case gb.Link
+
+              Try Link .Link To "/root/" & item
+
+            Case gb.Directory
+
+              Cpdir(fsdir & "/" & pname & "/root/" & item, "/root/" & item)
+
+            Case gb.File
+
+              Try Copy fsdir & "/" & pname & "/root/" & item To "/root/" & item
+              Cpertime(fsdir & "/" & pname & "/root/" & item, "/root/" & item)
+
+          End Select
+
+        End With
+
+      Endif
+
+    Next
 
   Endif
 

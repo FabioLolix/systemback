@@ -144,7 +144,7 @@ Public Sub Form_Open()
 
         dialog = Right(Application.Args[1], -7)
 
-      Case User.Name = "root"
+      Case User.Id = 0
 
         Try slock = Lock Left(tmp, RInStr(tmp, "/")) & "systembacklock"
 
@@ -4200,7 +4200,7 @@ Public Sub newrestorepoint_Click()
     File.Save(fsdir & "/.sbschedule", Null)
 
     prun = ("Emptying cache")
-    wproc = Exec ["sync"]
+    wproc = Exec ["systemback", "sync"]
     wprocwait
     File.Save("/proc/sys/vm/drop_caches", "3")
 
@@ -6576,7 +6576,7 @@ Public Sub pointdelete_Click()
   pointupgrade
 
   prun = ("Emptying cache")
-  wproc = Exec ["sync"]
+  wproc = Exec ["systemback", "sync"]
   wprocwait
   File.Save("/proc/sys/vm/drop_caches", "3")
 
@@ -8566,7 +8566,7 @@ Private Sub repair()
     Endif
 
     prun = ("Emptying cache")
-    wproc = Exec ["sync"]
+    wproc = Exec ["systemback", "sync"]
     wprocwait
     File.Save("/proc/sys/vm/drop_caches", "3")
 
@@ -9249,7 +9249,7 @@ Public Sub umount_Click()
 
       wproc = Exec ["umount", "-l", .Key]
       wprocwait
-      wproc = Exec ["sync"]
+      wproc = Exec ["systemback", "sync"]
       wprocwait
 
     Endif
@@ -9653,7 +9653,7 @@ Private Sub systemcopy()
             wproc = Exec ["umount", "-l", .Item[0]]
             wprocwait
             If prun = Null Then Return
-            wproc = Exec ["sync"]
+            wproc = Exec ["systemback", "sync"]
             wprocwait
             If prun = Null Then Return
 
@@ -10673,7 +10673,7 @@ Private Sub systemcopy()
 
     Try Rmdir "/.sbsystemcopy"
 
-    wproc = Exec ["sync"]
+    wproc = Exec ["systemback", "sync"]
     wprocwait
 
     File.Save("/proc/sys/vm/drop_caches", "3")
@@ -10735,7 +10735,7 @@ Public Sub partitionupdate2_Click()
   Wend
   Close #ofile
 
-  wproc = Exec ["sync"]
+  wproc = Exec ["systemback", "sync"]
   wprocwait
 
   With repairmountpoint
@@ -12468,7 +12468,7 @@ Public Sub livecreatenew_Click()
             Chmod lwdir & "/" & ifname & ".sblive" To "rw-rw-rw-"
 
             prun = ("Emptying cache")
-            wproc = Exec ["sync"]
+            wproc = Exec ["systemback", "sync"]
             wprocwait
             File.Save("/proc/sys/vm/drop_caches", "3")
 
@@ -12924,7 +12924,7 @@ Private Sub livewrite()
       wproc = Exec ["bash", "-c", "umount -l " & .Key & "*"] For Read
       wprocwait
       If prun = Null Then Return
-      wproc = Exec ["sync"]
+      wproc = Exec ["systemback", "sync"]
       wprocwait
       If prun = Null Then Return
 
@@ -13101,7 +13101,7 @@ Private Sub livewrite()
 
             Endif
 
-            wproc = Exec ["sync"]
+            wproc = Exec ["systemback", "sync"]
             wprocwait
 
             File.Save("/proc/sys/vm/drop_caches", "3")
@@ -13238,7 +13238,7 @@ Public Sub liveconvert_Click()
   If dialog <> 45 And dialog <> 46 And dialog <> 47
 
     prun = ("Emptying cache")
-    wproc = Exec ["sync"]
+    wproc = Exec ["systemback", "sync"]
     wprocwait
     File.Save("/proc/sys/vm/drop_caches", "3")
 

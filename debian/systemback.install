@@ -1,5 +1,5 @@
 cli/systemback usr/bin
-ipcopy.so usr/lib/systemback
+systemback.so usr/lib/systemback
 99_systemback etc/sudoers.d
 sbschedule.desktop etc/xdg/autostart
 sbstart usr/share/systemback

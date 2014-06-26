@@ -1,6 +1,11 @@
-cli/systemback usr/bin
-systemback.so usr/lib/systemback
-99_systemback etc/sudoers.d
-sbschedule.desktop etc/xdg/autostart
+systemback/systemback usr/bin
+sbsysupgrade/sbsysupgrade usr/lib/systemback
+efi.tar.gz usr/share/systemback
 sbstart usr/share/systemback
-version usr/share/systemback
+splash.png usr/share/systemback
+systemback*.desktop /usr/share/applications
+99_systemback etc/sudoers.d
+icons/128x128/systemback.png usr/share/icons/hicolor/128x128/apps
+icons/256x256/systemback.png usr/share/icons/hicolor/256x256/apps
+icons/48x48/systemback.png usr/share/icons/hicolor/48x48/apps
+icons/64x64/systemback.png usr/share/icons/hicolor/64x64/apps

@@ -1,0 +1,2 @@
+ALL ALL=(ALL) NOPASSWD: /usr/lib/systemback/sbscheduler
+ALL ALL=(ALL) NOPASSWD: /usr/bin/env QT_STYLE_OVERRIDE=gtk+ /usr/lib/systemback/sbscheduler

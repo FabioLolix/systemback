@@ -2,9 +2,9 @@
 Encoding=UTF-8
 Version=1.0
 Name=Systemback scheduler daemon
-Exec=sudo -nH /usr/bin/env QT_STYLE_OVERRIDE=gtk+ /usr/lib/systemback/sbscheduler
+Exec=sudo -nH /usr/lib/systemback/sbscheduler
 Type=Application
 Icon=systemback
 Terminal=false
-NotShowIn=KDE;
+OnlyShowIn=KDE;
 NoDisplay=true

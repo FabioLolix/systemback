@@ -1,5 +1,4 @@
 #!/bin/bash
-# Systemback GUI startup script
 #
 # Copyright(C) 2014, Krisztián Kende <nemh@freemail.hu>
 #
@@ -16,106 +15,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-gbver="351" # Required Gambas version
+if [[ $UID == 0 ]]
+then systemback
+else
+  tmpxauth=/tmp/sbXauthority-$RANDOM$RANDOM
 
-compcheck()
-{
-
-  if [[ "$gbver" -le "$(gbr3 -V | sed "s+\.++g" | head -c 3)" ]]
-  then
-
-    for comp in gui $1
-    do
-
-      if [[ ! -e "/usr/lib/gambas3/gb.$comp.so" && ! -e "/usr/local/lib/gambas3/gb.$comp.so" ]]
-      then
-
-	if which zenity >/dev/null
-	then zenity --title="Systemback" --error --text="Required <b>gb.$comp</b> component was not found!\n\nPlease install the <b>gambas3-gb-$comp</b> package."
-	else kdialog --title="Systemback" --error="Required <b>gb.$comp</b> component was not found!\n\nPlease install the <b>gambas3-gb-$comp</b> package."
-	fi
-
-	if [[ "$?" != "0" ]]
-	then
-
-	  tput reset
-	  tput bold
-	  tput setaf 1
-	  echo -e "\n Required gb.$comp component was not found!\n\n Please install the gambas3-gb-$comp package.\n"
-	  tput sgr0
-
-	fi
-
-	exit 3
-
-      fi
-
-    done
-
+  if [[ "$XAUTHORITY" ]]
+  then cp -a "$XAUTHORITY" $tmpxauth
+  elif [[ -f ~/.Xauthority ]]
+  then cp -a ~/.Xauthority $tmpxauth
   else
-
     if which zenity >/dev/null
-    then zenity --title="Systemback" --error --text="Gambas runtime version is too old!\n\nPlease upgrade your system."
-    else kdialog --title="Systemback" --error="Gambas runtime version is too old!\n\nPlease upgrade your system."
+    then zenity --title=Systemback --error --text="Failed to start Systemback graphical user interface!\n\nCannot connect to X server."
+    else kdialog --title=Systemback --error="Failed to start Systemback graphical user interface!\n\nCannot connect to X server."
     fi
 
-    if [[ "$?" != "0" ]]
-    then
-
-      tput reset
-      tput bold
-      tput setaf 1
-      echo -e "\n Gambas runtime version is too old!\n\n Please upgrade your system.\n"
-      tput sgr0
-
-    fi
-
-    exit 2
-
-  fi
-
-}
-
-guistart()
-{
-
-  if [[ "$2" = "authorization" && "$USER" != "root" ]]
-  then
-
-    tmpxauth="/tmp/sbXauthority-$RANDOM$RANDOM"
-    cp -a "$XAUTHORITY" "$tmpxauth"
-    XAUTHORITY="$tmpxauth" sudo -nH /usr/share/systemback/systembackgui authorization $USER $1
-    rm -rf "$tmpxauth"
-
-  else GB_GUI="gb.$1" /usr/share/systemback/systembackgui
-  fi
-
-}
-
-case "$0" in
-
-  /usr/bin/systemback-gtk)
-
-    compcheck gtk && guistart gtk $1
-    ;;
-
-  /usr/bin/systemback-qt4)
-
-    compcheck qt4 && guistart qt4 $1
-    ;;
-
-  /usr/bin/systembackgui)
-
-    compcheck && /usr/share/systemback/systembackgui
-    ;;
-
-  *)
-
-    tput reset
-    tput bold
-    tput setaf 1
-    echo -e "\n Incorrect parameters!\n"
-    tput sgr0
     exit 1
+  fi
 
-esac
+  XAUTHORITY=$tmpxauth sudo -nH $1 /usr/bin/systemback authorization $USER
+  rm -rf $tmpxauth
+fi

@@ -1,6 +1,5 @@
-systemback (0.8.0.010) release; urgency=low
+systemback (1.0.0.001) release; urgency=low
 
-  * 0.8.0.0XY
-  * Development version
+  * 1.0.0.100
 
- -- Kende Krisztián <nemh@freemail.hu>  Mon, 06 Jan 2014 22:15:56 +0100
+ -- Kende Krisztián <nemh@freemail.hu>  Thu, 26 Jun 2014 18:57:33 +0200

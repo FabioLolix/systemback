@@ -17,7 +17,7 @@
 
 ********************************************************************/
 
-#include "../libsystemback/sblib.h"
+#include "../libsystemback/sblib.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
 #include <QTranslator>

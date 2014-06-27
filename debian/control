@@ -9,7 +9,7 @@ Package: systemback
 Architecture: amd64 i386
 Depends: ${misc:Depends}, ${shlibs:Depends}, casper | live-boot, dosfstools, fonts-freefont-ttf | ttf-freefont, genisoimage, parted, squashfs-tools, syslinux,
  systemback-scheduler (= ${binary:Version}), upstart | sysvinit (>= 2.88) | systemd, xterm, zenity | kde-baseapps-bin | kdebase-bin
-Recommends: systemback-cli (= ${binary:Version}), systemback-l10n (= ${binary:Version})
+Recommends: systemback-cli (= ${binary:Version}), systemback-locales (= ${binary:Version})
 Conflicts: live-config, live-config-systemd
 Breaks: systemback-gui-common (<< 1.0.0)
 Replaces: systemback-gui-common (<< 1.0.0)
@@ -57,7 +57,7 @@ Description: Systemback shared library
  .
  This package contain a shared library for Systemback binaries.
 
-Package: systemback-l10n
+Package: systemback-locales
 Architecture: all
 Depends: ${misc:Depends}
 Description: Systemback localizations files

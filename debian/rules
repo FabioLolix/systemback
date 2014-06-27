@@ -3,8 +3,7 @@
 configure: configure-stamp
 
 configure-stamp:
-	sed -i "s/*old,/*old_table,/g" /usr/include/libmount/libmount.h
-	sed -i "s/*new);/*new_table);/g" /usr/include/libmount/libmount.h
+	sed -e "s/*old,/*old_table,/g" -e "s/*new);/*new_table);/g" /usr/include/libmount/libmount.h > libsystemback/libmount.hpp
 	qmake
 	touch configure-stamp
 
@@ -23,7 +22,7 @@ build-indep-stamp:
 	touch build-indep-stamp
 
 clean:
-	rm -rf configure-stamp build-stamp lang/*.qm
+	rm -rf configure-stamp build-stamp lang/*.qm libsystemback/libmount.hpp
 	[ ! -f Makefile ] || $(MAKE) distclean
 	dh_clean
 

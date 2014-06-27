@@ -17,10 +17,10 @@
 
 ********************************************************************/
 
-#ifndef SCHEDULER_H
-#define SCHEDULER_H
+#ifndef SCHEDULER_HPP
+#define SCHEDULER_HPP
 
-#include "../libsystemback/sblib.h"
+#include "../libsystemback/sblib.hpp"
 #include <QObject>
 
 class scheduler : public QObject
@@ -34,4 +34,4 @@ private:
     void newrestorepoint();
 };
 
-#endif // SCHEDULER_H
+#endif // SCHEDULER_HPP

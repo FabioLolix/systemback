@@ -15,7 +15,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     systemback.cpp
 
-HEADERS += systemback.h
+HEADERS += systemback.hpp
 
 FORMS += systemback.ui
 

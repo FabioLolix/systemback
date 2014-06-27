@@ -17,7 +17,7 @@
 
 ********************************************************************/
 
-#include "systemback.h"
+#include "systemback.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
 #include <QTextStream>

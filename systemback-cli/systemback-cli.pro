@@ -19,7 +19,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     systemback.cpp
 
-HEADERS += systemback.h
+HEADERS += systemback.hpp
 
 QMAKE_LFLAGS += -Wl,--rpath=/usr/lib/systemback
 

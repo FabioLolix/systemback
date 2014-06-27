@@ -18,7 +18,7 @@
 ********************************************************************/
 
 #include "ui_systemback.h"
-#include "systemback.h"
+#include "systemback.hpp"
 #include <QStringBuilder>
 #include <QDesktopWidget>
 #include <QFontDatabase>

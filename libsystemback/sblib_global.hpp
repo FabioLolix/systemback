@@ -17,8 +17,8 @@
 
 ********************************************************************/
 
-#ifndef SBLIB_GLOBAL_H
-#define SBLIB_GLOBAL_H
+#ifndef SBLIB_GLOBAL_HPP
+#define SBLIB_GLOBAL_HPP
 
 #include <QtCore/qglobal.h>
 
@@ -28,4 +28,4 @@
 #  define SHARED_EXPORT_IMPORT Q_DECL_IMPORT
 #endif
 
-#endif // SBLIB_GLOBAL_H
+#endif // SBLIB_GLOBAL_HPP

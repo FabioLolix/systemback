@@ -17,8 +17,8 @@
 
 ********************************************************************/
 
-#ifndef SBLIB_H
-#define SBLIB_H
+#ifndef SBLIB_HPP
+#define SBLIB_HPP
 #define QStr QString
 #define QSL QStringList
 #define QTS QTextStream
@@ -27,7 +27,7 @@
 #define isdir(path) QFileInfo(path).isDir()
 #define islink(path) QFileInfo(path).isSymLink()
 
-#include "sblib_global.h"
+#include "sblib_global.hpp"
 #include <QStringList>
 #include <QThread>
 
@@ -116,4 +116,4 @@ private:
     void sbdir(QStr path, uchar oplen, bool hidden = false);
 };
 
-#endif // SBLIB_H
+#endif // SBLIB_HPP

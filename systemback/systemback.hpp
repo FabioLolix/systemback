@@ -17,13 +17,13 @@
 
 ********************************************************************/
 
-#ifndef systemback_H
-#define systemback_H
+#ifndef systemback_HPP
+#define systemback_HPP
 #define QTblWI QTableWidgetItem
 #define QLWI QListWidgetItem
 #define QTrWI QTreeWidgetItem
 
-#include "../libsystemback/sblib.h"
+#include "../libsystemback/sblib.hpp"
 #include <QTableWidgetItem>
 #include <QListWidgetItem>
 #include <QTreeWidgetItem>
@@ -334,4 +334,4 @@ signals:
     void Focus_Out();
 };
 
-#endif // systemback_H
+#endif // systemback_HPP

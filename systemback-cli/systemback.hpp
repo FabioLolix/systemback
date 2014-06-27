@@ -17,10 +17,10 @@
 
 ********************************************************************/
 
-#ifndef SYSTEMBACK_H
-#define SYSTEMBACK_H
+#ifndef SYSTEMBACK_HPP
+#define SYSTEMBACK_HPP
 
-#include "../libsystemback/sblib.h"
+#include "../libsystemback/sblib.hpp"
 #include <QTimer>
 
 class systemback : public QObject
@@ -47,4 +47,4 @@ private:
     void progpercent();
 };
 
-#endif // SYSTEMBACK_H
+#endif // SYSTEMBACK_HPP

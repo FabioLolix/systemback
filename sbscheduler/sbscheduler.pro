@@ -19,7 +19,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     sbscheduler.cpp
 
-HEADERS += sbscheduler.h
+HEADERS += sbscheduler.hpp
 
 QMAKE_LFLAGS += -Wl,--rpath=/usr/lib/systemback
 

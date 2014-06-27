@@ -17,7 +17,7 @@
 
 ********************************************************************/
 
-#include "sbscheduler.h"
+#include "sbscheduler.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
 #include <QTranslator>

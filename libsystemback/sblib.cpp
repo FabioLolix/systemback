@@ -17,14 +17,14 @@
 
 ********************************************************************/
 
-#include "sblib.h"
+#include "sblib.hpp"
+#include "libmount.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
 #include <QTextStream>
 #include <QProcess>
 #include <QTime>
 #include <QDir>
-#include <libmount/libmount.h>
 #include <sys/resource.h>
 #include <blkid/blkid.h>
 #include <sys/statfs.h>

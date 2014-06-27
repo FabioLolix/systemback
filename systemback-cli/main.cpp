@@ -17,7 +17,7 @@
 
 ********************************************************************/
 
-#include "systemback.hpp"
+#include "systemback-cli.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
 #include <QTranslator>

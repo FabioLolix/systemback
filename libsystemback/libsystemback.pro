@@ -14,8 +14,8 @@ DEFINES += SYSTEMBACK_LIBRARY
 
 SOURCES += sblib.cpp
 
-HEADERS += sblib_global.hpp \
-    sblib.hpp
+HEADERS += sblib.hpp \
+    sblib_global.hpp
 
 LIBS += -lmount \
     -lblkid

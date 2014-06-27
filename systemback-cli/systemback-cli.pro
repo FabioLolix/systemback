@@ -17,9 +17,9 @@ CONFIG  -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    systemback.cpp
+    systemback-cli.cpp
 
-HEADERS += systemback.hpp
+HEADERS += systemback-cli.hpp
 
 QMAKE_LFLAGS += -Wl,--rpath=/usr/lib/systemback
 

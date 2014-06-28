@@ -76,7 +76,7 @@ start:;
     if(! sb::lock(sb::Schdlrlock)) goto error;
     QStr pfile(isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
     if(! sb::crtfile(pfile, QStr::number(qApp->applicationPid()))) goto error;
-    sb::delay(300000);
+    sleep(300);
 
     while(true)
     {
@@ -124,11 +124,11 @@ start:;
 
             sb::unlock(sb::Sblock);
             sb::unlock(sb::Dpkglock);
-            sb::delay(50000);
+            sleep(50);
         }
 
     next:;
-        sb::delay(10000);
+        sleep(10);
     }
 
     qApp->quit();

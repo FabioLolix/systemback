@@ -86,7 +86,7 @@ public:
     static bool exist(QStr path);
     static void srestore(uchar mthd, QStr usr, QStr srcdir, QStr trgt, bool sfstab = false);
     static void unlock(uchar type);
-    static void delay(uint msec);
+    static void delay(ushort msec);
     static void print(QStr txt);
     static void error(QStr txt);
     static void pupgrade();

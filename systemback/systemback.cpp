@@ -1214,15 +1214,15 @@ void systemback::cpymove()
     {
         short nwidth(QCursor::pos().x() - x() + width() - ui->copyresize->x() - ui->copyresize->MouseX - 1), nheight(QCursor::pos().y() - y() + height() - ui->copyresize->y() - ui->copyresize->MouseY - 24);
 
-        if(nwidth > 641)
+        if(nwidth > 697)
             wgeom[2] = nwidth;
-        else if(wgeom[2] != 642)
-            wgeom[2] = 642;
+        else if(wgeom[2] != 698)
+            wgeom[2] = 698;
 
-        if(nheight > 480)
+        if(nheight > 464)
             wgeom[3] = nheight;
-        else if(wgeom[3] != 481)
-            wgeom[3] = 481;
+        else if(wgeom[3] != 465)
+            wgeom[3] = 465;
 
         if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
     }
@@ -3412,7 +3412,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         if(ui->choosepanel->isVisible())
         {
             ui->choosepanel->resize(width() - 2, height() - 25);
-            ui->dirpath->resize(ui->choosepanel->width() - 42, 32);
+            ui->dirpath->resize(ui->choosepanel->width() - 40, 32);
             ui->dirrefresh->move(ui->choosepanel->width() - 32, 0);
             ui->dirchoose->resize(ui->choosepanel->width(), ui->choosepanel->height() - 80);
             ui->dirchooseok->move(ui->choosepanel->width() - 120, ui->choosepanel->height() - 40);
@@ -3424,7 +3424,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         {
             ui->copypanel->resize(width() -2, height() - 25);
             ui->partitionsettingstext->resize(ui->copypanel->width(), 32);
-            ui->partitionsettings->resize(ui->copypanel->width() - 154, ui->copypanel->height() - 200);
+            ui->partitionsettings->resize(ui->copypanel->width() - 152, ui->copypanel->height() - 200);
             ui->umount->move(ui->copypanel->width() - 128, ui->umount->y());
             ui->mountpointtext->move(ui->copypanel->width() - 144, ui->mountpointtext->y());
             ui->mountpoint->move(ui->umount->x(), ui->mountpoint->y());
@@ -3445,9 +3445,9 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         else
         {
             ui->excludepanel->resize(width() - 2, height() - 25);
-            ui->itemstext->resize(ui->excludepanel->width() / 2 - 26, 32);
-            ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + 26, ui->excludedtext->y(), ui->itemstext->width(), 32);
-            ui->itemslist->resize(ui->excludepanel->width() / 2 - 46, ui->excludepanel->height() - 160);
+            ui->itemstext->resize(ui->excludepanel->width() / 2 - 28, 32);
+            ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + 28, ui->excludedtext->y(), ui->itemstext->width(), 32);
+            ui->itemslist->resize(ui->excludepanel->width() / 2 - 44, ui->excludepanel->height() - 160);
             ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + 36, ui->excludedlist->y(), ui->itemslist->width(), ui->itemslist->height());
             ui->additem->move(ui->excludepanel->width() / 2 -24, 96 + ui->itemslist->height() / 2 - 60);
             ui->removeitem->move(ui->additem->x(), 96 + ui->itemslist->height() / 2 + 12);
@@ -3717,11 +3717,6 @@ void systemback::keyPressEvent(QKeyEvent *ev)
         else if(ui->excludedlist->hasFocus())
             on_removeitem_clicked();
     }
-}
-
-void systemback::on_pushButton_clicked()
-{
-
 }
 
 void systemback::on_admins_currentIndexChanged(const QStr &arg1)
@@ -4989,7 +4984,6 @@ void systemback::on_repairmenu_clicked()
     }
 
     on_repairmountpoint_currentTextChanged(ui->repairmountpoint->currentText());
-
     ui->sbpanel->hide();
     ui->repairpanel->show();
     ui->function1->setText(tr("System repair"));

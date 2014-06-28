@@ -66,7 +66,7 @@ void sb::error(QStr txt)
     QTS(stderr) << "\033[1;31m" % txt % "\033[0m";
 }
 
-void sb::delay(uint msec)
+void sb::delay(ushort msec)
 {
     QTime time;
     time.start();

@@ -232,7 +232,6 @@ private slots:
     void on_liveexclude_clicked();
     void on_pointdelete_clicked();
     void on_liveconvert_clicked();
-    void on_pushButton_clicked();
     void on_repairmenu_clicked();
     void on_repairback_clicked();
     void on_pointpipe1_clicked();

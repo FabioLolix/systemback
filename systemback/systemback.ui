@@ -143,9 +143,9 @@
      <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>0</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -156,9 +156,9 @@
      <widget class="QLabel" name="label_10">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>72</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -169,9 +169,9 @@
      <widget class="QLabel" name="label_11">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>144</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -182,9 +182,9 @@
      <widget class="QLabel" name="label_12">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>216</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -195,9 +195,9 @@
      <widget class="QLabel" name="label_13">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>288</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -701,9 +701,9 @@
      <widget class="QLineEdit" name="livename">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>104</y>
-        <width>271</width>
+        <width>272</width>
         <height>32</height>
        </rect>
       </property>
@@ -757,9 +757,9 @@
      <widget class="QCheckBox" name="userdatainclude">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>182</y>
-        <width>181</width>
+        <width>178</width>
         <height>20</height>
        </rect>
       </property>
@@ -935,9 +935,9 @@
      <widget class="QFrame" name="liveworkdirarea">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>8</x>
         <y>32</y>
-        <width>302</width>
+        <width>304</width>
         <height>32</height>
        </rect>
       </property>
@@ -955,7 +955,7 @@
         <rect>
          <x>2</x>
          <y>2</y>
-         <width>272</width>
+         <width>274</width>
          <height>28</height>
         </rect>
        </property>
@@ -975,7 +975,7 @@
       <widget class="QToolButton" name="liveworkdirbutton">
        <property name="geometry">
         <rect>
-         <x>276</x>
+         <x>278</x>
          <y>2</y>
          <width>24</width>
          <height>28</height>
@@ -1004,9 +1004,9 @@
      <widget class="QTableWidget" name="livedevices">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>8</x>
         <y>240</y>
-        <width>414</width>
+        <width>416</width>
         <height>136</height>
        </rect>
       </property>
@@ -1077,7 +1077,7 @@
        <rect>
         <x>328</x>
         <y>32</y>
-        <width>358</width>
+        <width>360</width>
         <height>168</height>
        </rect>
       </property>
@@ -1326,7 +1326,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>216</x>
+        <x>212</x>
         <y>320</y>
         <width>112</width>
         <height>32</height>
@@ -1357,9 +1357,9 @@
      <widget class="QRadioButton" name="grubrepair">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>198</y>
-        <width>131</width>
+        <width>126</width>
         <height>20</height>
        </rect>
       </property>
@@ -1376,9 +1376,9 @@
      <widget class="QRadioButton" name="systemrepair">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>134</y>
-        <width>161</width>
+        <width>156</width>
         <height>20</height>
        </rect>
       </property>
@@ -1398,7 +1398,7 @@
      <widget class="QLabel" name="grubreinstallrepairtext">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>320</y>
         <width>201</width>
         <height>32</height>
@@ -1411,7 +1411,7 @@
      <widget class="QCheckBox" name="autorepairoptions">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>262</y>
         <width>131</width>
         <height>20</height>
@@ -1459,9 +1459,9 @@
      <widget class="QRadioButton" name="fullrepair">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>166</y>
-        <width>101</width>
+        <width>99</width>
         <height>20</height>
        </rect>
       </property>
@@ -1481,9 +1481,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>294</y>
-        <width>181</width>
+        <width>175</width>
         <height>20</height>
        </rect>
       </property>
@@ -1535,7 +1535,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>216</x>
+        <x>212</x>
         <y>320</y>
         <width>112</width>
         <height>32</height>
@@ -1607,9 +1607,9 @@
      <widget class="QRadioButton" name="pointexclude">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>6</y>
-        <width>441</width>
+        <width>440</width>
         <height>20</height>
        </rect>
       </property>
@@ -1629,9 +1629,9 @@
      <widget class="QRadioButton" name="liveexclude">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>38</y>
-        <width>411</width>
+        <width>406</width>
         <height>20</height>
        </rect>
       </property>
@@ -1650,7 +1650,7 @@
        <rect>
         <x>0</x>
         <y>64</y>
-        <width>322</width>
+        <width>320</width>
         <height>32</height>
        </rect>
       </property>
@@ -1670,9 +1670,9 @@
      <widget class="QLabel" name="excludedtext">
       <property name="geometry">
        <rect>
-        <x>374</x>
+        <x>376</x>
         <y>64</y>
-        <width>322</width>
+        <width>320</width>
         <height>32</height>
        </rect>
       </property>
@@ -1758,7 +1758,7 @@
        <rect>
         <x>157</x>
         <y>416</y>
-        <width>531</width>
+        <width>533</width>
         <height>24</height>
        </rect>
       </property>
@@ -1798,9 +1798,9 @@
      <widget class="QTreeWidget" name="itemslist">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>8</x>
         <y>96</y>
-        <width>302</width>
+        <width>304</width>
         <height>280</height>
        </rect>
       </property>
@@ -1830,7 +1830,7 @@
        <rect>
         <x>384</x>
         <y>96</y>
-        <width>302</width>
+        <width>304</width>
         <height>280</height>
        </rect>
       </property>
@@ -1882,9 +1882,9 @@
      <widget class="QLabel" name="schedulerstatetext">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>8</y>
-        <width>111</width>
+        <width>113</width>
         <height>32</height>
        </rect>
       </property>
@@ -1895,7 +1895,7 @@
      <widget class="QPushButton" name="schedulerstate">
       <property name="geometry">
        <rect>
-        <x>128</x>
+        <x>126</x>
         <y>8</y>
         <width>136</width>
         <height>32</height>
@@ -1967,9 +1967,9 @@
      <widget class="QLabel" name="label_26">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>80</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -1980,9 +1980,9 @@
      <widget class="QLabel" name="schedulersecondtext">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>212</y>
-        <width>171</width>
+        <width>167</width>
         <height>32</height>
        </rect>
       </property>
@@ -1993,9 +1993,9 @@
      <widget class="QLabel" name="windowpositiontext">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>336</y>
-        <width>241</width>
+        <width>240</width>
         <height>32</height>
        </rect>
       </property>
@@ -2009,9 +2009,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>304</y>
-        <width>141</width>
+        <width>138</width>
         <height>20</height>
        </rect>
       </property>
@@ -2031,7 +2031,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>256</x>
+        <x>253</x>
         <y>336</y>
         <width>112</width>
         <height>32</height>
@@ -2090,7 +2090,7 @@
        <rect>
         <x>157</x>
         <y>416</y>
-        <width>531</width>
+        <width>533</width>
         <height>24</height>
        </rect>
       </property>
@@ -2449,7 +2449,7 @@
      <widget class="QFrame" name="schedulersecondpanel">
       <property name="geometry">
        <rect>
-        <x>184</x>
+        <x>180</x>
         <y>192</y>
         <width>112</width>
         <height>72</height>
@@ -2579,9 +2579,9 @@
      <widget class="QLabel" name="label_28">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>0</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -2592,9 +2592,9 @@
      <widget class="QLabel" name="label_29">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>32</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -2605,7 +2605,7 @@
      <widget class="lblevent" name="homepage1">
       <property name="geometry">
        <rect>
-        <x>25</x>
+        <x>24</x>
         <y>64</y>
         <width>311</width>
         <height>32</height>
@@ -2626,7 +2626,7 @@
      <widget class="lblevent" name="homepage2">
       <property name="geometry">
        <rect>
-        <x>25</x>
+        <x>24</x>
         <y>96</y>
         <width>241</width>
         <height>32</height>
@@ -2647,9 +2647,9 @@
      <widget class="QLabel" name="label_31">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>128</y>
-        <width>681</width>
+        <width>680</width>
         <height>32</height>
        </rect>
       </property>
@@ -2660,7 +2660,7 @@
      <widget class="lblevent" name="email">
       <property name="geometry">
        <rect>
-        <x>25</x>
+        <x>24</x>
         <y>160</y>
         <width>141</width>
         <height>32</height>
@@ -2681,7 +2681,7 @@
      <widget class="QLabel" name="label_33">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>192</y>
         <width>408</width>
         <height>32</height>
@@ -2694,7 +2694,7 @@
      <widget class="lblevent" name="donate">
       <property name="geometry">
        <rect>
-        <x>25</x>
+        <x>24</x>
         <y>224</y>
         <width>51</width>
         <height>32</height>
@@ -2718,7 +2718,7 @@
      <widget class="QLabel" name="label_34">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>256</y>
         <width>408</width>
         <height>32</height>
@@ -2809,7 +2809,7 @@
      <widget class="QLabel" name="label_35">
       <property name="geometry">
        <rect>
-        <x>307</x>
+        <x>309</x>
         <y>416</y>
         <width>381</width>
         <height>24</height>
@@ -2838,9 +2838,9 @@
      <widget class="QTextBrowser" name="license">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>8</y>
-        <width>677</width>
+        <width>680</width>
         <height>368</height>
        </rect>
       </property>
@@ -2865,7 +2865,7 @@
        <rect>
         <x>157</x>
         <y>416</y>
-        <width>531</width>
+        <width>533</width>
         <height>24</height>
        </rect>
       </property>
@@ -2918,9 +2918,9 @@
      <widget class="QLabel" name="dirpath">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>0</y>
-        <width>648</width>
+        <width>651</width>
         <height>32</height>
        </rect>
       </property>
@@ -3103,9 +3103,6 @@
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QRadioButton" name="pnumber4">
       <property name="enabled">
@@ -3127,9 +3124,6 @@
       </property>
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
      <widget class="QRadioButton" name="pnumber9">
@@ -3153,9 +3147,6 @@
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QRadioButton" name="pnumber3">
       <property name="enabled">
@@ -3177,9 +3168,6 @@
       </property>
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
-      </property>
-      <property name="text">
-       <string/>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -3206,9 +3194,6 @@
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
       <property name="checked">
        <bool>true</bool>
       </property>
@@ -3234,9 +3219,6 @@
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QRadioButton" name="pnumber10">
       <property name="enabled">
@@ -3259,9 +3241,6 @@
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QRadioButton" name="pnumber7">
       <property name="enabled">
@@ -3283,9 +3262,6 @@
       </property>
       <property name="toolTip">
        <string>Maximum number of temporary restore points</string>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
      <widget class="lndtevent" name="point1">
@@ -3668,7 +3644,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>240</width>
+        <width>238</width>
         <height>32</height>
        </rect>
       </property>
@@ -3690,7 +3666,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>648</width>
+        <width>646</width>
         <height>32</height>
        </rect>
       </property>
@@ -3823,7 +3799,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>38</y>
         <width>20</width>
         <height>20</height>
@@ -3838,9 +3814,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe2">
       <property name="enabled">
@@ -3848,7 +3821,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>78</y>
         <width>20</width>
         <height>20</height>
@@ -3863,9 +3836,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe3">
       <property name="enabled">
@@ -3873,7 +3843,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>118</y>
         <width>20</width>
         <height>20</height>
@@ -3888,9 +3858,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe4">
       <property name="enabled">
@@ -3898,7 +3865,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>158</y>
         <width>20</width>
         <height>20</height>
@@ -3913,9 +3880,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe5">
       <property name="enabled">
@@ -3923,7 +3887,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>198</y>
         <width>20</width>
         <height>20</height>
@@ -3938,9 +3902,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe6">
       <property name="enabled">
@@ -3948,7 +3909,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>238</y>
         <width>20</width>
         <height>20</height>
@@ -3963,9 +3924,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe7">
       <property name="enabled">
@@ -3973,7 +3931,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>278</y>
         <width>20</width>
         <height>20</height>
@@ -3988,9 +3946,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe8">
       <property name="enabled">
@@ -3998,7 +3953,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>318</y>
         <width>20</width>
         <height>20</height>
@@ -4013,9 +3968,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe9">
       <property name="enabled">
@@ -4023,7 +3975,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>358</y>
         <width>20</width>
         <height>20</height>
@@ -4038,9 +3990,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe10">
       <property name="enabled">
@@ -4048,7 +3997,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>196</x>
+        <x>197</x>
         <y>398</y>
         <width>20</width>
         <height>20</height>
@@ -4063,9 +4012,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe14">
       <property name="enabled">
@@ -4073,7 +4019,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>401</x>
         <y>158</y>
         <width>20</width>
         <height>20</height>
@@ -4088,9 +4034,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe15">
       <property name="enabled">
@@ -4098,7 +4041,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>401</x>
         <y>198</y>
         <width>20</width>
         <height>20</height>
@@ -4113,9 +4056,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe11">
       <property name="enabled">
@@ -4123,7 +4063,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>401</x>
         <y>38</y>
         <width>20</width>
         <height>20</height>
@@ -4138,9 +4078,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe12">
       <property name="enabled">
@@ -4148,7 +4085,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>401</x>
         <y>78</y>
         <width>20</width>
         <height>20</height>
@@ -4163,9 +4100,6 @@
       <property name="toolTip">
        <string>Select restore point</string>
       </property>
-      <property name="text">
-       <string/>
-      </property>
      </widget>
      <widget class="QCheckBox" name="pointpipe13">
       <property name="enabled">
@@ -4173,7 +4107,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>400</x>
+        <x>401</x>
         <y>118</y>
         <width>20</width>
         <height>20</height>
@@ -4187,9 +4121,6 @@
       </property>
       <property name="toolTip">
        <string>Select restore point</string>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -4595,9 +4526,9 @@
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>227</x>
+        <x>222</x>
         <y>416</y>
-        <width>461</width>
+        <width>468</width>
         <height>24</height>
        </rect>
       </property>
@@ -4680,22 +4611,6 @@
        </property>
       </widget>
      </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>390</y>
-        <width>99</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::NoFocus</enum>
-      </property>
-      <property name="text">
-       <string notr="true">PushButton</string>
-      </property>
-     </widget>
      <zorder>label_3</zorder>
      <zorder>functionmenu1</zorder>
      <zorder>functionmenu2</zorder>
@@ -4749,7 +4664,6 @@
      <zorder>functionmenuback</zorder>
      <zorder>functionmenunext</zorder>
      <zorder>label_6</zorder>
-     <zorder>pushButton</zorder>
     </widget>
     <widget class="lblevent" name="border">
      <property name="geometry">
@@ -4856,7 +4770,7 @@
        <rect>
         <x>8</x>
         <y>38</y>
-        <width>111</width>
+        <width>107</width>
         <height>20</height>
        </rect>
       </property>
@@ -4878,7 +4792,7 @@
        <rect>
         <x>8</x>
         <y>70</y>
-        <width>171</width>
+        <width>165</width>
         <height>20</height>
        </rect>
       </property>
@@ -4897,7 +4811,7 @@
        <rect>
         <x>8</x>
         <y>102</y>
-        <width>261</width>
+        <width>258</width>
         <height>20</height>
        </rect>
       </property>
@@ -4917,9 +4831,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>23</x>
+        <x>24</x>
         <y>134</y>
-        <width>301</width>
+        <width>297</width>
         <height>20</height>
        </rect>
       </property>
@@ -4936,9 +4850,9 @@
      <widget class="QLabel" name="includeuserstext">
       <property name="geometry">
        <rect>
-        <x>25</x>
+        <x>24</x>
         <y>160</y>
-        <width>111</width>
+        <width>106</width>
         <height>32</height>
        </rect>
       </property>
@@ -4952,7 +4866,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>136</x>
+        <x>135</x>
         <y>160</y>
         <width>112</width>
         <height>32</height>
@@ -5005,7 +4919,7 @@
      <widget class="QCheckBox" name="autorestoreoptions">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>230</y>
         <width>131</width>
         <height>20</height>
@@ -5030,9 +4944,9 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>262</y>
-        <width>191</width>
+        <width>184</width>
         <height>20</height>
        </rect>
       </property>
@@ -5049,9 +4963,9 @@
      <widget class="QLabel" name="grubreinstallrestoretext">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>288</y>
-        <width>201</width>
+        <width>200</width>
         <height>32</height>
        </rect>
       </property>
@@ -5065,7 +4979,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>217</x>
+        <x>213</x>
         <y>288</y>
         <width>112</width>
         <height>32</height>
@@ -5154,7 +5068,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>217</x>
+        <x>213</x>
         <y>288</y>
         <width>112</width>
         <height>32</height>
@@ -5480,9 +5394,9 @@
      <widget class="QCheckBox" name="usersettingscopy">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>318</y>
-        <width>251</width>
+        <width>246</width>
         <height>20</height>
        </rect>
       </property>
@@ -5502,9 +5416,9 @@
      <widget class="QCheckBox" name="userdatafilescopy">
       <property name="geometry">
        <rect>
-        <x>7</x>
+        <x>8</x>
         <y>318</y>
-        <width>171</width>
+        <width>162</width>
         <height>20</height>
        </rect>
       </property>
@@ -5521,7 +5435,7 @@
      <widget class="QComboBox" name="grubinstallcopy">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>196</x>
         <y>344</y>
         <width>112</width>
         <height>32</height>
@@ -5552,9 +5466,9 @@
      <widget class="QLabel" name="grubinstalltext">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>8</x>
         <y>344</y>
-        <width>191</width>
+        <width>183</width>
         <height>32</height>
        </rect>
       </property>
@@ -5626,7 +5540,7 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>196</x>
         <y>344</y>
         <width>112</width>
         <height>32</height>
@@ -5659,7 +5573,7 @@
        <rect>
         <x>8</x>
         <y>32</y>
-        <width>542</width>
+        <width>544</width>
         <height>240</height>
        </rect>
       </property>
@@ -6473,9 +6387,9 @@
     <widget class="QLabel" name="adminstext">
      <property name="geometry">
       <rect>
-       <x>9</x>
+       <x>8</x>
        <y>80</y>
-       <width>111</width>
+       <width>102</width>
        <height>32</height>
       </rect>
      </property>
@@ -6486,7 +6400,7 @@
     <widget class="QComboBox" name="admins">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>115</x>
        <y>80</y>
        <width>112</width>
        <height>32</height>
@@ -6514,9 +6428,9 @@
     <widget class="QLabel" name="adminpasswordtext">
      <property name="geometry">
       <rect>
-       <x>9</x>
+       <x>8</x>
        <y>128</y>
-       <width>81</width>
+       <width>72</width>
        <height>32</height>
       </rect>
      </property>
@@ -6527,9 +6441,9 @@
     <widget class="QLineEdit" name="adminpassword">
      <property name="geometry">
       <rect>
-       <x>88</x>
+       <x>85</x>
        <y>128</y>
-       <width>248</width>
+       <width>251</width>
        <height>32</height>
       </rect>
      </property>

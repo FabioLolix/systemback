@@ -19,10 +19,10 @@
 
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
-#define QStr QString
-#define QSL QStringList
 #define QTS QTextStream
+#define QSL QStringList
 #define QSIL QList<short>
+#define QStr QString
 #define isfile(path) QFileInfo(path).isFile()
 #define isdir(path) QFileInfo(path).isDir()
 #define islink(path) QFileInfo(path).isSymLink()
@@ -64,7 +64,7 @@ public:
     static uchar fcomp(QStr file1, QStr file2);
     static uchar stype(QStr path);
     static bool mount(QStr device, QStr mpoint, QStr moptions = NULL);
-    static bool crtscopy(uchar mthd, QStr usr, QStr srcdir);
+    static bool scopy(uchar mthd, QStr usr, QStr srcdir);
     static bool cpertime(QStr sourceitem, QStr newitem);
     static bool cpfile(QStr sourcefile, QStr newfile);
     static bool cplink(QStr sourcelink, QStr newlink);

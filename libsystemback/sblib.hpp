@@ -63,6 +63,7 @@ public:
     static uchar exec(QStr cmd, QStr envv = NULL, bool silent = false, bool bckgrnd = false);
     static uchar fcomp(QStr file1, QStr file2);
     static uchar stype(QStr path);
+    static bool srestore(uchar mthd, QStr usr, QStr srcdir, QStr trgt, bool sfstab = false);
     static bool mount(QStr device, QStr mpoint, QStr moptions = NULL);
     static bool scopy(uchar mthd, QStr usr, QStr srcdir);
     static bool cpertime(QStr sourceitem, QStr newitem);
@@ -84,7 +85,6 @@ public:
     static bool remove(QStr path);
     static bool lock(uchar type);
     static bool exist(QStr path);
-    static void srestore(uchar mthd, QStr usr, QStr srcdir, QStr trgt, bool sfstab = false);
     static void unlock(uchar type);
     static void delay(ushort msec);
     static void print(QStr txt);
@@ -108,11 +108,12 @@ private:
 
     QSL odir(QStr path, bool hidden = false);
     QStr rodir(QStr path, bool hidden = false);
+    bool thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sfstab);
     bool thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir);
     bool recrmdir(QStr path, bool slimit = false);
     bool thrdcrtrpoint(QStr &sdir, QStr &pname);
     bool thrdlvprpr(bool &iudata);
-    void thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sfstab);
+    bool fspchk(QStr &dir);
     void sbdir(QStr path, uchar oplen, bool hidden = false);
 };
 

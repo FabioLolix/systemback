@@ -601,7 +601,7 @@ void systemback::unitimer()
                 ui->processrun->setText(prun % points);
             }
 
-            if(sb::like(prun, QSL() << '_' % tr("Creating restore point") % '_' << '_' % tr("Restoring the full system") % '_' << '_' % tr("Restoring the system files") % '_' << '_' % tr("Restoring user(s) configuration files") % '_' << '_' % tr("Repairing the system files") % '_' << '_' % tr("Repairing the full system") % '_' << '_' % tr("Copying the system") % '_' << '_' % tr("Installing the system") % "_" << "_Converting Live system image*"))
+            if(sb::like(prun, QSL() << '_' % tr("Creating restore point") % '_' << '_' % tr("Restoring the full system") % '_' << '_' % tr("Restoring the system files") % '_' << '_' % tr("Restoring user(s) configuration files") % '_' << '_' % tr("Repairing the system files") % '_' << '_' % tr("Repairing the full system") % '_' << '_' % tr("Copying the system") % '_' << '_' % tr("Installing the system") % "_" << '_' % tr("Converting Live system image") % '*'))
             {
                 if(ui->interruptdisable->isVisible())
                 {
@@ -1822,71 +1822,76 @@ void systemback::restore()
     }
 
     if(prun.isEmpty()) return;
-    sb::srestore(mthd, ui->includeusers->currentText(), sb::sdir[1] % '/' % cpoint % '_' % pname, NULL, sfstab);
-    if(prun.isEmpty()) return;
-    sb::SBThrd.Progress = -1;
 
-    if(mthd < 3)
+    if(sb::srestore(mthd, ui->includeusers->currentText(), sb::sdir[1] % '/' % cpoint % '_' % pname, NULL, sfstab))
     {
-        if(ui->grubreinstallrestore->isVisibleTo(ui->restorepanel))
-        {
-            uchar res(0);
+        if(prun.isEmpty()) return;
+        sb::SBThrd.Progress = -1;
 
-            if(ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto")
+        if(mthd < 3)
+        {
+            if(ui->grubreinstallrestore->isVisibleTo(ui->restorepanel) && (! ui->grubreinstallrestore->isEnabled() || ui->grubreinstallrestore->currentText() != tr("Disabled")))
             {
-                if(fcmp)
-                    sb::exec("update-grub");
+                uchar res(0);
+
+                if(ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto")
+                {
+                    if(fcmp)
+                        sb::exec("update-grub");
+                    else
+                    {
+                        sb::exec("update-grub");
+                        if(prun.isEmpty()) return;
+                        QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
+                        QTS in(&mnts, QIODevice::ReadOnly);
+
+                        while(! in.atEnd())
+                        {
+                            QStr cline(in.readLine());
+
+                            if(cline.contains(" /boot "))
+                            {
+                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                                break;
+                            }
+                            else if(cline.contains(" / "))
+                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                        }
+
+                        if(prun.isEmpty()) return;
+                        res = sb::exec("grub-install --force " % sb::left(mntdev, 8));
+                    }
+                }
                 else
                 {
                     sb::exec("update-grub");
                     if(prun.isEmpty()) return;
-                    QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
-                    QTS in(&mnts, QIODevice::ReadOnly);
-
-                    while(! in.atEnd())
-                    {
-                        QStr cline(in.readLine());
-
-                        if(cline.contains(" /boot "))
-                        {
-                            mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                            break;
-                        }
-                        else if(cline.contains(" / "))
-                            mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                    }
-
-                    if(prun.isEmpty()) return;
-                    res = sb::exec("grub-install --force " % sb::left(mntdev, 8));
+                    res = sb::exec("grub-install --force " % ui->grubreinstallrestore->currentText());
                 }
-            }
-            else if(ui->grubreinstallrestore->currentText() != tr("Disabled"))
-            {
-                sb::exec("update-grub");
+
                 if(prun.isEmpty()) return;
-                res = sb::exec("grub-install --force " % ui->grubreinstallrestore->currentText());
+                if(res > 0) dialog = 23;
             }
 
-            if(prun.isEmpty()) return;
-            if(res > 0) dialog = 23;
+            sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
         }
 
-        sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
-    }
-
-    if(dialog != 23)
-    {
-        switch(mthd) {
-        case 1:
-            dialog = 20;
-            break;
-        case 2:
-            dialog = 19;
-            break;
-        default:
-            dialog = ui->keepfiles->isChecked() ? 10 : 9;
+        if(! sb::ilike(dialog, QSIL() << 23 << 60))
+        {
+            switch(mthd) {
+            case 1:
+                dialog = 20;
+                break;
+            case 2:
+                dialog = 19;
+                break;
+            default:
+                dialog = ui->keepfiles->isChecked() ? 10 : 9;
+            }
         }
     }
+    else
+        dialog = 60;
 
     if(prun.isEmpty()) return;
     dialogopen();
@@ -1974,6 +1979,7 @@ void systemback::repair()
         }
 
         if(prun.isEmpty()) return;
+        bool rv;
 
         if(pname == tr("Live image"))
         {
@@ -2001,72 +2007,76 @@ void systemback::repair()
             }
 
             if(prun.isEmpty()) return;
-            sb::srestore(mthd, NULL, "/.systembacklivepoint", "/mnt", sfstab);
+            rv = sb::srestore(mthd, NULL, "/.systembacklivepoint", "/mnt", sfstab);
             sb::umount("/.systembacklivepoint");
-            if(prun.isEmpty()) return;
             QDir().rmdir("/.systembacklivepoint");
         }
         else
-            sb::srestore(mthd, NULL, sb::sdir[1] % '/' % cpoint % '_' % pname, "/mnt", sfstab);
+            rv = sb::srestore(mthd, NULL, sb::sdir[1] % '/' % cpoint % '_' % pname, "/mnt", sfstab);
 
         if(prun.isEmpty()) return;
 
-        if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
+        if(rv)
         {
-            sb::mount("/dev", "/mnt/dev");
-            sb::mount("/dev/pts", "/mnt/dev/pts");
-            sb::mount("/proc", "/mnt/proc");
-            sb::mount("/sys", "/mnt/sys");
-            if(prun.isEmpty()) return;
-
-            if(ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")
+            if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel) && (! ui->grubreinstallrepair->isEnabled() || ui->grubreinstallrepair->currentText() != tr("Disabled")))
             {
-                if(fcmp)
-                    sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\n");
-                else
+                sb::mount("/dev", "/mnt/dev");
+                sb::mount("/dev/pts", "/mnt/dev/pts");
+                sb::mount("/proc", "/mnt/proc");
+                sb::mount("/sys", "/mnt/sys");
+                if(prun.isEmpty()) return;
+
+                if(ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")
                 {
-                    QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
-                    QTS in(&mnts, QIODevice::ReadOnly);
-
-                    while(! in.atEnd())
+                    if(fcmp)
+                        sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\n");
+                    else
                     {
-                        QStr cline(in.readLine());
+                        QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
+                        QTS in(&mnts, QIODevice::ReadOnly);
 
-                        if(cline.contains(" /mnt/boot "))
+                        while(! in.atEnd())
                         {
-                            mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                            break;
+                            QStr cline(in.readLine());
+
+                            if(cline.contains(" /mnt/boot "))
+                            {
+                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                                break;
+                            }
+                            else if(cline.contains(" /mnt "))
+                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
                         }
-                        else if(cline.contains(" /mnt "))
-                            mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+
+                        sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
                     }
-
-                    sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
                 }
+                else
+                    sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
+
+                QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
+                if(prun.isEmpty()) return;
+                if(sb::exec("chroot /mnt /grubinst") > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
+                QFile::remove("/mnt/grubinst");
+                sb::umount("/mnt/dev");
+                sb::umount("/mnt/dev/pts");
+                sb::umount("/mnt/proc");
+                sb::umount("/mnt/sys");
+                if(prun.isEmpty()) return;
             }
-            else if(ui->grubreinstallrepair->currentText() != tr("Disabled"))
-                sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
 
-            QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
-            if(prun.isEmpty()) return;
-            if(sb::exec("chroot /mnt /grubinst") > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
-            QFile::remove("/mnt/grubinst");
-            sb::umount("/mnt/dev");
-            sb::umount("/mnt/dev/pts");
-            sb::umount("/mnt/proc");
-            sb::umount("/mnt/sys");
-            if(prun.isEmpty()) return;
+            prun = tr("Emptying cache");
+            sb::fssync();
+            sb::crtfile("/proc/sys/vm/drop_caches", "3");
+
+            if(sb::ilike(dialog, QSIL() << 5 << 6 << 41))
+            {
+                if(ppipe == 1 && isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+                dialog = ui->fullrepair->isChecked() ? 12 : 13;
+            }
         }
-
-        prun = tr("Emptying cache");
-        sb::fssync();
-        sb::crtfile("/proc/sys/vm/drop_caches", "3");
-
-        if(sb::ilike(dialog, QSIL() << 5 << 6 << 41))
-        {
-            if(ppipe == 1 && isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
-            dialog = ui->fullrepair->isChecked() ? 12 : 13;
-        }
+        else
+            dialog = 61;
     }
 
     dialogopen();
@@ -2941,7 +2951,7 @@ void systemback::dialogopen()
             break;
         case 3:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("The specified name contains unsupported character(s)!") % "<p>" % tr("Please enter a new name!"));
+            ui->dialogtext->setText(tr("The specified name contains unsupported character(s)!") % "<p>" % tr("Please enter a new name."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 4:
@@ -3051,7 +3061,7 @@ void systemback::dialogopen()
             break;
         case 21:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) doesn't have enough free space to copy the system! The copied system will not function properly!"));
+            ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) doesn't have enough free space to copy the system. The copied system will not function properly."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 22:
@@ -3061,7 +3071,7 @@ void systemback::dialogopen()
             break;
         case 23:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB!"));
+            ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 24:
@@ -3076,12 +3086,12 @@ void systemback::dialogopen()
             break;
         case 26:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating file system image!"));
+            ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating file system image."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 27:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating container file!"));
+            ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating container file."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 28:
@@ -3122,12 +3132,12 @@ void systemback::dialogopen()
             break;
         case 35:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) doesn't have enough free space to install the system! The installed system will not function properly!"));
+            ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) doesn't have enough free space to install the system. The installed system will not function properly."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 36:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable)!") % "<p><b>" % dialogdev);
+            ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 37:
@@ -3158,12 +3168,12 @@ void systemback::dialogopen()
             break;
         case 42:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected partition doesn't have enough space to write the Live system!"));
+            ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected partition doesn't have enough space to write the Live system."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 43:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("An error occurred while unpacking Live system files!"));
+            ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("An error occurred while unpacking Live system files."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 44:
@@ -3173,22 +3183,22 @@ void systemback::dialogopen()
             break;
         case 45:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming essential Live files!"));
+            ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming essential Live files."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 46:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while creating .iso image!"));
+            ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while creating .iso image."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 47:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while reading .sblive image!"));
+            ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while reading .sblive image."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 48:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating new initramfs image!"));
+            ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating new initramfs image."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 49:
@@ -3208,7 +3218,7 @@ void systemback::dialogopen()
             break;
         case 52:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable)!") % "<p><b>" % dialogdev);
+            ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
             break;
         case 53:
@@ -3243,7 +3253,17 @@ void systemback::dialogopen()
             break;
         case 59:
             ui->dialogerror->show();
-            ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable)!") % "<p><b>" % dialogdev);
+            ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
+            if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+            break;
+        case 60:
+            ui->dialogerror->show();
+            ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("There isn't enough free space."));
+            if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+            break;
+        case 61:
+            ui->dialogerror->show();
+            ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("There isn't enough free space."));
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         }
 

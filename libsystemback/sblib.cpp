@@ -45,15 +45,21 @@ bool sb::ExecKill;
 
 sb::sb(QThread *parent) : QThread(parent)
 {
-    sb::ExecKill = true;
-    sb::SBThrd.ThrdKill = true;
+    sb::ExecKill = sb::SBThrd.ThrdKill = true;
 }
 
 QStr sb::getarch()
 {
     char *a;
-    if(sizeof(a) == 4) return "i386";
-    return (sizeof(a) == 8) ? "amd64" : "arch?";
+
+    switch(sizeof(a)) {
+    case 4:
+        return "i386";
+    case 8:
+        return "amd64";
+    default:
+        return "arch?";
+    }
 }
 
 void sb::print(QStr txt)
@@ -145,10 +151,7 @@ ushort sb::instr(QStr txt, QStr stxt, ushort start)
 
 ushort sb::rinstr(QStr txt, QStr stxt, ushort start)
 {
-    if(start == 0)
-        return txt.lastIndexOf(stxt) + 1;
-    else
-        return (start >= stxt.length()) ? txt.left(start).lastIndexOf(stxt) + 1 : 0;
+    return (start == 0) ? txt.lastIndexOf(stxt) + 1 : (start >= stxt.length()) ? txt.left(start).lastIndexOf(stxt) + 1 : 0;
 }
 
 QStr sb::rndstr(uchar vlen)
@@ -382,16 +385,14 @@ void sb::cfgread()
     if(schdle[1].isEmpty() || schdle[2].isEmpty() || schdle[3].isEmpty() || schdle[4].isEmpty())
     {
         schdle[1] = "1";
-        schdle[2] = "0";
-        schdle[3] = "0";
+        schdle[2] = schdle[3] = "0";
         schdle[4] = "10";
         if(! cfgupdt) cfgupdt = true;
     }
     else if(schdle[1].toShort() > 7 || schdle[2].toShort() > 23 || schdle[3].toShort() > 59 || schdle[4].toShort() < 10 || schdle[4].toShort() > 99)
     {
         schdle[1] = "1";
-        schdle[2] = "0";
-        schdle[3] = "0";
+        schdle[2] = schdle[3] = "0";
         schdle[4] = "10";
         if(! cfgupdt) cfgupdt = true;
     }
@@ -503,9 +504,8 @@ bool sb::cplink(QStr sourcelink, QStr newlink)
     if(lstat64(sourcelink.toStdString().c_str(), &sistat) == -1) return false;
     struct timeval sitimes[2];
     sitimes[0].tv_sec = sistat.st_atim.tv_sec;
-    sitimes[0].tv_usec = 0;
     sitimes[1].tv_sec = sistat.st_mtim.tv_sec;
-    sitimes[1].tv_usec = 0;
+    sitimes[0].tv_usec = sitimes[1].tv_usec = 0;
     return (lutimes(newlink.toStdString().c_str(), sitimes) == -1) ? false : true;
 }
 
@@ -1213,9 +1213,7 @@ QSL sb::odir(QStr path, bool hidden)
     while((ent = readdir(dir)) != NULL)
     {
         if(! like(ent->d_name, QSL() << "_._" << "_.._"))
-        {
             if(! hidden || QStr(ent->d_name).startsWith('.')) dlst.append(ent->d_name);
-        }
 
         if(ThrdKill) break;
     }

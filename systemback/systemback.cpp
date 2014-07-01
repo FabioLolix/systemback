@@ -35,9 +35,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 {
     ui->setupUi(this);
     installEventFilter(this);
-    nohmcpy = false;
-    cfgupdt = false;
-    utblock = false;
+    nohmcpy = cfgupdt = utblock = false;
     wround = 0;
 
     if((font().family() != "Ubuntu" && font().family() != "FreeSans") || fontInfo().pixelSize() != 15)
@@ -141,8 +139,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     else
     {
         grub = "pc";
-        ppipe = 0;
-        busycnt = 0;
+        ppipe = busycnt = 0;
         irfsc = false;
         ui->dialogpanel->hide();
         ui->statuspanel->move(0, 0);
@@ -515,9 +512,8 @@ void systemback::unitimer()
                 QFile file(":version");
                 file.open(QIODevice::ReadOnly);
                 QTS in(&file);
-                ui->systembackversion->setText(in.readLine() % "_Qt5_" % sb::getarch());
+                ui->systembackversion->setText(in.readLine() % "_Qt" % QStr((QStr(qVersion()) == QStr(QT_VERSION_STR)) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % "_" % sb::getarch());
                 file.close();
-
                 ui->repairmountpoint->addItems(QSL() << NULL << "/mnt" << "/mnt/home" << "/mnt/boot");
 
                 if(sb::getarch() == "amd64")
@@ -528,7 +524,6 @@ void systemback::unitimer()
                         ui->repairmountpoint->addItem("/mnt/boot/efi");
                     }
                     else
-
                     {
                         sb::exec("modprobe efivars", NULL, true);
                         if(isdir("/sys/firmware/efi")) grub = "efi-amd64";
@@ -3369,10 +3364,7 @@ void lblevent::mouseReleaseEvent(QMouseEvent *ev)
 
 void lblevent::mouseDoubleClickEvent(QMouseEvent *ev)
 {
-    if(ev->button() == Qt::LeftButton)
-    {
-        emit Mouse_DblClick();
-    }
+    if(ev->button() == Qt::LeftButton) emit Mouse_DblClick();
 }
 
 void lblevent::enterEvent(QEvent *)
@@ -3490,7 +3482,6 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 
         return true;
     case QEvent::WindowStateChange:
-
         if(isMinimized())
         {
             if(isActiveWindow()) showNormal();
@@ -3523,7 +3514,6 @@ void systemback::keyPressEvent(QKeyEvent *ev)
         break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
-
         if(ui->sbpanel->isVisible())
         {
             if(ui->point1->hasFocus())
@@ -3649,7 +3639,6 @@ void systemback::keyPressEvent(QKeyEvent *ev)
 
         break;
     case Qt::Key_F5:
-
         if(ui->sbpanel->isVisible())
         {
             if(ui->point1->hasFocus())
@@ -3735,7 +3724,6 @@ void systemback::keyPressEvent(QKeyEvent *ev)
 
         break;
     case Qt::Key_Delete:
-
         if(ui->partitionsettings->hasFocus())
         {
             if(ui->umount->isEnabled() && ! ui->copycover->isEnabled()) on_umount_clicked();
@@ -3755,7 +3743,6 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
 {
     ui->admins->resize(fontMetrics().width(arg1) + 30, 32);
     if(! hash.isEmpty()) hash.clear();
-
     QFile file("/etc/shadow");
     file.open(QIODevice::ReadOnly);
     QTS in(&file);
@@ -3772,7 +3759,6 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
     }
 
     file.close();
-
     if(ui->adminpassword->text().length() > 0) ui->adminpassword->clear();
 
     if(! hash.isEmpty())
@@ -4847,7 +4833,6 @@ void systemback::on_restoremenu_clicked()
     ui->restorepanel->show();
     ui->function1->setText(tr("System restore"));
     ui->restoreback->setFocus();
-
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
     QTS in(&file);
@@ -4888,7 +4873,6 @@ void systemback::on_copymenu_clicked()
     }
     else if(isfile("/usr/sbin/update-grub2") && isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
     {
-
         if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
         {
             ui->grubinstallcopydisable->hide();
@@ -5116,7 +5100,6 @@ void systemback::on_partitionupdate_clicked()
     ui->grubinstallcopy->addItems(QSL() << "Auto" << tr("Disabled"));
     ui->grubreinstallrestore->addItems(QSL() << "Auto" << tr("Disabled"));
     ui->grubreinstallrepair->addItems(QSL() << "Auto" << tr("Disabled"));
-
     QSL dlst(QDir("/dev").entryList(QDir::System));
 
     for(ushort a(0) ; a < dlst.count() ; ++a)
@@ -5297,7 +5280,6 @@ void systemback::on_copyback_clicked()
     if(! ui->copycover->isVisible())
     {
         windowmove(698, 465);
-
         ui->copypanel->hide();
 
         if(ui->function1->text() == tr("System copy"))
@@ -5403,7 +5385,6 @@ void lndtevent::focusOutEvent(QFocusEvent *ev)
 void systemback::on_pointpipe1_clicked()
 {
     bool rnmenbl(false);
-
     if(ppipe > 0) ppipe = 0;
 
     if(ui->pointpipe1->isChecked())
@@ -5936,7 +5917,6 @@ void systemback::on_pointexclude_clicked()
     }
 
     file.close();
-
     QSL dlst(QDir("/root").entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
     for(ushort a(0) ; a < dlst.count() ; ++a)
@@ -6929,7 +6909,6 @@ void systemback::on_installnext_clicked()
     ui->installpanel->hide();
     ui->copypanel->show();
     short nwidth(158 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
-
     if(nwidth > 698) (nwidth < 800) ? windowmove(nwidth, 465) : windowmove(800, 465);
 
     if(ui->partitionsettings->currentItem())
@@ -7266,7 +7245,6 @@ void systemback::on_repairpartitionupdate_clicked()
     }
 
     sb::fssync();
-
     ui->repairmountpoint->clear();
     ui->repairmountpoint->addItems(QSL() << NULL << "/mnt" << "/mnt/home" << "/mnt/boot");
     if(grub == "efi-amd64") ui->repairmountpoint->addItem("/mnt/boot/efi");
@@ -7361,7 +7339,6 @@ void systemback::on_repairmount_clicked()
         }
 
         if(ui->grubrepair->isChecked()) on_grubrepair_clicked();
-
         ui->repaircover->hide();
         busy(false);
 

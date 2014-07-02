@@ -6933,6 +6933,7 @@ void systemback::on_installnext_clicked()
                 {
                     ui->partitionsettings->item(a, 3)->setText(NULL);
                     ui->mountpoint->addItem("/home");
+                    nohmcpy = false;
                     break;
                 }
             }

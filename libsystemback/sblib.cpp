@@ -553,7 +553,7 @@ bool sb::mcheck(QStr item)
     if(item.startsWith("/dev/"))
         if(item.length() > 8)
         {
-            if(QStr("\n" % mnts).contains("\n" % item % ' '))
+            if(QStr('\n' % mnts).contains('\n' % item % ' '))
                 return true;
             else
             {
@@ -564,14 +564,14 @@ bool sb::mcheck(QStr item)
 
                 if(blkid_probe_lookup_value(pr, "UUID", &uuid, NULL) != -1)
                     if(! QStr(uuid).isEmpty())
-                        if(QStr("\n" % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ')) ismtd = true;
+                        if(QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ')) ismtd = true;
 
                 blkid_free_probe(pr);
                 return ismtd;
             }
         }
         else
-            return (QStr("\n" % mnts).contains("\n" % item)) ? true : false;
+            return (QStr('\n' % mnts).contains('\n' % item)) ? true : false;
     else if(item.endsWith("/") && item.length() > 1)
         return (mnts.contains(' ' % left(item, -1))) ? true : false;
     else
@@ -1129,6 +1129,20 @@ bool sb::recrmdir(QStr path, bool slimit)
             QStr fpath(path % '/' % QStr(ent->d_name));
 
             switch(ent->d_type) {
+            case DT_UNKNOWN:
+                switch(stype(fpath)) {
+                case Isdir:
+                    recrmdir(fpath, slimit);
+                    QDir().rmdir(fpath);
+                    break;
+                case Isfile:
+                    if(slimit)
+                        if(QFile(fpath).size() > 8000000) continue;
+                default:
+                    QFile::remove(fpath);
+                }
+
+                break;
             case DT_DIR:
                 recrmdir(fpath, slimit);
                 QDir().rmdir(fpath);
@@ -1164,34 +1178,33 @@ void sb::sbdir(QStr path, uchar oplen, bool hidden)
     {
         if(! like(ent->d_name, QSL() << "_._" << "_.._"))
         {
-            if(! hidden)
+            if(! hidden || QStr(ent->d_name).startsWith('.'))
             {
                 switch(ent->d_type) {
                 case DT_LNK:
-                    odlst.append(QStr::number(Islink) % '_' % prepath % QStr(ent->d_name) % "\n");
+                    odlst.append(QStr::number(Islink) % '_' % prepath % QStr(ent->d_name) % '\n');
                     break;
                 case DT_DIR:
-                    odlst.append(QStr::number(Isdir) % '_' % prepath % QStr(ent->d_name) % "\n");
+                    odlst.append(QStr::number(Isdir) % '_' % prepath % QStr(ent->d_name) % '\n');
                     sbdir(path % '/' % QStr(ent->d_name), oplen, false);
                     break;
                 case DT_REG:
-                    odlst.append(QStr::number(Isfile) % '_' % prepath % QStr(ent->d_name) % "\n");
+                    odlst.append(QStr::number(Isfile) % '_' % prepath % QStr(ent->d_name) % '\n');
                     break;
-                }
-            }
-            else if(QStr(ent->d_name).startsWith('.'))
-            {
-                switch(ent->d_type) {
-                case DT_LNK:
-                    odlst.append(QStr::number(Islink) % '_' % prepath % QStr(ent->d_name) % "\n");
-                    break;
-                case DT_DIR:
-                    odlst.append(QStr::number(Isdir) % '_' % prepath % QStr(ent->d_name) % "\n");
-                    sbdir(path % '/' % QStr(ent->d_name), oplen, false);
-                    break;
-                case DT_REG:
-                    odlst.append(QStr::number(Isfile) % '_' % prepath % QStr(ent->d_name) % "\n");
-                    break;
+                case DT_UNKNOWN:
+                    QStr fpath(path % '/' % QStr(ent->d_name));
+
+                    switch(stype(fpath)) {
+                    case Islink:
+                        odlst.append(QStr::number(Islink) % '_' % prepath % QStr(ent->d_name) % '\n');
+                        break;
+                    case Isdir:
+                        odlst.append(QStr::number(Isdir) % '_' % prepath % QStr(ent->d_name) % '\n');
+                        sbdir(fpath, oplen, false);
+                        break;
+                    case Isfile:
+                        odlst.append(QStr::number(Isfile) % '_' % prepath % QStr(ent->d_name) % '\n');
+                    }
                 }
             }
             else

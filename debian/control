@@ -9,7 +9,8 @@ Package: systemback
 Architecture: amd64 i386
 Depends: ${misc:Depends}, ${shlibs:Depends}, casper | live-boot, dosfstools, fonts-freefont-ttf | ttf-freefont, genisoimage, parted, squashfs-tools, syslinux,
  systemback-scheduler (= ${binary:Version}), upstart | sysvinit (>= 2.88) | systemd, xterm, zenity | kde-baseapps-bin | kdebase-bin
-Recommends: systemback-cli (= ${binary:Version}), systemback-locales (= ${binary:Version})
+Recommends: systemback-cli (= ${binary:Version}), systemback-locales (= ${binary:Version}), grub-efi | grub-pc
+Suggests: btrfs-tools, jfsutils, reiserfsprogs, xfsprogs, unionfs-fuse
 Conflicts: live-config, live-config-systemd
 Breaks: systemback-gui-common (<< 1.0.0)
 Replaces: systemback-gui-common (<< 1.0.0)
@@ -24,6 +25,7 @@ Description: Simple system backup and restore application with extra features
 Package: systemback-cli
 Architecture: amd64 i386
 Depends: ${misc:Depends}, ${shlibs:Depends}, upstart | sysvinit (>= 2.88) | systemd
+Recommends: grub-efi | grub-pc
 Description: Systemback command line interface
  Systemback makes it easy to create backups of system and users
  configuration files. In case of problems you can easily restore the

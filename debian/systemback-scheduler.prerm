@@ -2,9 +2,7 @@
 
 if [[ -d /run ]]
 then dir=/run
-elif [[ -d /var/run ]]
-then dir=/var/run
-else dir=/tmp
+else dir=/var/run
 fi
 
 if [[ $1 = remove && -e $dir/sbscheduler.lock && -s $dir/sbscheduler.pid ]]

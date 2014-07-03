@@ -2590,7 +2590,7 @@ start:;
             else
             {
                 sb::SBThrd.ThrdStr[0] = ui->partitionsettings->item(a, 0)->text();
-                sb::SBThrd.ThrdType = sb::SBThrd.Dinfo;
+                sb::SBThrd.ThrdType = sb::Dinfo;
                 sb::SBThrd.start();
                 sb::SBThrd.thrdelay();
 
@@ -5116,9 +5116,7 @@ void systemback::on_partitionupdate_clicked()
 
     char sn(-1);
     QStr fsystem, mntlst(sb::fload("/proc/self/mounts")), swplst;
-
-    if(isfile("/proc/swaps"))
-        swplst = sb::fload("/proc/self/mounts");
+    if(isfile("/proc/swaps")) swplst = sb::fload("/proc/swaps");
 
     for(ushort a(0) ; a < dlst.count() ; ++a)
     {
@@ -5129,7 +5127,7 @@ void systemback::on_partitionupdate_clicked()
             ui->grubinstallcopy->addItem(sb::SBThrd.ThrdStr[0]);
             ui->grubreinstallrestore->addItem(sb::SBThrd.ThrdStr[0]);
             ui->grubreinstallrepair->addItem(sb::SBThrd.ThrdStr[0]);
-            sb::SBThrd.ThrdType = sb::SBThrd.Dinfo;
+            sb::SBThrd.ThrdType = sb::Dinfo;
             sb::SBThrd.start();
             sb::SBThrd.thrdelay();
 
@@ -5158,28 +5156,28 @@ void systemback::on_partitionupdate_clicked()
 
                 if(QStr(sb::SBThrd.FSUUID).isEmpty())
                 {
-                    if(QStr('\n' % mntlst).contains('\n' % sb::SBThrd.ThrdStr[0]))
+                    if(QStr('\n' % mntlst).contains('\n' % sb::SBThrd.ThrdStr[0] % ' '))
                     {
-                        QStr mnt(sb::right(mntlst, - sb::instr(mntlst, sb::SBThrd.ThrdStr[0])));
+                        QStr mnt(sb::right(mntlst, - sb::instr(mntlst, sb::SBThrd.ThrdStr[0] % ' ')));
                         short spc(sb::instr(mnt, " "));
                         mpt->setText(sb::replace(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1) , "\\040", " "));
                     }
                     else
-                        mpt->setText("");
+                        mpt->setText(NULL);
 
                     fsystem = "?";
                 }
                 else
                 {
-                    if(QStr('\n' % mntlst).contains('\n' % sb::SBThrd.ThrdStr[0]))
+                    if(QStr('\n' % mntlst).contains('\n' % sb::SBThrd.ThrdStr[0] % ' '))
                     {
-                        if(QStr('\n' % mntlst).count('\n' % sb::SBThrd.ThrdStr[0]) > 1)
+                        if(QStr('\n' % mntlst).count('\n' % sb::SBThrd.ThrdStr[0] % ' ') > 1)
                             mpt->setText(tr("Multiple mount points"));
                         else if(QStr('\n' % mntlst).contains("\n/dev/disk/by-uuid/" % QStr(sb::SBThrd.FSUUID) % ' '))
                             mpt->setText(tr("Multiple mount points"));
                         else
                         {
-                            QStr mnt(sb::right(mntlst, - sb::instr(mntlst, sb::SBThrd.ThrdStr[0])));
+                            QStr mnt(sb::right(mntlst, - sb::instr(mntlst, sb::SBThrd.ThrdStr[0] % ' ')));
                             short spc(sb::instr(mnt, " "));
                             mpt->setText(sb::replace(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1) , "\\040", " "));
                         }
@@ -5196,7 +5194,7 @@ void systemback::on_partitionupdate_clicked()
                         }
                     }
                     else if(! swplst.isEmpty())
-                        QStr('\n' % swplst).contains('\n' % sb::SBThrd.ThrdStr[0]) ? mpt->setText("SWAP") : mpt->setText("");
+                        QStr('\n' % swplst).contains('\n' % sb::SBThrd.ThrdStr[0] % ' ') ? mpt->setText("SWAP") : mpt->setText(NULL);
 
                     fsystem = sb::SBThrd.FSType;
                 }
@@ -5252,7 +5250,7 @@ void systemback::on_umount_clicked()
         {
             QStr mpt(ui->partitionsettings->item(a, 2)->text());
 
-            if(! mpt.isEmpty())
+            if(! mpt.isEmpty() && mpt != "SWAP")
                 if(! mnts[0].contains(' ' % sb::replace(mpt, " ", "\\040") % ' ')) ui->partitionsettings->item(a, 2)->setText(NULL);
         }
 
@@ -8576,9 +8574,8 @@ start:;
         {
             QStr iname(dlst.at(a));
 
-            if(sb::like(iname, QSL() << "*integrity_check_" << "*mountpoints_" << "*fstab_" << "*swap_" << "*xconfig_" << "*networking_" << "*preseed_" << "*disable_update_notifier_" << "*disable_hibernation_" << "*disable_kde_services_" << "*fix_language_selector_" << "*disable_trackerd_" << "*disable_updateinitramfs_" << "*kubuntu_disable_restart_notifications_" << "*kubuntu_mobile_session_"))
-                if(isfile("/usr/share/initramfs-tools/scripts/casper-bottom" % iname))
-                    if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom" % iname, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
+            if(! sb::like(iname, QSL() << "*integrity_check_" << "*mountpoints_" << "*fstab_" << "*swap_" << "*xconfig_" << "*networking_" << "*disable_update_notifier_" << "*disable_hibernation_" << "*disable_kde_services_" << "*fix_language_selector_" << "*disable_trackerd_" << "*disable_updateinitramfs_" << "*kubuntu_disable_restart_notifications_" << "*kubuntu_mobile_session_"))
+                if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % iname, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
         }
     }
     else
@@ -8613,9 +8610,8 @@ start:;
         {
             QStr iname(dlst.at(a));
 
-            if(sb::like(iname, QSL() << "*integrity_check_" << "*mountpoints_" << "*fstab_" << "*swap_" << "*xconfig_" << "*networking_" << "*preseed_" << "*disable_update_notifier_" << "*disable_hibernation_" << "*disable_kde_services_" << "*fix_language_selector_" << "*disable_trackerd_" << "*disable_updateinitramfs_" << "*kubuntu_disable_restart_notifications_" << "*kubuntu_mobile_session_"))
-                if(isfile("/usr/share/initramfs-tools/scripts/casper-bottom" % iname))
-                    if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom" % iname, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
+            if(! sb::like(iname, QSL() << "*integrity_check_" << "*mountpoints_" << "*fstab_" << "*swap_" << "*xconfig_" << "*networking_" << "*disable_update_notifier_" << "*disable_hibernation_" << "*disable_kde_services_" << "*fix_language_selector_" << "*disable_trackerd_" << "*disable_updateinitramfs_" << "*kubuntu_disable_restart_notifications_" << "*kubuntu_mobile_session_"))
+                if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % iname, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
         }
     }
     else

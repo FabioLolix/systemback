@@ -370,7 +370,7 @@ systemback::~systemback()
 
 void systemback::closeEvent(QCloseEvent *ev)
 {
-    if(ui->statuspanel->isVisible()) ev->ignore();
+    if(ui->statuspanel->isVisible() && prun != tr("Upgrading the system")) ev->ignore();
 }
 
 void systemback::unitimer()
@@ -5022,19 +5022,22 @@ void systemback::on_systemupgrade_clicked()
     sb::unlock(sb::Dpkglock);
     sb::exec("xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e /usr/lib/systemback/sbsysupgrade");
 
-    if(ofdate == QFileInfo("/usr/bin/systemback").lastModified())
+    if(isVisible())
     {
-        sb::lock(sb::Dpkglock);
-        ui->statuspanel->hide();
-        ui->mainpanel->show();
-        ui->functionmenunext->setFocus();
-        windowmove(698, 465);
-    }
-    else
-    {
-        sb::unlock(sb::Sblock);
-        sb::exec("systemback", NULL, false, true);
-        close();
+        if(ofdate == QFileInfo("/usr/bin/systemback").lastModified())
+        {
+            sb::lock(sb::Dpkglock);
+            ui->statuspanel->hide();
+            ui->mainpanel->show();
+            ui->functionmenunext->setFocus();
+            windowmove(698, 465);
+        }
+        else
+        {
+            sb::unlock(sb::Sblock);
+            sb::exec("systemback", NULL, false, true);
+            close();
+        }
     }
 }
 

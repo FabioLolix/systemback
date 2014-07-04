@@ -54,10 +54,11 @@ private:
     short wgeom[4];
     char busycnt;
     uchar dialog, wround, ppipe;
-    bool ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt;
+    bool uchkd, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt;
 
     virtual bool eventFilter(QObject *, QEvent *ev);
     void keyPressEvent(QKeyEvent *ev);
+    void closeEvent(QCloseEvent *ev);
 
     QStr guname();
     bool minside(QPoint pos, QRect geom);

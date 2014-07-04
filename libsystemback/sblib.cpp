@@ -572,7 +572,7 @@ bool sb::mcheck(QStr item)
         }
         else
             return (QStr('\n' % mnts).contains('\n' % item)) ? true : false;
-    else if(item.endsWith("/") && item.length() > 1)
+    else if(item.endsWith('/') && item.length() > 1)
         return (mnts.contains(' ' % left(item, -1))) ? true : false;
     else
         return (mnts.contains(' ' % item % ' ')) ? true : false;
@@ -1312,7 +1312,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     Progress = 0;
     QStr trgt(sdir % '/' % pname);
     if(! QDir().mkdir(trgt)) return false;
-    QSL elist(QSL() << ".sbuserdata" << ".cache/gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority");
+    QSL elist(QSL() << ".sbuserdata" << ".cache/gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
     file.setFileName("/etc/systemback.excludes");
     file.open(QIODevice::ReadOnly);
 
@@ -1658,7 +1658,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                     if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                     {
                         QStr fdir;
-                        QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split("/"));
+                        QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
 
                         for(uchar b(0) ; b < cdlst.count() ; ++b)
                         {
@@ -2083,7 +2083,6 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 if(ThrdKill) return false;
             }
 
-            mediaitms.clear();
             cpertime(srcdir % "/media", trgt % "/media");
         }
         else if(exist(trgt % "/media"))
@@ -2100,13 +2099,15 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 
                 switch(left(line, instr(line, "_") - 1).toShort()) {
                 case Islink:
-                    if(! cplink(srcdir % "/.systemback/" % item, trgt % "/.systemback/" % item))
-                        if(! fspchk(trgt)) return false;
+                    if(item != "etc/fstab" || ! sfstab)
+                        if(! cplink(srcdir % "/.systemback/" % item, trgt % '/' % item))
+                            if(! fspchk(trgt)) return false;
 
                     break;
                 case Isfile:
-                    if(! cpfile(srcdir % "/.systemback/" % item, trgt % "/.systemback/" % item))
-                        if(! fspchk(trgt)) return false;
+                    if(item != "etc/fstab" || ! sfstab)
+                        if(! cpfile(srcdir % "/.systemback/" % item, trgt % '/' % item))
+                            if(! fspchk(trgt)) return false;
                 }
 
                 if(ThrdKill) return false;
@@ -2117,11 +2118,9 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
-                if(left(line, instr(line, "_") - 1).toShort() == Isdir) cpertime(srcdir % "/.systemback/" % item, trgt % "/.systemback/" % item);
+                if(left(line, instr(line, "_") - 1).toShort() == Isdir) cpertime(srcdir % "/.systemback/" % item, trgt % '/' % item);
                 if(ThrdKill) return false;
             }
-
-            sbitms.clear();
         }
     }
     else
@@ -2129,8 +2128,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 
     if(mthd != 2)
     {
-        QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority");
-
+        QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
         QFile file(srcdir % "/etc/systemback.excludes");
         file.open(QIODevice::ReadOnly);
         QTS in(&file);
@@ -2623,7 +2621,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     QStr *cditms, macid;
     uint cnum(0);
     uchar cperc;
-    QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority");
+    QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
     QFile file(srcdir % "/etc/systemback.excludes");
     file.open(QIODevice::ReadOnly);
     QTS in(&file);
@@ -3077,7 +3075,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
 
-                if(item != "lost+found" && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)))
+                if(item != "lost+found" && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! (QStr(cdir % '/' % item).startsWith("/etc/udev/rules.d") && item.contains("-persistent-"))))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:
@@ -3182,31 +3180,77 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             if(! QDir().mkdir("/.sbsystemcopy/media")) return false;
         }
 
-        QStr mediaitms(rodir(srcdir % "/media"));
-        QTS in(&mediaitms, QIODevice::ReadOnly);
-
-        while(! in.atEnd())
+        if(srcdir.isEmpty())
         {
-            QStr line(in.readLine()), item(right(line, - instr(line, "_")));
-
-            if(exist("/.sbsystemcopy/media/" % item))
+            if(isfile("/etc/fstab"))
             {
-                if(stype("/.sbsystemcopy/media/" % item) != Isdir)
+                dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                file.setFileName("/etc/fstab");
+                file.open(QIODevice::ReadOnly);
+                in.setDevice(&file);
+
+                for(uchar a(0) ; a < dlst.count() ; ++a)
                 {
-                    QFile::remove("/.sbsystemcopy/media/" % item);
-                    if(! QDir().mkdir("/.sbsystemcopy/media/" % item)) return false;
+                    QStr item(dlst.at(a));
+                    if(a > 0) file.open(QIODevice::ReadOnly);
+
+                    while(! in.atEnd())
+                    {
+                        QStr cline(replace(in.readLine(), "\t", " "));
+
+                        if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
+                        {
+                            QStr fdir;
+                            QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
+
+                            for(uchar b(0) ; b < cdlst.count() ; ++b)
+                            {
+                                QStr cdname(cdlst.at(b));
+
+                                if(! cdname.isEmpty())
+                                {
+                                    fdir.append('/' % replace(cdname, "\\040", " "));
+
+                                    if(! isdir("/.sbsystemcopy/media" % fdir))
+                                        if(! cpdir("/media" % fdir, "/.sbsystemcopy/media" % fdir)) return false;
+                                }
+                            }
+                        }
+
+                        if(ThrdKill) return false;
+                    }
+
+                    file.close();
                 }
-
-                if(! cpertime(srcdir % "/media/" % item, "/.sbsystemcopy/media/" % item)) return false;
             }
-            else
-                if(! cpdir(srcdir % "/media/" % item, "/.sbsystemcopy/media/" % item)) return false;
+        }
+        else
+        {
+            QStr mediaitms(rodir(srcdir % "/media"));
+            QTS in(&mediaitms, QIODevice::ReadOnly);
 
-            if(ThrdKill) return false;
+            while(! in.atEnd())
+            {
+                QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+
+                if(exist("/.sbsystemcopy/media/" % item))
+                {
+                    if(stype("/.sbsystemcopy/media/" % item) != Isdir)
+                    {
+                        QFile::remove("/.sbsystemcopy/media/" % item);
+                        if(! QDir().mkdir("/.sbsystemcopy/media/" % item)) return false;
+                    }
+
+                    if(! cpertime(srcdir % "/media/" % item, "/.sbsystemcopy/media/" % item)) return false;
+                }
+                else
+                    if(! cpdir(srcdir % "/media/" % item, "/.sbsystemcopy/media/" % item)) return false;
+
+                if(ThrdKill) return false;
+            }
         }
 
         if(! cpertime(srcdir % "/media", "/.sbsystemcopy/media")) return false;
-        mediaitms.clear();
     }
     else if(exist("/.sbsystemcopy/media"))
         stype("/.sbsystemcopy/media") == sb::Isdir ? recrmdir("/.sbsystemcopy/media") : QFile::remove("/.sbsystemcopy/media");
@@ -3250,11 +3294,26 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
             switch(left(line, instr(line, "_") - 1).toShort()) {
             case Islink:
-                cplink(srcdir % "/.systemback/" % item, "/.sbsystemcopy/.systemback/" % item);
+                if(item != "etc/fstab")
+                    if(! cplink(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
+
                 break;
             case Isfile:
-                cpfile(srcdir % "/.systemback/" % item, "/.sbsystemcopy/.systemback/" % item);
+                if(item != "etc/fstab")
+                    if(! cpfile(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
             }
+
+            if(ThrdKill) return false;
+        }
+
+        in.setString(&sbitms, QIODevice::ReadOnly);
+
+        while(! in.atEnd())
+        {
+            QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+
+            if(left(line, instr(line, "_") - 1).toShort() == Isdir)
+                if(! cpertime(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
 
             if(ThrdKill) return false;
         }
@@ -3286,13 +3345,30 @@ bool sb::thrdlvprpr(bool &iudata)
     sitms.clear();
     if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback")) return false;
     if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
-    if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev")) return false;
-    if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d")) return false;
-    cpfile("/etc/udev/rules.d/70-persistent-cd.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-cd.rules");
-    cpfile("/etc/udev/rules.d/70-persistent-net.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-net.rules");
-    if(isdir("/etc/udev/rules.d")) if(! cpertime("/etc/udev/rules.d", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d")) return false;
-    if(isdir("/etc/udev")) if(! cpertime("/etc/udev", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev")) return false;
-    cpfile("/etc/fstab", sdir[2] % "/.sblivesystemcreate/.systemback/etc/fstab");
+
+    if(isdir("/etc/udev"))
+    {
+        if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev")) return false;
+
+        if(isdir("/etc/udev/rules.d"))
+        {
+            if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d")) return false;
+
+            if(isfile("/etc/udev/rules.d/70-persistent-cd.rules"))
+                if(! cpfile("/etc/udev/rules.d/70-persistent-cd.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-cd.rules")) return false;
+
+            if(isfile("/etc/udev/rules.d/70-persistent-net.rules"))
+                if(! cpfile("/etc/udev/rules.d/70-persistent-net.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-net.rules")) return false;
+
+            if(! cpertime("/etc/udev/rules.d", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d")) return false;
+        }
+
+        if(! cpertime("/etc/udev", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev")) return false;
+    }
+
+    if(isfile("/etc/fstab"))
+        if(! cpfile("/etc/fstab", sdir[2] % "/.sblivesystemcreate/.systemback/etc/fstab")) return false;
+
     if(! cpertime("/etc", sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
     if(exist("/.sblvtmp")) stype("/.sblvtmp") == sb::Isdir ? recrmdir("/.sblvtmp") : QFile::remove("/.sblvtmp");
     if(! QDir().mkdir("/.sblvtmp")) return false;
@@ -3342,7 +3418,7 @@ bool sb::thrdlvprpr(bool &iudata)
                 if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                 {
                     QStr fdir;
-                    QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split("/"));
+                    QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
 
                     for(uchar b(0) ; b < cdlst.count() ; ++b)
                     {
@@ -3484,7 +3560,7 @@ bool sb::thrdlvprpr(bool &iudata)
 
     ++ThrdLng;
     if(ThrdKill) return false;
-    elist = QSL() << ".sbuserdata" << ".cache/gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority";
+    elist = QSL() << ".sbuserdata" << ".cache/gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority";
     file.setFileName("/etc/systemback.excludes");
     file.open(QIODevice::ReadOnly);
 

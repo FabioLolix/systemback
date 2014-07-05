@@ -109,7 +109,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     connect(utimer, SIGNAL(timeout()), this, SLOT(unitimer()));
     connect(bttnstimer, SIGNAL(timeout()), this, SLOT(buttonstimer()));
     connect(dlgtimer, SIGNAL(timeout()), this, SLOT(dialogtimer()));
-    connect(wrndtimer, SIGNAL(timeout()), this, SLOT(windowsizeworkaround()));
+    connect(wrndtimer, SIGNAL(timeout()), this, SLOT(wsizeworkaround()));
     connect(ui->function3, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
     connect(ui->function3, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
     connect(ui->function3, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
@@ -846,7 +846,7 @@ void systemback::unitimer()
     }
 }
 
-void systemback::windowsizeworkaround()
+void systemback::wsizeworkaround()
 {
     if((width() > 699 && width() < 711) || (width() > 507 && width() < 517) || (width() > 403 && width() < 415) || (width() > 377 && width() < 388))
     {

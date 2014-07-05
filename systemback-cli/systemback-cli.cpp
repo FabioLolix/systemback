@@ -115,22 +115,20 @@ start:
             rv = uinit();
             if(rv > 0) goto error;
             rv = clistart();
-            clear();
             endwin();
         }
         else if(sb::like(qApp->arguments().value(1), QSL() << "_-n_" << "_--newrestorepoint_"))
         {
-            rv = uinit();
-            if(rv > 0) goto error;
-
             if(! isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
             {
                 rv = 10;
                 goto error;
             }
 
-            rv = restore();
-            clear();
+            rv = uinit();
+            if(rv > 0) goto error;
+            sb::pupgrade();
+            if(! newrestorepoint()) rv = (sb::dfree(sb::sdir[1]) < 104857600) ? 8 : 9;
             endwin();
         }
         else if(sb::like(qApp->arguments().value(1), QSL() << "_-s_" << "_--storagedir_"))
@@ -166,8 +164,14 @@ start:
 uchar systemback::uinit()
 {
     initscr();
-    if(! has_colors()) return 11;
-    if(LINES < 24 || COLS < 80) return 12;
+    uchar rv((! has_colors()) ? 11 : (LINES < 24 || COLS < 80) ? 12 : 0);
+
+    if(rv > 0)
+    {
+        endwin();
+        return rv;
+    }
+
     noecho();
     raw();
     curs_set(0);
@@ -825,7 +829,7 @@ uchar systemback::restore()
     }
 
     attron(COLOR_PAIR(3));
-    (rmode < 3) ? printw(QStr("\n\n " % tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.")).toStdString().c_str()) : printw(QStr("\n " % tr("Press 'ENTER' key to quit.")).toStdString().c_str());
+    (rmode < 3) ? printw(QStr("\n\n " % tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.")).toStdString().c_str()) : printw(QStr("\n\n " % tr("Press 'ENTER' key to quit.")).toStdString().c_str());
     attron(COLOR_PAIR(2));
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
@@ -838,7 +842,7 @@ uchar systemback::restore()
             return 0;
         case 'q':
         case 'Q':
-            if(rmode > 2) return 0;
+            if(rmode < 3) return 0;
         }
     }
 }

@@ -75,7 +75,7 @@ private:
     void repair();
 
 private slots:
-    void windowsizeworkaround();
+    void wsizeworkaround();
     void apokkeyreleased();
     void schedulertimer();
     void hmpg1released();

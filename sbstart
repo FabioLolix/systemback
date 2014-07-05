@@ -34,5 +34,4 @@ else
   fi
 
   XAUTHORITY=$tmpxauth sudo -nH $1 /usr/bin/systemback authorization $USER
-  rm -rf $tmpxauth
 fi

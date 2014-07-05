@@ -54,7 +54,7 @@ private:
     short wgeom[4];
     char busycnt;
     uchar dialog, wround, ppipe;
-    bool uchkd, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt;
+    bool uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt;
 
     virtual bool eventFilter(QObject *, QEvent *ev);
     void keyPressEvent(QKeyEvent *ev);

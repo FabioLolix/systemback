@@ -35,7 +35,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 {
     ui->setupUi(this);
     installEventFilter(this);
-    uchkd = nohmcpy = cfgupdt = utblock = false;
+    uchkd = nrxth = nohmcpy = cfgupdt = utblock = false;
     wround = 0;
 
     if((font().family() != "Ubuntu" && font().family() != "FreeSans") || fontInfo().pixelSize() != 15)
@@ -365,6 +365,13 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 systemback::~systemback()
 {
     if(cfgupdt) sb::cfgwrite();
+
+    if(! nrxth)
+    {
+        QStr xauth(getenv("XAUTHORITY"));
+        if(xauth.startsWith("/tmp/sbXauthority-")) QFile::remove(xauth);
+    }
+
     delete ui;
 }
 
@@ -5034,6 +5041,7 @@ void systemback::on_systemupgrade_clicked()
         }
         else
         {
+            nrxth = true;
             sb::unlock(sb::Sblock);
             sb::exec("systemback", NULL, false, true);
             close();

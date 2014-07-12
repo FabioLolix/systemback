@@ -51,14 +51,10 @@ private:
 
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *wrndtimer;
     QStr cpoint, points, pname, prun, dialogdev, hash, grub;
-    short wgeom[4];
+    short wgeom[6];
     char busycnt;
     uchar dialog, wround, ppipe;
-    bool uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt;
-
-    virtual bool eventFilter(QObject *, QEvent *ev);
-    void keyPressEvent(QKeyEvent *ev);
-    void closeEvent(QCloseEvent *ev);
+    bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt;
 
     QStr guname();
     bool minside(QPoint pos, QRect geom);
@@ -276,6 +272,11 @@ private slots:
     void on_umount_clicked();
     void on_hourup_clicked();
     void on_dayup_clicked();
+
+protected:
+    bool eventFilter(QObject *, QEvent *ev);
+    void keyPressEvent(QKeyEvent *ev);
+    void closeEvent(QCloseEvent *ev);
 };
 
 class lblevent : public QLabel
@@ -290,6 +291,7 @@ public:
 private:
     bool MousePressed;
 
+protected:
     void mouseDoubleClickEvent(QMouseEvent *ev);
     void mouseReleaseEvent(QMouseEvent *ev);
     void mousePressEvent(QMouseEvent *ev);
@@ -313,7 +315,7 @@ class pnlevent : public QWidget
 public:
     explicit pnlevent(QWidget *parent = 0);
 
-private:
+protected:
     void leaveEvent(QEvent *);
 
 signals:
@@ -327,7 +329,7 @@ class lndtevent : public QLineEdit
 public:
     explicit lndtevent(QWidget *parent = 0);
 
-private:
+protected:
     void focusOutEvent(QFocusEvent *ev);
 
 signals:

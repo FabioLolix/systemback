@@ -164,7 +164,7 @@ start:
 uchar systemback::uinit()
 {
     initscr();
-    uchar rv((! has_colors()) ? 11 : (LINES < 24 || COLS < 80) ? 12 : 0);
+    uchar rv(has_colors() ? (LINES < 24 || COLS < 80) ? 12 : 0 : 11);
 
     if(rv > 0)
     {
@@ -359,13 +359,10 @@ uchar systemback::storagedir()
             sb::sdir[1] = sb::sdir[0] % "/Systemback";
         }
 
-        if(! isdir(sb::sdir[1]))
+        if(! isdir(sb::sdir[1]) && ! QDir().mkdir(sb::sdir[1]))
         {
-            if(! QDir().mkdir(sb::sdir[1]))
-            {
-                QFile::rename(sb::sdir[1], sb::sdir[1] % "_" % sb::rndstr());
-                QDir().mkdir(sb::sdir[1]);
-            }
+            QFile::rename(sb::sdir[1], sb::sdir[1] % "_" % sb::rndstr());
+            QDir().mkdir(sb::sdir[1]);
         }
 
         if(! isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);

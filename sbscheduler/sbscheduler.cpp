@@ -195,7 +195,17 @@ void scheduler::newrestorepoint()
     }
 
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
-    if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) return;
+
+    if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime))
+    {
+        if(sb::dfree(sb::sdir[1]) < 104857600)
+        {
+            sb::remove(sb::sdir[1] % "/.S00_" % dtime);
+            goto end;
+        }
+
+        return;
+    }
 
     if(isdir(sb::sdir[1] % "/S01_" % sb::pnames[0]))
     {
@@ -241,6 +251,7 @@ void scheduler::newrestorepoint()
     }
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return;
+end:;
     sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");

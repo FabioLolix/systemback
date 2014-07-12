@@ -879,89 +879,80 @@ void sb::supgrade()
 
     while(true)
     {
-        if(exec("apt-get install -fym --force-yes") == 0)
+        if(exec("apt-get install -fym --force-yes") == 0 && exec("dpkg --configure -a") == 0 && exec("apt-get dist-upgrade --no-install-recommends -ym --force-yes") == 0 && exec("apt-get autoremove --purge -y") == 0)
         {
-            if(exec("dpkg --configure -a") == 0)
+            QSL dlst(QDir("/boot").entryList(QDir::Files));
+            QStr rklist;
+
+            for(short a(dlst.count() - 1) ; a > -1 ; --a)
             {
-                if(exec("apt-get dist-upgrade --no-install-recommends -ym --force-yes") == 0)
+                QStr item(dlst.at(a));
+
+                if(item.startsWith("vmlinuz-"))
                 {
-                    if(exec("apt-get autoremove --purge -y") == 0)
+                    QStr vmlinuz(right(item, -8)), kernel(left(vmlinuz, instr(vmlinuz, "-") - 1)), kver(mid(vmlinuz, kernel.length() + 2, instr(vmlinuz, "-", kernel.length() + 2) - kernel.length() - 2));
+                    bool ok;
+                    kver.toShort(&ok);
+
+                    if(ok && vmlinuz.startsWith(kernel % '-' % kver % '-'))
                     {
-                        QSL dlst(QDir("/boot").entryList(QDir::Files));
-                        QStr rklist;
-
-                        for(short a(dlst.count() - 1) ; a > -1 ; --a)
+                        if(! rklist.contains(kernel % '-' % kver % "-*"))
                         {
-                            QStr item(dlst.at(a));
-
-                            if(item.startsWith("vmlinuz-"))
+                            for(ushort b(1) ; b < 101 ; ++b)
                             {
-                                QStr vmlinuz(right(item, -8)), kernel(left(vmlinuz, instr(vmlinuz, "-") - 1)), kver(mid(vmlinuz, kernel.length() + 2, instr(vmlinuz, "-", kernel.length() + 2) - kernel.length() - 2));
-                                bool ok;
-                                kver.toShort(&ok);
+                                QStr subk(kernel % '-' % QStr::number(kver.toShort() - b));
 
-                                if(ok && vmlinuz.startsWith(kernel % '-' % kver % '-'))
-                                {
-                                    if(! rklist.contains(kernel % '-' % kver % "-*"))
-                                    {
-                                        for(ushort b(1) ; b < 101 ; ++b)
-                                        {
-                                            QStr subk(kernel % '-' % QStr::number(kver.toShort() - b));
-
-                                            for(short c(dlst.count() - 1) ; c > -1 ; --c)
-                                                if(dlst.at(c).startsWith("vmlinuz-" % subk % '-')) rklist.append(' ' % subk % "-*");
-                                        }
-                                    }
-                                }
+                                for(short c(dlst.count() - 1) ; c > -1 ; --c)
+                                    if(dlst.at(c).startsWith("vmlinuz-" % subk % '-')) rklist.append(' ' % subk % "-*");
                             }
-                        }
-
-                        uchar cproc(0);
-                        if(! rklist.isEmpty()) cproc = exec("apt-get autoremove --purge " % rklist);
-
-                        if(ilike(cproc, QSIL() << 0 << 1))
-                        {
-                            QStr iplist;
-                            QProcess proc;
-                            proc.start("dpkg -l", QProcess::ReadOnly);
-
-                            while(proc.state() == QProcess::Starting || proc.state() == QProcess::Running)
-                            {
-                                msleep(10);
-                                qApp->processEvents();
-                            }
-
-                            QStr sout(proc.readAllStandardOutput());
-                            QTS in(&sout, QIODevice::ReadOnly);
-
-                            while(! in.atEnd())
-                            {
-                                QStr line(in.readLine());
-                                if(line.startsWith("rc")) iplist.append(' ' % mid(line, 5, instr(line, " ", 5) - 5));
-                            }
-
-                            if(! iplist.isEmpty()) exec("bash -c dpkg --purge " % iplist);
-                            exec("apt-get clean");
-                            QSL dlst(QDir("/var/cache/apt").entryList(QDir::Files));
-
-                            for(uchar a(0) ; a < dlst.count() ; ++a)
-                            {
-                                QStr item(dlst.at(a));
-                                if(item.contains(".bin.")) QFile::remove("/var/cache/apt/" % item);
-                            }
-
-                            dlst = QDir("/lib/modules").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-                            for(uchar a(0) ; a < dlst.count() ; ++a)
-                            {
-                                QStr item(dlst.at(a));
-                                if(! exist("/boot/vmlinuz-" % item)) QDir("/lib/modules/" % item).removeRecursively();
-                            }
-
-                            break;
                         }
                     }
                 }
+            }
+
+            uchar cproc(0);
+            if(! rklist.isEmpty()) cproc = exec("apt-get autoremove --purge " % rklist);
+
+            if(ilike(cproc, QSIL() << 0 << 1))
+            {
+                QStr iplist;
+                QProcess proc;
+                proc.start("dpkg -l", QProcess::ReadOnly);
+
+                while(proc.state() == QProcess::Starting || proc.state() == QProcess::Running)
+                {
+                    msleep(10);
+                    qApp->processEvents();
+                }
+
+                QStr sout(proc.readAllStandardOutput());
+                QTS in(&sout, QIODevice::ReadOnly);
+
+                while(! in.atEnd())
+                {
+                    QStr line(in.readLine());
+                    if(line.startsWith("rc")) iplist.append(' ' % mid(line, 5, instr(line, " ", 5) - 5));
+                }
+
+                if(! iplist.isEmpty()) exec("bash -c dpkg --purge " % iplist);
+                exec("apt-get clean");
+                QSL dlst(QDir("/var/cache/apt").entryList(QDir::Files));
+
+                for(uchar a(0) ; a < dlst.count() ; ++a)
+                {
+                    QStr item(dlst.at(a));
+                    if(item.contains(".bin.")) QFile::remove("/var/cache/apt/" % item);
+                }
+
+                dlst = QDir("/lib/modules").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+                for(uchar a(0) ; a < dlst.count() ; ++a)
+                {
+                    QStr item(dlst.at(a));
+                    if(! exist("/boot/vmlinuz-" % item)) QDir("/lib/modules/" % item).removeRecursively();
+                }
+
+                break;
             }
         }
         else
@@ -989,6 +980,31 @@ void sb::thrdelay()
         msleep(10);
         qApp->processEvents();
     }
+}
+
+bool sb::pisrng(QString pname)
+{
+    DIR *dir(opendir("/proc"));
+    struct dirent *ent;
+    bool rnng(false);
+
+    while((ent = readdir(dir)) != NULL)
+    {
+        if(! like(ent->d_name, QSL() << "_._" << "_.._") && ent->d_type == DT_DIR)
+        {
+            bool ok;
+            QStr(ent->d_name).toShort(&ok);
+
+            if(ok && islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
+            {
+                rnng = true;
+                break;
+            }
+        }
+    }
+
+    closedir(dir);
+    return rnng;
 }
 
 bool sb::crtrpoint(QStr sdir, QStr pname)
@@ -1132,7 +1148,12 @@ bool sb::recrmdir(QStr path, bool slimit)
             case DT_UNKNOWN:
                 switch(stype(fpath)) {
                 case Isdir:
-                    recrmdir(fpath, slimit);
+                    if(! recrmdir(fpath, slimit))
+                    {
+                        closedir(dir);
+                        return false;
+                    }
+
                     QDir().rmdir(fpath);
                     break;
                 case Isfile:
@@ -1144,7 +1165,12 @@ bool sb::recrmdir(QStr path, bool slimit)
 
                 break;
             case DT_DIR:
-                recrmdir(fpath, slimit);
+                if(! recrmdir(fpath, slimit))
+                {
+                    closedir(dir);
+                    return false;
+                }
+
                 QDir().rmdir(fpath);
                 break;
             case DT_REG:
@@ -1157,7 +1183,7 @@ bool sb::recrmdir(QStr path, bool slimit)
     }
 
     closedir(dir);
-    return QDir().rmdir(path) ? true : (slimit) ? true : false;
+    return QDir().rmdir(path) ? true : slimit ? true : false;
 }
 
 QStr sb::rodir(QStr path, bool hidden)
@@ -1377,36 +1403,33 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
 
-                if(! like(item, QSL() << "_lost+found_" << "*~_") && ! exclcheck(elist, item))
+                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && exist("/home/" % usr % '/' % item))
                 {
-                    if(exist("/home/" % usr % '/' % item))
-                    {
-                        switch(left(line, instr(line, "_") - 1).toShort()) {
-                        case Islink:
-                            if(! cplink("/home/" % usr % '/' % item, trgt % "/home/" % usr % '/' % item)) return false;
-                            break;
-                        case Isdir:
-                            if(! QDir().mkdir(trgt % "/home/" % usr % '/' % item)) return false;
-                            break;
-                        case Isfile:
-                            if(QFile("/home/" % usr % '/' % item).size() <= 8000000)
+                    switch(left(line, instr(line, "_") - 1).toShort()) {
+                    case Islink:
+                        if(! cplink("/home/" % usr % '/' % item, trgt % "/home/" % usr % '/' % item)) return false;
+                        break;
+                    case Isdir:
+                        if(! QDir().mkdir(trgt % "/home/" % usr % '/' % item)) return false;
+                        break;
+                    case Isfile:
+                        if(QFile("/home/" % usr % '/' % item).size() <= 8000000)
+                        {
+                            for(uchar b(0) ; b < rplst.count() ; ++b)
                             {
-                                for(uchar b(0) ; b < rplst.count() ; ++b)
-                                {
-                                    QStr cpname(rplst.at(b));
+                                QStr cpname(rplst.at(b));
 
-                                    if(stype(sdir % '/' % cpname % "/home/" % usr % '/' % item) == Isfile)
+                                if(stype(sdir % '/' % cpname % "/home/" % usr % '/' % item) == Isfile)
+                                {
+                                    if(fcomp("/home/" % usr % '/' % item, sdir % '/' % cpname % "/home/" % usr % '/' % item) == 2)
                                     {
-                                        if(fcomp("/home/" % usr % '/' % item, sdir % '/' % cpname % "/home/" % usr % '/' % item) == 2)
-                                        {
-                                            if(link(QStr(sdir % '/' % cpname % "/home/" % usr % '/' % item).toStdString().c_str(), QStr(trgt % "/home/" % usr % '/' % item).toStdString().c_str()) == -1) return false;
-                                            goto nitem_1;
-                                        }
+                                        if(link(QStr(sdir % '/' % cpname % "/home/" % usr % '/' % item).toStdString().c_str(), QStr(trgt % "/home/" % usr % '/' % item).toStdString().c_str()) == -1) return false;
+                                        goto nitem_1;
                                     }
                                 }
-
-                                if(! cpfile("/home/" % usr % '/' % item, trgt % "/home/" % usr % '/' % item)) return false;
                             }
+
+                            if(! cpfile("/home/" % usr % '/' % item, trgt % "/home/" % usr % '/' % item)) return false;
                         }
                     }
                 }
@@ -1447,36 +1470,33 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
             cperc = (cnum * 100 + 50) / anum;
             if(Progress < cperc) Progress = cperc;
 
-            if(! like(item, QSL() << "_lost+found_" << "*~_") && ! exclcheck(elist, item))
+            if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && exist("/root/" % item))
             {
-                if(exist("/root/" % item))
-                {
-                    switch(left(line, instr(line, "_") - 1).toShort()) {
-                    case Islink:
-                        if(! cplink("/root/" % item, trgt % "/root/" % item)) return false;
-                        break;
-                    case Isdir:
-                        if(! QDir().mkdir(trgt % "/root/" % item)) return false;
-                        break;
-                    case Isfile:
-                        if(QFile("/root/" % item).size() <= 8000000)
+                switch(left(line, instr(line, "_") - 1).toShort()) {
+                case Islink:
+                    if(! cplink("/root/" % item, trgt % "/root/" % item)) return false;
+                    break;
+                case Isdir:
+                    if(! QDir().mkdir(trgt % "/root/" % item)) return false;
+                    break;
+                case Isfile:
+                    if(QFile("/root/" % item).size() <= 8000000)
+                    {
+                        for(uchar b(0) ; b < rplst.count() ; ++b)
                         {
-                            for(uchar b(0) ; b < rplst.count() ; ++b)
-                            {
-                                QStr cpname(rplst.at(b));
+                            QStr cpname(rplst.at(b));
 
-                                if(stype(sdir % '/' % cpname % "/root/" % item) == Isfile)
+                            if(stype(sdir % '/' % cpname % "/root/" % item) == Isfile)
+                            {
+                                if(fcomp("/root/" % item, sdir % '/' % cpname % "/root/" % item) == 2)
                                 {
-                                    if(fcomp("/root/" % item, sdir % '/' % cpname % "/root/" % item) == 2)
-                                    {
-                                        if(link(QStr(sdir % '/' % cpname % "/root/" % item).toStdString().c_str(), QStr(trgt % "/root/" % item).toStdString().c_str()) == -1) return false;
-                                        goto nitem_2;
-                                    }
+                                    if(link(QStr(sdir % '/' % cpname % "/root/" % item).toStdString().c_str(), QStr(trgt % "/root/" % item).toStdString().c_str()) == -1) return false;
+                                    goto nitem_2;
                                 }
                             }
-
-                            if(! cpfile("/root/" % item, trgt % "/root/" % item)) return false;
                         }
+
+                        if(! cpfile("/root/" % item, trgt % "/root/" % item)) return false;
                     }
                 }
             }
@@ -1585,7 +1605,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
 
-                if(! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "*.dpkg-old_" << "*~_") && ! exclcheck(elist, QStr(cdir % '/' % item)))
+                if(! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, QStr(cdir % '/' % item)))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:
@@ -1884,7 +1904,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                     {
                         QStr item(sdlst.at(b));
 
-                        if(item != "lost+found" && ! exclcheck(elist, QStr(cdir % '/' % item)))
+                        if(! like(item, QSL() << "_lost+found_" << "_Systemback_") && ! exclcheck(elist, QStr(cdir % '/' % item)))
                             if(! exist(srcdir % cdir % '/' % item)) (stype(trgt % cdir % '/' % item) == Isdir) ? recrmdir(trgt % cdir % '/' % item) : QFile::remove(trgt % cdir % '/' % item);
 
                         if(ThrdKill) return false;
@@ -1945,7 +1965,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                     cperc = (cnum * 100 + 50) / anum;
                     if(Progress < cperc) Progress = cperc;
 
-                    if(item != "lost+found" && ! exclcheck(elist, QStr(cdir % '/' % item)))
+                    if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)))
                     {
                         switch(left(line, instr(line, "_") - 1).toShort()) {
                         case Islink:
@@ -1973,7 +1993,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                                 {
                                     QStr sitem(sdlst.at(b));
 
-                                    if(sitem != "lost+found" && ! exclcheck(elist, QStr(cdir % '/' % item % '/' % sitem)))
+                                    if(! like(sitem, QSL() << "_lost+found_" << "_Systemback_") && ! exclcheck(elist, QStr(cdir % '/' % item % '/' % sitem)))
                                         if(! exist(srcdir % cdir % '/' % item % '/' % sitem)) (stype(trgt % cdir % '/' % item % '/' % sitem) == Isdir) ? recrmdir(trgt % cdir % '/' % item % '/' % sitem) : QFile::remove(trgt % cdir % '/' % item % '/' % sitem);
 
                                     if(ThrdKill) return false;
@@ -2182,7 +2202,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
 
-                if(! item.endsWith('~') && ! exclcheck(elist, item))
+                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:
@@ -2212,19 +2232,16 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                                 {
                                     QStr sitem(sdlst.at(a));
 
-                                    if(! sitem.endsWith('~') && ! exclcheck(elist, QStr(item % '/' % sitem)))
+                                    if(! like(sitem, QSL() << "_lost+found_" << "_Systemback_" << "*~_") && ! exclcheck(elist, QStr(item % '/' % sitem)) && ! exist(srcdir % "/root/" % item % '/' % sitem))
                                     {
-                                        if(! exist(srcdir % "/root/" % item % '/' % sitem))
-                                        {
-                                            switch(stype(trgt % "/root/" % item % '/' % sitem)) {
-                                            case Isdir:
-                                                recrmdir(trgt % "/root/" % item % '/' % sitem, true);
-                                                break;
-                                            case Isfile:
-                                                if(QFile(trgt % "/root/" % item % '/' % sitem).size() > 8000000) continue;
-                                            case Islink:
-                                                QFile::remove(trgt % "/root/" % item % '/' % sitem);
-                                            }
+                                        switch(stype(trgt % "/root/" % item % '/' % sitem)) {
+                                        case Isdir:
+                                            recrmdir(trgt % "/root/" % item % '/' % sitem, true);
+                                            break;
+                                        case Isfile:
+                                            if(QFile(trgt % "/root/" % item % '/' % sitem).size() > 8000000) continue;
+                                        case Islink:
+                                            QFile::remove(trgt % "/root/" % item % '/' % sitem);
                                         }
                                     }
 
@@ -2303,19 +2320,16 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                     {
                         QStr item(sdlst.at(b));
 
-                        if(! item.endsWith('~') && ! exclcheck(elist, item))
+                        if(! item.endsWith('~') && ! exclcheck(elist, item) && ! exist(srcdir % "/home/" % usr % '/' % item))
                         {
-                            if(! exist(srcdir % "/home/" % usr % '/' % item))
-                            {
-                                switch(stype(trgt % "/home/" % usr % '/' % item)) {
-                                case Isdir:
-                                    recrmdir(trgt % "/home/" % usr % '/' % item, true);
-                                    break;
-                                case Isfile:
-                                    if(QFile(trgt % "/home/" % usr % '/' % item).size() > 8000000) continue;
-                                case Islink:
-                                    QFile::remove(trgt % "/home/" % usr % '/' % item);
-                                }
+                            switch(stype(trgt % "/home/" % usr % '/' % item)) {
+                            case Isdir:
+                                recrmdir(trgt % "/home/" % usr % '/' % item, true);
+                                break;
+                            case Isfile:
+                                if(QFile(trgt % "/home/" % usr % '/' % item).size() > 8000000) continue;
+                            case Islink:
+                                QFile::remove(trgt % "/home/" % usr % '/' % item);
                             }
                         }
 
@@ -2363,7 +2377,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
 
-                if(! item.endsWith('~') && ! exclcheck(elist, item))
+                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:
@@ -2393,19 +2407,16 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                                 {
                                     QStr sitem(sdlst.at(b));
 
-                                    if(! sitem.endsWith('~') && ! exclcheck(elist, QStr(item % '/' % sitem)))
+                                    if(! like(sitem, QSL() << "_lost+found_" << "_Systemback_" << "*~_") && ! exclcheck(elist, QStr(item % '/' % sitem)) && ! exist(srcdir % "/home/" % usr % '/' % item % '/' % sitem))
                                     {
-                                        if(! exist(srcdir % "/home/" % usr % '/' % item % '/' % sitem))
-                                        {
-                                            switch(stype(trgt % "/home/" % usr % '/' % item % '/' % sitem)) {
-                                            case Isdir:
-                                                recrmdir(trgt % "/home/" % usr % '/' % item % '/' % sitem, true);
-                                                break;
-                                            case Isfile:
-                                                if(QFile(trgt % "/home/" % usr % '/' % item % '/' % sitem).size() > 8000000) continue;
-                                            case Islink:
-                                                QFile::remove(trgt % "/home/" % usr % '/' % item % '/' % sitem);
-                                            }
+                                        switch(stype(trgt % "/home/" % usr % '/' % item % '/' % sitem)) {
+                                        case Isdir:
+                                            recrmdir(trgt % "/home/" % usr % '/' % item % '/' % sitem, true);
+                                            break;
+                                        case Isfile:
+                                            if(QFile(trgt % "/home/" % usr % '/' % item % '/' % sitem).size() > 8000000) continue;
+                                        case Islink:
+                                            QFile::remove(trgt % "/home/" % usr % '/' % item % '/' % sitem);
                                         }
                                     }
 
@@ -2658,13 +2669,10 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
     if(isdir(srcdir % "/home"))
     {
-        if(! isdir("/.sbsystemcopy/home"))
+        if(! isdir("/.sbsystemcopy/home") && ! QDir().mkdir("/.sbsystemcopy/home"))
         {
-            if(! QDir().mkdir("/.sbsystemcopy/home"))
-            {
-                QFile::rename("/.sbsystemcopy/home", "/.sbsystemcopy/home_" % sb::rndstr());
-                if(! QDir().mkdir("/.sbsystemcopy/home")) return false;
-            }
+            QFile::rename("/.sbsystemcopy/home", "/.sbsystemcopy/home_" % sb::rndstr());
+            if(! QDir().mkdir("/.sbsystemcopy/home")) return false;
         }
 
         if(mthd != 0)
@@ -2711,7 +2719,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                     cperc = (cnum * 100 + 50) / anum;
                     if(Progress < cperc) Progress = cperc;
 
-                    if(mthd == 4 || (! item.endsWith('~') && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid))))
+                    if(mthd == 4 || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid))))
                     {
                         switch(left(line, instr(line, "_") - 1).toShort()) {
                         case Islink:
@@ -2831,13 +2839,10 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
     if(isdir(srcdir % "/root"))
     {
-        if(! isdir("/.sbsystemcopy/root"))
+        if(! isdir("/.sbsystemcopy/root") && ! QDir().mkdir("/.sbsystemcopy/root"))
         {
-            if(! QDir().mkdir("/.sbsystemcopy/root"))
-            {
-                QFile::rename("/.sbsystemcopy/root", "/.sbsystemcopy/root_" % sb::rndstr());
-                if(! QDir().mkdir("/.sbsystemcopy/root")) return false;
-            }
+            QFile::rename("/.sbsystemcopy/root", "/.sbsystemcopy/root_" % sb::rndstr());
+            if(! QDir().mkdir("/.sbsystemcopy/root")) return false;
         }
 
         in.setString(&rootitms, QIODevice::ReadOnly);
@@ -2849,7 +2854,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             cperc = (cnum * 100 + 50) / anum;
             if(Progress < cperc) Progress = cperc;
 
-            if(mthd == 4 || (! item.endsWith('~') && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid))))
+            if(mthd == 4 || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid))))
             {
                 switch(left(line, instr(line, "_") - 1).toShort()) {
                 case Islink:
@@ -3016,7 +3021,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 {
                     QStr item(sdlst.at(b));
 
-                    if(item != "lost+found")
+                    if(! like(item, QSL() << "_lost+found_" << "_Systemback_"))
                         if(! exist(srcdir % cdir % '/' % item)) (stype("/.sbsystemcopy" % cdir % '/' % item) == Isdir) ? recrmdir("/.sbsystemcopy" % cdir % '/' % item) : QFile::remove("/.sbsystemcopy" % cdir % '/' % item);
 
                     if(ThrdKill) return false;
@@ -3075,7 +3080,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
 
-                if(item != "lost+found" && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! (QStr(cdir % '/' % item).startsWith("/etc/udev/rules.d") && item.contains("-persistent-"))))
+                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! (QStr(cdir % '/' % item).startsWith("/etc/udev/rules.d") && item.contains("-persistent-"))))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:
@@ -3101,7 +3106,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                             {
                                 QStr sitem(sdlst.at(b));
 
-                                if(sitem != "lost+found")
+                                if(! like(sitem, QSL() << "_lost+found_" << "_Systemback_"))
                                     if(! exist(srcdir % cdir % '/' % item % '/' % sitem) || cdir % '/' % item % '/' % sitem == "/etc/X11/xorg.conf") (stype("/.sbsystemcopy" % cdir % '/' % item % '/' % sitem) == Isdir) ? recrmdir("/.sbsystemcopy" % cdir % '/' % item % '/' % sitem) : QFile::remove("/.sbsystemcopy" % cdir % '/' % item % '/' % sitem);
 
                                 if(ThrdKill) return false;
@@ -3458,7 +3463,7 @@ bool sb::thrdlvprpr(bool &iudata)
     {
         QStr line(in.readLine()), item(right(line, - instr(line, "_")));
 
-        if(! (item.startsWith("cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (item.startsWith("cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "*.dpkg-old_" << "*~_") && ! exclcheck(elist, item))
+        if(! (item.startsWith("cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (item.startsWith("cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, item))
         {
             switch(left(line, instr(line, "_") - 1).toShort()) {
             case Islink:
@@ -3470,7 +3475,9 @@ bool sb::thrdlvprpr(bool &iudata)
                 ++ThrdLng;
                 break;
             case Isfile:
-                if(link(QStr("/var/" % item).toStdString().c_str(), QStr("/var/.sblvtmp/var/" % item).toStdString().c_str()) == -1) return false;
+                if(issmfs("/var/.sblvtmp", "/var/" % item))
+                    if(link(QStr("/var/" % item).toStdString().c_str(), QStr("/var/.sblvtmp/var/" % item).toStdString().c_str()) == -1) return false;
+
                 ++ThrdLng;
             }
         }
@@ -3597,7 +3604,7 @@ bool sb::thrdlvprpr(bool &iudata)
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
 
-            if(! like(item, QSL() << "_lost+found_" << "*~_") && ! exclcheck(elist, item))
+            if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item))
             {
                 if(exist("/root/" % item))
                 {
@@ -3659,31 +3666,28 @@ bool sb::thrdlvprpr(bool &iudata)
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
 
-            if(! like(item, QSL() << "_lost+found_" << "*~_") && ! exclcheck(elist, item))
+            if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && exist("/home/" % udir % '/' % item))
             {
-                if(exist("/home/" % udir % '/' % item))
-                {
-                    switch(left(line, instr(line, "_") - 1).toShort()) {
-                    case Islink:
-                        if(! cplink("/home/" % udir % '/' % item, usdir % '/' % udir % '/' % item)) return false;
-                        ++ThrdLng;
-                        break;
-                    case Isdir:
-                        if(! QDir().mkdir(usdir % '/' % udir % '/' % item)) return false;
-                        ++ThrdLng;
-                        break;
-                    case Isfile:
-                        if(iudata || QFile("/home/" % udir % '/' % item).size() <= 8000000)
+                switch(left(line, instr(line, "_") - 1).toShort()) {
+                case Islink:
+                    if(! cplink("/home/" % udir % '/' % item, usdir % '/' % udir % '/' % item)) return false;
+                    ++ThrdLng;
+                    break;
+                case Isdir:
+                    if(! QDir().mkdir(usdir % '/' % udir % '/' % item)) return false;
+                    ++ThrdLng;
+                    break;
+                case Isfile:
+                    if(iudata || QFile("/home/" % udir % '/' % item).size() <= 8000000)
+                    {
+                        if(uhl)
                         {
-                            if(uhl)
-                            {
-                                if(link(QStr("/home/" % udir % '/' % item).toStdString().c_str(), QStr(usdir % '/' % udir % '/' % item).toStdString().c_str()) == -1) return false;
-                            }
-                            else if(! cpfile("/home/" % udir % '/' % item, usdir % '/' % udir % '/' % item))
-                                return false;
-
-                            ++ThrdLng;
+                            if(link(QStr("/home/" % udir % '/' % item).toStdString().c_str(), QStr(usdir % '/' % udir % '/' % item).toStdString().c_str()) == -1) return false;
                         }
+                        else if(! cpfile("/home/" % udir % '/' % item, usdir % '/' % udir % '/' % item))
+                            return false;
+
+                        ++ThrdLng;
                     }
                 }
             }

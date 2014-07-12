@@ -35,8 +35,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 {
     ui->setupUi(this);
     installEventFilter(this);
+    unity = sb::pisrng("unity-panel-service");
     uchkd = nrxth = nohmcpy = cfgupdt = utblock = false;
-    wround = 0;
 
     if((font().family() != "Ubuntu" && font().family() != "FreeSans") || fontInfo().pixelSize() != 15)
     {
@@ -60,12 +60,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     {
         sstart = false;
 
-        if((qApp->arguments().count() == 2 || (qApp->arguments().count() == 3 && qApp->arguments().value(2).startsWith("/dev/"))) && qApp->arguments().value(1).startsWith("dialog") && qApp->arguments().value(1).length() > 7)
-        {
-            dialog = sb::right(qApp->arguments().value(1), -7).toShort();
-            if(sb::ilike(dialog, QSIL() << 31 << 36 << 51 << 52)) dialogdev = qApp->arguments().value(2);
-        }
-        else if(geteuid() != 0)
+        if(geteuid() != 0)
             dialog = 17;
         else if(! sb::lock(sb::Sblock))
             dialog = 1;
@@ -105,11 +100,9 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     bttnstimer->setInterval(100);
     dlgtimer = new QTimer;
     dlgtimer->setInterval(1000);
-    wrndtimer = new QTimer;
     connect(utimer, SIGNAL(timeout()), this, SLOT(unitimer()));
     connect(bttnstimer, SIGNAL(timeout()), this, SLOT(buttonstimer()));
     connect(dlgtimer, SIGNAL(timeout()), this, SLOT(dialogtimer()));
-    connect(wrndtimer, SIGNAL(timeout()), this, SLOT(wsizeworkaround()));
     connect(ui->function3, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
     connect(ui->function3, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
     connect(ui->function3, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
@@ -297,7 +290,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             wgeom[1] = qApp->desktop()->height() / 2 - 112;
             wgeom[2] = 376;
             wgeom[3] = 224;
-            setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
+            setFixedSize(wgeom[2], wgeom[3]);
+            move(wgeom[0], wgeom[1]);
             setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
         }
         else
@@ -311,7 +305,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                 ui->mainpanel->hide();
                 ui->schedulerpanel->setBackgroundRole(QPalette::Foreground);
                 ui->schedulerpanel->move(0, 0);
-                ui->function4->setText("systemback " % tr("scheduler"));
+                ui->function4->setText("Systemback " % tr("scheduler"));
 
                 if(qApp->arguments().value(2) == "topleft")
                 {
@@ -341,7 +335,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
                 wgeom[2] = 402;
                 wgeom[3] = 161;
-                setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
+                setFixedSize(wgeom[2], wgeom[3]);
+                move(wgeom[0], wgeom[1]);
                 shdltimer = new QTimer;
                 connect(shdltimer, SIGNAL(timeout()), this, SLOT(schedulertimer()));
                 shdltimer->start(1000);
@@ -354,12 +349,20 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                 wgeom[1] = qApp->desktop()->height() / 2 - 232;
                 wgeom[2] = 698;
                 wgeom[3] = 465;
-                setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
+                setFixedSize(wgeom[2], wgeom[3]);
+                move(wgeom[0], wgeom[1]);
             }
         }
     }
 
-    wrndtimer->start(50);
+    if(unity)
+    {
+        setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+        wround = 0;
+        wrndtimer = new QTimer;
+        connect(wrndtimer, SIGNAL(timeout()), this, SLOT(wsizeworkaround()));
+        wrndtimer->start(50);
+    }
 }
 
 systemback::~systemback()
@@ -377,7 +380,7 @@ systemback::~systemback()
 
 void systemback::closeEvent(QCloseEvent *ev)
 {
-    if(ui->statuspanel->isVisible() && prun != tr("Upgrading the system")) ev->ignore();
+    if(ui->statuspanel->isVisible() && ! (sstart && sb::SBThrd.ThrdKill) && prun != tr("Upgrading the system")) ev->ignore();
 }
 
 void systemback::unitimer()
@@ -1002,18 +1005,47 @@ void systemback::dialogtimer()
 
 void systemback::wpressed()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size())
         qApp->setOverrideCursor(Qt::SizeAllCursor);
 }
 
 void systemback::wreleased()
 {
     qApp->restoreOverrideCursor();
+
+    if(size() != qApp->desktop()->availableGeometry().size())
+    {
+        if(x() < 0)
+            wgeom[0] = 30;
+        else if(x() > qApp->desktop()->width() - width())
+            wgeom[0] = qApp->desktop()->width() - width() - 30;
+
+        if(y() < 0)
+            wgeom[1] = 30;
+        else if(y() > qApp->desktop()->height() - height())
+            wgeom[1] = qApp->desktop()->height() - height() - 30;
+
+        if(x() != wgeom[0] || y() != wgeom[1]) move(wgeom[0], wgeom[1]);
+    }
 }
 
 void systemback::wdblclck()
 {
-    if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible()) isMaximized() ? showNormal() : showMaximized();
+    if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible())
+    {
+        if(size() == qApp->desktop()->availableGeometry().size())
+        {
+            setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
+            setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+        }
+        else
+        {
+            wgeom[4] = wgeom[0];
+            wgeom[5] = wgeom[1];
+            setMaximumSize(qApp->desktop()->availableGeometry().size());
+            setGeometry(qApp->desktop()->availableGeometry());
+        }
+    }
 }
 
 void systemback::benter()
@@ -1037,7 +1069,7 @@ void systemback::benter()
             ui->windowminimize->move(47, 2);
         }
 
-        if(isMaximized())
+        if(size() == qApp->desktop()->availableGeometry().size())
         {
             if(ui->windowmaximize->text() == "□") ui->windowmaximize->setText("▭");
         }
@@ -1092,7 +1124,23 @@ void systemback::wmaxpressed()
 
 void systemback::wmaxreleased()
 {
-    if(ui->buttonspanel->isVisible() && ui->windowmaximize->foregroundRole() == QPalette::Highlight) (ui->windowmaximize->text() == "□") ? showMaximized() : showNormal();
+    if(ui->buttonspanel->isVisible() && ui->windowmaximize->foregroundRole() == QPalette::Highlight)
+    {
+        if(ui->windowmaximize->text() == "□")
+        {
+            wgeom[4] = wgeom[0];
+            wgeom[5] = wgeom[1];
+            setMaximumSize(qApp->desktop()->availableGeometry().size());
+            setGeometry(qApp->desktop()->availableGeometry());
+        }
+        else
+        {
+            setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
+            setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+        }
+    }
+
+    if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
 }
 
 void systemback::wminenter()
@@ -1146,13 +1194,10 @@ void systemback::apokkeyreleased()
 
 void systemback::chssenter()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size() && ui->chooseresize->width() == 10)
     {
-        if(ui->chooseresize->width() == 10)
-        {
-            ui->chooseresize->setGeometry(ui->chooseresize->x() - 20, ui->chooseresize->y() - 20, 30, 30);
-            ui->chooseresize->setPixmap(QPixmap(":pictures/bigresize.png"));
-        }
+        ui->chooseresize->setGeometry(ui->chooseresize->x() - 20, ui->chooseresize->y() - 20, 30, 30);
+        ui->chooseresize->setPixmap(QPixmap(":pictures/bigresize.png"));
     }
 }
 
@@ -1167,7 +1212,7 @@ void systemback::chssleave()
 
 void systemback::chsspressed()
 {
-    if(! isMaximized()) qApp->setOverrideCursor(Qt::SizeFDiagCursor);
+    if(size() != qApp->desktop()->availableGeometry().size()) qApp->setOverrideCursor(Qt::SizeFDiagCursor);
 }
 
 void systemback::chssreleased()
@@ -1177,33 +1222,20 @@ void systemback::chssreleased()
 
 void systemback::chssmove()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size())
     {
-        short nwidth(QCursor::pos().x() - x() + width() - ui->chooseresize->x() - ui->chooseresize->MouseX - 1), nheight(QCursor::pos().y() - y() + height() - ui->chooseresize->y() - ui->chooseresize->MouseY - 24);
-
-        if(nwidth > 641)
-            wgeom[2] = nwidth;
-        else if(wgeom[2] != 642)
-            wgeom[2] = 642;
-
-        if(nheight > 480)
-            wgeom[3] = nheight;
-        else if(wgeom[3] != 481)
-            wgeom[3] = 481;
-
+        wgeom[2] = QCursor::pos().x() - x() + width() - ui->chooseresize->x() - ui->chooseresize->MouseX - 1;
+        wgeom[3] = QCursor::pos().y() - y() + height() - ui->chooseresize->y() - ui->chooseresize->MouseY - 24;
         if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
     }
 }
 
 void systemback::cpyenter()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size() && ui->copyresize->width() == 10)
     {
-        if(ui->copyresize->width() == 10)
-        {
-            ui->copyresize->setGeometry(ui->copyresize->x() - 20, ui->copyresize->y() - 20, 30, 30);
-            ui->copyresize->setPixmap(QPixmap(":pictures/bigresize.png"));
-        }
+        ui->copyresize->setGeometry(ui->copyresize->x() - 20, ui->copyresize->y() - 20, 30, 30);
+        ui->copyresize->setPixmap(QPixmap(":pictures/bigresize.png"));
     }
 }
 
@@ -1218,33 +1250,20 @@ void systemback::cpyleave()
 
 void systemback::cpymove()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size())
     {
-        short nwidth(QCursor::pos().x() - x() + width() - ui->copyresize->x() - ui->copyresize->MouseX - 1), nheight(QCursor::pos().y() - y() + height() - ui->copyresize->y() - ui->copyresize->MouseY - 24);
-
-        if(nwidth > 697)
-            wgeom[2] = nwidth;
-        else if(wgeom[2] != 698)
-            wgeom[2] = 698;
-
-        if(nheight > 464)
-            wgeom[3] = nheight;
-        else if(wgeom[3] != 465)
-            wgeom[3] = 465;
-
+        wgeom[2] = QCursor::pos().x() - x() + width() - ui->copyresize->x() - ui->copyresize->MouseX - 1;
+        wgeom[3] = QCursor::pos().y() - y() + height() - ui->copyresize->y() - ui->copyresize->MouseY - 24;
         if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
     }
 }
 
 void systemback::xcldenter()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size() && ui->excluderesize->width() == 10)
     {
-        if(ui->excluderesize->width() == 10)
-        {
-            ui->excluderesize->setGeometry(ui->excluderesize->x() - 20, ui->excluderesize->y() - 20, 30, 30);
-            ui->excluderesize->setPixmap(QPixmap(":pictures/bigresize.png"));
-        }
+        ui->excluderesize->setGeometry(ui->excluderesize->x() - 20, ui->excluderesize->y() - 20, 30, 30);
+        ui->excluderesize->setPixmap(QPixmap(":pictures/bigresize.png"));
     }
 }
 
@@ -1259,20 +1278,10 @@ void systemback::xcldleave()
 
 void systemback::xcldmove()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size())
     {
-        short nwidth(QCursor::pos().x() - x() + width() - ui->excluderesize->x() - ui->excluderesize->MouseX - 1), nheight(QCursor::pos().y() - y() + height() - ui->excluderesize->y() - ui->excluderesize->MouseY - 24);
-
-        if(nwidth > 697)
-            wgeom[2] = nwidth;
-        else if(wgeom[2] != 698)
-            wgeom[2] = 698;
-
-        if(nheight > 464)
-            wgeom[3] = nheight;
-        else if(wgeom[3] != 465)
-            wgeom[3] = 465;
-
+        wgeom[2] = QCursor::pos().x() - x() + width() - ui->excluderesize->x() - ui->excluderesize->MouseX - 1;
+        wgeom[3] = QCursor::pos().y() - y() + height() - ui->excluderesize->y() - ui->excluderesize->MouseY - 24;
         if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
     }
 }
@@ -1753,26 +1762,27 @@ void systemback::pointupgrade()
 
 void systemback::statustart()
 {
-    if(ui->mainpanel->isVisible())
-        ui->mainpanel->hide();
-    else if(ui->dialogpanel->isVisible())
-        ui->dialogpanel->hide();
-
-    ui->statuspanel->show();
-    ui->progressbar->setMaximum(0);
-
-    if(sstart)
+    if(sstart && dialog != 16)
     {
-        ui->schedulerpanel->hide();
         resize(403, 161);
         setwontop(false);
         resize(402, 161);
+        ui->schedulerpanel->hide();
     }
     else
     {
         windowmove(ui->statuspanel->width(), ui->statuspanel->height());
         if(windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setwontop(false);
+
+        if(ui->mainpanel->isVisible())
+            ui->mainpanel->hide();
+        else if(ui->dialogpanel->isVisible())
+            ui->dialogpanel->hide();
     }
+
+    ui->statuspanel->show();
+    ui->progressbar->setMaximum(0);
+    repaint();
 }
 
 void systemback::accesserror()
@@ -1827,13 +1837,10 @@ void systemback::restore()
 
     if(mthd < 3)
     {
-        if(isfile("/etc/fstab") && isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab"))
+        if(isfile("/etc/fstab") && isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab") && sb::fload("/etc/fstab") == sb::fload(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab"))
         {
-            if(sb::fload("/etc/fstab") == sb::fload(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab"))
-            {
-                fcmp = true;
-                if(ui->autorestoreoptions->isChecked()) sfstab = true;
-            }
+            fcmp = true;
+            if(ui->autorestoreoptions->isChecked()) sfstab = true;
         }
 
         if(! ui->autorestoreoptions->isChecked())
@@ -1984,13 +1991,10 @@ void systemback::repair()
 
         if(mthd < 3)
         {
-            if(isfile("/mnt/etc/fstab") && isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab"))
+            if(isfile("/mnt/etc/fstab") && isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab") && sb::fload("/mnt/etc/fstab") == sb::fload(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab"))
             {
-                if(sb::fload("/mnt/etc/fstab") == sb::fload(sb::sdir[1] % '/' % cpoint % '_' % pname % "/etc/fstab"))
-                {
-                    fcmp = true;
-                    if(ui->autorepairoptions->isChecked()) sfstab = true;
-                }
+                fcmp = true;
+                if(ui->autorepairoptions->isChecked()) sfstab = true;
             }
 
             if(! ui->autorepairoptions->isChecked())
@@ -2002,13 +2006,10 @@ void systemback::repair()
 
         if(pname == tr("Live image"))
         {
-            if(! isdir("/.systembacklivepoint"))
+            if(! isdir("/.systembacklivepoint") && ! QDir().mkdir("/.systembacklivepoint"))
             {
-                if(! QDir().mkdir("/.systembacklivepoint"))
-                {
-                    QFile::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
-                    QDir().mkdir("/.systembacklivepoint");
-                }
+                QFile::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
+                QDir().mkdir("/.systembacklivepoint");
             }
 
             QStr mdev;
@@ -2160,15 +2161,12 @@ start:;
 
     for(uchar a(0) ; a < ui->partitionsettings->verticalHeader()->count() ; ++a)
     {
-        if(! ui->partitionsettings->item(a, 3)->text().isEmpty())
+        if(! ui->partitionsettings->item(a, 3)->text().isEmpty() && (ui->partitionsettings->item(a, 3)->text() != "/home" || ui->partitionsettings->item(a, 2)->text().isEmpty()))
         {
-            if(ui->partitionsettings->item(a, 3)->text() != "/home" || ui->partitionsettings->item(a, 2)->text().isEmpty())
-            {
-                if(ui->partitionsettings->item(a, 5)->text() == "x")
-                    msort.append(ui->partitionsettings->item(a, 3)->text() % ' ' % ui->partitionsettings->item(a, 4)->text() % ' ' % ui->partitionsettings->item(a, 0)->text());
-                else
-                    msort.append(ui->partitionsettings->item(a, 3)->text() % " - " % ui->partitionsettings->item(a, 0)->text());
-            }
+            if(ui->partitionsettings->item(a, 5)->text() == "x")
+                msort.append(ui->partitionsettings->item(a, 3)->text() % ' ' % ui->partitionsettings->item(a, 4)->text() % ' ' % ui->partitionsettings->item(a, 0)->text());
+            else
+                msort.append(ui->partitionsettings->item(a, 3)->text() % " - " % ui->partitionsettings->item(a, 0)->text());
         }
     }
 
@@ -2233,15 +2231,12 @@ start:;
                     {
                         fdir.append('/' % cdir);
 
-                        if(! isdir(fdir))
+                        if(! isdir(fdir) && ! QDir().mkdir(fdir))
                         {
-                            if(! QDir().mkdir(fdir))
-                            {
-                                QFile::rename(fdir, fdir % "_" % sb::rndstr());
-                                if(! QDir().mkdir(fdir)) goto error;
-                            }
+                            QFile::rename(fdir, fdir % "_" % sb::rndstr());
+                            if(! QDir().mkdir(fdir)) goto error;
                         }
-                    }
+                     }
                 }
             }
 
@@ -2290,13 +2285,10 @@ start:;
     }
     else if(pname == tr("Live image"))
     {
-        if(! isdir("/.systembacklivepoint"))
+        if(! isdir("/.systembacklivepoint") && ! QDir().mkdir("/.systembacklivepoint"))
         {
-            if(! QDir().mkdir("/.systembacklivepoint"))
-            {
-                QFile::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
-                if(! QDir().mkdir("/.systembacklivepoint")) goto error;
-            }
+            QFile::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
+            if(! QDir().mkdir("/.systembacklivepoint")) goto error;
         }
 
         if(prun.isEmpty()) goto exit;
@@ -2968,7 +2960,7 @@ void systemback::dialogopen()
         break;
     case 3:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("The specified name contains unsupported character(s)!") % "<p>" % tr("Please enter a new name."));
+        ui->dialogtext->setText(tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 4:
@@ -3284,57 +3276,75 @@ void systemback::dialogopen()
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
     }
 
-    if(ui->mainpanel->isVisible()) ui->mainpanel->hide();
-    if(ui->statuspanel->isVisible()) ui->statuspanel->hide();
-    if(ui->schedulerpanel->isVisible()) ui->schedulerpanel->hide();
-    if(ui->dialogpanel->isHidden()) ui->dialogpanel->show();
-    ui->dialogok->setFocus();
-
     if(width() != ui->dialogpanel->width())
     {
         if(utimer->isActive() && ! sstart)
             windowmove(ui->dialogpanel->width(), ui->dialogpanel->height());
         else
         {
+            if(sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
             wgeom[0] = qApp->desktop()->width() / 2 - 253;
             wgeom[1] = qApp->desktop()->height() / 2 - 100;
             wgeom[2] = ui->dialogpanel->width();
             wgeom[3] = ui->dialogpanel->height();
-            setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
+            setFixedSize(wgeom[2], wgeom[3]);
+            move(wgeom[0], wgeom[1]);
         }
     }
 
     setwontop();
+    if(ui->mainpanel->isVisible()) ui->mainpanel->hide();
+    if(ui->statuspanel->isVisible()) ui->statuspanel->hide();
+    if(ui->schedulerpanel->isVisible()) ui->schedulerpanel->hide();
+    if(ui->dialogpanel->isHidden()) ui->dialogpanel->show();
+    ui->dialogok->setFocus();
+    repaint();
 }
 
 void systemback::setwontop(bool state)
 {
     state ? setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint) : setWindowFlags(windowFlags() ^ Qt::WindowStaysOnTopHint);
+    qApp->setActiveWindow(this);
     show();
 }
 
 void systemback::windowmove(ushort nwidth, ushort nheight)
 {
-    short wmovex, wmovey;
-    if(isMaximized()) showNormal();
+    if(size() == qApp->desktop()->availableGeometry().size()) setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
 
-    if(width() != nwidth || height() != nheight)
+    if(width() == nwidth && height() == nheight)
     {
+        if(minimumSize() != maximumSize()) setFixedSize(wgeom[2], wgeom[3]);
+    }
+    else
+    {
+        short wmovex, wmovey, rghtlmt(qApp->desktop()->width() - nwidth - 30), bttmlmt(qApp->desktop()->height() - nheight - 30);
         wmovex = x() + (width() - nwidth) / 2;
-        if(wmovex < 0) wmovex = 0;
+
+        if(wmovex < 30)
+            wmovex = 30;
+        else if(wmovex > rghtlmt)
+            wmovex = rghtlmt;
+
         wmovey = y() + (height() - nheight) / 2;
-        if(wmovey < 0) wmovey = 0;
+
+        if(wmovey < 30)
+            wmovey = 30;
+        else if(wmovey > bttmlmt)
+            wmovey = bttmlmt;
+
         wgeom[0] = wmovex;
         wgeom[1] = wmovey;
         wgeom[2] = nwidth;
         wgeom[3] = nheight;
-        setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
+        setFixedSize(wgeom[2], wgeom[3]);
+        move(wgeom[0], wgeom[1]);
     }
 }
 
 void systemback::wmove()
 {
-    if(! isMaximized())
+    if(size() != qApp->desktop()->availableGeometry().size())
     {
         if(ui->function1->isVisible())
             move(QCursor::pos().x() - ui->function1->MouseX, QCursor::pos().y() - ui->function1->MouseY);
@@ -3344,11 +3354,6 @@ void systemback::wmove()
             move(QCursor::pos().x() - ui->function3->MouseX, QCursor::pos().y() - ui->function3->MouseY);
         else if(ui->function4->isVisible())
             move(QCursor::pos().x() - ui->function4->MouseX, QCursor::pos().y() - ui->function4->MouseY);
-
-        wgeom[0] = x();
-        wgeom[1] = y();
-        wgeom[2] = width();
-        wgeom[3] = height();
     }
 }
 
@@ -3431,6 +3436,28 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         ui->windowbutton3->setForegroundRole(QPalette::Base);
         ui->function4->setForegroundRole(QPalette::Base);
         ui->windowbutton4->setForegroundRole(QPalette::Base);
+
+        if(x() < 0)
+            wgeom[0] = 30;
+        else if(x() > qApp->desktop()->width() - width())
+            wgeom[0] = qApp->desktop()->width() - width() - 30;
+
+        if(y() < 0)
+            wgeom[1] = 30;
+        else if(y() > qApp->desktop()->height() - height())
+            wgeom[1] = qApp->desktop()->height() - height() - 30;
+
+        if(x() != wgeom[0] || y() != wgeom[1])
+        {
+            if(size() == qApp->desktop()->availableGeometry().size())
+            {
+                setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
+                setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+            }
+            else
+                move(wgeom[0], wgeom[1]);
+        }
+
         return true;
     case QEvent::WindowDeactivate:
         ui->function1->setForegroundRole(QPalette::Dark);
@@ -3441,10 +3468,8 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         ui->windowbutton3->setForegroundRole(QPalette::Dark);
         ui->function4->setForegroundRole(QPalette::Dark);
         ui->windowbutton4->setForegroundRole(QPalette::Dark);
-        if(isHidden()) activateWindow();
         return true;
     case QEvent::Resize:
-        if(! isMaximized() && (width() != wgeom[2] || height() != wgeom[3])) setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
         ui->mainpanel->resize(width(), height());
         ui->function1->resize(width(), 24);
         ui->border->resize(width(), 24);
@@ -3460,6 +3485,11 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->dirchoosecancel->move(ui->choosepanel->width() - 240, ui->choosepanel->height() - 40);
             ui->warning->move(ui->warning->x(), ui->choosepanel->height() - 41);
             ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
+
+            if(size() == qApp->desktop()->availableGeometry().size())
+                ui->chooseresize->setCursor(Qt::ArrowCursor);
+            else if(ui->chooseresize->cursor().shape() == Qt::ArrowCursor)
+                ui->chooseresize->setCursor(Qt::PointingHandCursor);
         }
         else if(ui->copypanel->isVisible())
         {
@@ -3483,6 +3513,11 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->copynext->move(ui->copypanel->width() - 152, ui->copyback->y());
             ui->copyresize->move(ui->copypanel->width() - ui->copyresize->width(), ui->copypanel->height() - ui->copyresize->height());
             ui->copycover->resize(ui->copypanel->width() - 10, ui->copypanel->height() - 10);
+
+            if(size() == qApp->desktop()->availableGeometry().size())
+                ui->copyresize->setCursor(Qt::ArrowCursor);
+            else if(ui->copyresize->cursor().shape() == Qt::ArrowCursor)
+                ui->copyresize->setCursor(Qt::PointingHandCursor);
         }
         else
         {
@@ -3496,26 +3531,23 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - 48);
             ui->kendektext->move(ui->excludepanel->width() - 539, ui->excludepanel->height() - 24);
             ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
+
+            if(size() == qApp->desktop()->availableGeometry().size())
+                ui->excluderesize->setCursor(Qt::ArrowCursor);
+            else if(ui->excluderesize->cursor().shape() == Qt::ArrowCursor)
+                ui->excluderesize->setCursor(Qt::PointingHandCursor);
         }
 
+        return true;
+    case QEvent::Move:
+        wgeom[0] = x();
+        wgeom[1] = y();
         return true;
     case QEvent::WindowStateChange:
         if(isMinimized())
         {
-            if(isActiveWindow()) showNormal();
+            if(unity) showNormal();
             if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
-        }
-        else if(isMaximized())
-        {
-            ui->chooseresize->setCursor(Qt::ArrowCursor);
-            ui->copyresize->setCursor(Qt::ArrowCursor);
-            ui->excluderesize->setCursor(Qt::ArrowCursor);
-        }
-        else if(ui->chooseresize->cursor().shape() == Qt::ArrowCursor)
-        {
-            ui->chooseresize->setCursor(Qt::PointingHandCursor);
-            ui->copyresize->setCursor(Qt::PointingHandCursor);
-            ui->excluderesize->setCursor(Qt::PointingHandCursor);
         }
 
         return true;
@@ -3777,15 +3809,12 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
     file.close();
     if(ui->adminpassword->text().length() > 0) ui->adminpassword->clear();
 
-    if(! hash.isEmpty())
+    if(! hash.isEmpty() && QStr(crypt("", hash.toStdString().c_str())) == hash)
     {
-        if(QStr(crypt("", hash.toStdString().c_str())) == hash)
-        {
-            ui->adminpasswordpipe->show();
-            ui->adminpassword->setDisabled(true);
-            ui->admins->setDisabled(true);
-            ui->passwordinputok->setEnabled(true);
-        }
+        ui->adminpasswordpipe->show();
+        ui->adminpassword->setDisabled(true);
+        ui->admins->setDisabled(true);
+        ui->passwordinputok->setEnabled(true);
     }
 }
 
@@ -3828,10 +3857,11 @@ void systemback::on_passwordinputok_clicked()
 {
     busy();
     utimer->start(100);
-    ui->passwordpanel->hide();
-    ui->mainpanel->show();
     windowmove(698, 465);
     setwontop(false);
+    ui->passwordpanel->hide();
+    ui->mainpanel->show();
+    repaint();
 }
 
 void systemback::on_schedulerstart_clicked()
@@ -3844,71 +3874,67 @@ void systemback::on_schedulerstart_clicked()
 
 void systemback::on_dialogcancel_clicked()
 {
-    if(utimer->isActive())
+    if(dialog != 30)
     {
-        if(dialog != 30)
+        if(dlgtimer->isActive())
         {
-            if(dlgtimer->isActive())
-            {
-                dlgtimer->stop();
-                if(ui->dialognumber->text() != "30s") ui->dialognumber->setText("30s");
-            }
-
-            if(! ui->sbpanel->isVisibleTo(ui->mainpanel))
-            {
-                if(ui->restorepanel->isVisibleTo(ui->mainpanel))
-                    ui->restorepanel->hide();
-                else if(ui->copypanel->isVisibleTo(ui->mainpanel))
-                    ui->copypanel->hide();
-                else if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
-                    ui->livecreatepanel->hide();
-                else if(ui->repairpanel->isVisibleTo(ui->mainpanel))
-                    ui->repairpanel->hide();
-
-                ui->sbpanel->show();
-                ui->function1->setText("Systemback");
-            }
-
-            if(ui->pointpipe1->isChecked())
-                ui->pointpipe1->click();
-            else if(ui->pointpipe2->isChecked())
-                ui->pointpipe2->click();
-            else if(ui->pointpipe3->isChecked())
-                ui->pointpipe3->click();
-            else if(ui->pointpipe4->isChecked())
-                ui->pointpipe4->click();
-            else if(ui->pointpipe5->isChecked())
-                ui->pointpipe5->click();
-            else if(ui->pointpipe6->isChecked())
-                ui->pointpipe6->click();
-            else if(ui->pointpipe7->isChecked())
-                ui->pointpipe7->click();
-            else if(ui->pointpipe8->isChecked())
-                ui->pointpipe8->click();
-            else if(ui->pointpipe9->isChecked())
-                ui->pointpipe9->click();
-            else if(ui->pointpipe10->isChecked())
-                ui->pointpipe10->click();
-            else if(ui->pointpipe11->isChecked())
-                ui->pointpipe11->click();
-            else if(ui->pointpipe12->isChecked())
-                ui->pointpipe12->click();
-            else if(ui->pointpipe13->isChecked())
-                ui->pointpipe13->click();
-            else if(ui->pointpipe14->isChecked())
-                ui->pointpipe14->click();
-            else if(ui->pointpipe15->isChecked())
-                ui->pointpipe15->click();
+            dlgtimer->stop();
+            if(ui->dialognumber->text() != "30s") ui->dialognumber->setText("30s");
         }
 
-        ui->dialogpanel->hide();
-        ui->mainpanel->show();
-        ui->functionmenunext->setFocus();
-        windowmove(698, 465);
-        setwontop(false);
+        if(! ui->sbpanel->isVisibleTo(ui->mainpanel))
+        {
+            if(ui->restorepanel->isVisibleTo(ui->mainpanel))
+                ui->restorepanel->hide();
+            else if(ui->copypanel->isVisibleTo(ui->mainpanel))
+                ui->copypanel->hide();
+            else if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
+                ui->livecreatepanel->hide();
+            else if(ui->repairpanel->isVisibleTo(ui->mainpanel))
+                ui->repairpanel->hide();
+
+            ui->sbpanel->show();
+            ui->function1->setText("Systemback");
+        }
+
+        if(ui->pointpipe1->isChecked())
+            ui->pointpipe1->click();
+        else if(ui->pointpipe2->isChecked())
+            ui->pointpipe2->click();
+        else if(ui->pointpipe3->isChecked())
+            ui->pointpipe3->click();
+        else if(ui->pointpipe4->isChecked())
+            ui->pointpipe4->click();
+        else if(ui->pointpipe5->isChecked())
+            ui->pointpipe5->click();
+        else if(ui->pointpipe6->isChecked())
+            ui->pointpipe6->click();
+        else if(ui->pointpipe7->isChecked())
+            ui->pointpipe7->click();
+        else if(ui->pointpipe8->isChecked())
+            ui->pointpipe8->click();
+        else if(ui->pointpipe9->isChecked())
+            ui->pointpipe9->click();
+        else if(ui->pointpipe10->isChecked())
+            ui->pointpipe10->click();
+        else if(ui->pointpipe11->isChecked())
+            ui->pointpipe11->click();
+        else if(ui->pointpipe12->isChecked())
+            ui->pointpipe12->click();
+        else if(ui->pointpipe13->isChecked())
+            ui->pointpipe13->click();
+        else if(ui->pointpipe14->isChecked())
+            ui->pointpipe14->click();
+        else if(ui->pointpipe15->isChecked())
+            ui->pointpipe15->click();
     }
-    else
-        close();
+
+    windowmove(698, 465);
+    setwontop(false);
+    ui->dialogpanel->hide();
+    ui->mainpanel->show();
+    ui->functionmenunext->setFocus();
+    repaint();
 }
 
 void systemback::on_pnumber3_clicked()
@@ -4849,6 +4875,7 @@ void systemback::on_restoremenu_clicked()
     ui->restorepanel->show();
     ui->function1->setText(tr("System restore"));
     ui->restoreback->setFocus();
+    repaint();
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
     QTS in(&file);
@@ -4917,9 +4944,6 @@ void systemback::on_copymenu_clicked()
         if(ui->userdatafilescopy->isChecked()) ui->userdatafilescopy->setChecked(false);
     }
 
-    ui->sbpanel->hide();
-    ui->copypanel->show();
-    ui->function1->setText(tr("System copy"));
     short nwidth(158 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
 
     if(nwidth > 698)
@@ -4930,6 +4954,13 @@ void systemback::on_copymenu_clicked()
             windowmove(800, 465);
     }
 
+    ui->sbpanel->hide();
+    ui->copypanel->show();
+    ui->function1->setText(tr("System copy"));
+    ui->copyback->setFocus();
+    repaint();
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+
     if(ui->partitionsettings->currentItem())
     {
         if(sb::mcheck("/.sbsystemcopy/") || sb::mcheck("/.sblivesystemwrite/"))
@@ -4937,8 +4968,6 @@ void systemback::on_copymenu_clicked()
         else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 2)->text() == "/home" && ! ui->mountpoint->isEnabled())
             ui->mountpoint->setEnabled(true);
     }
-
-    ui->copyback->setFocus();
 }
 
 void systemback::on_installmenu_clicked()
@@ -4947,6 +4976,7 @@ void systemback::on_installmenu_clicked()
     ui->installpanel->show();
     ui->function1->setText(tr("System install"));
     ui->fullname->setFocus();
+    repaint();
 }
 
 void systemback::on_livecreatemenu_clicked()
@@ -4962,6 +4992,7 @@ void systemback::on_livecreatemenu_clicked()
         ui->livecreatepanel->show();
         ui->function1->setText(tr("Live system create"));
         ui->livecreateback->setFocus();
+        repaint();
     }
 
     if(isdir(sb::sdir[2]))
@@ -5019,6 +5050,7 @@ void systemback::on_repairmenu_clicked()
     ui->repairpanel->show();
     ui->function1->setText(tr("System repair"));
     ui->repairback->setFocus();
+    repaint();
 }
 
 void systemback::on_systemupgrade_clicked()
@@ -5034,10 +5066,11 @@ void systemback::on_systemupgrade_clicked()
         if(ofdate == QFileInfo("/usr/bin/systemback").lastModified())
         {
             sb::lock(sb::Dpkglock);
+            windowmove(698, 465);
             ui->statuspanel->hide();
             ui->mainpanel->show();
             ui->functionmenunext->setFocus();
-            windowmove(698, 465);
+            repaint();
         }
         else
         {
@@ -5055,6 +5088,8 @@ void systemback::on_excludemenu_clicked()
     ui->excludepanel->show();
     ui->function1->setText(tr("Exclude"));
     ui->excludeback->setFocus();
+    repaint();
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
 }
 
 void systemback::on_schedulemenu_clicked()
@@ -5063,6 +5098,7 @@ void systemback::on_schedulemenu_clicked()
     ui->schedulepanel->show();
     ui->function1->setText(tr("Schedule"));
     ui->timerback->setFocus();
+    repaint();
 }
 
 void systemback::on_aboutmenu_clicked()
@@ -5071,6 +5107,7 @@ void systemback::on_aboutmenu_clicked()
     ui->aboutpanel->show();
     ui->function1->setText(tr("About"));
     ui->aboutback->setFocus();
+    repaint();
 }
 
 void systemback::on_partitionupdate_clicked()
@@ -5290,6 +5327,7 @@ void systemback::on_restoreback_clicked()
     ui->sbpanel->show();
     ui->function1->setText("Systemback");
     ui->functionmenunext->setFocus();
+    repaint();
 }
 
 void systemback::on_copyback_clicked()
@@ -5310,6 +5348,8 @@ void systemback::on_copyback_clicked()
             ui->installpanel->show();
             ui->fullname->setFocus();
         }
+
+        repaint();
     }
 }
 
@@ -5319,6 +5359,7 @@ void systemback::on_installback_clicked()
     ui->sbpanel->show();
     ui->function1->setText("Systemback");
     ui->functionmenunext->setFocus();
+    repaint();
 }
 
 void systemback::on_livecreateback_clicked()
@@ -5329,6 +5370,7 @@ void systemback::on_livecreateback_clicked()
         ui->sbpanel->show();
         ui->function1->setText("Systemback");
         ui->functionmenunext->setFocus();
+        repaint();
     }
 }
 
@@ -5340,6 +5382,7 @@ void systemback::on_repairback_clicked()
         ui->sbpanel->show();
         ui->function1->setText("Systemback");
         ui->functionmenunext->setFocus();
+        repaint();
     }
 }
 
@@ -5350,6 +5393,7 @@ void systemback::on_excludeback_clicked()
     ui->sbpanel->show();
     ui->function1->setText("Systemback");
     ui->functionmenunext->setFocus();
+    repaint();
 }
 
 void systemback::on_timerback_clicked()
@@ -5358,6 +5402,7 @@ void systemback::on_timerback_clicked()
     ui->sbpanel->show();
     ui->function1->setText("Systemback");
     ui->functionmenunext->setFocus();
+    repaint();
 }
 
 void systemback::on_aboutback_clicked()
@@ -5366,6 +5411,7 @@ void systemback::on_aboutback_clicked()
     ui->sbpanel->show();
     ui->function1->setText("Systemback");
     ui->functionmenunext->setFocus();
+    repaint();
 }
 
 void systemback::on_licenseback_clicked()
@@ -5374,6 +5420,7 @@ void systemback::on_licenseback_clicked()
     ui->aboutpanel->show();
     ui->function1->setText(tr("About"));
     ui->aboutback->setFocus();
+    repaint();
 }
 
 void systemback::on_licensemenu_clicked()
@@ -5382,6 +5429,7 @@ void systemback::on_licensemenu_clicked()
     ui->licensepanel->show();
     ui->function1->setText(tr("License"));
     ui->licenseback->setFocus();
+    repaint();
 
     if(ui->license->toPlainText().isEmpty())
     {
@@ -5864,66 +5912,58 @@ void systemback::on_pointexclude_clicked()
                 {
                     QStr iname(dlst.at(a));
 
-                    if((iname.startsWith('.') && ui->pointexclude->isChecked()) || (! iname.startsWith('.') && ui->liveexclude->isChecked()))
+                    if(((iname.startsWith('.') && ui->pointexclude->isChecked()) || (! iname.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(iname, Qt::MatchExactly).isEmpty() && ! sb::like(iname, QSL() << "_.gvfs_" << "_.Xauthority_" << "_.ICEauthority_"))
                     {
-                        if(ui->excludedlist->findItems(iname, Qt::MatchExactly).isEmpty() && ! sb::like(iname, QSL() << "_.gvfs_" << "_.Xauthority_" << "_.ICEauthority_"))
+                        if(ui->itemslist->findItems(iname, Qt::MatchExactly).isEmpty())
                         {
-                            if(ui->itemslist->findItems(iname, Qt::MatchExactly).isEmpty())
+                            QTrWI *twi(new QTrWI);
+                            twi->setText(0, iname);
+
+                            if(sb::access("/home/" % usr % '/' % iname) && sb::stype("/home/" % usr % '/' % iname) == sb::Isdir)
                             {
-                                QTrWI *twi(new QTrWI);
-                                twi->setText(0, iname);
+                                twi->setIcon(0, QIcon(":pictures/dir.png"));
+                                ui->itemslist->addTopLevelItem(twi);
+                                QSL sdlst(QDir("/home/" % usr % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                                if(sb::access("/home/" % usr % '/' % iname))
+                                for(ushort a(0) ; a < sdlst.count() ; ++a)
                                 {
-                                    if(sb::stype("/home/" % usr % '/' % iname) == sb::Isdir)
+                                    QStr siname(sdlst.at(a));
+
+                                    if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
                                     {
-                                        twi->setIcon(0, QIcon(":pictures/dir.png"));
-                                        ui->itemslist->addTopLevelItem(twi);
-                                        QSL sdlst(QDir("/home/" % usr % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
-
-                                        for(ushort a(0) ; a < sdlst.count() ; ++a)
-                                        {
-                                            QStr siname(sdlst.at(a));
-
-                                            if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
-                                            {
-                                                QTrWI *ctwi(new QTrWI);
-                                                ctwi->setText(0, siname);
-                                                twi->addChild(ctwi);
-                                            }
-                                        }
+                                        QTrWI *ctwi(new QTrWI);
+                                        ctwi->setText(0, siname);
+                                        twi->addChild(ctwi);
                                     }
-                                    else
-                                        ui->itemslist->addTopLevelItem(twi);
                                 }
-                                else
-                                    ui->itemslist->addTopLevelItem(twi);
                             }
-                            else if(sb::access("/home/" % usr % '/' % iname))
+                            else
+                                ui->itemslist->addTopLevelItem(twi);
+                        }
+                        else if(sb::access("/home/" % usr % '/' % iname))
+                        {
+                            if(sb::stype("/home/" % usr % '/' % iname) == sb::Isdir)
                             {
-                                if(sb::stype("/home/" % usr % '/' % iname) == sb::Isdir)
+                                QTrWI *ctwi(ui->itemslist->findItems(iname, Qt::MatchExactly).at(0));
+                                if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
+                                QSL sdlst(QDir("/home/" % usr % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
+                                for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
+
+                                for(ushort b(0) ; b < sdlst.count() ; ++b)
                                 {
-                                    QTrWI *ctwi(ui->itemslist->findItems(iname, Qt::MatchExactly).at(0));
-                                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
-                                    QSL sdlst(QDir("/home/" % usr % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
-                                    for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
+                                    QStr siname(sdlst.at(b));
 
-                                    for(ushort b(0) ; b < sdlst.count() ; ++b)
+                                    if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
                                     {
-                                        QStr siname(sdlst.at(b));
+                                        for(ushort c(0) ; c < itmlst.count() ; ++c)
+                                            if(itmlst.at(c) == siname) goto unext;
 
-                                        if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
-                                        {
-                                            for(ushort c(0) ; c < itmlst.count() ; ++c)
-                                                if(itmlst.at(c) == siname) goto unext;
-
-                                            QTrWI *sctwi(new QTrWI);
-                                            sctwi->setText(0, siname);
-                                            ctwi->addChild(sctwi);
-                                        }
-
-                                    unext:;
+                                        QTrWI *sctwi(new QTrWI);
+                                        sctwi->setText(0, siname);
+                                        ctwi->addChild(sctwi);
                                     }
+
+                                unext:;
                                 }
                             }
                         }
@@ -5940,66 +5980,58 @@ void systemback::on_pointexclude_clicked()
     {
         QStr iname(dlst.at(a));
 
-        if((iname.startsWith('.') && ui->pointexclude->isChecked()) || (! iname.startsWith('.') && ui->liveexclude->isChecked()))
+        if(((iname.startsWith('.') && ui->pointexclude->isChecked()) || (! iname.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(iname, Qt::MatchExactly).isEmpty() && ! sb::like(iname, QSL() << "_.gvfs_" << "_.Xauthority_" << "_.ICEauthority_"))
         {
-            if(ui->excludedlist->findItems(iname, Qt::MatchExactly).isEmpty() && ! sb::like(iname, QSL() << "_.gvfs_" << "_.Xauthority_" << "_.ICEauthority_"))
+            if(ui->itemslist->findItems(iname, Qt::MatchExactly).isEmpty())
             {
-                if(ui->itemslist->findItems(iname, Qt::MatchExactly).isEmpty())
+                QTrWI *twi(new QTrWI);
+                twi->setText(0, iname);
+
+                if(sb::access("/root/" % iname) && sb::stype("/root/" % iname) == sb::Isdir)
                 {
-                    QTrWI *twi(new QTrWI);
-                    twi->setText(0, iname);
+                    twi->setIcon(0, QIcon(":pictures/dir.png"));
+                    ui->itemslist->addTopLevelItem(twi);
+                    QSL sdlst(QDir("/root/" % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                    if(sb::access("/root/" % iname))
+                    for(ushort a(0) ; a < sdlst.count() ; ++a)
                     {
-                        if(sb::stype("/root/" % iname) == sb::Isdir)
+                        QStr siname(sdlst.at(a));
+
+                        if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
                         {
-                            twi->setIcon(0, QIcon(":pictures/dir.png"));
-                            ui->itemslist->addTopLevelItem(twi);
-                            QSL sdlst(QDir("/root/" % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
-
-                            for(ushort a(0) ; a < sdlst.count() ; ++a)
-                            {
-                                QStr siname(sdlst.at(a));
-
-                                if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
-                                {
-                                    QTrWI *ctwi(new QTrWI);
-                                    ctwi->setText(0, siname);
-                                    twi->addChild(ctwi);
-                                }
-                            }
+                            QTrWI *ctwi(new QTrWI);
+                            ctwi->setText(0, siname);
+                            twi->addChild(ctwi);
                         }
-                        else
-                            ui->itemslist->addTopLevelItem(twi);
                     }
-                    else
-                        ui->itemslist->addTopLevelItem(twi);
                 }
-                else if(sb::access("/root/" % iname))
+                else
+                    ui->itemslist->addTopLevelItem(twi);
+            }
+            else if(sb::access("/root/" % iname))
+            {
+                if(sb::stype("/root/" % iname) == sb::Isdir)
                 {
-                    if(sb::stype("/root/" % iname) == sb::Isdir)
+                    QTrWI *ctwi(ui->itemslist->findItems(iname, Qt::MatchExactly).at(0));
+                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
+                    QSL sdlst(QDir("/root/" % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
+                    for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
+
+                    for(ushort b(0) ; b < sdlst.count() ; ++b)
                     {
-                        QTrWI *ctwi(ui->itemslist->findItems(iname, Qt::MatchExactly).at(0));
-                        if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
-                        QSL sdlst(QDir("/root/" % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
-                        for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
+                        QStr siname(sdlst.at(b));
 
-                        for(ushort b(0) ; b < sdlst.count() ; ++b)
+                        if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
                         {
-                            QStr siname(sdlst.at(b));
+                            for(ushort c(0) ; c < itmlst.count() ; ++c)
+                                if(itmlst.at(c) == siname) goto rnext;
 
-                            if(ui->excludedlist->findItems(iname % '/' % siname, Qt::MatchExactly).isEmpty() && iname % '/' % siname != ".cache/gvfs")
-                            {
-                                for(ushort c(0) ; c < itmlst.count() ; ++c)
-                                    if(itmlst.at(c) == siname) goto rnext;
-
-                                QTrWI *sctwi(new QTrWI);
-                                sctwi->setText(0, siname);
-                                ctwi->addChild(sctwi);
-                            }
-
-                        rnext:;
+                            QTrWI *sctwi(new QTrWI);
+                            sctwi->setText(0, siname);
+                            ctwi->addChild(sctwi);
                         }
+
+                    rnext:;
                     }
                 }
             }
@@ -6025,13 +6057,68 @@ void systemback::on_dialogok_clicked()
             dialog = ui->fullrestore->isChecked() ? 20 : 19;
             dialogopen();
         }
+        else if(dialog == 16)
+        {
+            statustart();
+            QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
+
+            for(uchar a(0) ; a < dlst.count() ; ++a)
+            {
+                QStr iname(dlst.at(a));
+
+                if(iname.startsWith(".S00_"))
+                {
+                    prun = tr("Deleting incomplete restore point");
+
+                    if(sb::remove(sb::sdir[1] % '/' % iname))
+                    {
+                        prun = tr("Emptying cache");
+                        sb::fssync();
+                        sb::crtfile("/proc/sys/vm/drop_caches", "3");
+
+                        if(sstart)
+                        {
+                            sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+                            sb::SBThrd.ThrdKill = true;
+                            close();
+                        }
+                        else
+                        {
+                            windowmove(698, 465);
+                            ui->statuspanel->hide();
+                            ui->mainpanel->show();
+                            ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
+                            repaint();
+                        }
+                    }
+                    else
+                    {
+                        if(sstart) sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+
+                        if(! prun.isEmpty())
+                        {
+                            dialog = 50;
+                            dialogopen();
+                        }
+                    }
+
+                    return;
+                }
+            }
+
+            if(sstart)
+            {
+                sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+                sb::SBThrd.ThrdKill = true;
+                close();
+            }
+            else
+                on_dialogcancel_clicked();
+        }
         else if(! utimer->isActive() || sstart)
             close();
         else if(sb::ilike(dialog, QSIL() << 3 << 21 << 26 << 27 << 28 << 29 << 31 << 35 << 36 << 39 << 40 << 42 << 43 << 44 << 45 << 46 << 47 << 48 << 49 << 51 << 52 << 53 << 54 << 55 << 56 << 57 << 58 << 59))
         {
-            ui->dialogpanel->hide();
-            ui->mainpanel->show();
-
             if(ui->copypanel->isVisible())
             {
                 ui->copyback->setFocus();
@@ -6056,6 +6143,9 @@ void systemback::on_dialogok_clicked()
             }
 
             setwontop(false);
+            ui->dialogpanel->hide();
+            ui->mainpanel->show();
+            repaint();
         }
         else if(dialog == 33)
         {
@@ -6281,22 +6371,25 @@ void systemback::on_autorepairoptions_clicked(bool checked)
 
 void systemback::on_storagedirbutton_clicked()
 {
-    ui->function1->setText(tr("Storage directory"));
-    on_dirrefresh_clicked();
+    windowmove(642, 481);
     ui->sbpanel->hide();
     ui->choosepanel->show();
+    ui->function1->setText(tr("Storage directory"));
     ui->dirchooseok->setFocus();
-    windowmove(642, 481);
+    repaint();
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+    on_dirrefresh_clicked();
 }
 
 void systemback::on_liveworkdirbutton_clicked()
 {
-    ui->function1->setText(tr("Working directory"));
-    on_dirrefresh_clicked();
+    windowmove(642, 481);
     ui->livecreatepanel->hide();
     ui->choosepanel->show();
+    ui->function1->setText(tr("Working directory"));
     ui->dirchooseok->setFocus();
-    windowmove(642, 481);
+    repaint();
+    on_dirrefresh_clicked();
 }
 
 void systemback::on_dirrefresh_clicked()
@@ -6509,6 +6602,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
 
 void systemback::on_dirchoosecancel_clicked()
 {
+    windowmove(698, 465);
     ui->choosepanel->hide();
 
     if(ui->function1->text() == tr("Storage directory"))
@@ -6524,7 +6618,7 @@ void systemback::on_dirchoosecancel_clicked()
         ui->livecreateback->setFocus();
     }
 
-    windowmove(698, 465);
+    repaint();
     ui->dirchoose->clear();
 }
 
@@ -6532,6 +6626,8 @@ void systemback::on_dirchooseok_clicked()
 {
     if(isdir(ui->dirpath->text()))
     {
+        windowmove(698, 465);
+
         if(ui->function1->text() == tr("Storage directory"))
         {
             if(sb::sdir[0] != ui->dirpath->text())
@@ -6564,9 +6660,16 @@ void systemback::on_dirchooseok_clicked()
             ui->sbpanel->show();
             ui->function1->setText("Systemback");
             ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
+            repaint();
         }
         else
         {
+            ui->choosepanel->hide();
+            ui->livecreatepanel->show();
+            ui->function1->setText(tr("Live system create"));
+            ui->livecreateback->setFocus();
+            repaint();
+
             if(sb::sdir[2] != ui->dirpath->text())
             {
                 sb::sdir[2] = ui->dirpath->text();
@@ -6574,14 +6677,8 @@ void systemback::on_dirchooseok_clicked()
                 ui->liveworkdir->setText(sb::sdir[2]);
                 on_livecreatemenu_clicked();
             }
-
-            ui->choosepanel->hide();
-            ui->livecreatepanel->show();
-            ui->function1->setText(tr("Live system create"));
-            ui->livecreateback->setFocus();
         }
 
-        windowmove(698, 465);
         ui->dirchoose->clear();
     }
     else
@@ -6711,16 +6808,13 @@ void systemback::on_livedelete_clicked()
 
 void systemback::on_livedevices_currentItemChanged(QTblWI *current, QTblWI *previous)
 {
-    char prow((previous) ? previous->row() : -1);
+    char prow(previous ? previous->row() : -1);
 
-    if(current)
+    if(current && current->row() != prow)
     {
-        if(current->row() != prow)
-        {
-            ui->livedevices->item(current->row(), 3)->setText("x");
-            if(previous) ui->livedevices->item(previous->row(), 3)->setText("-");
-            if(ui->livelist->currentItem() && ! ui->livewritestart->isEnabled()) ui->livewritestart->setEnabled(true);
-        }
+        ui->livedevices->item(current->row(), 3)->setText("x");
+        if(previous) ui->livedevices->item(previous->row(), 3)->setText("-");
+        if(ui->livelist->currentItem() && ! ui->livewritestart->isEnabled()) ui->livewritestart->setEnabled(true);
     }
 }
 
@@ -6851,10 +6945,12 @@ void systemback::on_installnext_clicked()
         ui->usersettingscopy->show();
     }
 
-    ui->installpanel->hide();
-    ui->copypanel->show();
     short nwidth(158 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
     if(nwidth > 698) (nwidth < 800) ? windowmove(nwidth, 465) : windowmove(800, 465);
+    ui->installpanel->hide();
+    ui->copypanel->show();
+    ui->copyback->setFocus();
+    repaint();
 
     if(ui->partitionsettings->currentItem())
     {
@@ -6884,13 +6980,11 @@ void systemback::on_installnext_clicked()
             }
         }
     }
-
-    ui->copyback->setFocus();
 }
 
 void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI *previous)
 {
-    char prow((previous) ? previous->row() : -1);
+    char prow(previous ? previous->row() : -1);
 
     if(current)
     {
@@ -7281,7 +7375,7 @@ void systemback::on_repairmount_clicked()
         {
             ui->repairmount->setEnabled(true);
             sb::delay(500);
-            ui->repairmount->setIcon(QIcon(NULL));
+            ui->repairmount->setIcon(QIcon());
             ui->repairmount->setText(tr("Mount"));
         }
     }
@@ -7940,13 +8034,10 @@ void systemback::on_userdatainclude_clicked(bool checked)
                 {
                     usr = sb::left(usr, sb::instr(usr, ":") -1);
 
-                    if(isdir("/home/" % usr))
+                    if(isdir("/home/" % usr) && sb::dfree("/home/" % usr) != hfree)
                     {
-                        if(sb::dfree("/home/" % usr) != hfree)
-                        {
-                            ui->userdatainclude->setChecked(false);
-                            break;
-                        }
+                        ui->userdatainclude->setChecked(false);
+                        break;
                     }
                 }
             }
@@ -7992,6 +8083,7 @@ void systemback::on_interrupt_clicked()
         if(ui->pointpipe14->isChecked()) ui->pointpipe14->setChecked(false);
         if(ui->pointpipe15->isChecked()) ui->pointpipe15->setChecked(false);
         on_pointpipe1_clicked();
+        windowmove(698, 465);
         ui->statuspanel->hide();
 
         if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
@@ -8017,7 +8109,7 @@ void systemback::on_interrupt_clicked()
         }
 
         ui->mainpanel->show();
-        windowmove(698, 465);
+        repaint();
     }
 }
 
@@ -8199,14 +8291,18 @@ start:;
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
 
     if(sstart)
+    {
+        sb::SBThrd.ThrdKill = true;
         close();
+    }
     else
     {
         pointupgrade();
+        windowmove(698, 465);
         ui->statuspanel->hide();
         ui->mainpanel->show();
         ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
-        windowmove(698, 465);
+        repaint();
     }
 }
 
@@ -8362,10 +8458,11 @@ start:;
     prun = tr("Emptying cache");
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    windowmove(698, 465);
     ui->statuspanel->hide();
     ui->mainpanel->show();
     ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
-    windowmove(698, 465);
+    repaint();
  }
 
 void systemback::on_livecreatenew_clicked()
@@ -8697,8 +8794,9 @@ start:;
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
     ui->livelist->currentItem()->setText(sb::left(ui->livelist->currentItem()->text(), sb::rinstr(ui->livelist->currentItem()->text(), " ")) % "sblive+iso)");
     ui->liveconvert->setDisabled(true);
+    windowmove(698, 465);
     ui->statuspanel->hide();
     ui->mainpanel->show();
     ui->livecreateback->setFocus();
-    windowmove(698, 465);
+    repaint();
 }

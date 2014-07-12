@@ -81,6 +81,7 @@ public:
     static bool lvprpr(bool iudata);
     static bool umount(QStr device);
     static bool islnxfs(QStr path);
+    static bool pisrng(QStr pname);
     static bool mcheck(QStr item);
     static bool remove(QStr path);
     static bool lock(uchar type);

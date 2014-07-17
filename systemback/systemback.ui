@@ -6547,12 +6547,26 @@
     <zorder>adminpasswordpipe</zorder>
     <zorder>passwordinputok</zorder>
    </widget>
+   <widget class="QFrame" name="resizepanel">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>2865</y>
+      <width>20</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+   </widget>
    <zorder>mainpanel</zorder>
    <zorder>statuspanel</zorder>
    <zorder>schedulerpanel</zorder>
    <zorder>dialogpanel</zorder>
    <zorder>passwordpanel</zorder>
    <zorder>buttonspanel</zorder>
+   <zorder>resizepanel</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

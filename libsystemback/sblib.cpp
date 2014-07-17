@@ -45,7 +45,7 @@ bool sb::ExecKill;
 
 sb::sb(QThread *parent) : QThread(parent)
 {
-    sb::ExecKill = sb::SBThrd.ThrdKill = true;
+    ExecKill = SBThrd.ThrdKill = true;
 }
 
 QStr sb::getarch()
@@ -266,13 +266,13 @@ void sb::unlock(uchar type)
     }
 }
 
-ulong sb::dfree(QStr path)
+quint64 sb::dfree(QStr path)
 {
     struct statfs64 dstat;
     return (statfs64(path.toStdString().c_str(), &dstat) == -1) ? 0 : dstat.f_bavail * dstat.f_bsize;
 }
 
-ulong sb::fsize(QStr path)
+quint64 sb::fsize(QStr path)
 {
     return QFileInfo(path).size();
 }
@@ -312,16 +312,16 @@ void sb::cfgread()
             QStr cline(in.readLine());
 
             if(cline.startsWith("storagedir="))
-                sdir[0] = sb::right(cline, - sb::instr(cline, "="));
+                sdir[0] = right(cline, - instr(cline, "="));
             else if(cline.startsWith("liveworkdir="))
-                sdir[2] = sb::right(cline, - sb::instr(cline, "="));
+                sdir[2] = right(cline, - instr(cline, "="));
             else if(cline.startsWith("schedule="))
             {
-                QStr cval(sb::right(cline, - sb::instr(cline, "=")));
-                schdle[1] = sb::left(cval, sb::instr(cval, ":") - 1);
-                schdle[2] = sb::mid(cval, schdle[1].length() + 2, sb::instr(cval, ":", schdle[1].length() + 2) - sb::instr(cval, ":") - 1);
-                schdle[3] = sb::right(sb::left(cval, sb::instr(cval, ":", QStr(schdle[1] % schdle[2]).length() + 3) - 1), - QStr(schdle[1] % schdle[2]).length() - 2);
-                schdle[4] = sb::right(cval, - sb::rinstr(cval, ":"));
+                QStr cval(right(cline, - instr(cline, "=")));
+                schdle[1] = left(cval, instr(cval, ":") - 1);
+                schdle[2] = mid(cval, schdle[1].length() + 2, instr(cval, ":", schdle[1].length() + 2) - instr(cval, ":") - 1);
+                schdle[3] = right(left(cval, instr(cval, ":", QStr(schdle[1] % schdle[2]).length() + 3) - 1), - QStr(schdle[1] % schdle[2]).length() - 2);
+                schdle[4] = right(cval, - rinstr(cval, ":"));
             }
             else if(cline.startsWith("pointsnumber=3"))
                 pnumber = 3;
@@ -536,9 +536,9 @@ void sb::fssync()
     SBThrd.thrdelay();
 }
 
-ulong sb::devsize(QStr device)
+quint64 sb::devsize(QStr device)
 {
-    ulong bsize;
+    quint64 bsize;
     int dev(open(device.toStdString().c_str(), O_RDONLY));
     ioctl(dev, BLKGETSIZE64, &bsize);
     close(dev);
@@ -654,7 +654,7 @@ uchar sb::exec(QStr cmd, QStr envv, bool silent, bool bckgrnd)
 
     if(proc.error() == QProcess::FailedToStart) return 255;
     if(rprcnt == 1) setpriority(0, proc.pid(), 10);
-    ulong inum(0);
+    quint64 inum(0);
     uchar cperc;
 
     while(proc.state() == QProcess::Running)
@@ -687,7 +687,7 @@ uchar sb::exec(QStr cmd, QStr envv, bool silent, bool bckgrnd)
         case 3:
             QStr itms(SBThrd.rodir("/.sblivesystemwrite"));
             QTS in(&itms, QIODevice::ReadOnly);
-            ulong size(0);
+            quint64 size(0);
 
             while(! in.atEnd())
             {
@@ -817,9 +817,9 @@ void sb::pupgrade()
             if(! rerun) rerun = true;
         }
 
-        if(! pnames[9].isEmpty() && sb::pnames[8].isEmpty())
+        if(! pnames[9].isEmpty() && pnames[8].isEmpty())
         {
-            QFile::rename(sdir[1] % "/S10_" % pnames[9], sdir[1] % "/S09_" % sb::pnames[9]);
+            QFile::rename(sdir[1] % "/S10_" % pnames[9], sdir[1] % "/S09_" % pnames[9]);
             if(! rerun) rerun = true;
         }
 
@@ -1053,6 +1053,7 @@ bool sb::lvprpr(bool iudata)
 void sb::run()
 {
     if(SBThrd.ThrdKill) SBThrd.ThrdKill = false;
+    if(! SBThrd.ThrdDbg.isEmpty()) SBThrd.ThrdDbg.clear();
 
     switch(ThrdType) {
     case Remove:
@@ -1291,7 +1292,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     if(isdir("/root")) rootitms = rodir("/root", true);
     if(ThrdKill) return false;
     QSL usrs;
-    uint anum(0);
+    ulong anum(0);
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
     QTS in(&file);
@@ -1351,7 +1352,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
 
     file.close();
     QStr *cditms;
-    uint cnum(0);
+    ulong cnum(0);
     uchar cperc;
     QSL rplst, dlst(QDir(sdir).entryList(QDir::Dirs | QDir::NoDotAndDotDot));
 
@@ -1402,6 +1403,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 ++cnum;
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
+                ThrdDbg = "@/home/" % usr % '/' % item;
 
                 if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && exist("/home/" % usr % '/' % item))
                 {
@@ -1443,6 +1445,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = "@/home/" % usr % '/' % item;
 
                 if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                     if(exist(trgt % "/home/" % usr % '/' % item))
@@ -1469,6 +1472,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
             ++cnum;
             cperc = (cnum * 100 + 50) / anum;
             if(Progress < cperc) Progress = cperc;
+            ThrdDbg = "@/root/" % item;
 
             if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && exist("/root/" % item))
             {
@@ -1510,6 +1514,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/root/" % item;
 
             if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                 if(exist(trgt % "/root/" % item))
@@ -1604,6 +1609,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 ++cnum;
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
+                ThrdDbg = '@' % cdir % '/' % item;
 
                 if(! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, QStr(cdir % '/' % item)))
                 {
@@ -1642,6 +1648,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = '@' % cdir % '/' % item;
 
                 if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                     if(exist(trgt % cdir % '/' % item))
@@ -1712,6 +1719,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/var/log/" % item;
 
             switch(left(line, instr(line, "_") - 1).toShort()) {
             case Isdir:
@@ -1744,11 +1752,11 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 {
     QSL usrs;
     QStr home1itms, home2itms, home3itms, home4itms, home5itms, rootitms, binitms, bootitms, etcitms, libitms, lib32itms, lib64itms, optitms, sbinitms, selinuxitms, srvitms, usritms, varitms;
-    uint anum(0);
+    ulong anum(0);
 
     if(mthd != 2)
     {
-        if(! sb::ilike(mthd, QSIL() << 4 << 6))
+        if(! ilike(mthd, QSIL() << 4 << 6))
         {
             if(isdir(srcdir % "/root")) rootitms = rodir(srcdir % "/root", true);
 
@@ -1799,7 +1807,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
     }
 
     QStr *cditms;
-    uint cnum(0);
+    ulong cnum(0);
     uchar cperc;
 
     if(mthd < 3)
@@ -1879,7 +1887,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 }
             }
             else if(exist(trgt % cdir))
-                stype(trgt % cdir) == sb::Isdir ? recrmdir(trgt % cdir) : QFile::remove(trgt % cdir);
+                stype(trgt % cdir) == Isdir ? recrmdir(trgt % cdir) : QFile::remove(trgt % cdir);
 
             if(ThrdKill) return false;
         }
@@ -1964,6 +1972,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                     ++cnum;
                     cperc = (cnum * 100 + 50) / anum;
                     if(Progress < cperc) Progress = cperc;
+                    ThrdDbg = '@' % cdir % '/' % item;
 
                     if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)))
                     {
@@ -2040,6 +2049,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 while(! in.atEnd())
                 {
                     QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                    ThrdDbg = '@' % cdir % '/' % item;
 
                     if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                         if(exist(trgt % cdir % '/' % item))
@@ -2051,7 +2061,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 cditms->clear();
             }
             else if(exist(trgt % cdir))
-                stype(trgt % cdir) == sb::Isdir ? recrmdir(trgt % cdir) : QFile::remove(trgt % cdir);
+                stype(trgt % cdir) == Isdir ? recrmdir(trgt % cdir) : QFile::remove(trgt % cdir);
 
             cpertime(srcdir % cdir, trgt % cdir);
         }
@@ -2083,6 +2093,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = "@/media/" % item;
 
                 if(exist(trgt % "/media/" % item))
                 {
@@ -2106,7 +2117,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             cpertime(srcdir % "/media", trgt % "/media");
         }
         else if(exist(trgt % "/media"))
-            stype(trgt % "/media") == sb::Isdir ? recrmdir(trgt % "/media") : QFile::remove(trgt % "/media");
+            stype(trgt % "/media") == Isdir ? recrmdir(trgt % "/media") : QFile::remove(trgt % "/media");
 
         if(srcdir == "/.systembacklivepoint" && isdir("/.systembacklivepoint/.systemback"))
         {
@@ -2116,6 +2127,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = "@/.systemback/" % item;
 
                 switch(left(line, instr(line, "_") - 1).toShort()) {
                 case Islink:
@@ -2138,6 +2150,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = "@/.systemback/" % item;
                 if(left(line, instr(line, "_") - 1).toShort() == Isdir) cpertime(srcdir % "/.systemback/" % item, trgt % '/' % item);
                 if(ThrdKill) return false;
             }
@@ -2163,9 +2176,9 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
         file.close();
         bool skppd;
 
-        if(! sb::ilike(mthd, QSIL() << 4 << 6) || usr == "root")
+        if(! ilike(mthd, QSIL() << 4 << 6) || usr == "root")
         {
-            if(! sb::ilike(mthd, QSIL() << 3 << 4))
+            if(! ilike(mthd, QSIL() << 3 << 4))
             {
                 QSL sdlst(odir(trgt % "/root", true));
 
@@ -2201,6 +2214,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 ++cnum;
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
+                ThrdDbg = "@/root/" % item;
 
                 if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item))
                 {
@@ -2224,7 +2238,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                         switch(stype(trgt % "/root/" % item)) {
                         case Isdir:
                         {
-                            if(! sb::ilike(mthd, QSIL() << 3 << 4))
+                            if(! ilike(mthd, QSIL() << 3 << 4))
                             {
                                 QSL sdlst(odir(trgt % "/root/" % item));
 
@@ -2295,6 +2309,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = "@/root/" % item;
 
                 if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                     if(exist(trgt % "/root/" % item))
@@ -2312,7 +2327,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 
             if(isdir(trgt % "/home/" % usr))
             {
-                if(! sb::ilike(mthd, QSIL() << 3 << 4))
+                if(! ilike(mthd, QSIL() << 3 << 4))
                 {
                     QSL sdlst(odir(trgt % "/home/" % usr, true));
 
@@ -2376,6 +2391,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 ++cnum;
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
+                ThrdDbg = "@/home/" % usr % '/' % item;
 
                 if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item))
                 {
@@ -2399,7 +2415,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                         switch(stype(trgt % "/home/" % usr % '/' % item)) {
                         case Isdir:
                         {
-                            if(! sb::ilike(mthd, QSIL() << 3 << 4))
+                            if(! ilike(mthd, QSIL() << 3 << 4))
                             {
                                 QSL sdlst(odir(trgt % "/home/" % usr % '/' % item));
 
@@ -2470,6 +2486,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = "@/home/" % usr % '/' % item;
 
                 if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                     if(exist(trgt % "/home/" % usr % '/' % item))
@@ -2490,7 +2507,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 {
     QSL usrs;
     QStr home1itms, home2itms, home3itms, home4itms, home5itms, rootitms, binitms, bootitms, etcitms, libitms, lib32itms, lib64itms, optitms, sbinitms, selinuxitms, srvitms, usritms, varitms;
-    uint anum(0);
+    ulong anum(0);
     if(isdir(srcdir % "/bin")) binitms = rodir(srcdir % "/bin");
     if(ThrdKill) return false;
     if(isdir(srcdir % "/boot")) bootitms = rodir(srcdir % "/boot");
@@ -2630,7 +2647,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
     Progress = 0;
     QStr *cditms, macid;
-    uint cnum(0);
+    ulong cnum(0);
     uchar cperc;
     QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
     QFile file(srcdir % "/etc/systemback.excludes");
@@ -2671,7 +2688,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     {
         if(! isdir("/.sbsystemcopy/home") && ! QDir().mkdir("/.sbsystemcopy/home"))
         {
-            QFile::rename("/.sbsystemcopy/home", "/.sbsystemcopy/home_" % sb::rndstr());
+            QFile::rename("/.sbsystemcopy/home", "/.sbsystemcopy/home_" % rndstr());
             if(! QDir().mkdir("/.sbsystemcopy/home")) return false;
         }
 
@@ -2718,6 +2735,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                     ++cnum;
                     cperc = (cnum * 100 + 50) / anum;
                     if(Progress < cperc) Progress = cperc;
+                    ThrdDbg = (mthd == 4) ? QStr("@/etc/skel/" % item) : QStr("@/home/" % usr % '/' % item);
 
                     if(mthd == 4 || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid))))
                     {
@@ -2795,6 +2813,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 while(! in.atEnd())
                 {
                     QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                    ThrdDbg = (mthd == 4) ? QStr("@/etc/skel/" % item) : QStr("@/home/" % usr % '/' % item);
 
                     if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                         if(exist("/.sbsystemcopy/home/" % usr % '/' % item))
@@ -2819,8 +2838,8 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
                             if(! cline.startsWith('#') && cline.contains("$HOME"))
                             {
-                                dir = sb::left(sb::right(cline, - sb::instr(cline, "/")), -1);
-                                if(isdir(srcdir % "/home/" % usr % '/' % dir)) sb::cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir);
+                                dir = left(right(cline, - instr(cline, "/")), -1);
+                                if(isdir(srcdir % "/home/" % usr % '/' % dir)) cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir);
                             }
 
                             if(ThrdKill) return false;
@@ -2841,7 +2860,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     {
         if(! isdir("/.sbsystemcopy/root") && ! QDir().mkdir("/.sbsystemcopy/root"))
         {
-            QFile::rename("/.sbsystemcopy/root", "/.sbsystemcopy/root_" % sb::rndstr());
+            QFile::rename("/.sbsystemcopy/root", "/.sbsystemcopy/root_" % rndstr());
             if(! QDir().mkdir("/.sbsystemcopy/root")) return false;
         }
 
@@ -2853,6 +2872,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             ++cnum;
             cperc = (cnum * 100 + 50) / anum;
             if(Progress < cperc) Progress = cperc;
+            ThrdDbg = (mthd == 4) ? QStr("@/etc/skel/" % item) : QStr("@/root/" % item);
 
             if(mthd == 4 || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid))))
             {
@@ -2931,6 +2951,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = (mthd == 4) ? QStr("@/etc/skel/" % item) : QStr("@/root/" % item);
 
             if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                 if(exist("/.sbsystemcopy/root/" % item))
@@ -2994,7 +3015,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             }
         }
         else if(exist("/.sbsystemcopy" % cdir))
-            stype("/.sbsystemcopy" % cdir) == sb::Isdir ? recrmdir("/.sbsystemcopy" % cdir) : QFile::remove("/.sbsystemcopy" % cdir);
+            stype("/.sbsystemcopy" % cdir) == Isdir ? recrmdir("/.sbsystemcopy" % cdir) : QFile::remove("/.sbsystemcopy" % cdir);
 
         if(ThrdKill) return false;
     }
@@ -3079,6 +3100,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 ++cnum;
                 cperc = (cnum * 100 + 50) / anum;
                 if(Progress < cperc) Progress = cperc;
+                ThrdDbg = '@' % cdir % '/' % item;
 
                 if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! (QStr(cdir % '/' % item).startsWith("/etc/udev/rules.d") && item.contains("-persistent-"))))
                 {
@@ -3151,6 +3173,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = '@' % cdir % '/' % item;
 
                 if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                     if(exist("/.sbsystemcopy" % cdir % '/' % item))
@@ -3163,7 +3186,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             cditms->clear();
         }
         else if(exist("/.sbsystemcopy" % cdir))
-            stype("/.sbsystemcopy" % cdir) == sb::Isdir ? recrmdir("/.sbsystemcopy" % cdir) : QFile::remove("/.sbsystemcopy" % cdir);
+            stype("/.sbsystemcopy" % cdir) == Isdir ? recrmdir("/.sbsystemcopy" % cdir) : QFile::remove("/.sbsystemcopy" % cdir);
     }
 
     if(isdir(srcdir % "/media"))
@@ -3237,6 +3260,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+                ThrdDbg = "@/media/" % item;
 
                 if(exist("/.sbsystemcopy/media/" % item))
                 {
@@ -3258,7 +3282,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         if(! cpertime(srcdir % "/media", "/.sbsystemcopy/media")) return false;
     }
     else if(exist("/.sbsystemcopy/media"))
-        stype("/.sbsystemcopy/media") == sb::Isdir ? recrmdir("/.sbsystemcopy/media") : QFile::remove("/.sbsystemcopy/media");
+        stype("/.sbsystemcopy/media") == Isdir ? recrmdir("/.sbsystemcopy/media") : QFile::remove("/.sbsystemcopy/media");
 
     if(isdir(srcdir % "/var/log"))
     {
@@ -3268,6 +3292,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/var/log/" % item;
 
             switch(left(line, instr(line, "_") - 1).toShort()) {
             case Isdir:
@@ -3296,6 +3321,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/.systemback/" % item;
 
             switch(left(line, instr(line, "_") - 1).toShort()) {
             case Islink:
@@ -3316,6 +3342,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/.systemback/" % item;
 
             if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                 if(! cpertime(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
@@ -3375,7 +3402,7 @@ bool sb::thrdlvprpr(bool &iudata)
         if(! cpfile("/etc/fstab", sdir[2] % "/.sblivesystemcreate/.systemback/etc/fstab")) return false;
 
     if(! cpertime("/etc", sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
-    if(exist("/.sblvtmp")) stype("/.sblvtmp") == sb::Isdir ? recrmdir("/.sblvtmp") : QFile::remove("/.sblvtmp");
+    if(exist("/.sblvtmp")) stype("/.sblvtmp") == Isdir ? recrmdir("/.sblvtmp") : QFile::remove("/.sblvtmp");
     if(! QDir().mkdir("/.sblvtmp")) return false;
     dlst = QSL() << "/cdrom" << "/dev" << "/mnt" << "/proc" << "/run" << "/srv" << "/sys" << "/tmp";
 
@@ -3397,7 +3424,7 @@ bool sb::thrdlvprpr(bool &iudata)
         if(! QDir().mkdir("/media")) return false;
     }
     else if(exist("/media/.sblvtmp"))
-       stype("/media/.sblvtmp") == sb::Isdir ? recrmdir("/media/.sblvtmp") : QFile::remove("/media/.sblvtmp");
+       stype("/media/.sblvtmp") == Isdir ? recrmdir("/media/.sblvtmp") : QFile::remove("/media/.sblvtmp");
 
     if(! QDir().mkdir("/media/.sblvtmp")) return false;
     if(! QDir().mkdir("/media/.sblvtmp/media")) return false;
@@ -3449,7 +3476,7 @@ bool sb::thrdlvprpr(bool &iudata)
         }
     }
 
-    if(exist("/var/.sblvtmp")) stype("/var/.sblvtmp") == sb::Isdir ? recrmdir("/var/.sblvtmp") : QFile::remove("/var/.sblvtmp");
+    if(exist("/var/.sblvtmp")) stype("/var/.sblvtmp") == Isdir ? recrmdir("/var/.sblvtmp") : QFile::remove("/var/.sblvtmp");
     if(ThrdKill) return false;
     QStr varitms(rodir("/var"));
     QTS in(&varitms, QIODevice::ReadOnly);
@@ -3462,6 +3489,7 @@ bool sb::thrdlvprpr(bool &iudata)
     while(! in.atEnd())
     {
         QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+        ThrdDbg = "@/var/" % item;
 
         if(! (item.startsWith("cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (item.startsWith("cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, item))
         {
@@ -3506,6 +3534,7 @@ bool sb::thrdlvprpr(bool &iudata)
     while(! in.atEnd())
     {
         QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+        ThrdDbg = "@/var/" % item;
 
         if(left(line, instr(line, "_") - 1).toShort() == Isdir)
             if(exist("/var/.sblvtmp/var/" % item))
@@ -3555,7 +3584,7 @@ bool sb::thrdlvprpr(bool &iudata)
 
     if(uhl)
     {
-        if(exist("/home/.sbuserdata")) stype("/home/.sbuserdata") == sb::Isdir ? recrmdir("/home/.sbuserdata") : QFile::remove("/home/.sbuserdata");
+        if(exist("/home/.sbuserdata")) stype("/home/.sbuserdata") == Isdir ? recrmdir("/home/.sbuserdata") : QFile::remove("/home/.sbuserdata");
         if(! QDir().mkdir("/home/.sbuserdata")) return false;
         if(! QDir().mkdir("/home/.sbuserdata/home")) return false;
     }
@@ -3587,7 +3616,7 @@ bool sb::thrdlvprpr(bool &iudata)
         if(uhl)
         {
             usdir = "/root/.sbuserdata";
-            if(exist("/root/.sbuserdata")) stype("/root/.sbuserdata") == sb::Isdir ? recrmdir("/root/.sbuserdata") : QFile::remove("/root/.sbuserdata");
+            if(exist("/root/.sbuserdata")) stype("/root/.sbuserdata") == Isdir ? recrmdir("/root/.sbuserdata") : QFile::remove("/root/.sbuserdata");
             if(! QDir().mkdir(usdir)) return false;
         }
         else
@@ -3603,6 +3632,7 @@ bool sb::thrdlvprpr(bool &iudata)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/root/" % item;
 
             if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item))
             {
@@ -3641,6 +3671,7 @@ bool sb::thrdlvprpr(bool &iudata)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/root/" % item;
 
             if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                 if(exist(usdir % "/root/" % item))
@@ -3665,6 +3696,7 @@ bool sb::thrdlvprpr(bool &iudata)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/home/" % udir % '/' % item;
 
             if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && exist("/home/" % udir % '/' % item))
             {
@@ -3700,6 +3732,7 @@ bool sb::thrdlvprpr(bool &iudata)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/home/" % udir % '/' % item;
 
             if(left(line, instr(line, "_") - 1).toShort() == Isdir)
                 if(exist(usdir % '/' % udir % '/' % item))
@@ -3720,11 +3753,11 @@ bool sb::thrdlvprpr(bool &iudata)
 
                 if(! cline.startsWith('#') && cline.contains("$HOME"))
                 {
-                    dir = sb::left(sb::right(cline, - sb::instr(cline, "/")), -1);
+                    dir = left(right(cline, - instr(cline, "/")), -1);
 
                     if(isdir("/home/" % udir % '/' % dir))
                     {
-                        if(! sb::cpdir("/home/" % udir % '/' % dir, usdir % '/' % udir % '/' % dir)) return false;
+                        if(! cpdir("/home/" % udir % '/' % dir, usdir % '/' % udir % '/' % dir)) return false;
                         ++ThrdLng;
                     }
                 }

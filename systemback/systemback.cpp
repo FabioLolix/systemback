@@ -29,6 +29,7 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 #include <sys/swap.h>
+#include <X11/Xlib.h>
 #include <unistd.h>
 
 systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
@@ -83,6 +84,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     ui->licensepanel->hide();
     ui->choosepanel->hide();
     ui->buttonspanel->hide();
+    ui->resizepanel->hide();
     ui->functionmenu2->hide();
     ui->dialogpanel->setBackgroundRole(QPalette::Foreground);
     ui->subdialogpanel->setBackgroundRole(QPalette::Background);
@@ -424,6 +426,8 @@ void systemback::unitimer()
                 on_pnumber10_clicked();
             }
 
+            ui->resizepanel->move(1, 24);
+
             if(! sstart)
             {
                 ui->installpanel->move(1, 24);
@@ -553,8 +557,8 @@ void systemback::unitimer()
                 on_partitionupdate_clicked();
                 on_livedevicesupdate_clicked();
                 on_pointexclude_clicked();
-                ui->storagedirbutton->show();
                 ui->storagedir->resize(210, 28);
+                ui->storagedirbutton->show();
                 ui->repairmenu->setEnabled(true);
                 ui->aboutmenu->setEnabled(true);
                 ui->pnumber3->setEnabled(true);
@@ -870,7 +874,7 @@ void systemback::busy(bool state)
 {
     state ? ++busycnt : --busycnt;
 
-    switch (busycnt) {
+    switch(busycnt) {
     case 0:
         qApp->restoreOverrideCursor();
         break;
@@ -1764,20 +1768,20 @@ void systemback::statustart()
 {
     if(sstart && dialog != 16)
     {
-        resize(403, 161);
-        setwontop(false);
-        resize(402, 161);
         ui->schedulerpanel->hide();
+        setwontop(false);
     }
     else
     {
-        windowmove(ui->statuspanel->width(), ui->statuspanel->height());
-        if(windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setwontop(false);
-
         if(ui->mainpanel->isVisible())
             ui->mainpanel->hide();
         else if(ui->dialogpanel->isVisible())
+        {
             ui->dialogpanel->hide();
+            setwontop(false);
+        }
+
+        windowmove(ui->statuspanel->width(), ui->statuspanel->height());
     }
 
     ui->statuspanel->show();
@@ -2121,7 +2125,10 @@ error:;
     else if(! sb::ilike(dialog, QSIL() << 31 << 36 << 51 << 52 << 53 << 54))
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && sb::dfree("/.sbsystemcopy/home") > 104857600 && sb::dfree("/.sbsystemcopy/boot") > 52428800)
+        {
+            if(! sb::SBThrd.ThrdDbg.isEmpty()) debugmsg();
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 39 : 40;
+        }
         else
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 21 : 35;
     }
@@ -2373,10 +2380,81 @@ start:;
 
     if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
     {
-        if(isdir("/.sbsystemcopy/home/" % guname()))
-            if(! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text())) goto error;
-
         QStr nfile;
+
+        if(guname() != ui->username->text())
+        {
+            if(isdir("/.sbsystemcopy/home/" % guname()))
+                if(! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text())) goto error;
+
+            file.setFileName("/.sbsystemcopy/etc/group");
+            file.open(QIODevice::ReadOnly);
+
+            while(! in.atEnd())
+            {
+                QStr nline(in.readLine());
+                if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
+                nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
+                if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
+                nfile.append(nline % '\n');
+                if(prun.isEmpty()) return;
+            }
+
+            file.close();
+            if(! sb::crtfile("/.sbsystemcopy/etc/group", nfile)) goto error;
+            nfile.clear();
+            file.setFileName("/.sbsystemcopy/etc/gshadow");
+            file.open(QIODevice::ReadOnly);
+
+            while(! in.atEnd())
+            {
+                QStr nline(in.readLine());
+                if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
+                nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
+                if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
+                nfile.append(nline % '\n');
+                if(prun.isEmpty()) return;
+            }
+
+            file.close();
+            if(! sb::crtfile("/.sbsystemcopy/etc/gshadow", nfile)) goto error;
+            nfile.clear();
+
+            if(isfile("/.sbsystemcopy/etc/subuid") && isfile("/.sbsystemcopy/etc/subgid"))
+            {
+                file.setFileName("/.sbsystemcopy/etc/subuid");
+                file.open(QIODevice::ReadOnly);
+
+                while(! in.atEnd())
+                {
+                    QStr nline(in.readLine());
+                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                    nfile.append(nline % '\n');
+                    if(prun.isEmpty()) return;
+                }
+
+                file.close();
+                if(! sb::crtfile("/.sbsystemcopy/etc/subuid", nfile)) goto error;
+                nfile.clear();
+                file.setFileName("/.sbsystemcopy/etc/subgid");
+                file.open(QIODevice::ReadOnly);
+
+                while(! in.atEnd())
+                {
+                    QStr nline(in.readLine());
+                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                    nfile.append(nline % '\n');
+                    if(prun.isEmpty()) return;
+                }
+
+                file.close();
+                if(! sb::crtfile("/.sbsystemcopy/etc/subgid", nfile)) goto error;
+                nfile.clear();
+            }
+        }
+
         file.setFileName("/.sbsystemcopy/etc/passwd");
         file.open(QIODevice::ReadOnly);
         in.setDevice(&file);
@@ -2482,94 +2560,32 @@ start:;
         file.close();
         if(! sb::crtfile("/.sbsystemcopy/etc/shadow", nfile)) goto error;
         nfile.clear();
-        file.setFileName("/.sbsystemcopy/etc/group");
-        file.open(QIODevice::ReadOnly);
-
-        while(! in.atEnd())
-        {
-            QStr nline(in.readLine());
-            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-            nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
-            nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
-            if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
-            nfile.append(nline % '\n');
-            if(prun.isEmpty()) return;
-        }
-
-        file.close();
-        if(! sb::crtfile("/.sbsystemcopy/etc/group", nfile)) goto error;
-        nfile.clear();
-        file.setFileName("/.sbsystemcopy/etc/gshadow");
-        file.open(QIODevice::ReadOnly);
-
-        while(! in.atEnd())
-        {
-            QStr nline(in.readLine());
-            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-            nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
-            nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
-            if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
-            nfile.append(nline % '\n');
-            if(prun.isEmpty()) return;
-        }
-
-        file.close();
-        if(! sb::crtfile("/.sbsystemcopy/etc/gshadow", nfile)) goto error;
-        nfile.clear();
         file.setFileName("/.sbsystemcopy/etc/hostname");
         file.open(QIODevice::ReadOnly);
         QStr ohname(in.readLine());
         file.close();
-        if(! sb::crtfile("/.sbsystemcopy/etc/hostname", ui->hostname->text() % '\n')) goto error;
-        file.setFileName("/.sbsystemcopy/etc/hosts");
-        file.open(QIODevice::ReadOnly);
 
-        while(! in.atEnd())
+        if(ohname != ui->hostname->text())
         {
-            QStr nline(in.readLine());
-            nline = sb::replace(nline, '\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
-            if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
-            nfile.append(nline % '\n');
-            if(prun.isEmpty()) return;
-        }
-
-        file.close();
-        if(! sb::crtfile("/.sbsystemcopy/etc/hosts", nfile)) goto error;
-        nfile.clear();
-
-        if(isfile("/.sbsystemcopy/etc/subuid") && isfile("/.sbsystemcopy/etc/subgid"))
-        {
-            file.setFileName("/.sbsystemcopy/etc/subuid");
+            if(! sb::crtfile("/.sbsystemcopy/etc/hostname", ui->hostname->text() % '\n')) goto error;
+            file.setFileName("/.sbsystemcopy/etc/hosts");
             file.open(QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
                 QStr nline(in.readLine());
-                if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                nline = sb::replace(nline, '\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
+                if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
                 nfile.append(nline % '\n');
                 if(prun.isEmpty()) return;
             }
 
             file.close();
-            if(! sb::crtfile("/.sbsystemcopy/etc/subuid", nfile)) goto error;
+            if(! sb::crtfile("/.sbsystemcopy/etc/hosts", nfile)) goto error;
             nfile.clear();
-            file.setFileName("/.sbsystemcopy/etc/subgid");
-            file.open(QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                QStr nline(in.readLine());
-                if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                nfile.append(nline % '\n');
-                if(prun.isEmpty()) return;
-            }
-
-            file.close();
-            if(! sb::crtfile("/.sbsystemcopy/etc/subgid", nfile)) goto error;
-            nfile.clear();
+            if(prun.isEmpty()) goto exit;
         }
 
-        if(prun.isEmpty()) goto exit;
         if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/bash\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " -o $rmuser = root ] || userdel $rmuser\ndone\n")) goto error;
         if(! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
         if(prun.isEmpty()) goto exit;
@@ -2798,7 +2814,7 @@ start:;
         lrdir = "sblive";
         bool stract(0);
 
-        while(sb::exec("parted -s " % ldev % " mkpart primary 1 " % QStr::number(ulong(float(sb::devsize(ldev) / 1000000 + .5)) - stract)) > 0)
+        while(sb::exec("parted -s " % ldev % " mkpart primary 1 " % QStr::number(quint64(double(sb::devsize(ldev)) / 1000000 + .5) - stract)) > 0)
         {
             if(stract == 0)
             {
@@ -2823,7 +2839,7 @@ start:;
             goto error;
         }
 
-        while(sb::exec("parted -s " % ldev % " mkpart primary 100 " % QStr::number(ulong(float(sb::devsize(ldev) / 1000000 + .5)) - stract)) > 0)
+        while(sb::exec("parted -s " % ldev % " mkpart primary 100 " % QStr::number(quint64(double(sb::devsize(ldev)) / 1000000 + .5) - stract)) > 0)
         {
             if(stract == 0)
             {
@@ -3276,6 +3292,12 @@ void systemback::dialogopen()
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
     }
 
+    if(ui->mainpanel->isVisible()) ui->mainpanel->hide();
+    if(ui->statuspanel->isVisible()) ui->statuspanel->hide();
+    if(ui->schedulerpanel->isVisible()) ui->schedulerpanel->hide();
+    if(ui->dialogpanel->isHidden()) ui->dialogpanel->show();
+    ui->dialogok->setFocus();
+
     if(width() != ui->dialogpanel->width())
     {
         if(utimer->isActive() && ! sstart)
@@ -3292,53 +3314,68 @@ void systemback::dialogopen()
         }
     }
 
-    setwontop();
-    if(ui->mainpanel->isVisible()) ui->mainpanel->hide();
-    if(ui->statuspanel->isVisible()) ui->statuspanel->hide();
-    if(ui->schedulerpanel->isVisible()) ui->schedulerpanel->hide();
-    if(ui->dialogpanel->isHidden()) ui->dialogpanel->show();
-    ui->dialogok->setFocus();
     repaint();
+    setwontop();
 }
 
 void systemback::setwontop(bool state)
 {
-    state ? setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint) : setWindowFlags(windowFlags() ^ Qt::WindowStaysOnTopHint);
-    qApp->setActiveWindow(this);
-    show();
+    Display *dsply(XOpenDisplay(NULL));
+    XEvent ev;
+    ev.xclient.type = ClientMessage;
+    ev.xclient.message_type = XInternAtom(dsply, "_NET_WM_STATE", 0);
+    ev.xclient.display = dsply;
+    ev.xclient.window = winId();
+    ev.xclient.format = 32;
+    ev.xclient.data.l[0] = state ? 1 : 0;
+    ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_ABOVE", 0);
+    XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
+    ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_STAYS_ON_TOP", 0);
+    XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
 }
 
-void systemback::windowmove(ushort nwidth, ushort nheight)
+void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
 {
     if(size() == qApp->desktop()->availableGeometry().size()) setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
+    wgeom[2] = nwidth;
+    wgeom[3] = nheight;
 
-    if(width() == nwidth && height() == nheight)
+    if(size() == QSize(wgeom[2], wgeom[3]))
     {
-        if(minimumSize() != maximumSize()) setFixedSize(wgeom[2], wgeom[3]);
+        if(fxdw && minimumSize() != maximumSize()) setFixedSize(wgeom[2], wgeom[3]);
     }
     else
     {
-        short wmovex, wmovey, rghtlmt(qApp->desktop()->width() - nwidth - 30), bttmlmt(qApp->desktop()->height() - nheight - 30);
-        wmovex = x() + (width() - nwidth) / 2;
+        ui->resizepanel->show();
+        repaint();
+        short wmvxy[2], rghtlmt(qApp->desktop()->width() - wgeom[2] - 30), bttmlmt(qApp->desktop()->height() - wgeom[3] - 30);
+        wmvxy[0] = x() + (width() - wgeom[2]) / 2;
 
-        if(wmovex < 30)
-            wmovex = 30;
-        else if(wmovex > rghtlmt)
-            wmovex = rghtlmt;
+        if(wmvxy[0] < 30)
+            wmvxy[0] = 30;
+        else if(wmvxy[0] > rghtlmt)
+            wmvxy[0] = rghtlmt;
 
-        wmovey = y() + (height() - nheight) / 2;
+        wmvxy[1] = y() + (height() - wgeom[3]) / 2;
 
-        if(wmovey < 30)
-            wmovey = 30;
-        else if(wmovey > bttmlmt)
-            wmovey = bttmlmt;
+        if(wmvxy[1] < 30)
+            wmvxy[1] = 30;
+        else if(wmvxy[1] > bttmlmt)
+            wmvxy[1] = bttmlmt;
 
-        wgeom[0] = wmovex;
-        wgeom[1] = wmovey;
-        wgeom[2] = nwidth;
-        wgeom[3] = nheight;
-        setFixedSize(wgeom[2], wgeom[3]);
-        move(wgeom[0], wgeom[1]);
+        wgeom[0] = wmvxy[0];
+        wgeom[1] = wmvxy[1];
+
+        if(fxdw)
+        {
+            setMinimumSize(0, 0);
+            setMaximumSize(qApp->desktop()->availableGeometry().size());
+        }
+
+        setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
+        if(fxdw) setFixedSize(wgeom[2], wgeom[3]);
+        ui->resizepanel->hide();
+        qApp->processEvents();
     }
 }
 
@@ -3474,6 +3511,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         ui->function1->resize(width(), 24);
         ui->border->resize(width(), 24);
         ui->windowbutton1->move(width() - 24, 0);
+        ui->resizepanel->resize(width() - 1, height() - 24);
 
         if(ui->choosepanel->isVisible())
         {
@@ -3493,7 +3531,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         }
         else if(ui->copypanel->isVisible())
         {
-            ui->copypanel->resize(width() -2, height() - 25);
+            ui->copypanel->resize(width() - 2, height() - 25);
             ui->partitionsettingstext->resize(ui->copypanel->width(), 32);
             ui->partitionsettings->resize(ui->copypanel->width() - 152, ui->copypanel->height() - 200);
             ui->umount->move(ui->copypanel->width() - 128, ui->umount->y());
@@ -3519,15 +3557,15 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             else if(ui->copyresize->cursor().shape() == Qt::ArrowCursor)
                 ui->copyresize->setCursor(Qt::PointingHandCursor);
         }
-        else
+        else if(ui->excludepanel->isVisible())
         {
             ui->excludepanel->resize(width() - 2, height() - 25);
             ui->itemstext->resize(ui->excludepanel->width() / 2 - 28, 32);
             ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + 28, ui->excludedtext->y(), ui->itemstext->width(), 32);
             ui->itemslist->resize(ui->excludepanel->width() / 2 - 44, ui->excludepanel->height() - 160);
             ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + 36, ui->excludedlist->y(), ui->itemslist->width(), ui->itemslist->height());
-            ui->additem->move(ui->excludepanel->width() / 2 -24, 96 + ui->itemslist->height() / 2 - 60);
-            ui->removeitem->move(ui->additem->x(), 96 + ui->itemslist->height() / 2 + 12);
+            ui->additem->move(ui->excludepanel->width() / 2 - 24, ui->itemslist->height() / 2 + 36);
+            ui->removeitem->move(ui->additem->x(), ui->itemslist->height() / 2 + 108);
             ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - 48);
             ui->kendektext->move(ui->excludepanel->width() - 539, ui->excludepanel->height() - 24);
             ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
@@ -3538,6 +3576,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 ui->excluderesize->setCursor(Qt::PointingHandCursor);
         }
 
+        repaint();
         return true;
     case QEvent::Move:
         wgeom[0] = x();
@@ -3857,11 +3896,10 @@ void systemback::on_passwordinputok_clicked()
 {
     busy();
     utimer->start(100);
-    windowmove(698, 465);
-    setwontop(false);
     ui->passwordpanel->hide();
     ui->mainpanel->show();
-    repaint();
+    windowmove(698, 465);
+    setwontop(false);
 }
 
 void systemback::on_schedulerstart_clicked()
@@ -3929,12 +3967,11 @@ void systemback::on_dialogcancel_clicked()
             ui->pointpipe15->click();
     }
 
-    windowmove(698, 465);
-    setwontop(false);
     ui->dialogpanel->hide();
     ui->mainpanel->show();
     ui->functionmenunext->setFocus();
-    repaint();
+    windowmove(698, 465);
+    setwontop(false);
 }
 
 void systemback::on_pnumber3_clicked()
@@ -4944,22 +4981,21 @@ void systemback::on_copymenu_clicked()
         if(ui->userdatafilescopy->isChecked()) ui->userdatafilescopy->setChecked(false);
     }
 
-    short nwidth(158 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
-
-    if(nwidth > 698)
-    {
-        if(nwidth < 800)
-            ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465) : windowmove(nwidth, 465);
-        else
-            windowmove(800, 465);
-    }
-
+    short nwidth(156 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
     ui->sbpanel->hide();
     ui->copypanel->show();
     ui->function1->setText(tr("System copy"));
     ui->copyback->setFocus();
-    repaint();
+    setMinimumSize(698, 465);
     setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+
+    if(nwidth > 698)
+    {
+        if(nwidth < 800)
+            ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465, false) : windowmove(nwidth, 465, false);
+        else
+            windowmove(800, 465, false);
+    }
 
     if(ui->partitionsettings->currentItem())
     {
@@ -5007,12 +5043,12 @@ void systemback::on_livecreatemenu_clicked()
             {
                 if(sb::stype(sb::sdir[2] % '/' % sb::left(iname, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(iname, -6) % "iso") > 0)
                 {
-                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(float(ulong(sb::fsize(sb::sdir[2] % '/' % iname) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB, sblive+iso)"));
+                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(double(quint64(double(sb::fsize(sb::sdir[2] % '/' % iname)) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB, sblive+iso)"));
                     ui->livelist->addItem(lwi);
                 }
                 else
                 {
-                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(float(ulong(sb::fsize(sb::sdir[2] % '/' % iname) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB, sblive)"));
+                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(double(quint64(double(sb::fsize(sb::sdir[2] % '/' % iname)) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB, sblive)"));
                     ui->livelist->addItem(lwi);
                 }
 
@@ -5066,11 +5102,10 @@ void systemback::on_systemupgrade_clicked()
         if(ofdate == QFileInfo("/usr/bin/systemback").lastModified())
         {
             sb::lock(sb::Dpkglock);
-            windowmove(698, 465);
             ui->statuspanel->hide();
             ui->mainpanel->show();
             ui->functionmenunext->setFocus();
-            repaint();
+            windowmove(698, 465);
         }
         else
         {
@@ -5198,11 +5233,11 @@ void systemback::on_partitionupdate_clicked()
                 QTblWI *size(new QTblWI);
 
                 if(sb::SBThrd.ThrdLng < 1048576000)
-                    size->setText(QStr::number(float(ulong(float(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 + .5) / 100.0)) % " MiB");
+                    size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 + .5) / 100.0)) % " MiB");
                 else if(sb::SBThrd.ThrdLng < 1073741824000)
-                    size->setText(QStr::number(float(ulong(float(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB");
+                    size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB");
                 else
-                    size->setText(QStr::number(float(ulong(float(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 / 1024 + .5) / 100.0)) % " TiB");
+                    size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 / 1024 + .5) / 100.0)) % " TiB");
 
                 size->setTextAlignment(Qt::AlignCenter);
                 ui->partitionsettings->setItem(sn, 1, size);
@@ -5349,7 +5384,7 @@ void systemback::on_copyback_clicked()
             ui->fullname->setFocus();
         }
 
-        repaint();
+        ui->partitionsettings->resizeColumnToContents(5);
     }
 }
 
@@ -5650,8 +5685,8 @@ void systemback::on_pointpipe1_clicked()
 
         if(! ui->storagedirbutton->isVisible())
         {
-            ui->storagedirbutton->show();
             ui->storagedir->resize(210, 28);
+            ui->storagedirbutton->show();
             ui->pointrename->setDisabled(true);
             ui->pointdelete->setDisabled(true);
         }
@@ -5832,11 +5867,11 @@ void systemback::on_livedevicesupdate_clicked()
         QTblWI *size(new QTblWI);
 
         if(sb::SBThrd.ThrdLng < 1048576000)
-            size->setText(QStr::number(float(ulong(float(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 + .5) / 100.0)) % " MiB");
+            size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 + .5) / 100.0)) % " MiB");
         else if(sb::SBThrd.ThrdLng < 1073741824000)
-            size->setText(QStr::number(float(ulong(float(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB");
+            size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB");
         else
-            size->setText(QStr::number(float(ulong(float(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 / 1024 + .5) / 100.0)) % " TiB");
+            size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 / 1024 + .5) / 100.0)) % " TiB");
 
         size->setTextAlignment(Qt::AlignCenter);
         ui->livedevices->setItem(sn, 1, size);
@@ -6084,11 +6119,10 @@ void systemback::on_dialogok_clicked()
                         }
                         else
                         {
-                            windowmove(698, 465);
                             ui->statuspanel->hide();
                             ui->mainpanel->show();
                             ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
-                            repaint();
+                            windowmove(698, 465);
                         }
                     }
                     else
@@ -6119,10 +6153,13 @@ void systemback::on_dialogok_clicked()
             close();
         else if(sb::ilike(dialog, QSIL() << 3 << 21 << 26 << 27 << 28 << 29 << 31 << 35 << 36 << 39 << 40 << 42 << 43 << 44 << 45 << 46 << 47 << 48 << 49 << 51 << 52 << 53 << 54 << 55 << 56 << 57 << 58 << 59))
         {
+            ui->dialogpanel->hide();
+            ui->mainpanel->show();
+
             if(ui->copypanel->isVisible())
             {
                 ui->copyback->setFocus();
-                short nwidth(158 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
+                short nwidth(156 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
 
                 if(nwidth > 698)
                 {
@@ -6143,9 +6180,6 @@ void systemback::on_dialogok_clicked()
             }
 
             setwontop(false);
-            ui->dialogpanel->hide();
-            ui->mainpanel->show();
-            repaint();
         }
         else if(dialog == 33)
         {
@@ -6371,24 +6405,25 @@ void systemback::on_autorepairoptions_clicked(bool checked)
 
 void systemback::on_storagedirbutton_clicked()
 {
-    windowmove(642, 481);
     ui->sbpanel->hide();
     ui->choosepanel->show();
     ui->function1->setText(tr("Storage directory"));
     ui->dirchooseok->setFocus();
-    repaint();
+    setMinimumSize(642, 481);
     setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+    windowmove(642, 481, false);
     on_dirrefresh_clicked();
 }
 
 void systemback::on_liveworkdirbutton_clicked()
 {
-    windowmove(642, 481);
     ui->livecreatepanel->hide();
     ui->choosepanel->show();
     ui->function1->setText(tr("Working directory"));
     ui->dirchooseok->setFocus();
-    repaint();
+    setMinimumSize(642, 481);
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+    windowmove(642, 481, false);
     on_dirrefresh_clicked();
 }
 
@@ -6602,7 +6637,6 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
 
 void systemback::on_dirchoosecancel_clicked()
 {
-    windowmove(698, 465);
     ui->choosepanel->hide();
 
     if(ui->function1->text() == tr("Storage directory"))
@@ -6618,7 +6652,7 @@ void systemback::on_dirchoosecancel_clicked()
         ui->livecreateback->setFocus();
     }
 
-    repaint();
+    windowmove(698, 465);
     ui->dirchoose->clear();
 }
 
@@ -6626,8 +6660,6 @@ void systemback::on_dirchooseok_clicked()
 {
     if(isdir(ui->dirpath->text()))
     {
-        windowmove(698, 465);
-
         if(ui->function1->text() == tr("Storage directory"))
         {
             if(sb::sdir[0] != ui->dirpath->text())
@@ -6679,6 +6711,7 @@ void systemback::on_dirchooseok_clicked()
             }
         }
 
+        windowmove(698, 465);
         ui->dirchoose->clear();
     }
     else
@@ -6769,7 +6802,7 @@ void systemback::on_livelist_currentItemChanged(QLWI *current)
         if(isfile(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"))
         {
             if(! ui->livedelete->isEnabled()) ui->livedelete->setEnabled(true);
-            ulong isize(sb::fsize(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"));
+            quint64 isize(sb::fsize(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"));
 
             if(isize > 0 && isize < 4294967295 && isize * 2 + 104857600 < sb::dfree(sb::sdir[2]) && ! sb::exist(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".iso"))
             {
@@ -6945,12 +6978,20 @@ void systemback::on_installnext_clicked()
         ui->usersettingscopy->show();
     }
 
-    short nwidth(158 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
-    if(nwidth > 698) (nwidth < 800) ? windowmove(nwidth, 465) : windowmove(800, 465);
+    short nwidth(156 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5));
     ui->installpanel->hide();
     ui->copypanel->show();
     ui->copyback->setFocus();
-    repaint();
+    setMinimumSize(698, 465);
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+
+    if(nwidth > 698)
+    {
+        if(nwidth < 800)
+            ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465, false) : windowmove(nwidth, 465, false);
+        else
+            windowmove(800, 465, false);
+    }
 
     if(ui->partitionsettings->currentItem())
     {
@@ -8018,7 +8059,7 @@ void systemback::on_userdatainclude_clicked(bool checked)
 {
     if(checked)
     {
-        ulong hfree(sb::dfree("/home"));
+        quint64 hfree(sb::dfree("/home"));
 
         if(hfree > 104857600 && sb::dfree("/root") > 104857600)
         {
@@ -8083,13 +8124,10 @@ void systemback::on_interrupt_clicked()
         if(ui->pointpipe14->isChecked()) ui->pointpipe14->setChecked(false);
         if(ui->pointpipe15->isChecked()) ui->pointpipe15->setChecked(false);
         on_pointpipe1_clicked();
-        windowmove(698, 465);
         ui->statuspanel->hide();
 
         if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
-        {
             ui->livecreateback->setFocus();
-        }
         else
         {
             if(! ui->sbpanel->isVisibleTo(ui->mainpanel))
@@ -8109,7 +8147,7 @@ void systemback::on_interrupt_clicked()
         }
 
         ui->mainpanel->show();
-        repaint();
+        windowmove(698, 465);
     }
 }
 
@@ -8130,7 +8168,15 @@ void systemback::on_newrestorepoint_clicked()
     goto start;
 error:;
     if(prun.isEmpty()) return;
-    dialog = (sb::dfree(sb::sdir[1]) < 104857600) ? 16 : 38;
+
+    if(sb::dfree(sb::sdir[1]) < 104857600)
+        dialog = 16;
+    else
+    {
+        if(! sb::SBThrd.ThrdDbg.isEmpty()) debugmsg();
+        dialog = 38;
+    }
+
     dialogopen();
     if(! sstart) pointupgrade();
     return;
@@ -8298,11 +8344,10 @@ start:;
     else
     {
         pointupgrade();
-        windowmove(698, 465);
         ui->statuspanel->hide();
         ui->mainpanel->show();
         ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
-        repaint();
+        windowmove(698, 465);
     }
 }
 
@@ -8458,11 +8503,10 @@ start:;
     prun = tr("Emptying cache");
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
-    windowmove(698, 465);
     ui->statuspanel->hide();
     ui->mainpanel->show();
     ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
-    repaint();
+    windowmove(698, 465);
  }
 
 void systemback::on_livecreatenew_clicked()
@@ -8477,7 +8521,10 @@ error:;
         if(sb::dfree(sb::sdir[2]) < 104857600 || (isdir("/home/.sbuserdata") && sb::dfree("/home") < 104857600))
             dialog = 29;
         else if(dialog == 0)
+        {
+            if(! sb::SBThrd.ThrdDbg.isEmpty()) debugmsg();
             dialog = 49;
+        }
     }
 
     if(isdir("/.sblvtmp")) sb::remove("/.sblvtmp");
@@ -8724,7 +8771,7 @@ start:;
 
     if(prun.isEmpty()) goto exit;
 
-    if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate ."))
+    if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .") > 0)
     {
         if(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) sb::remove(sb::sdir[2] % '/' % ifname % ".sblive");
         dialog = 27;
@@ -8784,7 +8831,7 @@ start:;
     if(prun.isEmpty()) goto exit;
 
     if(isfile("/usr/bin/isohybrid.pl"))
-        if(sb::exec("isohybrid.pl " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso")) goto error;
+        if(sb::exec("isohybrid.pl " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0) goto error;
 
     if(! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
@@ -8794,9 +8841,13 @@ start:;
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
     ui->livelist->currentItem()->setText(sb::left(ui->livelist->currentItem()->text(), sb::rinstr(ui->livelist->currentItem()->text(), " ")) % "sblive+iso)");
     ui->liveconvert->setDisabled(true);
-    windowmove(698, 465);
     ui->statuspanel->hide();
     ui->mainpanel->show();
     ui->livecreateback->setFocus();
-    repaint();
+    windowmove(698, 465);
+}
+
+void systemback::debugmsg()
+{
+    sb::error("\n " % tr("Systemback worker thread error because the following item:") % "\n\n " % sb::SBThrd.ThrdDbg % "\n\n");
 }

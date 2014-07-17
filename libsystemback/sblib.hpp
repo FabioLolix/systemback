@@ -40,8 +40,8 @@ public:
     static const uchar Unknow = 0, Read = 1, Write = 2, Exec = 3, Notexist = 4, Isfile = 5, Isdir = 6, Islink = 7, Isblock = 8, Sblock = 1, Dpkglock = 2, Schdlrlock = 3, Remove = 1, Copy = 2, Sync = 3, Mount = 4, Umount = 5, Dinfo = 6, Dsize = 7, Crtrpoint = 8, Srestore = 9, Scopy = 10, Lvprpr = 11;
     static uchar pnumber;
     static bool ExecKill;
-    QStr ThrdStr[3];
-    ulong ThrdLng;
+    QStr ThrdStr[3], ThrdDbg;
+    quint64 ThrdLng;
     const char *FSUUID, *FSType;
     char Progress;
     uchar ThrdType;
@@ -55,9 +55,9 @@ public:
     static QStr rlink(QStr path);
     static QStr fload(QStr path);
     static QStr getarch();
-    static ulong devsize(QStr device);
-    static ulong dfree(QStr path);
-    static ulong fsize(QStr path);
+    static quint64 devsize(QStr device);
+    static quint64 dfree(QStr path);
+    static quint64 fsize(QStr path);
     static ushort rinstr(QStr txt, QStr stxt, ushort start = 0);
     static ushort instr(QStr txt, QStr stxt, ushort start = 1);
     static uchar exec(QStr cmd, QStr envv = NULL, bool silent = false, bool bckgrnd = false);

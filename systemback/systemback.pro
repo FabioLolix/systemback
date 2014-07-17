@@ -22,4 +22,5 @@ RESOURCES += resedit.qrc
 QMAKE_LFLAGS += -Wl,--rpath=/usr/lib/systemback
 
 LIBS += -L../libsystemback -lsystemback \
-    -lcrypt
+    -lcrypt \
+    -lX11

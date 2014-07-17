@@ -58,7 +58,7 @@ private:
 
     QStr guname();
     bool minside(QPoint pos, QRect geom);
-    void windowmove(ushort nwidth, ushort nheight);
+    void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
     void setwontop(bool state = true);
     void busy(bool state = true);
     void pointupgrade();
@@ -111,6 +111,7 @@ private slots:
     void cpyenter();
     void cpyleave();
     void xcldmove();
+    void debugmsg();
     void wcenter();
     void wcleave();
     void cpymove();

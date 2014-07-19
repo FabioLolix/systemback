@@ -1,5 +1,5 @@
 Source: systemback
-Section: utils
+Section: admin
 Priority: optional
 Maintainer: Kende Krisztián <nemh@freemail.hu>
 Build-Depends: debhelper (>= 9), libblkid-dev, libmount-dev, libncursesw5-dev, qt5-default, qtbase5-dev, qttools5-dev-tools
@@ -8,7 +8,8 @@ Standards-Version: 3.9.5
 Package: systemback
 Architecture: amd64 i386
 Depends: ${misc:Depends}, ${shlibs:Depends}, casper | live-boot, dosfstools, fonts-freefont-ttf | ttf-freefont, genisoimage, parted, squashfs-tools, syslinux,
- systemback-scheduler (= ${binary:Version}), upstart | sysvinit (>= 2.88) | systemd, xterm, zenity | kde-baseapps-bin | kdebase-bin
+ systemback-efiboot-amd64 (= ${binary:Version}) [amd64], systemback-scheduler (= ${binary:Version}), upstart | sysvinit (>= 2.88) | systemd, xterm,
+ zenity | kde-baseapps-bin | kdebase-bin
 Recommends: systemback-cli (= ${binary:Version}), systemback-locales (= ${binary:Version}), grub-efi | grub-pc
 Suggests: btrfs-tools, jfsutils, reiserfsprogs, xfsprogs, unionfs-fuse
 Conflicts: live-config, live-config-systemd
@@ -58,6 +59,17 @@ Description: Systemback shared library
  copying, system installation and Live system creation.
  .
  This package contain a shared library for Systemback binaries.
+
+Package: systemback-efiboot-amd64
+Architecture: all
+Depends: ${misc:Depends}, xz-utils
+Description: Systemback boot files
+ Systemback makes it easy to create backups of system and users
+ configuration files. In case of problems you can easily restore the
+ previous state of the system. There are extra features like system
+ copying, system installation and Live system creation.
+ .
+ This package contais 64-bit boot files for UEFI-based machines.
 
 Package: systemback-locales
 Architecture: all

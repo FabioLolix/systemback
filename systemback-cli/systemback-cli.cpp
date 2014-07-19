@@ -361,7 +361,7 @@ uchar systemback::storagedir()
 
         if(! isdir(sb::sdir[1]) && ! QDir().mkdir(sb::sdir[1]))
         {
-            QFile::rename(sb::sdir[1], sb::sdir[1] % "_" % sb::rndstr());
+            QFile::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
             QDir().mkdir(sb::sdir[1]);
         }
 
@@ -637,7 +637,7 @@ uchar systemback::restore()
             (fsave == 1) ? printw(" Y"): printw(" N");
             attron(COLOR_PAIR(3));
 
-            if(isfile(sb::sdir[1] % '/' % cpoint % "_" % pname % "/usr/sbin/update-grub2"))
+            if(isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/usr/sbin/update-grub2"))
             {
                 printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
                 attron(COLOR_PAIR(2));
@@ -682,7 +682,7 @@ uchar systemback::restore()
                 (greinst == 1) ? printw(" Y"): printw(" N");
             }
         }
-        else if(isfile(sb::sdir[1] % '/' % cpoint % "_" % pname % "/usr/sbin/update-grub2"))
+        else if(isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/usr/sbin/update-grub2"))
         {
             printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
             attron(COLOR_PAIR(2));

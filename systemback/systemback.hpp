@@ -89,6 +89,7 @@ private slots:
     void dialogtimer();
     void chsspressed();
     void dntreleased();
+    void printdbgmsg();
     void wcreleased();
     void dntpressed();
     void wreleased();
@@ -111,7 +112,6 @@ private slots:
     void cpyenter();
     void cpyleave();
     void xcldmove();
-    void debugmsg();
     void wcenter();
     void wcleave();
     void cpymove();

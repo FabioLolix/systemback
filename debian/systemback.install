@@ -1,6 +1,5 @@
 systemback/systemback usr/bin
 sbsysupgrade/sbsysupgrade usr/lib/systemback
-efi.tar.gz usr/share/systemback
 sbstart usr/share/systemback
 splash.png usr/share/systemback
 systemback*.desktop /usr/share/applications

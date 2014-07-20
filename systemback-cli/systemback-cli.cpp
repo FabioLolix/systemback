@@ -39,7 +39,7 @@ systemback::systemback(QObject *parent) : QObject(parent)
 
 void systemback::main()
 {
-    QStr help("\n " % tr("Usage: systemback [option]\n\n Options:\n\n  -n, --newbackup          create a new restore point\n\n  -s, --storagedir <path>  get or set restore points storage directory path\n\n  -u, --upgrade            upgrade current system\n                           remove unnecessary files and packages\n\n  -v, --version            output Systemback version number\n\n  -h, --help               show this help") % "\n\n");
+    QStr help("\n " % tr("Usage: systemback-cli [option]\n\n Options:\n\n  -n, --newbackup          create a new restore point\n\n  -s, --storagedir <path>  get or set restore points storage directory path\n\n  -u, --upgrade            upgrade current system\n                           remove unnecessary files and packages\n\n  -v, --version            output Systemback version number\n\n  -h, --help               show this help") % "\n\n");
     uchar rv(0);
     goto start;
 error:

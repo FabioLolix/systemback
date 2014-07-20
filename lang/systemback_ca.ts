@@ -1524,37 +1524,6 @@
         <translation>Convertint imatge del sistema Live</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="42"/>
-        <source>Usage: systemback [option]
-
- Options:
-
-  -n, --newbackup          create a new restore point
-
-  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path
-
-  -u, --upgrade            upgrade current system
-                           remove unnecessary files and packages
-
-  -v, --version            output Systemback version number
-
-  -h, --help               show this help</source>
-        <translation>Usage: systemback [option]\n&quot;
-&quot;\n&quot;
-&quot; Options:\n&quot;
-&quot;\n&quot;
-&quot;  -n, --newbackup          create a new restore point\n&quot;
-&quot;\n&quot;
-&quot;  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path\n&quot;
-&quot;\n&quot;
-&quot;  -u, --upgrade            upgrade current system\n&quot;
-&quot;                           remove unnecessary files and packages\n&quot;
-&quot;\n&quot;
-&quot;  -v, --version            output Systemback version number\n&quot;
-&quot;\n&quot;
-&quot;  -h, --help               show this help</translation>
-    </message>
-    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="54"/>
         <source>Another Systemback process is currently running, please wait until it
  finishes.</source>
@@ -1571,6 +1540,24 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="57"/>
         <source>First, close all package manager.</source>
         <translation>Tanqui qualsevol gestor de paquets que tingui obert.</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="42"/>
+        <source>Usage: systemback-cli [option]
+
+ Options:
+
+  -n, --newbackup          create a new restore point
+
+  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path
+
+  -u, --upgrade            upgrade current system
+                           remove unnecessary files and packages
+
+  -v, --version            output Systemback version number
+
+  -h, --help               show this help</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="60"/>

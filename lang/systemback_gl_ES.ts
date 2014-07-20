@@ -1524,38 +1524,6 @@
         <translation>Convertendo a imaxe do sistema  «en vivo»</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="42"/>
-        <source>Usage: systemback [option]
-
- Options:
-
-  -n, --newbackup          create a new restore point
-
-  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path
-
-  -u, --upgrade            upgrade current system
-                           remove unnecessary files and packages
-
-  -v, --version            output Systemback version number
-
-  -h, --help               show this help</source>
-        <translation>Uso: systemback [opción]\n&quot;
-&quot;\n&quot;
-&quot; Opcións:\n&quot;
-&quot;\n&quot;
-&quot;  -n, --newbackup          crear un novo punto de restauración\n&quot;
-&quot;\n&quot;
-&quot;  -s, --storagedir &lt;ruta&gt;  obter ou estabelecer a ruta do directorio de\n&quot;
-&quot;                           almacenamento dos puntos de restauración\n&quot;
-&quot;\n&quot;
-&quot;  -u, --upgrade            anovar o sistema actual\n&quot;
-&quot;                           retirar os ficheiros e paquetes innecesarios\n&quot;
-&quot;\n&quot;
-&quot;  -v, --versión            saída do número da versión do Systemback\n&quot;
-&quot;\n&quot;
-&quot;  -h, --help               amosa esta axuda</translation>
-    </message>
-    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="54"/>
         <source>Another Systemback process is currently running, please wait until it
  finishes.</source>
@@ -1572,6 +1540,38 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="57"/>
         <source>First, close all package manager.</source>
         <translation>Peche calquera xestor de paquetes que teña aberto.</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="42"/>
+        <source>Usage: systemback-cli [option]
+
+ Options:
+
+  -n, --newbackup          create a new restore point
+
+  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path
+
+  -u, --upgrade            upgrade current system
+                           remove unnecessary files and packages
+
+  -v, --version            output Systemback version number
+
+  -h, --help               show this help</source>
+        <translation>Uso: systemback-cli [opción]
+
+ Opcións:
+
+  -n, --newbackup          crear un novo punto de restauración
+
+  -s, --storagedir &lt;ruta&gt;  obter ou estabelecer a ruta do directorio de
+                           almacenamento dos puntos de restauración
+
+  -u, --upgrade            anovar o sistema actual
+                           retirar os ficheiros e paquetes innecesarios
+
+  -v, --versión            saída do número da versión do Systemback
+
+  -h, --help               amosa esta axuda</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="60"/>

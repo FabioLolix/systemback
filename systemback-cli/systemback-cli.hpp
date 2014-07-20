@@ -17,8 +17,8 @@
 
 ********************************************************************/
 
-#ifndef SYSTEMBACK_HPP
-#define SYSTEMBACK_HPP
+#ifndef SYSTEMBACKCLI_HPP
+#define SYSTEMBACKCLI_HPP
 
 #include "../libsystemback/sblib.hpp"
 #include <QTimer>
@@ -47,4 +47,4 @@ private:
     void progpercent();
 };
 
-#endif // SYSTEMBACK_HPP
+#endif // SYSTEMBACKCLI_HPP

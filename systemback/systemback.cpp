@@ -2792,7 +2792,7 @@ start:;
         lrdir = "sblive";
         bool stract(0);
 
-        while(sb::exec("parted -s " % ldev % " mkpart primary 1 " % QStr::number(quint64(double(sb::devsize(ldev)) / 1000000 + .5) - stract)) > 0)
+        while(sb::exec("parted -s " % ldev % " mkpart primary 1 " % QStr::number(quint64(sb::devsize(ldev) / 1000000.0 + .5) - stract)) > 0)
         {
             if(stract == 0)
             {
@@ -2817,7 +2817,7 @@ start:;
             goto error;
         }
 
-        while(sb::exec("parted -s " % ldev % " mkpart primary 100 " % QStr::number(quint64(double(sb::devsize(ldev)) / 1000000 + .5) - stract)) > 0)
+        while(sb::exec("parted -s " % ldev % " mkpart primary 100 " % QStr::number(quint64(sb::devsize(ldev) / 1000000.0 + .5) - stract)) > 0)
         {
             if(stract == 0)
             {
@@ -5023,12 +5023,12 @@ void systemback::on_livecreatemenu_clicked()
             {
                 if(sb::stype(sb::sdir[2] % '/' % sb::left(iname, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(iname, -6) % "iso") > 0)
                 {
-                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(double(quint64(double(sb::fsize(sb::sdir[2] % '/' % iname)) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB, sblive+iso)"));
+                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(quint64(sb::fsize(sb::sdir[2] % '/' % iname) * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB, sblive+iso)"));
                     ui->livelist->addItem(lwi);
                 }
                 else
                 {
-                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(double(quint64(double(sb::fsize(sb::sdir[2] % '/' % iname)) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB, sblive)"));
+                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(quint64(sb::fsize(sb::sdir[2] % '/' % iname) * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB, sblive)"));
                     ui->livelist->addItem(lwi);
                 }
 
@@ -5213,11 +5213,11 @@ void systemback::on_partitionupdate_clicked()
                 QTblWI *size(new QTblWI);
 
                 if(sb::SBThrd.ThrdLng < 1048576000)
-                    size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 + .5) / 100.0)) % " MiB");
+                    size->setText(QStr::number(quint64(sb::SBThrd.ThrdLng * 100.0 / 1024.0 / 1024.0 + .5) / 100.0) % " MiB");
                 else if(sb::SBThrd.ThrdLng < 1073741824000)
-                    size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB");
+                    size->setText(QStr::number(quint64(sb::SBThrd.ThrdLng * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB");
                 else
-                    size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 / 1024 + .5) / 100.0)) % " TiB");
+                    size->setText(QStr::number(quint64(sb::SBThrd.ThrdLng * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " TiB");
 
                 size->setTextAlignment(Qt::AlignCenter);
                 ui->partitionsettings->setItem(sn, 1, size);
@@ -5847,11 +5847,11 @@ void systemback::on_livedevicesupdate_clicked()
         QTblWI *size(new QTblWI);
 
         if(sb::SBThrd.ThrdLng < 1048576000)
-            size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 + .5) / 100.0)) % " MiB");
+            size->setText(QStr::number(quint64(sb::SBThrd.ThrdLng * 100.0 / 1024.0 / 1024.0 + .5) / 100.0) % " MiB");
         else if(sb::SBThrd.ThrdLng < 1073741824000)
-            size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 + .5) / 100.0)) % " GiB");
+            size->setText(QStr::number(quint64(sb::SBThrd.ThrdLng * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB");
         else
-            size->setText(QStr::number(double(quint64(double(sb::SBThrd.ThrdLng) * 100 / 1024 / 1024 / 1024 / 1024 + .5) / 100.0)) % " TiB");
+            size->setText(QStr::number(quint64(sb::SBThrd.ThrdLng * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " TiB");
 
         size->setTextAlignment(Qt::AlignCenter);
         ui->livedevices->setItem(sn, 1, size);

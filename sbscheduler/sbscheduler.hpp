@@ -17,8 +17,8 @@
 
 ********************************************************************/
 
-#ifndef SCHEDULER_HPP
-#define SCHEDULER_HPP
+#ifndef SBSCHEDULER_HPP
+#define SBSCHEDULER_HPP
 
 #include "../libsystemback/sblib.hpp"
 #include <QObject>
@@ -34,4 +34,4 @@ private:
     void newrestorepoint();
 };
 
-#endif // SCHEDULER_HPP
+#endif // SBSCHEDULER_HPP

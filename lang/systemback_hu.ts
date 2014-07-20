@@ -1524,38 +1524,6 @@
         <translation>Live rendszerkép konvertálása</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="42"/>
-        <source>Usage: systemback [option]
-
- Options:
-
-  -n, --newbackup          create a new restore point
-
-  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path
-
-  -u, --upgrade            upgrade current system
-                           remove unnecessary files and packages
-
-  -v, --version            output Systemback version number
-
-  -h, --help               show this help</source>
-        <translation>Használat: systemback [kapcsoló]
-
- Kapcsolók:
-
-  -n, --newbackup             új visszaállítási pont készítése
-
-  -s, --storagedir &lt;útvonal&gt;  a visszaállítási pontok tárolására szolgáló
-                              könyvtár útvonalának kiírása vagy beállítása
-
-  -u, --upgrade               a rendszer frissítése
-                              felesleges fájlok és csomagok eltávolítása
-
-  -v, --version               a telepített Systemback verziószámának kiírása
-
-  -h, --help                  ezen súgó megjelenítése</translation>
-    </message>
-    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="54"/>
         <source>Another Systemback process is currently running, please wait until it
  finishes.</source>
@@ -1572,6 +1540,38 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="57"/>
         <source>First, close all package manager.</source>
         <translation>Előbb zárj be minden csomagkezelőt.</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="42"/>
+        <source>Usage: systemback-cli [option]
+
+ Options:
+
+  -n, --newbackup          create a new restore point
+
+  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path
+
+  -u, --upgrade            upgrade current system
+                           remove unnecessary files and packages
+
+  -v, --version            output Systemback version number
+
+  -h, --help               show this help</source>
+        <translation>Használat: systemback-cli [kapcsoló]
+
+ Kapcsolók:
+
+  -n, --newbackup             új visszaállítási pont készítése
+
+  -s, --storagedir &lt;útvonal&gt;  a visszaállítási pontok tárolására szolgáló
+                              könyvtár útvonalának kiírása vagy beállítása
+
+  -u, --upgrade               a rendszer frissítése
+                              felesleges fájlok és csomagok eltávolítása
+
+  -v, --version               a telepített Systemback verziószámának kiírása
+
+  -h, --help                  ezen súgó megjelenítése</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="60"/>

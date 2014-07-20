@@ -17,8 +17,8 @@
 
 ********************************************************************/
 
-#ifndef systemback_HPP
-#define systemback_HPP
+#ifndef SYSTEMBACK_HPP
+#define SYSTEMBACK_HPP
 #define QTblWI QTableWidgetItem
 #define QLWI QListWidgetItem
 #define QTrWI QTreeWidgetItem
@@ -337,4 +337,4 @@ signals:
     void Focus_Out();
 };
 
-#endif // systemback_HPP
+#endif // SYSTEMBACK_HPP

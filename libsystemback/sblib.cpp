@@ -668,7 +668,7 @@ uchar sb::exec(QStr cmd, QStr envv, bool silent, bool bckgrnd)
 
         switch(rprcnt) {
         case 1:
-            inum = inum + proc.readAllStandardOutput().count('\n');
+            inum += proc.readAllStandardOutput().count('\n');
             cperc = (inum * 100 + 50) / SBThrd.ThrdLng;
             if(SBThrd.Progress < cperc) SBThrd.Progress = cperc;
             QTS(stderr) << QStr(proc.readAllStandardError());
@@ -698,7 +698,7 @@ uchar sb::exec(QStr cmd, QStr envv, bool silent, bool bckgrnd)
                     QStr line(in.readLine()), item(right(line, - instr(line, "_")));
 
                     if(left(line, instr(line, "_") - 1).toShort() == Isfile)
-                        SBThrd.ThrdLng = SBThrd.ThrdLng + fsize(sb::sdir[2] % "/.sblivesystemcreate/" % item);
+                        SBThrd.ThrdLng += fsize(sb::sdir[2] % "/.sblivesystemcreate/" % item);
                 }
             }
             else if(isfile(SBThrd.ThrdStr[0]))
@@ -718,7 +718,7 @@ uchar sb::exec(QStr cmd, QStr envv, bool silent, bool bckgrnd)
                 QStr line(in.readLine()), item(right(line, - instr(line, "_")));
 
                 if(left(line, instr(line, "_") - 1).toShort() == Isfile)
-                    size = size + fsize(SBThrd.ThrdStr[0] % '/' % item);
+                    size += fsize(SBThrd.ThrdStr[0] % '/' % item);
             }
 
             cperc = (size * 100 + 50) / SBThrd.ThrdLng;
@@ -1350,7 +1350,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                     home5itms = rodir("/home/" % usr, true);
                     break;
                 default:
-                    anum = anum + rodir("/home/" % usr, true).count('\n');
+                    anum += rodir("/home/" % usr, true).count('\n');
                 }
             }
         }
@@ -1359,7 +1359,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     }
 
     file.close();
-    anum = anum + home1itms.count('\n') + home2itms.count('\n') + home3itms.count('\n') + home4itms.count('\n') + home5itms.count('\n') + rootitms.count('\n') + binitms.count('\n') + bootitms.count('\n') + etcitms.count('\n') + libitms.count('\n') + lib32itms.count('\n') + lib64itms.count('\n') + optitms.count('\n') + sbinitms.count('\n') + selinuxitms.count('\n') + srvitms.count('\n') + usritms.count('\n') + varitms.count('\n');
+    anum += home1itms.count('\n') + home2itms.count('\n') + home3itms.count('\n') + home4itms.count('\n') + home5itms.count('\n') + rootitms.count('\n') + binitms.count('\n') + bootitms.count('\n') + etcitms.count('\n') + libitms.count('\n') + lib32itms.count('\n') + lib64itms.count('\n') + optitms.count('\n') + sbinitms.count('\n') + selinuxitms.count('\n') + srvitms.count('\n') + usritms.count('\n') + varitms.count('\n');
     Progress = 0;
     QStr trgt(sdir % '/' % pname);
     if(! QDir().mkdir(trgt)) return false;
@@ -1811,7 +1811,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                         home5itms = rodir(srcdir % "/home/" % usr, true);
                         break;
                     default:
-                        anum = anum + rodir(srcdir % "/home/" % usr, true).count('\n');
+                        anum += rodir(srcdir % "/home/" % usr, true).count('\n');
                     }
 
                     if(ThrdKill) return false;
@@ -1828,7 +1828,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
             home1itms = rodir(srcdir % "/home/" % usr, true);
         }
 
-        anum = anum + home1itms.count('\n') + home2itms.count('\n') + home3itms.count('\n') + home4itms.count('\n') + home5itms.count('\n') + rootitms.count('\n');
+        anum += home1itms.count('\n') + home2itms.count('\n') + home3itms.count('\n') + home4itms.count('\n') + home5itms.count('\n') + rootitms.count('\n');
     }
 
     QStr *cditms;
@@ -1861,7 +1861,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
         if(ThrdKill) return false;
         if(isdir(srcdir % "/var")) varitms = rodir(srcdir % "/var");
         if(ThrdKill) return false;
-        anum = anum + binitms.count('\n') + bootitms.count('\n') + etcitms.count('\n') + libitms.count('\n') + lib32itms.count('\n') + lib64itms.count('\n') + optitms.count('\n') + sbinitms.count('\n') + selinuxitms.count('\n') + srvitms.count('\n') + usritms.count('\n') + varitms.count('\n');
+        anum += binitms.count('\n') + bootitms.count('\n') + etcitms.count('\n') + libitms.count('\n') + lib32itms.count('\n') + lib64itms.count('\n') + optitms.count('\n') + sbinitms.count('\n') + selinuxitms.count('\n') + srvitms.count('\n') + usritms.count('\n') + varitms.count('\n');
         Progress = 0;
         QSL dlst(QDir(trgt.isEmpty() ? "/" : trgt).entryList(QDir::Files));
 
@@ -2550,7 +2550,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     if(ThrdKill) return false;
     if(isdir(srcdir % "/root")) rootitms = (mthd == 4) ? rodir(srcdir % "/etc/skel") : rodir(srcdir % "/root", true);
     if(ThrdKill) return false;
-    anum = anum + binitms.count('\n') + bootitms.count('\n') + etcitms.count('\n') + libitms.count('\n') + lib32itms.count('\n') + lib64itms.count('\n') + optitms.count('\n') + sbinitms.count('\n') + selinuxitms.count('\n') + srvitms.count('\n') + usritms.count('\n') + varitms.count('\n') + rootitms.count('\n');
+    anum += binitms.count('\n') + bootitms.count('\n') + etcitms.count('\n') + libitms.count('\n') + lib32itms.count('\n') + lib64itms.count('\n') + optitms.count('\n') + sbinitms.count('\n') + selinuxitms.count('\n') + srvitms.count('\n') + usritms.count('\n') + varitms.count('\n') + rootitms.count('\n');
 
     if(mthd != 0)
     {
@@ -2609,7 +2609,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                         home5itms = rodir(srcdir % "/home/" % usr);
                         break;
                     default:
-                        anum = anum + rodir(srcdir % "/home/" % usr).count('\n');
+                        anum += rodir(srcdir % "/home/" % usr).count('\n');
                     }
 
                     if(ThrdKill) return false;
@@ -2638,7 +2638,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                         home5itms = rodir(srcdir % "/home/" % usr, true);
                         break;
                     default:
-                        anum = anum + rodir(srcdir % "/home/" % usr, true).count('\n');
+                        anum += rodir(srcdir % "/home/" % usr, true).count('\n');
                     }
 
                     if(ThrdKill) return false;
@@ -2658,7 +2658,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             }
         }
 
-        anum = anum + home1itms.count('\n') + home2itms.count('\n') + home3itms.count('\n') + home4itms.count('\n') + home5itms.count('\n');
+        anum += home1itms.count('\n') + home2itms.count('\n') + home3itms.count('\n') + home4itms.count('\n') + home5itms.count('\n');
     }
 
     Progress = 0;
@@ -3390,7 +3390,7 @@ bool sb::thrdlvprpr(bool &iudata)
         if(ThrdKill) return false;
     }
 
-    ThrdLng = ThrdLng + sitms.count('\n');
+    ThrdLng += sitms.count('\n');
     sitms.clear();
     if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback")) return false;
     if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;

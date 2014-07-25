@@ -3405,13 +3405,8 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
 
         wgeom[0] = wmvxy[0];
         wgeom[1] = wmvxy[1];
-
-        if(fxdw)
-        {
-            setMinimumSize(0, 0);
-            setMaximumSize(qApp->desktop()->availableGeometry().size());
-        }
-
+        setMinimumSize(0, 0);
+        setMaximumSize(qApp->desktop()->availableGeometry().size());
         setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
         if(fxdw) setFixedSize(wgeom[2], wgeom[3]);
         ui->resizepanel->hide();
@@ -5048,8 +5043,6 @@ void systemback::on_copymenu_clicked()
     ui->copypanel->show();
     ui->function1->setText(tr("System copy"));
     ui->copyback->setFocus();
-    setMinimumSize(698, 465);
-    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
 
     if(nwidth > 698)
     {
@@ -5058,6 +5051,9 @@ void systemback::on_copymenu_clicked()
         else
             windowmove(850, 465, false);
     }
+
+    setMinimumSize(698, 465);
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
 
     if(ui->partitionsettings->currentItem())
     {
@@ -6477,9 +6473,9 @@ void systemback::on_storagedirbutton_clicked()
     ui->choosepanel->show();
     ui->function1->setText(tr("Storage directory"));
     ui->dirchooseok->setFocus();
+    windowmove(642, 481, false);
     setMinimumSize(642, 481);
     setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
-    windowmove(642, 481, false);
     on_dirrefresh_clicked();
 }
 
@@ -6489,9 +6485,9 @@ void systemback::on_liveworkdirbutton_clicked()
     ui->choosepanel->show();
     ui->function1->setText(tr("Working directory"));
     ui->dirchooseok->setFocus();
+    windowmove(642, 481, false);
     setMinimumSize(642, 481);
     setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
-    windowmove(642, 481, false);
     on_dirrefresh_clicked();
 }
 
@@ -7051,8 +7047,6 @@ void systemback::on_installnext_clicked()
     ui->installpanel->hide();
     ui->copypanel->show();
     ui->copyback->setFocus();
-    setMinimumSize(698, 465);
-    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
 
     if(nwidth > 698)
     {
@@ -7061,6 +7055,9 @@ void systemback::on_installnext_clicked()
         else
             windowmove(850, 465, false);
     }
+
+    setMinimumSize(698, 465);
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
 
     if(ui->partitionsettings->currentItem())
     {

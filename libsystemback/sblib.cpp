@@ -2755,7 +2755,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                     if(Progress < cperc) Progress = cperc;
                     ThrdDbg = (mthd == 5) ? QStr("@/etc/skel/" % item) : QStr("@/home/" % usr % '/' % item);
 
-                    if((mthd == 5 && (srcdir.isEmpty() && exist("/etc/skel/" % item))) || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)) && (srcdir.isEmpty() && exist("/home/" % usr % '/' % item))))
+                    if((mthd == 5 && (! srcdir.isEmpty() || exist("/etc/skel/" % item))) || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)) && (! srcdir.isEmpty() || exist("/home/" % usr % '/' % item))))
                     {
                         switch(left(line, instr(line, "_") - 1).toShort()) {
                         case Islink:
@@ -2892,7 +2892,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             if(Progress < cperc) Progress = cperc;
             ThrdDbg = (mthd == 5) ? QStr("@/etc/skel/" % item) : QStr("@/root/" % item);
 
-            if((mthd == 5 && (srcdir.isEmpty() && exist("/etc/skel/" % item))) || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)) && (srcdir.isEmpty() && exist("/root/" % item))))
+            if((mthd == 5 && (! srcdir.isEmpty() || exist("/etc/skel/" % item))) || (! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*~_" << "*~/*") && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)) && (! srcdir.isEmpty() || exist("/root/" % item))))
             {
                 switch(left(line, instr(line, "_") - 1).toShort()) {
                 case Islink:
@@ -3120,7 +3120,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 if(Progress < cperc) Progress = cperc;
                 ThrdDbg = '@' % cdir % '/' % item;
 
-                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! (QStr(cdir % '/' % item).startsWith("/etc/udev/rules.d") && item.contains("-persistent-"))) && (srcdir.isEmpty() && exist(cdir % '/' % item)))
+                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! (QStr(cdir % '/' % item).startsWith("/etc/udev/rules.d") && item.contains("-persistent-"))) && (! srcdir.isEmpty() || exist(cdir % '/' % item)))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:

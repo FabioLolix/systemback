@@ -37,6 +37,7 @@ public slots:
 private:
     QTimer *ptimer;
     QStr pname, cpoint, prun, pbar;
+    QChar yn[2];
 
     uchar storagedir();
     uchar clistart();

@@ -29,6 +29,7 @@
 #include <QTreeWidgetItem>
 #include <QMainWindow>
 #include <QKeyEvent>
+#include <QCheckBox>
 #include <QLineEdit>
 #include <QLabel>
 #include <QTimer>
@@ -133,6 +134,8 @@ private slots:
     void foutp7();
     void foutp8();
     void foutp9();
+    void center();
+    void cleave();
     void wmove();
 
     void on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI *previous);
@@ -150,6 +153,7 @@ private slots:
     void on_autorestoreoptions_clicked(bool checked);
     void on_autorepairoptions_clicked(bool checked);
     void on_password1_textChanged(const QStr &arg1);
+    void on_usersettingscopy_stateChanged(int arg1);
     void on_skipfstabrestore_clicked(bool checked);
     void on_livename_textChanged(const QStr &arg1);
     void on_fullname_textChanged(const QStr &arg1);
@@ -335,6 +339,22 @@ protected:
 
 signals:
     void Focus_Out();
+};
+
+class chckbxevent : public QCheckBox
+{
+    Q_OBJECT
+
+public:
+    explicit chckbxevent(QWidget *parent = 0);
+
+protected:
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
+
+signals:
+    void Mouse_Enter();
+    void Mouse_Leave();
 };
 
 #endif // SYSTEMBACK_HPP

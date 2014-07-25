@@ -1,17 +1,9 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-05-03T23:14:50
-#
-#-------------------------------------------------
-
 QT  += core
-
 QT  -= gui
 
 TARGET = sbsysupgrade
 
 CONFIG  += console
-
 CONFIG  -= app_bundle
 
 TEMPLATE = app

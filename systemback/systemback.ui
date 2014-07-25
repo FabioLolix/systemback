@@ -5391,12 +5391,12 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QCheckBox" name="usersettingscopy">
+     <widget class="chckbxevent" name="usersettingscopy">
       <property name="geometry">
        <rect>
         <x>8</x>
         <y>318</y>
-        <width>246</width>
+        <width>311</width>
         <height>20</height>
        </rect>
       </property>
@@ -5406,10 +5406,7 @@
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
       </property>
-      <property name="text">
-       <string>Transfer user configuration files</string>
-      </property>
-      <property name="checked">
+      <property name="tristate">
        <bool>true</bool>
       </property>
      </widget>
@@ -5608,7 +5605,7 @@
        <bool>false</bool>
       </property>
       <property name="columnCount">
-       <number>6</number>
+       <number>7</number>
       </property>
       <attribute name="horizontalHeaderHighlightSections">
        <bool>false</bool>
@@ -5631,6 +5628,7 @@
       <attribute name="verticalHeaderMinimumSectionSize">
        <number>20</number>
       </attribute>
+      <column/>
       <column/>
       <column/>
       <column/>
@@ -5667,6 +5665,23 @@
        </rect>
       </property>
      </widget>
+     <widget class="QLabel" name="usersettingscopytext">
+      <property name="geometry">
+       <rect>
+        <x>33</x>
+        <y>319</y>
+        <width>655</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Transfer user configuration and data files</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+     </widget>
+     <zorder>usersettingscopytext</zorder>
      <zorder>grubinstallcopydisable</zorder>
      <zorder>partitionsettingstext</zorder>
      <zorder>umount</zorder>
@@ -6585,6 +6600,11 @@
   <customwidget>
    <class>lndtevent</class>
    <extends>QLineEdit</extends>
+   <header location="global">systemback.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>chckbxevent</class>
+   <extends>QCheckBox</extends>
    <header location="global">systemback.hpp</header>
   </customwidget>
  </customwidgets>

@@ -32,6 +32,8 @@
 
 systemback::systemback(QObject *parent) : QObject(parent)
 {
+    yn[0] = tr("(Y/N)").at(1);
+    yn[1] = tr("(Y/N)").at(3);
     ptimer = new QTimer;
     ptimer->setInterval(2000);
     connect(ptimer, SIGNAL(timeout()), this, SLOT(progress()));
@@ -222,7 +224,7 @@ uchar systemback::clistart()
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
     if(! pname.isEmpty()) pname.clear();
-    if(sb::SBThrd.Progress != -1) sb::SBThrd.Progress = -1;
+    if(sb::Progress != -1) sb::Progress = -1;
 
     do {
         switch(getch()) {
@@ -602,25 +604,12 @@ uchar systemback::restore()
             refresh();
 
             do {
-                switch(getch()) {
-                case 'y':
-                case 'Y':
-                case 'i':
-                case 'I':
-                case 'k':
-                case 'K':
-                case 'o':
-                case 'O':
-                case 's':
-                case 'S':
+                QChar gtch(getch());
+
+                if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
                     fsave = 1;
-                    break;
-                case 'n':
-                case 'N':
-                case 'e':
-                case 'E':
+                else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
                     fsave = 2;
-                }
             } while(fsave == 0);
 
             clear();
@@ -634,7 +623,7 @@ uchar systemback::restore()
             attron(COLOR_PAIR(4));
             (rmode == 1) ? printw(QStr("\n\n  " % tr("Full restore")).toStdString().c_str()) : printw(QStr("\n\n  " % tr("System files restore")).toStdString().c_str());
             printw(QStr("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-            (fsave == 1) ? printw(" Y"): printw(" N");
+            (fsave == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
             attron(COLOR_PAIR(3));
 
             if(isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/usr/sbin/update-grub2"))
@@ -645,25 +634,12 @@ uchar systemback::restore()
                 refresh();
 
                 do {
-                    switch(getch()) {
-                    case 'y':
-                    case 'Y':
-                    case 'i':
-                    case 'I':
-                    case 'k':
-                    case 'K':
-                    case 'o':
-                    case 'O':
-                    case 's':
-                    case 'S':
+                    QChar gtch(getch());
+
+                    if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
                         greinst = 1;
-                        break;
-                    case 'n':
-                    case 'N':
-                    case 'e':
-                    case 'E':
+                    else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
                         greinst = 2;
-                    }
                 } while(greinst == 0);
 
                 clear();
@@ -677,9 +653,9 @@ uchar systemback::restore()
                 attron(COLOR_PAIR(4));
                 (rmode == 1) ? printw(QStr("\n\n  " % tr("Full restore")).toStdString().c_str()) : printw(QStr("\n\n  " % tr("System files restore")).toStdString().c_str());
                 printw(QStr("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-                (fsave == 1) ? printw(" Y"): printw(" N");
+                (fsave == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
                 printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-                (greinst == 1) ? printw(" Y"): printw(" N");
+                (greinst == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
             }
         }
         else if(isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/usr/sbin/update-grub2"))
@@ -690,25 +666,12 @@ uchar systemback::restore()
             refresh();
 
             do {
-                switch(getch()) {
-                case 'y':
-                case 'Y':
-                case 'i':
-                case 'I':
-                case 'k':
-                case 'K':
-                case 'o':
-                case 'O':
-                case 's':
-                case 'S':
+                QChar gtch(getch());
+
+                if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
                     greinst = 1;
-                    break;
-                case 'n':
-                case 'N':
-                case 'e':
-                case 'E':
+                else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
                     greinst = 2;
-                }
             } while(greinst == 0);
 
             clear();
@@ -722,7 +685,7 @@ uchar systemback::restore()
             attron(COLOR_PAIR(4));
             (rmode == 1) ? printw(QStr("\n\n  " % tr("Full restore")).toStdString().c_str()) : printw(QStr("\n\n  " % tr("System files restore")).toStdString().c_str());
             printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-            (greinst == 1) ? printw(" Y"): printw(" N");
+            (greinst == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
         }
     }
 
@@ -734,25 +697,12 @@ uchar systemback::restore()
     bool rstart(false);
 
     do {
-        switch(getch()) {
-        case 'y':
-        case 'Y':
-        case 'i':
-        case 'I':
-        case 'k':
-        case 'K':
-        case 'o':
-        case 'O':
-        case 's':
-        case 'S':
+        QChar gtch(getch());
+
+        if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
             rstart = true;
-            break;
-        case 'n':
-        case 'N':
-        case 'e':
-        case 'E':
+        else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
             return 6;
-        }
     } while(! rstart);
 
     uchar mthd;
@@ -848,7 +798,7 @@ void systemback::progpercent()
 {
     if(sb::like(prun, QSL() << '_' % tr("Creating restore point") % '_' << '_' % tr("Restoring the full system") % '_' << '_' % tr("Restoring the system files") % '_' << '_' % tr("Restoring users configuration files") % '_'))
     {
-        char cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toShort()), cperc(sb::SBThrd.Progress);
+        char cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toShort()), cperc(sb::Progress);
 
         if(cperc == -1)
         {

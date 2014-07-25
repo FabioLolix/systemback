@@ -34,18 +34,14 @@
 class SHARED_EXPORT_IMPORT sb : public QThread
 {
 public:
-    explicit sb(QThread *parent = 0);
     static sb SBThrd;
-    static QStr sdir[3], schdle[7], pnames[15], trn[2];
+    static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], trn[2];
+    static quint64 ThrdLng;
     static const uchar Unknow = 0, Read = 1, Write = 2, Exec = 3, Notexist = 4, Isfile = 5, Isdir = 6, Islink = 7, Isblock = 8, Sblock = 1, Dpkglock = 2, Schdlrlock = 3, Remove = 1, Copy = 2, Sync = 3, Mount = 4, Umount = 5, Dinfo = 6, Dsize = 7, Crtrpoint = 8, Srestore = 9, Scopy = 10, Lvprpr = 11;
-    static uchar pnumber;
-    static bool ExecKill;
-    QStr ThrdStr[3], ThrdDbg;
-    quint64 ThrdLng;
-    const char *FSUUID, *FSType;
-    char Progress;
-    uchar ThrdType;
-    bool ThrdKill;
+    static uchar ThrdType, pnumber;
+    static const char *FSUUID, *FSType, *FSLabel;
+    static char Progress;
+    static bool ExecKill, ThrdKill;
 
     static QStr replace(QStr txt, QStr stxt, QStr rtxt);
     static QStr mid(QStr txt, ushort start, ushort len);
@@ -93,29 +89,28 @@ public:
     static void pupgrade();
     static void supgrade();
     static void cfgwrite();
+    static void thrdelay();
     static void cfgread();
     static void fssync();
-    void thrdelay();
 
 protected:
     void run();
 
 private:
+    static QStr odlst;
     static char sblock, dpkglock, schdlrlock;
-    QSL ThrdQSL;
-    QStr odlst;
-    uchar ThrdChr;
-    bool ThrdBool, ThrdRslt;
+    static uchar ThrdChr;
+    static bool ThrdBool, ThrdRslt;
 
+    static QStr rodir(QStr path, bool hidden = false);
+    static void sbdir(QStr path, uchar oplen, bool hidden = false);
     QSL odir(QStr path, bool hidden = false);
-    QStr rodir(QStr path, bool hidden = false);
     bool thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sfstab);
     bool thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir);
     bool recrmdir(QStr path, bool slimit = false);
     bool thrdcrtrpoint(QStr &sdir, QStr &pname);
     bool thrdlvprpr(bool &iudata);
     bool fspchk(QStr &dir);
-    void sbdir(QStr path, uchar oplen, bool hidden = false);
 };
 
 #endif // SBLIB_HPP

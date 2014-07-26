@@ -250,7 +250,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         connect(ui->usersettingscopy, SIGNAL(Mouse_Enter()), this, SLOT(center()));
         connect(ui->usersettingscopy, SIGNAL(Mouse_Leave()), this, SLOT(cleave()));
 
-        if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && qApp->arguments().value(2) != "root")
+        if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization")
         {
             ui->mainpanel->hide();
             ui->schedulerpanel->hide();

@@ -6,7 +6,7 @@
     <message>
         <location filename="../sbsysupgrade/sbsysupgrade.cpp" line="31"/>
         <source>An error occurred while upgrading the system!</source>
-        <translation>Se produjo un error al actualizar el sistema!</translation>
+        <translation>¡Se produjo un error al actualizar el sistema!</translation>
     </message>
     <message>
         <location filename="../sbsysupgrade/sbsysupgrade.cpp" line="32"/>
@@ -19,7 +19,7 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="32"/>
         <source>Cannot start Systemback scheduler daemon!</source>
-        <translation>No se puede iniciar el servicio de programación de eventos de Systemback!</translation>
+        <translation>¡No se puede iniciar el servicio de programación de eventos de Systemback!</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="36"/>
@@ -757,7 +757,7 @@
         <location filename="../systemback/systemback.ui" line="5871"/>
         <location filename="../systemback/systemback.ui" line="5899"/>
         <source>! Interrupt !</source>
-        <translation>! Interrumpir !</translation>
+        <translation>¡Interrumpir!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6034"/>
@@ -1107,7 +1107,7 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="3019"/>
         <source>The specified name contain(s) unsupported character(s)!</source>
-        <translation>El nombre especificado contiene caracteres no admitidos!</translation>
+        <translation>¡El nombre especificado contiene caracteres no admitidos!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3030"/>
@@ -1546,7 +1546,7 @@
         <location filename="../systemback/systemback.cpp" line="3014"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="59"/>
         <source>Unable to get exclusive lock!</source>
-        <translation>No se pudo obtener el bloqueo exclusivo!</translation>
+        <translation>¡No se pudo obtener el bloqueo exclusivo!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3014"/>
@@ -1580,7 +1580,7 @@
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="65"/>
         <source>Restoration is aborted!</source>
-        <translation>Se ha interrumpido la restauración!</translation>
+        <translation>¡Se interrumpió la restauración!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="68"/>

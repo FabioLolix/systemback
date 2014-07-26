@@ -1315,7 +1315,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     if(isdir("/root")) rootitms = rodir("/root", true);
     if(ThrdKill) return false;
     QSL usrs;
-    ulong anum(0);
+    uint anum(0);
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
     QTS in(&file);
@@ -1375,7 +1375,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
 
     file.close();
     QStr *cditms;
-    ulong cnum(0);
+    uint cnum(0);
     uchar cperc;
     QSL rplst, dlst(QDir(sdir).entryList(QDir::Dirs | QDir::NoDotAndDotDot));
 
@@ -1776,7 +1776,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 {
     QSL usrs;
     QStr home1itms, home2itms, home3itms, home4itms, home5itms, rootitms, binitms, bootitms, etcitms, libitms, lib32itms, lib64itms, optitms, sbinitms, selinuxitms, srvitms, usritms, varitms;
-    ulong anum(0);
+    uint anum(0);
 
     if(mthd != 2)
     {
@@ -1831,7 +1831,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
     }
 
     QStr *cditms;
-    ulong cnum(0);
+    uint cnum(0);
     uchar cperc;
 
     if(mthd < 3)
@@ -2522,7 +2522,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 {
     QSL usrs;
     QStr home1itms, home2itms, home3itms, home4itms, home5itms, rootitms, binitms, bootitms, etcitms, libitms, lib32itms, lib64itms, optitms, sbinitms, selinuxitms, srvitms, usritms, varitms;
-    ulong anum(0);
+    uint anum(0);
     if(isdir(srcdir % "/bin")) binitms = rodir(srcdir % "/bin");
     if(ThrdKill) return false;
     if(isdir(srcdir % "/boot")) bootitms = rodir(srcdir % "/boot");
@@ -2665,7 +2665,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
     Progress = 0;
     QStr *cditms, macid;
-    ulong cnum(0);
+    uint cnum(0);
     uchar cperc;
     QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
     QFile file(srcdir % "/etc/systemback.excludes");

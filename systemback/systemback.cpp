@@ -3639,12 +3639,8 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         wgeom[1] = y();
         return true;
     case QEvent::WindowStateChange:
-        if(isMinimized())
-        {
-            if(unity) showNormal();
-            if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
-        }
-
+        if(isMinimized() && unity) showNormal();
+        if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
         return true;
     default:
         return false;

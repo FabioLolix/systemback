@@ -146,9 +146,7 @@ start:
         {
             QFile file(":version");
             file.open(QIODevice::ReadOnly);
-            QTS in(&file);
-            sb::print("\n " % in.readLine() % "_Qt5_" % sb::getarch() % "\n\n");
-            file.close();
+            sb::print("\n " % file.readLine().trimmed() % "_Qt5_" % sb::getarch() % "\n\n");
         }
         else
         {

@@ -266,11 +266,10 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
             QFile file("/etc/group");
             file.open(QIODevice::ReadOnly);
-            QTS in(&file);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr usrs(in.readLine());
+                QStr usrs(file.readLine().trimmed());
 
                 if(sb::like(usrs, QSL() << "_sudo:*" << "_admins:*"))
                 {
@@ -542,8 +541,7 @@ void systemback::unitimer()
                 if(isfile("/sbin/mkfs.xfs")) ui->filesystem->addItem("xfs");
                 QFile file(":version");
                 file.open(QIODevice::ReadOnly);
-                QTS in(&file);
-                ui->systembackversion->setText(in.readLine() % "_Qt" % QStr((QStr(qVersion()) == QStr(QT_VERSION_STR)) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_' % sb::getarch());
+                ui->systembackversion->setText(file.readLine().trimmed() % "_Qt" % QStr((QStr(qVersion()) == QStr(QT_VERSION_STR)) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_' % sb::getarch());
                 file.close();
                 ui->repairmountpoint->addItems(QSL() << NULL << "/mnt" << "/mnt/home" << "/mnt/boot");
 
@@ -882,12 +880,11 @@ QStr systemback::guname()
     {
         QFile file("/etc/passwd");
         file.open(QIODevice::ReadOnly);
-        QTS in(&file);
         QSL usrs;
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr usr(in.readLine());
+            QStr usr(file.readLine().trimmed());
             if(sb::like(usr, QSL() << "*:x:1000:10*" << "*:x:1001:10*" << "*:x:1002:10*" << "*:x:1003:10*" << "*:x:1004:10*" << "*:x:1005:10*" << "*:x:1006:10*" << "*:x:1007:10*" << "*:x:1008:10*" << "*:x:1009:10*" << "*:x:1010:10*" << "*:x:1011:10*" << "*:x:1012:10*" << "*:x:1013:10*" << "*:x:1014:10*" << "*:x:1015:10*")) usrs.append(sb::left(usr, sb::instr(usr, ":") -1));
         }
 
@@ -2419,7 +2416,6 @@ start:;
     if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
     {
         QStr nfile;
-        in.setDevice(&file);
 
         if(guname() != ui->username->text())
         {
@@ -2429,9 +2425,9 @@ start:;
             file.setFileName("/.sbsystemcopy/etc/group");
             file.open(QIODevice::ReadOnly);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr nline(in.readLine());
+                QStr nline(file.readLine().trimmed());
                 if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
                 nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
                 nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
@@ -2446,9 +2442,9 @@ start:;
             file.setFileName("/.sbsystemcopy/etc/gshadow");
             file.open(QIODevice::ReadOnly);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr nline(in.readLine());
+                QStr nline(file.readLine().trimmed());
                 if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
                 nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
                 nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
@@ -2466,9 +2462,9 @@ start:;
                 file.setFileName("/.sbsystemcopy/etc/subuid");
                 file.open(QIODevice::ReadOnly);
 
-                while(! in.atEnd())
+                while(! file.atEnd())
                 {
-                    QStr nline(in.readLine());
+                    QStr nline(file.readLine().trimmed());
                     if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
                     nfile.append(nline % '\n');
                     if(prun.isEmpty()) return;
@@ -2480,9 +2476,9 @@ start:;
                 file.setFileName("/.sbsystemcopy/etc/subgid");
                 file.open(QIODevice::ReadOnly);
 
-                while(! in.atEnd())
+                while(! file.atEnd())
                 {
-                    QStr nline(in.readLine());
+                    QStr nline(file.readLine().trimmed());
                     if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
                     nfile.append(nline % '\n');
                     if(prun.isEmpty()) return;
@@ -2497,9 +2493,9 @@ start:;
         file.setFileName("/.sbsystemcopy/etc/passwd");
         file.open(QIODevice::ReadOnly);
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr cline(in.readLine());
+            QStr cline(file.readLine().trimmed());
 
             if(cline.startsWith(guname() % ':'))
             {
@@ -2540,9 +2536,9 @@ start:;
         file.setFileName("/.sbsystemcopy/etc/shadow");
         file.open(QIODevice::ReadOnly);
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr cline(in.readLine());
+            QStr cline(file.readLine().trimmed());
 
             if(cline.startsWith(guname() % ':'))
             {
@@ -2600,7 +2596,7 @@ start:;
         nfile.clear();
         file.setFileName("/.sbsystemcopy/etc/hostname");
         file.open(QIODevice::ReadOnly);
-        QStr ohname(in.readLine());
+        QStr ohname(file.readLine().trimmed());
         file.close();
 
         if(ohname != ui->hostname->text())
@@ -2609,9 +2605,9 @@ start:;
             file.setFileName("/.sbsystemcopy/etc/hosts");
             file.open(QIODevice::ReadOnly);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr nline(in.readLine());
+                QStr nline(file.readLine().trimmed());
                 nline = sb::replace(nline, '\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
                 if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
                 nfile.append(nline % '\n');
@@ -2642,11 +2638,10 @@ start:;
             {
                 file.setFileName("/etc/fstab");
                 file.open(QIODevice::ReadOnly);
-                in.setDevice(&file);
 
-                while(! in.atEnd())
+                while(! file.atEnd())
                 {
-                    QStr cline(in.readLine());
+                    QStr cline(file.readLine().trimmed());
 
                     if(sb::like(cline, QSL() << "* /home *" << "*\t/home *" << "* /home\t*" << "*\t/home\t*" << "* /home/ *" << "*\t/home/ *" << "* /home/\t*" << "*\t/home/\t*"))
                     {
@@ -2689,11 +2684,10 @@ start:;
     {
         file.setFileName("/etc/fstab");
         file.open(QIODevice::ReadOnly);
-        in.setDevice(&file);
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr cline(in.readLine());
+            QStr cline(file.readLine().trimmed());
 
             if(sb::like(cline, QSL() << "*/dev/cdrom*" << "*/dev/sr*"))
                 fstabtxt.append("# cdrom\n" % cline % '\n');
@@ -3884,11 +3878,10 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
     if(! hash.isEmpty()) hash.clear();
     QFile file("/etc/shadow");
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr cline(in.readLine());
+        QStr cline(file.readLine().trimmed());
 
         if(cline.startsWith(arg1 % ":"))
         {
@@ -4967,11 +4960,10 @@ void systemback::on_restoremenu_clicked()
     repaint();
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr usr(in.readLine());
+        QStr usr(file.readLine().trimmed());
 
         if(usr.contains(":/home/"))
         {
@@ -4981,8 +4973,6 @@ void systemback::on_restoremenu_clicked()
 
         qApp->processEvents();
     }
-
-    file.close();
 }
 
 void systemback::on_copymenu_clicked()
@@ -5968,11 +5958,10 @@ void systemback::on_pointexclude_clicked()
     {
         QFile file("/etc/systemback.excludes");
         file.open(QIODevice::ReadOnly);
-        QTS in(&file);
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr cline(in.readLine());
+            QStr cline(file.readLine().trimmed());
 
             if(cline.startsWith('.'))
             {
@@ -5981,19 +5970,16 @@ void systemback::on_pointexclude_clicked()
             else if(ui->liveexclude->isChecked())
                 ui->excludedlist->addItem(cline);
         }
-
-        file.close();
     }
     else
         sb::crtfile("/etc/systemback.excludes", NULL);
 
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr usr(in.readLine());
+        QStr usr(file.readLine().trimmed());
 
         if(usr.contains(":/home/"))
         {
@@ -7187,11 +7173,10 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 {
                     QFile file("/etc/fstab");
                     file.open(QIODevice::ReadOnly);
-                    QTS in(&file);
 
-                    while(! in.atEnd())
+                    while(! file.atEnd())
                     {
-                        QStr cline(sb::replace(in.readLine(), "\t", " "));
+                        QStr cline(sb::replace(file.readLine().trimmed(), "\t", " "));
 
                         if(sb::like(sb::replace(cline, "\\040", " "), QSL() << "* " % ui->partitionsettings->item(current->row(), 3)->text() % " *" << "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"))
                         {
@@ -7199,8 +7184,6 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                             break;
                         }
                     }
-
-                    file.close();
                 }
 
                 if(! mntcheck)
@@ -7549,11 +7532,10 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
 
         QFile file("/etc/passwd");
         file.open(QIODevice::ReadOnly);
-        QTS in(&file);
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr usr(in.readLine());
+            QStr usr(file.readLine().trimmed());
 
             if(usr.contains(":/home/"))
             {
@@ -7693,8 +7675,7 @@ void systemback::on_additem_clicked()
 
     QFile file("/etc/systemback.excludes");
     file.open(QIODevice::Append);
-    QTS out(&file);
-    out << path << '\n';
+    file.write(QStr(path % '\n').toLocal8Bit());
     file.flush();
     file.close();
     ui->excludedlist->addItem(path);
@@ -7711,11 +7692,10 @@ void systemback::on_removeitem_clicked()
     QStr excdlst;
     QFile file("/etc/systemback.excludes");
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr cline(in.readLine());
+        QStr cline(file.readLine().trimmed());
         if(cline != ui->excludedlist->currentItem()->text()) excdlst.append(cline % '\n');
     }
 
@@ -7823,8 +7803,7 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
             {
                 QFile file("/etc/hostname");
                 file.open(QIODevice::ReadOnly);
-                QTS in(&file);
-                QStr hname(in.readLine());
+                QStr hname(file.readLine().trimmed());
                 file.close();
 
                 if(sb::exec("hostname " % arg1, NULL, true) == 0)
@@ -8127,11 +8106,10 @@ void systemback::on_userdatainclude_clicked(bool checked)
         {
             QFile file("/etc/passwd");
             file.open(QIODevice::ReadOnly);
-            QTS in(&file);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr usr(in.readLine());
+                QStr usr(file.readLine().trimmed());
 
                 if(usr.contains(":/home/"))
                 {
@@ -8144,8 +8122,6 @@ void systemback::on_userdatainclude_clicked(bool checked)
                     }
                 }
             }
-
-            file.close();
         }
         else
             ui->userdatainclude->setChecked(false);
@@ -8640,12 +8616,11 @@ start:;
     if(prun.isEmpty()) goto exit;
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
     QStr fname;
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr cline(in.readLine());
+        QStr cline(file.readLine().trimmed());
 
         if(cline.startsWith(guname() % ':'))
         {
@@ -8680,9 +8655,9 @@ start:;
             file.setFileName("/etc/lsb-release");
             file.open(QIODevice::ReadOnly);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr cline(in.readLine());
+                QStr cline(file.readLine().trimmed());
 
                 if(cline.startsWith("DISTRIB_ID="))
                 {
@@ -8698,7 +8673,7 @@ start:;
         if(did.isEmpty()) did = "Ubuntu";
         file.setFileName("/etc/hostname");
         file.open(QIODevice::ReadOnly);
-        QStr hname(in.readLine());
+        QStr hname(file.readLine().trimmed());
         file.close();
         if(! sb::crtfile("/etc/casper.conf", "USERNAME=\"" % guname() % "\"\nUSERFULLNAME=\"" % fname % "\"\nHOST=\"" % hname % "\"\nBUILD_SYSTEM=\"" % did % "\"\n\nexport USERNAME USERFULLNAME HOST BUILD_SYSTEM\n")) goto error;
         QSL dlst(QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files));

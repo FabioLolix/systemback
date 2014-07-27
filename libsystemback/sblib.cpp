@@ -209,8 +209,7 @@ QString sb::fload(QString path)
 {
     QFile file(path);
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
-    return in.readAll();
+    return file.readAll();
 }
 
 bool sb::crtfile(QStr path, QStr txt)
@@ -218,10 +217,8 @@ bool sb::crtfile(QStr path, QStr txt)
     if(! ilike(stype(path), QSIL() << Notexist << Isfile) || ! isdir(path.left(path.lastIndexOf('/')))) return false;
     QFile file(path);
     file.open(QFile::WriteOnly | QFile::Truncate);
-    QTS out(&file);
-    out << txt;
+    if(file.write(txt.toLocal8Bit()) == -1) return false;
     file.flush();
-    file.close();
     return true;
 }
 
@@ -302,11 +299,10 @@ void sb::cfgread()
     {
         QFile file("/etc/systemback.conf");
         file.open(QIODevice::ReadOnly);
-        QTS in(&file);
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr cline(in.readLine());
+            QStr cline(file.readLine().trimmed());
 
             if(cline.startsWith("storagedir="))
                 sdir[0] = right(cline, - instr(cline, "="));
@@ -355,8 +351,6 @@ void sb::cfgread()
             else if(cline.startsWith("windowposition=bottomright"))
                 schdle[6] = "bottomright";
         }
-
-        file.close();
     }
 
     if(sdir[0].isEmpty())
@@ -1318,11 +1312,10 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     uint anum(0);
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr usr(in.readLine());
+        QStr usr(file.readLine().trimmed());
 
         if(usr.contains(":/home/"))
         {
@@ -1366,9 +1359,9 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     file.setFileName("/etc/systemback.excludes");
     file.open(QIODevice::ReadOnly);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr cline(in.readLine());
+        QStr cline(file.readLine().trimmed());
         if(cline.startsWith('.')) elist.append(cline);
         if(ThrdKill) return false;
     }
@@ -1418,7 +1411,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 cditms = &homeitms;
             }
 
-            in.setString(cditms, QIODevice::ReadOnly);
+            QTS in(cditms, QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -1487,7 +1480,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     if(isdir("/root"))
     {
         if(! QDir().mkdir(trgt % "/root")) return false;
-        in.setString(&rootitms, QIODevice::ReadOnly);
+        QTS in(&rootitms, QIODevice::ReadOnly);
 
         while(! in.atEnd())
         {
@@ -1624,7 +1617,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 cditms = &varitms;
             }
 
-            in.setString(cditms, QIODevice::ReadOnly);
+            QTS in(cditms, QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -1694,16 +1687,15 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
             dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
             file.setFileName("/etc/fstab");
             file.open(QIODevice::ReadOnly);
-            in.setDevice(&file);
 
             for(uchar a(0) ; a < dlst.count() ; ++a)
             {
                 QStr item(dlst.at(a));
                 if(a > 0) file.open(QIODevice::ReadOnly);
 
-                while(! in.atEnd())
+                while(! file.atEnd())
                 {
-                    QStr cline(replace(in.readLine(), "\t", " "));
+                    QStr cline(replace(file.readLine().trimmed(), "\t", " "));
 
                     if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                     {
@@ -1737,7 +1729,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     if(isdir("/var/log"))
     {
         QStr logitms(rodir("/var/log"));
-        in.setString(&logitms, QIODevice::ReadOnly);
+        QTS in(&logitms, QIODevice::ReadOnly);
 
         while(! in.atEnd())
         {
@@ -2183,11 +2175,10 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
         QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
         QFile file(srcdir % "/etc/systemback.excludes");
         file.open(QIODevice::ReadOnly);
-        QTS in(&file);
 
-        while(! in.atEnd())
+        while(! file.atEnd())
         {
-            QStr cline(in.readLine());
+            QStr cline(file.readLine().trimmed());
             if(cline.startsWith('.')) elist.append(cline);
             if(ThrdKill) return false;
         }
@@ -2225,7 +2216,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 }
             }
 
-            in.setString(&rootitms, QIODevice::ReadOnly);
+            QTS in(&rootitms, QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -2400,7 +2391,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                 cditms = &homeitms;
             }
 
-            in.setString(cditms, QIODevice::ReadOnly);
+            QTS in(cditms, QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -2561,11 +2552,10 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 {
                     QFile file("/etc/passwd");
                     file.open(QIODevice::ReadOnly);
-                    QTS in(&file);
 
-                    while(! in.atEnd())
+                    while(! file.atEnd())
                     {
-                        QStr usr(in.readLine());
+                        QStr usr(file.readLine().trimmed());
 
                         if(usr.contains(":/home/"))
                         {
@@ -2573,8 +2563,6 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                             if(isdir("/home/" % usr)) usrs.append(usr);
                         }
                     }
-
-                    file.close();
                 }
                 else
                 {
@@ -2670,11 +2658,10 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
     QFile file(srcdir % "/etc/systemback.excludes");
     file.open(QIODevice::ReadOnly);
-    QTS in(&file);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr cline(in.readLine());
+        QStr cline(file.readLine().trimmed());
         if(cline.startsWith('.')) elist.append(cline);
         if(ThrdKill) return false;
     }
@@ -2694,8 +2681,8 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         {
             file.setFileName(srcdir % mid);
             file.open(QIODevice::ReadOnly);
-            QStr out(in.readLine());
-            if(out.length() == 32) macid = out;
+            QStr line(file.readLine().trimmed());
+            if(line.length() == 32) macid = line;
             file.close();
         }
     }
@@ -2745,7 +2732,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                     cditms = &homeitms;
                 }
 
-                in.setString(cditms, QIODevice::ReadOnly);
+                QTS in(cditms, QIODevice::ReadOnly);
 
                 while(! in.atEnd())
                 {
@@ -2848,11 +2835,10 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                     {
                         QFile file(srcdir % "/home/" % usr % "/.config/user-dirs.dirs");
                         file.open(QIODevice::ReadOnly);
-                        QTS in(&file);
 
-                        while(! in.atEnd())
+                        while(! file.atEnd())
                         {
-                            QStr cline(in.readLine()), dir;
+                            QStr cline(file.readLine().trimmed()), dir;
 
                             if(! cline.startsWith('#') && cline.contains("$HOME"))
                             {
@@ -2862,8 +2848,6 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
                             if(ThrdKill) return false;
                         }
-
-                        file.close();
                     }
                 }
 
@@ -2882,7 +2866,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             if(! QDir().mkdir("/.sbsystemcopy/root")) return false;
         }
 
-        in.setString(&rootitms, QIODevice::ReadOnly);
+        QTS in(&rootitms, QIODevice::ReadOnly);
 
         while(! in.atEnd())
         {
@@ -3233,16 +3217,15 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
                 file.setFileName("/etc/fstab");
                 file.open(QIODevice::ReadOnly);
-                in.setDevice(&file);
 
                 for(uchar a(0) ; a < dlst.count() ; ++a)
                 {
                     QStr item(dlst.at(a));
                     if(a > 0) file.open(QIODevice::ReadOnly);
 
-                    while(! in.atEnd())
+                    while(! file.atEnd())
                     {
-                        QStr cline(replace(in.readLine(), "\t", " "));
+                        QStr cline(replace(file.readLine().trimmed(), "\t", " "));
 
                         if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                         {
@@ -3305,7 +3288,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     if(isdir(srcdir % "/var/log"))
     {
         QStr logitms(rodir(srcdir % "/var/log"));
-        in.setString(&logitms, QIODevice::ReadOnly);
+        QTS in(&logitms, QIODevice::ReadOnly);
 
         while(! in.atEnd())
         {
@@ -3455,16 +3438,15 @@ bool sb::thrdlvprpr(bool &iudata)
         QSL dlst(QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot));
         QFile file("/etc/fstab");
         file.open(QIODevice::ReadOnly);
-        QTS in(&file);
 
         for(uchar a(0) ; a < dlst.count() ; ++a)
         {
             QStr item(dlst.at(a));
             if(a > 0) file.open(QIODevice::ReadOnly);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr cline(replace(in.readLine(), "\t", " "));
+                QStr cline(replace(file.readLine().trimmed(), "\t", " "));
 
                 if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                 {
@@ -3570,11 +3552,10 @@ bool sb::thrdlvprpr(bool &iudata)
     QSL usrs;
     QFile file("/etc/passwd");
     file.open(QIODevice::ReadOnly);
-    in.setDevice(&file);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr usr(in.readLine());
+        QStr usr(file.readLine().trimmed());
 
         if(usr.contains(":/home/"))
         {
@@ -3623,9 +3604,9 @@ bool sb::thrdlvprpr(bool &iudata)
     file.setFileName("/etc/systemback.excludes");
     file.open(QIODevice::ReadOnly);
 
-    while(! in.atEnd())
+    while(! file.atEnd())
     {
-        QStr cline(in.readLine());
+        QStr cline(file.readLine().trimmed());
         elist.append(cline);
         if(ThrdKill) return false;
     }
@@ -3648,8 +3629,7 @@ bool sb::thrdlvprpr(bool &iudata)
         if(! QDir().mkdir(usdir % "/root")) return false;
         ++ThrdLng;
         if(ThrdKill) return false;
-        QStr rootitms;
-        rootitms = iudata ? rodir("/root") : rodir("/root", true);
+        QStr rootitms(iudata ? rodir("/root") : rodir("/root", true));
         in.setString(&rootitms, QIODevice::ReadOnly);
 
         while(! in.atEnd())
@@ -3709,8 +3689,7 @@ bool sb::thrdlvprpr(bool &iudata)
         usdir = uhl ? "/home/.sbuserdata/home" : QStr(sdir[2] % "/.sblivesystemcreate/userdata/home");
         if(! QDir().mkdir(usdir % '/' % udir)) return false;
         ++ThrdLng;
-        QStr useritms;
-        useritms = iudata ? rodir("/home/" % udir) : rodir("/home/" % udir, true);
+        QStr useritms(iudata ? rodir("/home/" % udir) : rodir("/home/" % udir, true));
         in.setString(&useritms, QIODevice::ReadOnly);
 
         while(! in.atEnd())
@@ -3765,11 +3744,10 @@ bool sb::thrdlvprpr(bool &iudata)
         {
             file.setFileName("/home/" % udir % "/.config/user-dirs.dirs");
             file.open(QIODevice::ReadOnly);
-            in.setDevice(&file);
 
-            while(! in.atEnd())
+            while(! file.atEnd())
             {
-                QStr cline(in.readLine()), dir;
+                QStr cline(file.readLine().trimmed()), dir;
 
                 if(! cline.startsWith('#') && cline.contains("$HOME"))
                 {

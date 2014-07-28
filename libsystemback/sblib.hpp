@@ -59,6 +59,7 @@ public:
     static uchar exec(QStr cmd, QStr envv = NULL, bool silent = false, bool bckgrnd = false);
     static uchar fcomp(QStr file1, QStr file2);
     static uchar stype(QStr path);
+    static uchar exec(QSL cmds);
     static bool srestore(uchar mthd, QStr usr, QStr srcdir, QStr trgt, bool sfstab = false);
     static bool mount(QStr device, QStr mpoint, QStr moptions = NULL);
     static bool scopy(uchar mthd, QStr usr, QStr srcdir);

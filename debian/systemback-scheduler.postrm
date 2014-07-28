@@ -6,6 +6,6 @@ else pfile=/var/run/sbscheduler.pid
 fi
 
 if [[ $1 = upgrade && -s $pfile ]]
-then echo -n restart > $pfile
+then printf restart > $pfile
 fi
 #DEBHELPER#

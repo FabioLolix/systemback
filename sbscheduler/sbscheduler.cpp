@@ -141,9 +141,7 @@ void scheduler::newrestorepoint()
     for(uchar a(0) ; a < dlst.count() ; ++a)
     {
         QStr iname(dlst.at(a));
-
-        if(sb::like(iname, QSL() << "_.DELETED_*" << "_.S00_*"))
-            if(! sb::remove(sb::sdir[1] % '/' % iname)) return;
+        if(sb::like(iname, QSL() << "_.DELETED_*" << "_.S00_*") && ! sb::remove(sb::sdir[1] % '/' % iname)) return;
     }
 
     if(! sb::pnames[9].isEmpty())
@@ -238,9 +236,7 @@ void scheduler::newrestorepoint()
                                 if(isdir(sb::sdir[1] % "/S08_" % sb::pnames[7]))
                                 {
                                     if(! QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S09_" % sb::pnames[7])) return;
-
-                                    if(isdir(sb::sdir[1] % "/S09_" % sb::pnames[8]))
-                                       if(! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S10_" % sb::pnames[8])) return;
+                                    if(isdir(sb::sdir[1] % "/S09_" % sb::pnames[8]) && ! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S10_" % sb::pnames[8])) return;
                                 }
                             }
                         }

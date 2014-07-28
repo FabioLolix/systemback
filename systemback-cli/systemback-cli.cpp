@@ -334,11 +334,7 @@ uchar systemback::storagedir()
     else
     {
         QStr ndir(qApp->arguments().value(2));
-
-        if(qApp->arguments().count() > 3)
-            for(uchar a(3); a < qApp->arguments().count(); ++a)
-                ndir.append(' ' % qApp->arguments().value(a));
-
+        if(qApp->arguments().count() > 3) for(uchar a(3); a < qApp->arguments().count(); ++a) ndir.append(' ' % qApp->arguments().value(a));
         if(sb::like(ndir, QSL() << "*/systemback_" << "*/_" << "_/bin_" << "_/bin/*" << "_/boot_" << "_/boot/*" << "_/cdrom_" << "_/cdrom/*" << "_/dev_" << "_/dev/*" << "_/etc_" << "_/etc/*" << "_/lib_" << "_/lib/*" << "_/lib32_" << "_/lib32/*" << "_/lib64_" << "_/lib64/*" << "_/opt_" << "_/opt/*" << "_/proc_" << "_/proc/*" << "_/root_" << "_/root/*" << "_/run_" << "_/run/*" << "_/sbin_" << "_/sbin/*" << "_/selinux_" << "_/selinux/*" << "_/srv_" << "_/sys/*" << "_/tmp_" << "_/tmp/*" << "_/usr_" << "_/usr/*" << "_/var_" << "_/var/*") || sb::fload("/etc/passwd").contains(':' % ndir % ':')) return 5;
         if(! sb::islnxfs(ndir)) return 5;
 
@@ -485,9 +481,7 @@ start:;
                                 if(isdir(sb::sdir[1] % "/S08_" % sb::pnames[7]))
                                 {
                                     if(! QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S09_" % sb::pnames[7])) goto error;
-
-                                    if(isdir(sb::sdir[1] % "/S09_" % sb::pnames[8]))
-                                       if(! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S10_" % sb::pnames[8])) goto error;
+                                    if(isdir(sb::sdir[1] % "/S09_" % sb::pnames[8]) && ! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S10_" % sb::pnames[8])) goto error;
                                 }
                             }
                         }
@@ -725,7 +719,7 @@ uchar systemback::restore()
 
     QTimer::singleShot(0, this, SLOT(progress()));
     ptimer->start();
-    bool sfstab((fsave == 1) ? true : false);
+    bool sfstab(fsave == 1);
     sb::srestore(mthd, NULL, sb::sdir[1] % '/' % cpoint % '_' % pname, NULL, sfstab);
 
     if(greinst == 1)

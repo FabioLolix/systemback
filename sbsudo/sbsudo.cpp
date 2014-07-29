@@ -45,7 +45,7 @@ error:
         emsg = tr("Cannot start Systemback scheduler daemon!") % "\n\n" % tr("Unable to get root permissions.");
     }
 
-    if(! emsg.isEmpty()) (sb::exec("which zenity", NULL, true) == 0) ? sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"") : sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"");
+    if(! emsg.isEmpty()) (sb::exec("which zenity", NULL, true) == 0) ? sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) : sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
     qApp->exit(rv);
     return;
 };
@@ -56,10 +56,11 @@ start:;
         goto error;
     }
 
-    QStr cmd((qApp->arguments().value(1) == "systemback") ? "systemback" : QStr("/usr/lib/systemback/sbscheduler " % QStr(getenv("USER"))));
+    QStr cmd((qApp->arguments().value(1) == "systemback") ? "systemback authorization " : "/usr/lib/systemback/sbscheduler ");
+    cmd.append(getenv("USER"));
 
     if(getuid() == 0)
-        (qApp->arguments().value(2) == "gtk+") ? qApp->exit(sb::exec("sudo env QT_STYLE_OVERRIDE=gtk+ " % cmd)) : qApp->exit(sb::exec("sudo " % cmd));
+        (qApp->arguments().value(2) == "gtk+") ? qApp->exit(sb::exec("sudo -nH env QT_STYLE_OVERRIDE=gtk+ " % cmd)) : qApp->exit(sb::exec("sudo -nH " % cmd));
     else if(cmd == "systemback")
     {
         QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), env(getenv("XAUTHORITY"));
@@ -77,7 +78,7 @@ start:;
             goto error;
         }
 
-        (qApp->arguments().value(2) == "gtk+") ? qApp->exit(sb::exec("sudo env QT_STYLE_OVERRIDE=gtk+ " % cmd, "XAUTHORITY=" % xauth)) : qApp->exit(sb::exec("sudo " % cmd, "XAUTHORITY=" % xauth));
+        (qApp->arguments().value(2) == "gtk+") ? qApp->exit(sb::exec("sudo -nH env QT_STYLE_OVERRIDE=gtk+ " % cmd, "XAUTHORITY=" % xauth)) : qApp->exit(sb::exec("sudo -nH " % cmd, "XAUTHORITY=" % xauth));
     }
     else if(setuid(0) == -1)
     {
@@ -85,7 +86,7 @@ start:;
         goto error;
     }
     else if(qApp->arguments().value(2) == "gtk+")
-        qApp->exit(sb::exec("sudo env QT_STYLE_OVERRIDE=gtk+ " % cmd));
+        qApp->exit(sb::exec("sudo -nH env QT_STYLE_OVERRIDE=gtk+ " % cmd));
     else
-        qApp->exit(sb::exec("sudo " % cmd));
+        qApp->exit(sb::exec("sudo -nH " % cmd));
 }

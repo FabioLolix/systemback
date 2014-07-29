@@ -1,2 +1,0 @@
-ALL ALL=(ALL) NOPASSWD: /usr/bin/systemback authorization *
-ALL ALL=(ALL) NOPASSWD: /usr/bin/env QT_STYLE_OVERRIDE=gtk+ /usr/bin/systemback authorization *

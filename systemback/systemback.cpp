@@ -61,7 +61,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     {
         sstart = false;
 
-        if(geteuid() != 0)
+        if(getuid() != 0)
             dialog = 17;
         else if(! sb::lock(sb::Sblock))
             dialog = 1;
@@ -2189,14 +2189,14 @@ start:;
             else if(mset[1] == "btrfs")
             {
                 rv = sb::exec("mkfs.btrfs -f " % mset[2]);
-                if(rv != 0) rv = sb::exec("mkfs.btrfs " % mset[2]);
+                if(rv > 0) rv = sb::exec("mkfs.btrfs " % mset[2]);
             }
             else
                  rv = sb::exec("mkfs." % mset[1] % ' ' % mset[2]);
 
             if(prun.isEmpty()) goto exit;
 
-            if(rv != 0)
+            if(rv > 0)
             {
                 dialogdev = mset[2];
                 dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 36 : 52;
@@ -7049,7 +7049,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
                 if(ui->mountpoint->currentText() != "SWAP")
                 {
-                    if(ui->mountpoint->currentIndex() != 0)
+                    if(ui->mountpoint->currentIndex() > 0)
                         ui->mountpoint->setCurrentIndex(0);
                     else if(! ui->mountpoint->currentText().isEmpty())
                         ui->mountpoint->setCurrentText(NULL);
@@ -7075,7 +7075,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
                 if(ui->mountpoint->currentText() != "/home")
                 {
-                    if(ui->mountpoint->currentIndex() != 0)
+                    if(ui->mountpoint->currentIndex() > 0)
                         ui->mountpoint->setCurrentIndex(0);
                     else if(! ui->mountpoint->currentText().isEmpty())
                         ui->mountpoint->setCurrentText(NULL);
@@ -7091,7 +7091,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     ui->format->setDisabled(true);
                 }
 
-                if(ui->mountpoint->currentIndex() != 0)
+                if(ui->mountpoint->currentIndex() > 0)
                     ui->mountpoint->setCurrentIndex(0);
                 else if(! ui->mountpoint->currentText().isEmpty())
                     ui->mountpoint->setCurrentText(NULL);
@@ -7196,7 +7196,7 @@ void systemback::on_changepartition_clicked()
 
     if(ui->mountpoint->currentIndex() > 0 && ui->mountpoint->currentText() != "SWAP") ui->mountpoint->removeItem(ui->mountpoint->currentIndex());
 
-    if(ui->mountpoint->currentIndex() != 0)
+    if(ui->mountpoint->currentIndex() > 0)
         ui->mountpoint->setCurrentIndex(0);
     else if(! ui->mountpoint->currentText().isEmpty())
         ui->mountpoint->setCurrentText(NULL);
@@ -7367,10 +7367,12 @@ void systemback::on_repairmount_clicked()
         if(sb::mount(ui->repairpartition->currentText(), ui->repairmountpoint->currentText()))
         {
             on_partitionupdate_clicked();
-            if(ui->repairmountpoint->currentIndex() > 0) ui->repairmountpoint->removeItem(ui->repairmountpoint->currentIndex());
 
-            if(ui->repairmountpoint->currentIndex() != 0)
-                ui->repairmountpoint->setCurrentIndex(0);
+            if(ui->repairmountpoint->currentIndex() > 0)
+            {
+                ui->repairmountpoint->removeItem(ui->repairmountpoint->currentIndex());
+                if(ui->repairmountpoint->currentIndex() > 0) ui->repairmountpoint->setCurrentIndex(0);
+            }
             else if(! ui->repairmountpoint->currentText().isEmpty())
                 ui->repairmountpoint->setCurrentText(NULL);
         }

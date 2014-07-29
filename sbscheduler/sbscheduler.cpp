@@ -33,42 +33,51 @@ error:;
 
     switch(rv) {
     case 1:
-        sb::error("\n\n " % tr("Root privileges are required.") % "\n\n");
+        sb::error("\n\n " % tr("Missing or too much argument(s).") % "\n\n");
         break;
     case 2:
-        sb::error("\n\n " % tr("This system is a Live.") % "\n\n");
+        sb::error("\n\n " % tr("Root privileges are required.") % "\n\n");
         break;
     case 3:
-        sb::error("\n\n " % tr("Already running.") % "\n\n");
+        sb::error("\n\n " % tr("This system is a Live.") % "\n\n");
         break;
     case 4:
+        sb::error("\n\n " % tr("Already running.") % "\n\n");
+        break;
+    case 5:
         sb::error("\n\n " % tr("Unable to demonize.") % "\n\n");
     }
 
     qApp->exit(rv);
     return;
 start:;
-    if(geteuid() != 0)
+    if(qApp->arguments().count() != 2)
     {
         rv = 1;
         goto error;
     }
 
-    if(isfile("/cdrom/casper/filesystem.squashfs") || isfile("/live/image/live/filesystem.squashfs") || isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
+    if(getuid() != 0)
     {
         rv = 2;
         goto error;
     }
 
-    if(! sb::lock(sb::Schdlrlock))
+    if(isfile("/cdrom/casper/filesystem.squashfs") || isfile("/live/image/live/filesystem.squashfs") || isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
     {
         rv = 3;
         goto error;
     }
 
-    if(daemon(0, 0) != 0)
+    if(! sb::lock(sb::Schdlrlock))
     {
         rv = 4;
+        goto error;
+    }
+
+    if(daemon(0, 0) != 0)
+    {
+        rv = 5;
         goto error;
     }
 
@@ -111,15 +120,13 @@ start:;
                 newrestorepoint();
             else
             {
-                QStr xauth("/tmp/sbXauthority-" % sb::rndstr());
+                QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), env(getenv("XAUTHORITY"));
 
-                if(QFile(getenv("XAUTHORITY")).copy(xauth))
+                if((! env.isEmpty() && QFile(env).copy(xauth)) || (isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)))
                 {
                     sb::exec("/usr/bin/systemback schedule " % sb::schdle[6], "XAUTHORITY=" % xauth);
                     QFile::remove(xauth);
                 }
-                else
-                    sb::exec("/usr/bin/systemback schedule " % sb::schdle[6]);
             }
 
             sb::unlock(sb::Sblock);

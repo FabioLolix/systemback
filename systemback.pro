@@ -3,11 +3,13 @@ TEMPLATE = subdirs
 SUBDIRS += libsystemback \
     sbscheduler \
     sbsysupgrade \
+    sbsudo \
     systemback \
     systemback-cli
 
 sbscheduler.depends = libsystemback
 sbsysupgrade.depends = libsystemback
+sbsudo.depends = libsystemback
 systemback.depends = libsystemback
 systemback-cli.depends = libsystemback
 

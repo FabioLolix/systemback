@@ -91,7 +91,7 @@ error:
 start:
     if(sb::like(qApp->arguments().value(1), QSL() << "_-h_" << "_--help_"))
         sb::print(help);
-    else if(geteuid() > 0)
+    else if(getuid() > 0)
     {
         rv = 2;
         goto error;

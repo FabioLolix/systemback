@@ -47,9 +47,7 @@ bool sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdBool, sb::ThrdRslt;
 
 QStr sb::getarch()
 {
-    char *a;
-
-    switch(sizeof a) {
+    switch(sizeof(char *)) {
     case 4:
         return "i386";
     case 8:
@@ -2399,7 +2397,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     if(ThrdKill) return false;
     anum += binitms.count('\n') + bootitms.count('\n') + etcitms.count('\n') + libitms.count('\n') + lib32itms.count('\n') + lib64itms.count('\n') + optitms.count('\n') + sbinitms.count('\n') + selinuxitms.count('\n') + srvitms.count('\n') + usritms.count('\n') + varitms.count('\n') + rootitms.count('\n');
 
-    if(mthd != 0)
+    if(mthd > 0)
     {
         if(isdir(srcdir % "/home"))
         {
@@ -2554,7 +2552,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             if(! QDir().mkdir("/.sbsystemcopy/home")) return false;
         }
 
-        if(mthd != 0)
+        if(mthd > 0)
         {
             for(uchar a(0) ; a < usrs.count() ; ++a)
             {

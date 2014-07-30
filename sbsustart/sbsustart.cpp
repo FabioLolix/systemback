@@ -81,11 +81,12 @@ start:;
 
         if(! clrenv(xauth, (qApp->arguments().value(2) == "gtk+")))
         {
+            sb::remove(xauth);
             rv = 3;
             goto error;
         }
     }
-    else if(setuid(0) == -1 || setgid(0) == -1 || ! clrenv(NULL, (qApp->arguments().value(2) == "gtk+")))
+    else if(setuid(0) == -1 || setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), (qApp->arguments().value(2) == "gtk+")))
     {
         rv = 4;
         goto error;

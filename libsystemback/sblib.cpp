@@ -151,7 +151,7 @@ QStr sb::rndstr(uchar vlen)
 {
     QStr val, chrs("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz./"), chr;
     uchar clen((vlen == 16) ? 64 : 62);
-    srand (time(NULL));
+    srand(time(NULL));
 
     while(val.length() < vlen)
     {

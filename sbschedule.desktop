@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=Systemback scheduler daemon
-Exec=/usr/lib/systemback/sbsudo scheduler gtk+
+Exec=/usr/lib/systemback/sbsustart scheduler gtk+
 Type=Application
 Icon=systemback
 Terminal=false

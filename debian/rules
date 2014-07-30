@@ -33,7 +33,7 @@ binary-arch: build-arch
 	dh_strip -a
 	dh_link -a
 	dh_fixperms -a
-	chmod 4755 debian/systemback-scheduler/usr/lib/systemback/sbsudo
+	chmod 4755 debian/systemback-scheduler/usr/lib/systemback/sbsustart
 	dh_makeshlibs -nV "libsystemback (= $(shell dpkg-parsechangelog | sed -n 's/^Version: //p'))" -a
 	dh_shlibdeps -a
 	dh_installdeb -a

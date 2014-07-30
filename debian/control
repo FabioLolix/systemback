@@ -37,7 +37,7 @@ Description: Systemback command line interface
 
 Package: systemback-scheduler
 Architecture: amd64 i386
-Depends: ${misc:Depends}, ${shlibs:Depends}, sudo
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Breaks: systemback (<< 1.0.0)
 Replaces: systemback (<< 1.0.0)
 Description: Systemback scheduler daemon

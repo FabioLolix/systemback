@@ -15,31 +15,31 @@
     </message>
 </context>
 <context>
-    <name>sbsudo</name>
+    <name>sbsustart</name>
     <message>
-        <location filename="../sbsudo/sbsudo.cpp" line="36"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="36"/>
         <source>Missing or too much argument(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsudo/sbsudo.cpp" line="39"/>
-        <location filename="../sbsudo/sbsudo.cpp" line="42"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="39"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="42"/>
         <source>Cannot start Systemback graphical user interface!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsudo/sbsudo.cpp" line="39"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="39"/>
         <source>Unable to connect to X server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsudo/sbsudo.cpp" line="42"/>
-        <location filename="../sbsudo/sbsudo.cpp" line="45"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="42"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Unable to get root permissions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsudo/sbsudo.cpp" line="45"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Cannot start Systemback scheduler daemon!</source>
         <translation type="unfinished"></translation>
     </message>

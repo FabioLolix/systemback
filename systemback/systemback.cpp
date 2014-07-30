@@ -551,7 +551,7 @@ void systemback::unitimer()
                     }
                     else
                     {
-                        sb::exec("modprobe efivars", NULL, true);
+                        sb::exec("/sbin/modprobe efivars", NULL, true);
                         if(isdir("/sys/firmware/efi")) grub = "efi-amd64";
                     }
                 }
@@ -590,7 +590,7 @@ void systemback::unitimer()
 
             pointupgrade();
             if(sstart) ui->schedulerstart->setEnabled(true);
-            ickernel = (sb::exec("modprobe -n overlayfs", NULL, true) == 0 || sb::exec("modprobe -n aufs", NULL, true) == 0 || sb::exec("modprobe -n unionfs", NULL, true) == 0 || isfile("/usr/bin/unionfs-fuse"));
+            ickernel = (sb::exec("/sbin/modprobe -n overlayfs", NULL, true) == 0 || sb::exec("/sbin/modprobe -n aufs", NULL, true) == 0 || sb::exec("/sbin/modprobe -n unionfs", NULL, true) == 0 || isfile("/usr/bin/unionfs-fuse"));
             busy(false);
         }
         else if(ui->statuspanel->isVisible())
@@ -1278,7 +1278,7 @@ void systemback::hmpg1released()
     if(ui->homepage1->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage1->setForegroundRole(QPalette::Text);
-        sb::exec("sudo -iu " % guname() % " xdg-open https://sourceforge.net/projects/systemback", NULL, false, true);
+        sb::exec("/bin/su -c \"/usr/bin/xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -1302,7 +1302,7 @@ void systemback::hmpg2released()
     if(ui->homepage2->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage2->setForegroundRole(QPalette::Text);
-        sb::exec("sudo -iu " % guname() % " xdg-open https://launchpad.net/systemback", NULL, false, true);
+        sb::exec("/bin/su -c \"/usr/bin/xdg-open https://launchpad.net/systemback &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -1326,7 +1326,7 @@ void systemback::emailreleased()
     if(ui->email->foregroundRole() == QPalette::Highlight)
     {
         ui->email->setForegroundRole(QPalette::Text);
-        sb::exec("sudo -iu " % guname() % " xdg-email nemh@freemail.hu", NULL, false, true);
+        sb::exec("/bin/su -c \"/usr/bin/xdg-email nemh@freemail.hu &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -1350,7 +1350,7 @@ void systemback::dntreleased()
     if(ui->donate->foregroundRole() == QPalette::Highlight)
     {
         ui->donate->setForegroundRole(QPalette::Text);
-        sb::exec("sudo -iu " % guname() % " xdg-open https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ", NULL, false, true);
+        sb::exec("/bin/su -c \"/usr/bin/xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -1868,10 +1868,10 @@ void systemback::restore()
                 if(ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto")
                 {
                     if(fcmp)
-                        sb::exec("update-grub");
+                        sb::exec("/usr/sbin/update-grub");
                     else
                     {
-                        sb::exec("update-grub");
+                        sb::exec("/usr/sbin/update-grub");
                         if(prun.isEmpty()) return;
                         QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
                         QTS in(&mnts, QIODevice::ReadOnly);
@@ -1890,14 +1890,14 @@ void systemback::restore()
                         }
 
                         if(prun.isEmpty()) return;
-                        res = sb::exec("grub-install --force " % sb::left(mntdev, 8));
+                        res = sb::exec("/usr/sbin/grub-install --force " % sb::left(mntdev, 8));
                     }
                 }
                 else
                 {
-                    sb::exec("update-grub");
+                    sb::exec("/usr/sbin/update-grub");
                     if(prun.isEmpty()) return;
-                    res = sb::exec("grub-install --force " % ui->grubreinstallrestore->currentText());
+                    res = sb::exec("/usr/sbin/grub-install --force " % ui->grubreinstallrestore->currentText());
                 }
 
                 if(prun.isEmpty()) return;
@@ -1975,14 +1975,14 @@ void systemback::repair()
                     mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
             }
 
-            sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
+            sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % sb::left(mntdev, 8) % '\n');
         }
         else
-            sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
+            sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
 
         QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
         if(prun.isEmpty()) return;
-        dialog = (sb::exec("chroot /mnt /grubinst") == 0) ? 32 : 37;
+        dialog = (sb::exec("/usr/sbin/chroot /mnt /grubinst") == 0) ? 32 : 37;
         QFile::remove("/mnt/grubinst");
         sb::umount("/mnt/dev");
         sb::umount("/mnt/dev/pts");
@@ -2067,15 +2067,15 @@ void systemback::repair()
                                 mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
                         }
 
-                        sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
+                        sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % sb::left(mntdev, 8) % '\n');
                     }
                 }
                 else
-                    sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
+                    sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
 
                 QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
                 if(prun.isEmpty()) return;
-                if(sb::exec("chroot /mnt /grubinst") > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
+                if(sb::exec("/usr/sbin/chroot /mnt /grubinst") > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
                 QFile::remove("/mnt/grubinst");
                 sb::umount("/mnt/dev");
                 sb::umount("/mnt/dev/pts");
@@ -2179,20 +2179,20 @@ start:;
         if(mset[1] != "-")
         {
             if(mset[1] == "swap")
-                rv = sb::exec("mkswap " % mset[2]);
+                rv = sb::exec("/sbin/mkswap " % mset[2]);
             else if(sb::like(mset[1], QSL() << "_jfs_" << "_reiserfs_"))
-                rv = sb::exec("mkfs." % mset[1] % " -q " % mset[2]);
+                rv = sb::exec("/sbin/mkfs." % mset[1] % " -q " % mset[2]);
             else if(mset[1] == "xfs")
-                rv = sb::exec("mkfs.xfs -f " % mset[2]);
+                rv = sb::exec("/sbin/mkfs.xfs -f " % mset[2]);
             else if(mset[1] == "vfat")
-                rv = sb::exec(QSL() << "parted -s " % sb::left(mset[2], 8) % " set " % sb::right(mset[2], -8) % " boot on" << "mkfs.vfat -F 32 " % mset[2]);
+                rv = sb::exec(QSL() << "/sbin/parted -s " % sb::left(mset[2], 8) % " set " % sb::right(mset[2], -8) % " boot on" << "/sbin/mkfs.vfat -F 32 " % mset[2]);
             else if(mset[1] == "btrfs")
             {
-                rv = sb::exec("mkfs.btrfs -f " % mset[2]);
-                if(rv > 0) rv = sb::exec("mkfs.btrfs " % mset[2]);
+                rv = sb::exec("/sbin/mkfs.btrfs -f " % mset[2]);
+                if(rv > 0) rv = sb::exec("/sbin/mkfs.btrfs " % mset[2]);
             }
             else
-                 rv = sb::exec("mkfs." % mset[1] % ' ' % mset[2]);
+                 rv = sb::exec("/sbin/mkfs." % mset[1] % ' ' % mset[2]);
 
             if(prun.isEmpty()) goto exit;
 
@@ -2234,7 +2234,7 @@ start:;
             {
                 if(mset[1] == "btrfs")
                 {
-                    sb::exec("btrfs subvolume create /.sbsystemcopy" % mset[0] % "/@" % sb::right(mset[0], -1));
+                    sb::exec("/sbin/btrfs subvolume create /.sbsystemcopy" % mset[0] % "/@" % sb::right(mset[0], -1));
                     sb::umount(mset[2]);
                     if(prun.isEmpty()) goto exit;
 
@@ -2591,7 +2591,7 @@ start:;
         if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/bash\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " -o $rmuser = root ] || userdel $rmuser\ndone\n")) goto error;
         if(! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
         if(prun.isEmpty()) goto exit;
-        if(sb::exec("chroot /.sbsystemcopy /deluser") > 0) goto error;
+        if(sb::exec("/usr/sbin/chroot /.sbsystemcopy /deluser") > 0) goto error;
         QFile::remove("/.sbsystemcopy/deluser");
     }
 
@@ -2699,15 +2699,15 @@ start:;
                     mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
             }
 
-            if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
+            if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
         }
-        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubinstallcopy->currentText() % '\n'))
+        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % ui->grubinstallcopy->currentText() % '\n'))
             goto error;
 
         if(! QFile::setPermissions("/.sbsystemcopy/grubinst", QFile::ExeOwner)) goto error;
         if(prun.isEmpty()) goto exit;
 
-        if(sb::exec("chroot /.sbsystemcopy /grubinst") > 0)
+        if(sb::exec("/usr/sbin/chroot /.sbsystemcopy /grubinst") > 0)
         {
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 22 : 34;
             goto error;
@@ -2796,7 +2796,7 @@ start:;
         if(prun.isEmpty()) return;
     }
 
-    if(sb::exec("parted -s " % ldev % " mklabel msdos") > 0)
+    if(sb::exec("/sbin/parted -s " % ldev % " mklabel msdos") > 0)
     {
         dialog = 59;
         goto error;
@@ -2811,7 +2811,7 @@ start:;
         lrdir = "sblive";
         bool stract(0);
 
-        while(sb::exec("parted -s " % ldev % " mkpart primary 1 " % QStr::number(quint64(sb::devsize(ldev) / 1000000.0 + .5) - stract)) > 0)
+        while(sb::exec("/sbin/parted -s " % ldev % " mkpart primary 1 " % QStr::number(quint64(sb::devsize(ldev) / 1000000.0 + .5) - stract)) > 0)
         {
             if(stract == 0)
             {
@@ -2830,13 +2830,13 @@ start:;
         lrdir = "sbroot";
         bool stract(0);
 
-        if(sb::exec("parted -s " % ldev % " mkpart primary 1 100") > 0)
+        if(sb::exec("/sbin/parted -s " % ldev % " mkpart primary 1 100") > 0)
         {
             dialog = 59;
             goto error;
         }
 
-        while(sb::exec("parted -s " % ldev % " mkpart primary 100 " % QStr::number(quint64(sb::devsize(ldev) / 1000000.0 + .5) - stract)) > 0)
+        while(sb::exec("/sbin/parted -s " % ldev % " mkpart primary 100 " % QStr::number(quint64(sb::devsize(ldev) / 1000000.0 + .5) - stract)) > 0)
         {
             if(stract == 0)
             {
@@ -2852,7 +2852,7 @@ start:;
 
         if(prun.isEmpty()) return;
 
-        if(sb::exec("mkfs.ext2 -L SBROOT " % ldev % '2') > 0)
+        if(sb::exec("/sbin/mkfs.ext2 -L SBROOT " % ldev % '2') > 0)
         {
             dialog = 59;
             goto error;
@@ -2861,14 +2861,14 @@ start:;
 
     if(prun.isEmpty()) return;
 
-    if(sb::exec("mkfs.vfat -F 32 -n SBLIVE " % ldev % '1') > 0)
+    if(sb::exec("/sbin/mkfs.vfat -F 32 -n SBLIVE " % ldev % '1') > 0)
     {
         dialog = 59;
         goto error;
     }
 
     if(prun.isEmpty()) return;
-    if(sb::exec(QSL() << "dd if=/usr/lib/syslinux/mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1" << "parted -s " % ldev % " set 1 boot On" << "parted -s " % ldev % " set 1 lba On") > 0) goto error;
+    if(sb::exec(QSL() << "/bin/dd if=/usr/lib/syslinux/mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1" << "/sbin/parted -s " % ldev % " set 1 boot On" << "/sbin/parted -s " % ldev % " set 1 lba On") > 0) goto error;
     if(prun.isEmpty()) return;
 
     if(sb::exist("/.sblivesystemwrite"))
@@ -2913,25 +2913,25 @@ start:;
 
     if(lrdir == "sblive")
     {
-        if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions") > 0)
+        if(sb::exec("/bin/tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions") > 0)
         {
             dialog = 43;
             goto error;
         }
     }
-    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-permissions --no-same-owner") > 0)
+    else if(sb::exec("/bin/tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-permissions --no-same-owner") > 0)
     {
         dialog = 43;
         goto error;
     }
-    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions") > 0)
+    else if(sb::exec("/bin/tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions") > 0)
     {
         dialog = 43;
         goto error;
     }
 
     prun = tr("Emptying cache");
-    if(sb::exec("syslinux -if " % ldev % '1') > 0) goto error;
+    if(sb::exec("/usr/bin/syslinux -if " % ldev % '1') > 0) goto error;
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
     sb::umount("/.sblivesystemwrite/sblive");
@@ -5091,7 +5091,7 @@ void systemback::on_systemupgrade_clicked()
     prun = tr("Upgrading the system");
     QDateTime ofdate(QFileInfo("/usr/bin/systemback").lastModified());
     sb::unlock(sb::Dpkglock);
-    sb::exec("xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e /usr/lib/systemback/sbsysupgrade");
+    sb::exec("/usr/bin/xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e /usr/lib/systemback/sbsysupgrade");
 
     if(isVisible())
     {
@@ -5099,7 +5099,7 @@ void systemback::on_systemupgrade_clicked()
         {
             nrxth = true;
             sb::unlock(sb::Sblock);
-            sb::exec("systemback", NULL, false, true);
+            sb::exec("/usr/bin/systemback", NULL, false, true);
             close();
         }
         else if(sb::lock(sb::Dpkglock))
@@ -6198,12 +6198,12 @@ void systemback::on_dialogok_clicked()
     }
     else if(ui->dialogok->text() == tr("Reboot"))
     {
-        isfile("/sbin/reboot") ? sb::exec("reboot", NULL, false, true) : sb::exec("systemctl reboot", NULL, false, true);
+        isfile("/sbin/reboot") ? sb::exec("/sbin/reboot", NULL, false, true) : sb::exec("/bin/systemctl reboot", NULL, false, true);
         close();
     }
     else if(ui->dialogok->text() == tr("X restart"))
     {
-        sb::exec("pkill -x Xorg", NULL, true, false);
+        sb::exec("/usr/bin/pkill -x Xorg", NULL, true, false);
         close();
     }
 }
@@ -7689,11 +7689,11 @@ void systemback::on_username_textChanged(const QStr &arg1)
 
             if(arg1 == ui->username->text())
             {
-                uchar rval(sb::exec("useradd " % arg1, NULL, true));
+                uchar rval(sb::exec("/usr/sbin/useradd " % arg1, NULL, true));
 
                 if(rval == 0)
                 {
-                    sb::exec("userdel " % arg1, NULL, true);
+                    sb::exec("/usr/sbin/userdel " % arg1, NULL, true);
 
                     if(arg1 == ui->username->text())
                     {
@@ -7735,9 +7735,9 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
                 QStr hname(file.readLine().trimmed());
                 file.close();
 
-                if(sb::exec("hostname " % arg1, NULL, true) == 0)
+                if(sb::exec("/bin/hostname " % arg1, NULL, true) == 0)
                 {
-                    sb::exec("hostname " % hname, NULL, true);
+                    sb::exec("/bin/hostname " % hname, NULL, true);
 
                     if(arg1 == ui->hostname->text())
                     {
@@ -8631,7 +8631,7 @@ start:;
         xmntry = true;
     }
 
-    uchar rv(sb::exec("update-initramfs -tck" % ckernel));
+    uchar rv(sb::exec("/usr/sbin/update-initramfs -tck" % ckernel));
 
     if(lvtype == "casper")
     {
@@ -8686,7 +8686,7 @@ start:;
     if(prun.isEmpty()) goto exit;
     prun = tr("Creating Live system") % '\n' % tr("process") % " 2/3";
 
-    if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs -info -b 1M -no-duplicates -no-recovery -always-use-fragments -e /etc/fstab -e /etc/mtab -e /etc/udev/rules.d/70-persistent-cd.rules -e /etc/udev/rules.d/70-persistent-net.rules") > 0)
+    if(sb::exec("/usr/bin/mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs -info -b 1M -no-duplicates -no-recovery -always-use-fragments -e /etc/fstab -e /etc/mtab -e /etc/udev/rules.d/70-persistent-cd.rules -e /etc/udev/rules.d/70-persistent-net.rules") > 0)
     {
         dialog = 26;
         goto error;
@@ -8712,7 +8712,7 @@ start:;
 
     if(sb::getarch() == "amd64" && isfile("/usr/share/systemback/efi-amd64.bootfiles"))
     {
-        if(sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0) goto error;
+        if(sb::exec("/bin/tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0) goto error;
         if(! sb::cpfile("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png")) goto error;
         if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n")) goto error;;
         if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"left\"}\n}\n")) goto error;
@@ -8728,7 +8728,7 @@ start:;
     if(sb::ThrdLng > 0) sb::ThrdLng = 0;
     sb::ThrdStr[0] = sb::sdir[2] % '/' % ifname % ".sblive";
 
-    if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .") > 0)
+    if(sb::exec("/bin/tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .") > 0)
     {
         if(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) sb::remove(sb::sdir[2] % '/' % ifname % ".sblive");
         dialog = 27;
@@ -8766,7 +8766,7 @@ start:;
     sb::ThrdLng = sb::fsize(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive");
     sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
 
-    if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions") > 0)
+    if(sb::exec("/bin/tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions") > 0)
     {
         dialog = 47;
         goto error;
@@ -8779,7 +8779,7 @@ start:;
     sb::Progress = -1;
     ui->progressbar->setValue(0);
 
-    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -o " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso " % sb::sdir[2] % "/.sblivesystemconvert") > 0)
+    if(sb::exec("/usr/bin/genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -o " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso " % sb::sdir[2] % "/.sblivesystemconvert") > 0)
     {
         if(isfile(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso")) sb::remove(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso");
         dialog = 46;
@@ -8787,7 +8787,7 @@ start:;
     }
 
     if(prun.isEmpty()) goto exit;
-    if(isfile("/usr/bin/isohybrid.pl") && sb::exec("isohybrid.pl " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0) goto error;
+    if(isfile("/usr/bin/isohybrid.pl") && sb::exec("/usr/bin/isohybrid.pl " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0) goto error;
     if(! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(prun.isEmpty()) goto exit;

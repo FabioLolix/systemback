@@ -29,6 +29,9 @@ class sbsustart : public QObject
 
 public slots:
     void main();
+
+private:
+    bool clrenv(QStr xpath, bool gtk = false);
 };
 
 #endif // SBSUSTART_HPP

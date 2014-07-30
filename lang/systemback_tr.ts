@@ -15,13 +15,6 @@
     </message>
 </context>
 <context>
-    <name>sbsudo</name>
-    <message>
-        <source>Cannot start Systemback scheduler daemon!</source>
-        <translation type="obsolete">Systemback zamanlayıcısı arkaplan hizmeti başlatılamadı!</translation>
-    </message>
-</context>
-<context>
     <name>sbsustart</name>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="36"/>

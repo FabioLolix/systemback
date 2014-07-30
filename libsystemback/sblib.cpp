@@ -151,6 +151,7 @@ QStr sb::rndstr(uchar vlen)
 {
     QStr val, chrs("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz./"), chr;
     uchar clen((vlen == 16) ? 64 : 62);
+    srand (time(NULL));
 
     while(val.length() < vlen)
     {
@@ -839,11 +840,11 @@ void sb::pupgrade()
 
 void sb::supgrade()
 {
-    exec("apt-get update");
+    exec("/usr/bin/apt-get update");
 
     while(true)
     {
-        if(exec(QSL() << "apt-get install -fym --force-yes" << "dpkg --configure -a" << "apt-get dist-upgrade --no-install-recommends -ym --force-yes" << "apt-get autoremove --purge -y") == 0)
+        if(exec(QSL() << "/usr/bin/apt-get install -fym --force-yes" << "/usr/bin/dpkg --configure -a" << "/usr/bin/apt-get dist-upgrade --no-install-recommends -ym --force-yes" << "/usr/bin/apt-get autoremove --purge -y") == 0)
         {
             QSL dlst(QDir("/boot").entryList(QDir::Files));
             QStr rklist;
@@ -875,7 +876,7 @@ void sb::supgrade()
             }
 
             uchar cproc(0);
-            if(! rklist.isEmpty()) cproc = exec("apt-get autoremove --purge " % rklist);
+            if(! rklist.isEmpty()) cproc = exec("/usr/bin/apt-get autoremove --purge " % rklist);
 
             if(ilike(cproc, QSIL() << 0 << 1))
             {
@@ -898,8 +899,8 @@ void sb::supgrade()
                     if(line.startsWith("rc")) iplist.append(' ' % mid(line, 5, instr(line, " ", 5) - 5));
                 }
 
-                if(! iplist.isEmpty()) exec("bash -c dpkg --purge " % iplist);
-                exec("apt-get clean");
+                if(! iplist.isEmpty()) exec("/usr/bin/dpkg --purge " % iplist);
+                exec("/usr/bin/apt-get clean");
                 QSL dlst(QDir("/var/cache/apt").entryList(QDir::Files));
 
                 for(uchar a(0) ; a < dlst.count() ; ++a)
@@ -920,19 +921,19 @@ void sb::supgrade()
             }
         }
         else
-            exec("dpkg --configure -a");
+            exec("/usr/bin/dpkg --configure -a");
 
-        exec(QSL() << "tput reset" << "tput civis");
+        exec(QSL() << "/usr/bin/tput reset" << "/usr/bin/tput civis");
 
         for(uchar a(3) ; a > 0 ; --a)
         {
             error("\n " % trn[0] % '\n');
             print("\n " % trn[1] % ' ' % QStr::number(a));
             sleep(1);
-            exec("tput cup 0 0");
+            exec("/usr/bin/tput cup 0 0");
         }
 
-        exec("tput reset");
+        exec("/usr/bin/tput reset");
     }
 }
 
@@ -1665,6 +1666,16 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
             if(ThrdKill) return false;
         }
 
+        in.setString(&logitms, QIODevice::ReadOnly);
+
+        while(! in.atEnd())
+        {
+            QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/var/log/" % item;
+            if(left(line, instr(line, "_") - 1).toShort() == Isdir && exist(trgt % "/var/log/" % item) && ! cpertime("/var/log/" % item, trgt % "/var/log/" % item)) return false;
+            if(ThrdKill) return false;
+        }
+
         if(! cpertime("/var/log", trgt % "/var/log")) return false;
         if(! cpertime("/var", trgt % "/var")) return false;
     }
@@ -1816,7 +1827,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 
         QSL elist;
         if(trgt.isEmpty()) elist = QSL() << "/etc/mtab" << "/var/cache/fontconfig/" << "/var/lib/dpkg/lock" << "/var/lib/udisks/mtab" << "/var/run/" << "/var/tmp/";
-        if(trgt.isEmpty() || (isfile("/mnt/etc/sudoers.d/99_systemback") && isfile("/mnt/etc/sudoers.d/99_sbscheduler") && isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/sbstart") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append(QSL() << "/etc/sudoers.d/99_sbscheduler" << "/etc/sudoers.d/99_systemback" << "/etc/systemback*" << "/etc/xdg/autostart/sbschedule*" << "/usr/bin/systemback*" << "/usr/lib/systemback/" << "/usr/share/systemback/" << "/var/lib/dpkg/info/systemback*");
+        if(trgt.isEmpty() || (isfile("/mnt/etc/sudoers.d/99_systemback") && isfile("/mnt/etc/sudoers.d/99_sbscheduler") && isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsustart") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/sbstart") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append(QSL() << "/etc/sudoers.d/99_sbscheduler" << "/etc/sudoers.d/99_systemback" << "/etc/systemback*" << "/etc/xdg/autostart/sbschedule*" << "/usr/bin/systemback*" << "/usr/lib/systemback/" << "/usr/share/systemback/" << "/var/lib/dpkg/info/systemback*");
         if(sfstab) elist.append("/etc/fstab");
         dlst = QSL() << "/bin" << "/boot" << "/etc" << "/lib" << "/lib32" << "/lib64" << "/opt" << "/sbin" << "/selinux" << "/srv" << "/usr" << "/var";
 
@@ -2856,7 +2867,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         if(ThrdKill) return false;
     }
 
-    elist = QSL() << "/etc/mtab" << "/var/cache/fontconfig/" << "/var/lib/dpkg/lock" << "/var/lib/udisks/mtab" << "/var/log/" << "/var/run/" << "/var/tmp/";
+    elist = QSL() << "/etc/mtab" << "/var/cache/fontconfig/" << "/var/lib/dpkg/lock" << "/var/lib/udisks/mtab" << "/var/log" << "/var/run/" << "/var/tmp/";
     if(mthd > 2) elist.append(QSL() << "/etc/machine-id" << "/etc/systemback.conf" << "/etc/systemback.excludes" << "/var/lib/dbus/machine-id");
     if(srcdir == "/.systembacklivepoint" && fload("/proc/cmdline").contains("noxconf")) elist.append("/etc/X11/xorg.conf");
     dlst = QSL() << "/bin" << "/boot" << "/etc" << "/lib" << "/lib32" << "/lib64" << "/opt" << "/sbin" << "/selinux" << "/srv" << "/usr" << "/var";
@@ -3104,8 +3115,11 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     else if(exist("/.sbsystemcopy/media"))
         stype("/.sbsystemcopy/media") == Isdir ? recrmdir("/.sbsystemcopy/media") : QFile::remove("/.sbsystemcopy/media");
 
+    if(exist("/.sbsystemcopy/var/log")) stype("/.sbsystemcopy/var/log") == Isdir ? recrmdir("/.sbsystemcopy/var/log") : QFile::remove("/.sbsystemcopy/var/log");
+
     if(isdir(srcdir % "/var/log"))
     {
+        if(! QDir().mkdir("/.sbsystemcopy/var/log")) return false;
         QStr logitms(rodir(srcdir % "/var/log"));
         QTS in(&logitms, QIODevice::ReadOnly);
 
@@ -3126,6 +3140,16 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 }
             }
 
+            if(ThrdKill) return false;
+        }
+
+        in.setString(&logitms, QIODevice::ReadOnly);
+
+        while(! in.atEnd())
+        {
+            QStr line(in.readLine()), item(right(line, - instr(line, "_")));
+            ThrdDbg = "@/.systemback/" % item;
+            if(left(line, instr(line, "_") - 1).toShort() == Isdir && ! cpertime(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
             if(ThrdKill) return false;
         }
 

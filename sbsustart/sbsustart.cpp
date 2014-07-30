@@ -45,7 +45,7 @@ error:
         emsg = tr("Cannot start Systemback scheduler daemon!") % "\n\n" % tr("Unable to get root permissions.");
     }
 
-    if(! emsg.isEmpty()) (sb::exec("which zenity", NULL, true) == 0) ? sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) : sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
+    if(! emsg.isEmpty()) isfile("/usr/bin/zenity") ? sb::exec("/usr/bin/zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) : sb::exec("/usr/bin/kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
     qApp->exit(rv);
     return;
 };
@@ -56,37 +56,56 @@ start:;
         goto error;
     }
 
-    QStr cmd((qApp->arguments().value(1) == "systemback") ? "systemback authorization " : "/usr/lib/systemback/sbscheduler ");
-    cmd.append(getenv("USER"));
+    QStr usr(getenv("USER")), cmd((qApp->arguments().value(1) == "systemback") ? "/usr/bin/systemback authorization " : "/usr/lib/systemback/sbscheduler ");
+    cmd.append(usr);
 
     if(getuid() == 0)
-        (qApp->arguments().value(2) == "gtk+") ? qApp->exit(sb::exec("su -lc \"env QT_STYLE_OVERRIDE=gtk+ " % cmd % "\"")) : qApp->exit(sb::exec("su -lc \"" % cmd % "\""));
-    else if(cmd.startsWith("systemback"))
     {
-        QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), env(getenv("XAUTHORITY"));
+        if(qApp->arguments().value(2) == "gtk+") setenv("QT_STYLE_OVERRIDE", "gtk+", 1);
+    }
+    else if(cmd.startsWith("/usr/b"))
+    {
+        QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), xpath(getenv("XAUTHORITY")), usrhm(getenv("HOME"));
 
-        if(! (! env.isEmpty() && QFile(env).copy(xauth)) && ! (isfile("/home/" % QStr(getenv("USER")) % "/.Xauthority") && QFile("/home/" % QStr(getenv("USER")) % "/.Xauthority").copy(xauth)))
+        if(setuid(0) == -1 || setgid(0) == -1)
+        {
+            rv = 3;
+            goto error;
+        }
+
+        if((xpath.isEmpty() || ! QFile(xpath).copy(xauth)) && (usrhm.isEmpty() || ! isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
         {
             rv = 2;
             goto error;
         }
 
-        if(setuid(0) == -1)
+        if(! clrenv(xauth, (qApp->arguments().value(2) == "gtk+")))
         {
-            QFile::remove(xauth);
             rv = 3;
             goto error;
         }
-
-        (qApp->arguments().value(2) == "gtk+") ? qApp->exit(sb::exec("su -lc \"env QT_STYLE_OVERRIDE=gtk+ " % cmd % "\"", "XAUTHORITY=" % xauth)) : qApp->exit(sb::exec("su -lc \"" % cmd % "\"", "XAUTHORITY=" % xauth));
     }
-    else if(setuid(0) == -1)
+    else if(setuid(0) == -1 || setgid(0) == -1 || ! clrenv(NULL, (qApp->arguments().value(2) == "gtk+")))
     {
         rv = 4;
         goto error;
     }
-    else if(qApp->arguments().value(2) == "gtk+")
-        qApp->exit(sb::exec("su -lc \"env QT_STYLE_OVERRIDE=gtk+ " % cmd % "\n"));
-    else
-        qApp->exit(sb::exec("su -lc \"" % cmd % "\""));
+
+    qApp->exit(sb::exec(cmd));
+}
+
+bool sbsustart::clrenv(QStr xpath, bool gtk)
+{
+    QStr dsply(getenv("DISPLAY")), pth(getenv("PATH")), lng(getenv("LANG"));
+    if(clearenv() == -1) return false;
+    if(! dsply.isEmpty()) setenv("DISPLAY", dsply.toStdString().c_str(), 1);
+    setenv("HOME", "/root", 1);
+    if(! lng.isEmpty()) setenv("LANG", lng.toStdString().c_str(), 1);
+    setenv("LOGNAME", "root", 1);
+    if(! pth.isEmpty()) setenv("PATH", pth.toStdString().c_str(), 1);
+    setenv("SHELL", "/bin/bash", 1);
+    setenv("USER", "root", 1);
+    if(! xpath.isEmpty()) setenv("XAUTHORITY", xpath.toStdString().c_str(), 1);
+    if(gtk) setenv("QT_STYLE_OVERRIDE", "gtk+", 1);
+    return true;
 }

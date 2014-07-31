@@ -23,9 +23,26 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QTimer>
+#include <unistd.h>
 
 int main(int argc, char *argv[])
 {
+    if(QStr(qVersion()).replace(".", NULL).toShort() >= 530 && setuid(0) == -1)
+    {
+        QStr arg1(argv[1]);
+
+        if(arg1.isEmpty() || ! sb::like(arg1, QSL() << "_systemback_" << "_scheduler_"))
+        {
+            sb::error("\n Missing, wrong or too much argument(s).\n\n");
+            return 2;
+        }
+
+        QStr emsg((arg1 == "systemback") ? "Cannot start Systemback graphical user interface!" : "Cannot start Systemback scheduler daemon!");
+        emsg.append("\n\nUnable to get root permissions.");
+        if(sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) == 255) sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
+        return 1;
+    }
+
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;
     if(trnsltr.load("/usr/share/systemback/lang/systemback_" % QLocale::system().name())) a.installTranslator(&trnsltr);

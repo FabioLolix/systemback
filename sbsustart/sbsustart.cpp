@@ -32,34 +32,34 @@ error:
     QStr emsg;
 
     switch(rv) {
-    case 1:
-        sb::error("\n " % tr("Missing or too much argument(s).") % "\n\n");
-        break;
     case 2:
-        emsg = tr("Cannot start Systemback graphical user interface!") % "\n\n" % tr("Unable to connect to X server.");
+        sb::error("\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
         break;
     case 3:
-        emsg = tr("Cannot start Systemback graphical user interface!") % "\n\n" % tr("Unable to get root permissions.");
+        emsg = tr("Cannot start Systemback graphical user interface!") % "\n\n" % tr("Unable to connect to X server.");
         break;
     case 4:
+        emsg = tr("Cannot start Systemback graphical user interface!") % "\n\n" % tr("Unable to get root permissions.");
+        break;
+    case 5:
         emsg = tr("Cannot start Systemback scheduler daemon!") % "\n\n" % tr("Unable to get root permissions.");
     }
 
-    if(! emsg.isEmpty()) (sb::exec("which zenity", NULL, true) == 0) ? sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) : sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
+    if(! emsg.isEmpty()) if(sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) == 255) sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
     qApp->exit(rv);
     return;
 };
 start:;
-    if(! sb::ilike(qApp->arguments().count(), QSIL() << 2 << 3))
+    if(! sb::ilike(qApp->arguments().count(), QSIL() << 2 << 3) || ! sb::like(qApp->arguments().value(1), QSL() << "_systemback_" << "_scheduler_"))
     {
-        rv = 1;
+        rv = 2;
         goto error;
     }
 
     QStr usr(getenv("USER")), cmd((qApp->arguments().value(1) == "systemback") ? "systemback authorization " : "sbscheduler ");
     cmd.append(usr);
 
-    if(getuid() == 0)
+    if(getgid() == 0)
     {
         if(qApp->arguments().value(2) == "gtk+") setenv("QT_STYLE_OVERRIDE", "gtk+", 1);
     }
@@ -67,28 +67,28 @@ start:;
     {
         QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), xpath(getenv("XAUTHORITY")), usrhm(getenv("HOME"));
 
-        if(setuid(0) == -1 || setgid(0) == -1)
+        if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1)
         {
-            rv = 3;
+            rv = 4;
             goto error;
         }
 
         if((xpath.isEmpty() || ! QFile(xpath).copy(xauth)) && (usrhm.isEmpty() || ! isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
         {
-            rv = 2;
+            rv = 3;
             goto error;
         }
 
         if(! clrenv(xauth, "/root", (qApp->arguments().value(2) == "gtk+")))
         {
             sb::remove(xauth);
-            rv = 3;
+            rv = 4;
             goto error;
         }
     }
-    else if(setuid(0) == -1 || setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), getenv("HOME"), (qApp->arguments().value(2) == "gtk+")))
+    else if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), getenv("HOME"), (qApp->arguments().value(2) == "gtk+")))
     {
-        rv = 4;
+        rv = 5;
         goto error;
     }
 

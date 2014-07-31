@@ -18,7 +18,7 @@
     <name>sbsustart</name>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="36"/>
-        <source>Missing or too much argument(s).</source>
+        <source>Missing, wrong or too much argument(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -47,32 +47,32 @@
 <context>
     <name>scheduler</name>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="32"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="33"/>
         <source>Cannot start Systemback scheduler daemon!</source>
         <translation>Systemback zamanlayıcısı arkaplan hizmeti başlatılamadı!</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="36"/>
-        <source>Missing or too much argument(s).</source>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="37"/>
+        <source>Missing, wrong or too much argument(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="39"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="40"/>
         <source>Root privileges are required.</source>
         <translation>Yönetici ayrıcalıkları gerekli.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="43"/>
         <source>This system is a Live.</source>
         <translation>Bu bir çalışan sistem.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="45"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
         <source>Already running.</source>
         <translation>Zaten çalışıyor.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="48"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="49"/>
         <source>Unable to demonize.</source>
         <translation type="unfinished"></translation>
     </message>

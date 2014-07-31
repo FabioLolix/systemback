@@ -45,7 +45,6 @@ public:
     static char Progress;
     static bool ExecKill, ThrdKill;
 
-    static QStr replace(QStr txt, QStr stxt, QStr rtxt);
     static QStr mid(QStr txt, ushort start, ushort len);
     static QStr right(QStr txt, short len);
     static QStr left(QStr txt, short len);

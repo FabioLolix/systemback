@@ -104,12 +104,6 @@ QStr sb::mid(QStr txt, ushort start, ushort len)
     return NULL;
 }
 
-QStr sb::replace(QStr txt, QStr stxt, QStr rtxt)
-{
-    while(txt.contains(stxt)) txt = txt.replace(txt.indexOf(stxt), stxt.length(), rtxt);
-    return txt;
-}
-
 bool sb::like(QStr txt, QSL lst)
 {
     for(uchar a(0) ; a < lst.count() ; ++a)
@@ -512,7 +506,7 @@ quint64 sb::devsize(QStr device)
 bool sb::mcheck(QStr item)
 {
     QStr mnts(fload("/proc/self/mounts"));
-    if(item.contains(" ")) item = replace(item, " ", "\\040");
+    if(item.contains(" ")) item = item.replace(" ", "\\040");
 
     if(item.startsWith("/dev/"))
         if(item.length() > 8)
@@ -1617,9 +1611,9 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
 
                 while(! file.atEnd())
                 {
-                    QStr cline(replace(file.readLine().trimmed(), "\t", " "));
+                    QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                    if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
+                    if(! cline.startsWith("#") && like(cline.replace("\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                     {
                         QStr fdir;
                         QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
@@ -1630,7 +1624,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
 
                             if(! cdname.isEmpty())
                             {
-                                fdir.append('/' % replace(cdname, "\\040", " "));
+                                fdir.append('/' % cdname.replace("\\040", " "));
                                 if(! isdir(trgt % "/media" % fdir) && ! cpdir("/media" % fdir, trgt % "/media" % fdir)) return false;
                             }
                         }
@@ -3062,9 +3056,9 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
                     while(! file.atEnd())
                     {
-                        QStr cline(replace(file.readLine().trimmed(), "\t", " "));
+                        QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                        if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
+                        if(! cline.startsWith("#") && like(cline.replace("\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                         {
                             QStr fdir;
                             QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
@@ -3075,7 +3069,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
                                 if(! cdname.isEmpty())
                                 {
-                                    fdir.append('/' % replace(cdname, "\\040", " "));
+                                    fdir.append('/' % cdname.replace("\\040", " "));
                                     if(! isdir("/.sbsystemcopy/media" % fdir) && ! cpdir("/media" % fdir, "/.sbsystemcopy/media" % fdir)) return false;
                                 }
                             }
@@ -3281,9 +3275,9 @@ bool sb::thrdlvprpr(bool &iudata)
 
             while(! file.atEnd())
             {
-                QStr cline(replace(file.readLine().trimmed(), "\t", " "));
+                QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                if(! cline.startsWith("#") && like(replace(cline, "\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
+                if(! cline.startsWith("#") && like(cline.replace("\\040", " "), QSL() << "* /media/" % item % " *" << "* /media/" % item % "/*"))
                 {
                     QStr fdir;
                     QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
@@ -3294,7 +3288,7 @@ bool sb::thrdlvprpr(bool &iudata)
 
                         if(! cdname.isEmpty())
                         {
-                            fdir.append('/' % replace(cdname, "\\040", " "));
+                            fdir.append('/' % cdname.replace("\\040", " "));
 
                             if(! isdir("/media/.sblvtmp/media" % fdir))
                             {

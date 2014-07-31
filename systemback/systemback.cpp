@@ -2397,8 +2397,8 @@ start:;
             {
                 QStr nline(file.readLine().trimmed());
                 if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
-                nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
+                nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
+                nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
                 if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
                 nfile.append(nline % '\n');
                 if(prun.isEmpty()) return;
@@ -2414,8 +2414,8 @@ start:;
             {
                 QStr nline(file.readLine().trimmed());
                 if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                nline = sb::replace(nline, ':' % guname() % ',', ':' % ui->username->text() % ',');
-                nline = sb::replace(nline, ',' % guname() % ',', ',' % ui->username->text() % ',');
+                nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
+                nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
                 if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
                 nfile.append(nline % '\n');
                 if(prun.isEmpty()) return;
@@ -2576,7 +2576,7 @@ start:;
             while(! file.atEnd())
             {
                 QStr nline(file.readLine().trimmed());
-                nline = sb::replace(nline, '\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
+                nline = nline.replace('\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
                 if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
                 nfile.append(nline % '\n');
                 if(prun.isEmpty()) return;
@@ -5251,7 +5251,7 @@ void systemback::on_partitionupdate_clicked()
                     {
                         QStr mnt(sb::right(mntlst, - sb::instr(mntlst, sb::ThrdStr[0] % ' ')));
                         short spc(sb::instr(mnt, " "));
-                        mpt->setText(sb::replace(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1) , "\\040", " "));
+                        mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                     }
                     else
                         mpt->setText(NULL);
@@ -5269,7 +5269,7 @@ void systemback::on_partitionupdate_clicked()
                         {
                             QStr mnt(sb::right(mntlst, - sb::instr(mntlst, sb::ThrdStr[0] % ' ')));
                             short spc(sb::instr(mnt, " "));
-                            mpt->setText(sb::replace(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1) , "\\040", " "));
+                            mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                         }
                     }
                     else if(QStr('\n' % mntlst).contains("\n/dev/disk/by-uuid/" % QStr(sb::FSUUID) % ' '))
@@ -5280,7 +5280,7 @@ void systemback::on_partitionupdate_clicked()
                         {
                             QStr mnt(sb::right(mntlst, - sb::instr(mntlst, "/dev/disk/by-uuid/" % QStr(sb::FSUUID) % ' ')));
                             short spc(sb::instr(mnt, " "));
-                            mpt->setText(sb::replace(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1) , "\\040", " "));
+                            mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                         }
                     }
                     else if(! swplst.isEmpty())
@@ -5331,7 +5331,7 @@ void systemback::on_umount_clicked()
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, QSL() << "* " % sb::replace(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), " ", "\\040") % " *" << "* " % sb::replace(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), " ", "\\040") % "/*")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+            if(sb::like(cline, QSL() << "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % " *" << "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % "/*")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
         }
 
         mnts[0] = sb::fload("/proc/self/mounts");
@@ -5339,7 +5339,7 @@ void systemback::on_umount_clicked()
         for(uchar a(0) ; a < ui->partitionsettings->verticalHeader()->count() ; ++a)
         {
             QStr mpt(ui->partitionsettings->item(a, 3)->text());
-            if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts[0].contains(' ' % sb::replace(mpt, " ", "\\040") % ' ')) ui->partitionsettings->item(a, 3)->setText(NULL);
+            if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')) ui->partitionsettings->item(a, 3)->setText(NULL);
         }
 
         sb::fssync();
@@ -5837,7 +5837,7 @@ void systemback::on_livedevicesupdate_clicked()
         {
             QStr path(sb::rlink("/dev/disk/by-id/" % iname));
             dpath = "/dev/" % sb::right(path, - sb::rinstr(path, "/"));
-            if(dpath.length() == 8) devs.append(dpath % '_' % sb::replace(sb::mid(iname, 5, sb::rinstr(iname, "_") - 5), "_", " "));
+            if(dpath.length() == 8) devs.append(dpath % '_' % sb::mid(iname, 5, sb::rinstr(iname, "_") - 5).replace('_', ' '));
         }
     }
 
@@ -7107,9 +7107,9 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
                     while(! file.atEnd())
                     {
-                        QStr cline(sb::replace(file.readLine().trimmed(), "\t", " "));
+                        QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                        if(sb::like(sb::replace(cline, "\\040", " "), QSL() << "* " % ui->partitionsettings->item(current->row(), 3)->text() % " *" << "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"))
+                        if(sb::like(cline.replace("\\040", " "), QSL() << "* " % ui->partitionsettings->item(current->row(), 3)->text() % " *" << "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"))
                         {
                             mntcheck = true;
                             break;
@@ -7270,7 +7270,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
 
                 if(arg1 == ui->mountpoint->currentText())
                 {
-                    QStr mpname(sb::replace(arg1 % '_' % sb::rndstr(), "/", "_"));
+                    QStr mpname(QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
 
                     if(QDir().mkdir("/tmp/" % mpname))
                     {
@@ -7332,7 +7332,7 @@ void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
 
             if(arg1 == ui->repairmountpoint->currentText())
             {
-                QStr mpname(sb::replace(arg1 % '_' % sb::rndstr(), "/", "_"));
+                QStr mpname(QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
 
                 if(QDir().mkdir("/tmp/" % mpname))
                 {

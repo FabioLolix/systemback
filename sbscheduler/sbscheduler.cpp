@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "sbscheduler.hpp"
+#include "../libsystemback/sblib.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
 #include <QDateTime>
@@ -33,7 +34,7 @@ error:;
 
     switch(rv) {
     case 1:
-        sb::error("\n\n " % tr("Missing or too much argument(s).") % "\n\n");
+        sb::error("\n\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
         break;
     case 2:
         sb::error("\n\n " % tr("Root privileges are required.") % "\n\n");

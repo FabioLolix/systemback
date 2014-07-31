@@ -19,29 +19,29 @@
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="36"/>
         <source>Missing or too much argument(s).</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiányzó vagy túl sok argumentum.</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="39"/>
         <location filename="../sbsustart/sbsustart.cpp" line="42"/>
         <source>Cannot start Systemback graphical user interface!</source>
-        <translation type="unfinished"></translation>
+        <translation>A Systemback grafikus felülete nem indult el!</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="39"/>
         <source>Unable to connect to X server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem sikerült az X szerverhez csatlakozni.</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="42"/>
         <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Unable to get root permissions.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem sikerült root jogosultságot szerezni.</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Cannot start Systemback scheduler daemon!</source>
-        <translation type="unfinished">A Systemback ütemező démon nem indult el!</translation>
+        <translation>A Systemback ütemező démon nem indult el!</translation>
     </message>
 </context>
 <context>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="36"/>
         <source>Missing or too much argument(s).</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiányzó vagy túl sok argumentum.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="39"/>

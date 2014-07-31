@@ -79,14 +79,14 @@ start:;
             goto error;
         }
 
-        if(! clrenv(xauth, (qApp->arguments().value(2) == "gtk+")))
+        if(! clrenv(xauth, "/root", (qApp->arguments().value(2) == "gtk+")))
         {
             sb::remove(xauth);
             rv = 3;
             goto error;
         }
     }
-    else if(setuid(0) == -1 || setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), (qApp->arguments().value(2) == "gtk+")))
+    else if(setuid(0) == -1 || setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), getenv("HOME"), (qApp->arguments().value(2) == "gtk+")))
     {
         rv = 4;
         goto error;
@@ -95,12 +95,12 @@ start:;
     qApp->exit(sb::exec(cmd));
 }
 
-bool sbsustart::clrenv(QStr xpath, bool gtk)
+bool sbsustart::clrenv(QStr xpath, QStr usrhm, bool gtk)
 {
     QStr dsply(getenv("DISPLAY")), pth(getenv("PATH")), lng(getenv("LANG"));
     if(clearenv() == -1) return false;
     if(! dsply.isEmpty()) setenv("DISPLAY", dsply.toStdString().c_str(), 1);
-    setenv("HOME", "/root", 1);
+    setenv("HOME", usrhm.isEmpty() ? "/root" : usrhm.toStdString().c_str(), 1);
     if(! lng.isEmpty()) setenv("LANG", lng.toStdString().c_str(), 1);
     setenv("LOGNAME", "root", 1);
     if(! pth.isEmpty()) setenv("PATH", pth.toStdString().c_str(), 1);

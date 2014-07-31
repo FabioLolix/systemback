@@ -8,9 +8,9 @@ Standards-Version: 3.9.5
 Package: systemback
 Architecture: amd64 i386
 Depends: ${misc:Depends}, ${shlibs:Depends}, casper | live-boot, dosfstools, fonts-freefont-ttf | ttf-freefont, genisoimage, parted, squashfs-tools, syslinux,
- systemback-efiboot-amd64 (= ${binary:Version}) [amd64], systemback-scheduler (= ${binary:Version}), upstart | sysvinit (>= 2.88) | systemd, xterm,
+ systemback-efiboot-amd64 (= ${source:Version}) [amd64], systemback-scheduler (= ${binary:Version}), upstart | sysvinit (>= 2.88) | systemd, xterm,
  zenity | kde-baseapps-bin | kdebase-bin
-Recommends: systemback-cli (= ${binary:Version}), systemback-locales (= ${binary:Version}), grub-efi | grub-pc
+Recommends: systemback-cli (= ${binary:Version}), systemback-locales (= ${source:Version}), grub-efi | grub-pc
 Suggests: btrfs-tools, jfsutils, reiserfsprogs, xfsprogs, unionfs-fuse
 Conflicts: live-config, live-config-systemd
 Breaks: systemback-gui-common (<< 1.0.0)

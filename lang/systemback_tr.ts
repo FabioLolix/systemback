@@ -41,7 +41,7 @@
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Cannot start Systemback scheduler daemon!</source>
-        <translation type="unfinished">Systemback zamanlayıcısı arkaplan hizmeti başlatılamadı!</translation>
+        <translation>Systemback zamanlayıcısı arkaplan hizmeti başlatılamadı!</translation>
     </message>
 </context>
 <context>
@@ -97,7 +97,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="192"/>
         <source>New root password (optional, not recommended for Ubuntu):</source>
-        <translation type="unfinished"></translation>
+        <translation>Yeni root şifresi (isteğe bağlı, Ubuntu/Linux Mint için tavsiye edilmez):</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="205"/>
@@ -1583,6 +1583,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="35"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="36"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="593"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="617"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="623"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="647"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="649"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="655"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="679"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="685"/>
+        <source>(Y/N)</source>
+        <translation>(E/H)</translation>
+    </message>
+    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="44"/>
         <source>Usage: systemback-cli [option]
 
@@ -1734,20 +1748,6 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="647"/>
         <source>You want to keep the current fstab file?</source>
         <translation>Mevcut fstab dosyasını korumak istiyor musunuz?</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="35"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="36"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="593"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="617"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="623"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="647"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="649"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="655"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="679"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="685"/>
-        <source>(Y/N)</source>
-        <translation>(E/H)</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="623"/>

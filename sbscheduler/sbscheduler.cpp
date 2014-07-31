@@ -120,9 +120,9 @@ start:;
                 newrestorepoint();
             else
             {
-                QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), env(getenv("XAUTHORITY"));
+                QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), xpath(getenv("XAUTHORITY")), usrhm(getenv("HOME"));
 
-                if((! env.isEmpty() && QFile(env).copy(xauth)) || (isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)))
+                if((! xpath.isEmpty() && QFile(xpath).copy(xauth)) || (isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
                 {
                     sb::exec("systemback schedule " % sb::schdle[6], "XAUTHORITY=" % xauth);
                     QFile::remove(xauth);

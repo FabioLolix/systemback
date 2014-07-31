@@ -34,6 +34,8 @@
 class SHARED_EXPORT_IMPORT sb : public QThread
 {
 public:
+    explicit sb(QThread *parent = 0);
+
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], trn[2];
     static quint64 ThrdLng;

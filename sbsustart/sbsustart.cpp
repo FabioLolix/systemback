@@ -45,7 +45,7 @@ error:
         emsg = tr("Cannot start Systemback scheduler daemon!") % "\n\n" % tr("Unable to get root permissions.");
     }
 
-    if(! emsg.isEmpty()) isfile("/usr/bin/zenity") ? sb::exec("/usr/bin/zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) : sb::exec("/usr/bin/kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
+    if(! emsg.isEmpty()) (sb::exec("which zenity", NULL, true) == 0) ? sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) : sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
     qApp->exit(rv);
     return;
 };
@@ -56,14 +56,14 @@ start:;
         goto error;
     }
 
-    QStr usr(getenv("USER")), cmd((qApp->arguments().value(1) == "systemback") ? "/usr/bin/systemback authorization " : "/usr/lib/systemback/sbscheduler ");
+    QStr usr(getenv("USER")), cmd((qApp->arguments().value(1) == "systemback") ? "systemback authorization " : "sbscheduler ");
     cmd.append(usr);
 
     if(getuid() == 0)
     {
         if(qApp->arguments().value(2) == "gtk+") setenv("QT_STYLE_OVERRIDE", "gtk+", 1);
     }
-    else if(cmd.startsWith("/usr/b"))
+    else if(cmd.startsWith("systemback"))
     {
         QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), xpath(getenv("XAUTHORITY")), usrhm(getenv("HOME"));
 

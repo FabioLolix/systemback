@@ -45,6 +45,11 @@ const char *sb::FSUUID, *sb::FSType, *sb::FSLabel;
 char sb::Progress(-1), sb::sblock, sb::dpkglock, sb::schdlrlock;
 bool sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdBool, sb::ThrdRslt;
 
+sb::sb(QThread *parent) : QThread(parent)
+{
+    setenv("PATH", "/usr/lib/systemback:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/sbin:/usr/local/bin:", 1);
+}
+
 QStr sb::getarch()
 {
     switch(sizeof(char *)) {
@@ -840,11 +845,11 @@ void sb::pupgrade()
 
 void sb::supgrade()
 {
-    exec("/usr/bin/apt-get update");
+    exec("apt-get update");
 
     while(true)
     {
-        if(exec(QSL() << "/usr/bin/apt-get install -fym --force-yes" << "/usr/bin/dpkg --configure -a" << "/usr/bin/apt-get dist-upgrade --no-install-recommends -ym --force-yes" << "/usr/bin/apt-get autoremove --purge -y") == 0)
+        if(exec(QSL() << "apt-get install -fym --force-yes" << "dpkg --configure -a" << "apt-get dist-upgrade --no-install-recommends -ym --force-yes" << "apt-get autoremove --purge -y") == 0)
         {
             QSL dlst(QDir("/boot").entryList(QDir::Files));
             QStr rklist;
@@ -876,7 +881,7 @@ void sb::supgrade()
             }
 
             uchar cproc(0);
-            if(! rklist.isEmpty()) cproc = exec("/usr/bin/apt-get autoremove --purge " % rklist);
+            if(! rklist.isEmpty()) cproc = exec("apt-get autoremove --purge " % rklist);
 
             if(ilike(cproc, QSIL() << 0 << 1))
             {
@@ -899,8 +904,8 @@ void sb::supgrade()
                     if(line.startsWith("rc")) iplist.append(' ' % mid(line, 5, instr(line, " ", 5) - 5));
                 }
 
-                if(! iplist.isEmpty()) exec("/usr/bin/dpkg --purge " % iplist);
-                exec("/usr/bin/apt-get clean");
+                if(! iplist.isEmpty()) exec("dpkg --purge " % iplist);
+                exec("apt-get clean");
                 QSL dlst(QDir("/var/cache/apt").entryList(QDir::Files));
 
                 for(uchar a(0) ; a < dlst.count() ; ++a)
@@ -921,19 +926,19 @@ void sb::supgrade()
             }
         }
         else
-            exec("/usr/bin/dpkg --configure -a");
+            exec("dpkg --configure -a");
 
-        exec(QSL() << "/usr/bin/tput reset" << "/usr/bin/tput civis");
+        exec(QSL() << "tput reset" << "tput civis");
 
         for(uchar a(3) ; a > 0 ; --a)
         {
             error("\n " % trn[0] % '\n');
             print("\n " % trn[1] % ' ' % QStr::number(a));
             sleep(1);
-            exec("/usr/bin/tput cup 0 0");
+            exec("tput cup 0 0");
         }
 
-        exec("/usr/bin/tput reset");
+        exec("tput reset");
     }
 }
 
@@ -1827,7 +1832,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 
         QSL elist;
         if(trgt.isEmpty()) elist = QSL() << "/etc/mtab" << "/var/cache/fontconfig/" << "/var/lib/dpkg/lock" << "/var/lib/udisks/mtab" << "/var/run/" << "/var/tmp/";
-        if(trgt.isEmpty() || (isfile("/mnt/etc/sudoers.d/99_systemback") && isfile("/mnt/etc/sudoers.d/99_sbscheduler") && isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsustart") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/sbstart") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append(QSL() << "/etc/sudoers.d/99_sbscheduler" << "/etc/sudoers.d/99_systemback" << "/etc/systemback*" << "/etc/xdg/autostart/sbschedule*" << "/usr/bin/systemback*" << "/usr/lib/systemback/" << "/usr/share/systemback/" << "/var/lib/dpkg/info/systemback*");
+        if(trgt.isEmpty() || (isfile("/mnt/etc/sudoers.d/99_systemback") && isfile("/mnt/etc/sudoers.d/99_sbscheduler") && isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsustart") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/sbstart") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append(QSL() << "/etc/sudoers.d/99_sbscheduler" << "/etc/sudoers.d/99_systemback" << "/etc/systemback*" << "/etc/xdg/autostart/sbschedule*" << "systemback*" << "/usr/lib/systemback/" << "/usr/share/systemback/" << "/var/lib/dpkg/info/systemback*");
         if(sfstab) elist.append("/etc/fstab");
         dlst = QSL() << "/bin" << "/boot" << "/etc" << "/lib" << "/lib32" << "/lib64" << "/opt" << "/sbin" << "/selinux" << "/srv" << "/usr" << "/var";
 

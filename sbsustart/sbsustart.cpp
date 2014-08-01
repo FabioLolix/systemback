@@ -59,11 +59,7 @@ start:;
     QStr usr(getenv("USER")), cmd((qApp->arguments().value(1) == "systemback") ? "systemback authorization " : "sbscheduler ");
     cmd.append(usr);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
     if(getuid() + getgid() == 0)
-#else
-    if(getgid() == 0)
-#endif
     {
         if(qApp->arguments().value(2) == "gtk+") setenv("QT_STYLE_OVERRIDE", "gtk+", 1);
     }
@@ -71,11 +67,7 @@ start:;
     {
         QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), xpath(getenv("XAUTHORITY")), usrhm(getenv("HOME"));
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
         if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1)
-#else
-        if(setgid(0) == -1)
-#endif
         {
             rv = 4;
             goto error;
@@ -94,11 +86,7 @@ start:;
             goto error;
         }
     }
-#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
     else if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), getenv("HOME"), (qApp->arguments().value(2) == "gtk+")))
-#else
-    else if(setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), getenv("HOME"), (qApp->arguments().value(2) == "gtk+")))
-#endif
     {
         rv = 5;
         goto error;

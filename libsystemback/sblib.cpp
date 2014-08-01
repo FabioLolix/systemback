@@ -2679,7 +2679,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 {
                     QStr line(in.readLine()), item(right(line, - instr(line, "_")));
                     ThrdDbg = (mthd == 5) ? QStr("@/etc/skel/" % item) : QStr("@/home/" % usr % '/' % item);
-                    if(left(line, instr(line, "_") - 1).toShort() == Isdir && exist("/.sbsystemcopy/home/" % usr % '/' % item) && (mthd == 5) ? ! cpertime(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/home/" % usr % '/' % item) : ! cpertime(srcdir % "/home/" % usr % '/' % item, "/.sbsystemcopy/home/" % usr % '/' % item)) return false;
+                    if(left(line, instr(line, "_") - 1).toShort() == Isdir && exist("/.sbsystemcopy/home/" % usr % '/' % item) && ((mthd == 5) ? ! cpertime(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/home/" % usr % '/' % item) : ! cpertime(srcdir % "/home/" % usr % '/' % item, "/.sbsystemcopy/home/" % usr % '/' % item))) return false;
                     if(ThrdKill) return false;
                 }
 
@@ -2807,7 +2807,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
             ThrdDbg = (mthd == 5) ? QStr("@/etc/skel/" % item) : QStr("@/root/" % item);
-            if(left(line, instr(line, "_") - 1).toShort() == Isdir && exist("/.sbsystemcopy/root/" % item) && (mthd == 5) ? ! cpertime(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/root/" % item) : ! cpertime(srcdir % "/root/" % item, "/.sbsystemcopy/root/" % item)) return false;
+            if(left(line, instr(line, "_") - 1).toShort() == Isdir && exist("/.sbsystemcopy/root/" % item) && ((mthd == 5) ? ! cpertime(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/root/" % item) : ! cpertime(srcdir % "/root/" % item, "/.sbsystemcopy/root/" % item))) return false;
             if(ThrdKill) return false;
         }
 
@@ -3130,7 +3130,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 if(! like(item, QSL() << "*.0_" << "*.1_" << "*.gz_" << "*.old_"))
                 {
                     crtfile("/.sbsystemcopy/var/log/" % item, NULL);
-                    if(! cpertime("/var/log/" % item, "/.sbsystemcopy/var/log/" % item)) return false;
+                    if(! cpertime(srcdir % "/var/log/" % item, "/.sbsystemcopy/var/log/" % item)) return false;
                 }
             }
 
@@ -3142,8 +3142,8 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
-            ThrdDbg = "@/.systemback/" % item;
-            if(left(line, instr(line, "_") - 1).toShort() == Isdir && ! cpertime(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
+            ThrdDbg = "@/var/log/" % item;
+            if(left(line, instr(line, "_") - 1).toShort() == Isdir && ! cpertime(srcdir % "/var/log/" % item, "/.sbsystemcopy/var/log/" % item)) return false;
             if(ThrdKill) return false;
         }
 
@@ -3163,10 +3163,10 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
             switch(left(line, instr(line, "_") - 1).toShort()) {
             case Islink:
-                if(item != "etc/fstab" && ! cplink(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
+                if(item != "etc/fstab" && ! cplink("/.systembacklivepoint/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
                 break;
             case Isfile:
-                if(item != "etc/fstab" && ! cpfile(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
+                if(item != "etc/fstab" && ! cpfile("/.systembacklivepoint/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
             }
 
             if(ThrdKill) return false;
@@ -3178,7 +3178,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         {
             QStr line(in.readLine()), item(right(line, - instr(line, "_")));
             ThrdDbg = "@/.systemback/" % item;
-            if(left(line, instr(line, "_") - 1).toShort() == Isdir && ! cpertime(srcdir % "/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
+            if(left(line, instr(line, "_") - 1).toShort() == Isdir && ! cpertime("/.systembacklivepoint/.systemback/" % item, "/.sbsystemcopy/" % item)) return false;
             if(ThrdKill) return false;
         }
     }

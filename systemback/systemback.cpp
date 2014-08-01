@@ -2136,10 +2136,11 @@ error:;
     while(! in.atEnd())
     {
         QStr cline(in.readLine());
-        if(cline.contains(" /.sbsystemcopy")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        if(sb::like(cline, QSL() << "* /.sbsystemcopy*" << "* /.systembacklivepoint *")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
     }
 
     QDir().rmdir("/.sbsystemcopy");
+    if(isdir("/.systembacklivepoint")) QDir().rmdir("/.systembacklivepoint");
     dialogopen();
     return;
 exit:
@@ -2151,10 +2152,11 @@ exit:
     while(! in.atEnd())
     {
         QStr cline(in.readLine());
-        if(cline.contains(" /.sbsystemcopy")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        if(sb::like(cline, QSL() << "* /.sbsystemcopy*" << "* /.systembacklivepoint *")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
     }
 
     QDir().rmdir("/.sbsystemcopy");
+    if(isdir("/.systembacklivepoint")) QDir().rmdir("/.systembacklivepoint");
     return;
 start:;
     statustart();

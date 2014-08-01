@@ -41,7 +41,7 @@
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Cannot start Systemback scheduler daemon!</source>
-        <translation type="unfinished">¡No se puede iniciar el servicio de programación de eventos de Systemback!</translation>
+        <translation>¡No se puede iniciar el servicio de programación de eventos de Systemback!</translation>
     </message>
 </context>
 <context>

@@ -54,7 +54,7 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="37"/>
         <source>Missing, wrong or too much argument(s).</source>
-        <translation type="unfinished">Hiányzó, hibás vagy túl sok argumentum.</translation>
+        <translation>Hiányzó, hibás vagy túl sok argumentum.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="40"/>

@@ -27,7 +27,8 @@
 
 int main(int argc, char *argv[])
 {
-    if(QStr(qVersion()).replace(".", NULL).toShort() >= 530 && setuid(0) == -1)
+#if QT_VERSION < 0x050300
+    if(getuid() > 0 && QStr(qVersion()).replace(".", NULL).toShort() >= 530 && setuid(0) == -1)
     {
         QStr arg1(argv[1]);
 
@@ -42,6 +43,9 @@ int main(int argc, char *argv[])
         if(sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) == 255) sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
         return 1;
     }
+#else
+    QCoreApplication::setSetuidAllowed(true);
+#endif
 
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;

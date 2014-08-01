@@ -2535,12 +2535,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
 
     if(mthd > 2)
     {
-        QStr mid;
-
-        if(isfile(srcdir % "/var/lib/dbus/machine-id"))
-            mid = "/var/lib/dbus/machine-id";
-        else if(isfile(srcdir % "/etc/machine-id"))
-            mid = "/etc/machine-id";
+        QStr mid(isfile(srcdir % "/var/lib/dbus/machine-id") ? "/var/lib/dbus/machine-id" : isfile(srcdir % "/etc/machine-id") ? "/etc/machine-id" : NULL);
 
         if(! mid.isEmpty())
         {
@@ -3506,8 +3501,7 @@ bool sb::thrdlvprpr(bool &iudata)
 
     for(uchar a(0) ; a < usrs.count() ; ++a)
     {
-        QStr udir(usrs.at(a)), usdir;
-        usdir = uhl ? "/home/.sbuserdata/home" : QStr(sdir[2] % "/.sblivesystemcreate/userdata/home");
+        QStr udir(usrs.at(a)), usdir(uhl ? "/home/.sbuserdata/home" : QStr(sdir[2] % "/.sblivesystemcreate/userdata/home"));
         if(! QDir().mkdir(usdir % '/' % udir)) return false;
         ++ThrdLng;
         QStr useritms(iudata ? rodir("/home/" % udir) : rodir("/home/" % udir, true));

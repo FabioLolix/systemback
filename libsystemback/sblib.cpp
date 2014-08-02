@@ -506,7 +506,7 @@ quint64 sb::devsize(QStr device)
 bool sb::mcheck(QStr item)
 {
     QStr mnts(fload("/proc/self/mounts"));
-    if(item.contains(" ")) item = item.replace(" ", "\\040");
+    if(item.contains(' ')) item = item.replace(" ", "\\040");
 
     if(item.startsWith("/dev/"))
         if(item.length() > 8)
@@ -740,7 +740,7 @@ void sb::pupgrade()
             {
                 QStr iname(dlst.at(a));
 
-                if(! islink(sdir[1] % '/' % iname) && ! iname.contains(" "))
+                if(! islink(sdir[1] % '/' % iname) && ! iname.contains(' '))
                 {
                     QStr pre(left(iname, 4));
 
@@ -1826,7 +1826,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
 
         QSL elist;
         if(trgt.isEmpty()) elist = QSL() << "/etc/mtab" << "/var/cache/fontconfig/" << "/var/lib/dpkg/lock" << "/var/lib/udisks/mtab" << "/var/run/" << "/var/tmp/";
-        if(trgt.isEmpty() || (isfile("/mnt/etc/sudoers.d/99_systemback") && isfile("/mnt/etc/sudoers.d/99_sbscheduler") && isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsustart") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/sbstart") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append(QSL() << "/etc/sudoers.d/99_sbscheduler" << "/etc/sudoers.d/99_systemback" << "/etc/systemback*" << "/etc/xdg/autostart/sbschedule*" << "systemback*" << "/usr/lib/systemback/" << "/usr/share/systemback/" << "/var/lib/dpkg/info/systemback*");
+        if(trgt.isEmpty() || (isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsustart") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append(QSL() << "/etc/systemback*" << "/etc/xdg/autostart/sbschedule*" << "systemback*" << "/usr/lib/systemback/" << "/usr/share/systemback/" << "/var/lib/dpkg/info/systemback*");
         if(sfstab) elist.append("/etc/fstab");
         dlst = QSL() << "/bin" << "/boot" << "/etc" << "/lib" << "/lib32" << "/lib64" << "/opt" << "/sbin" << "/selinux" << "/srv" << "/usr" << "/var";
 

@@ -1975,10 +1975,10 @@ void systemback::repair()
                     mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
             }
 
-            sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % sb::left(mntdev, 8) % '\n');
+            sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
         }
         else
-            sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
+            sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
 
         QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
         if(prun.isEmpty()) return;
@@ -2067,11 +2067,11 @@ void systemback::repair()
                                 mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
                         }
 
-                        sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % sb::left(mntdev, 8) % '\n');
+                        sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
                     }
                 }
                 else
-                    sb::crtfile("/mnt/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
+                    sb::crtfile("/mnt/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
 
                 QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
                 if(prun.isEmpty()) return;
@@ -2701,9 +2701,9 @@ start:;
                     mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
             }
 
-            if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
+            if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
         }
-        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\n/usr/sbin/update-grub\n/usr/sbin/grub-install --force " % ui->grubinstallcopy->currentText() % '\n'))
+        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % ui->grubinstallcopy->currentText() % '\n'))
             goto error;
 
         if(! QFile::setPermissions("/.sbsystemcopy/grubinst", QFile::ExeOwner)) goto error;
@@ -8789,7 +8789,7 @@ start:;
     }
 
     if(prun.isEmpty()) goto exit;
-    if(isfile("/usr/bin/isohybrid.pl") && sb::exec("isohybrid.pl " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0) goto error;
+    if(sb::exec("isohybrid " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0) goto error;
     if(! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(prun.isEmpty()) goto exit;

@@ -146,6 +146,12 @@ ushort sb::rinstr(QStr txt, QStr stxt, ushort start)
     return (start == 0) ? txt.lastIndexOf(stxt) + 1 : (start >= stxt.length()) ? txt.left(start).lastIndexOf(stxt) + 1 : 0;
 }
 
+bool sb::isnum(QStr txt)
+{
+    for(uchar a(0) ; a < txt.length() ; ++a) if(! txt.at(a).isDigit()) return false;
+    return txt.isEmpty() ? false : true;
+}
+
 QStr sb::rndstr(uchar vlen)
 {
     QStr val, chrs("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz./"), chr;
@@ -855,10 +861,8 @@ void sb::supgrade()
                 if(item.startsWith("vmlinuz-"))
                 {
                     QStr vmlinuz(right(item, -8)), kernel(left(vmlinuz, instr(vmlinuz, "-") - 1)), kver(mid(vmlinuz, kernel.length() + 2, instr(vmlinuz, "-", kernel.length() + 2) - kernel.length() - 2));
-                    bool ok;
-                    kver.toShort(&ok);
 
-                    if(ok && vmlinuz.startsWith(kernel % '-' % kver % '-'))
+                    if(isnum(kver) && vmlinuz.startsWith(kernel % '-' % kver % '-'))
                     {
                         if(! rklist.contains(kernel % '-' % kver % "-*"))
                         {
@@ -952,16 +956,10 @@ bool sb::pisrng(QString pname)
 
     while((ent = readdir(dir)) != NULL)
     {
-        if(! like(ent->d_name, QSL() << "_._" << "_.._") && ent->d_type == DT_DIR)
+        if(! like(ent->d_name, QSL() << "_._" << "_.._") && ent->d_type == DT_DIR && isnum(QStr(ent->d_name)) && islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
         {
-            bool ok;
-            QStr(ent->d_name).toShort(&ok);
-
-            if(ok && islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
-            {
-                closedir(dir);
-                return true;
-            }
+            closedir(dir);
+            return true;
         }
     }
 
@@ -1655,7 +1653,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 if(! cpdir("/var/log/" % item, trgt % "/var/log/" % item)) return false;
                 break;
             case Isfile:
-                if(! like(item, QSL() << "*.0_" << "*.1_" << "*.gz_" << "*.old_"))
+                if(! like(item, QSL() << "*.gz_" << "*.old_") && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                 {
                     crtfile(trgt % "/var/log/" % item, NULL);
                     if(! cpertime("/var/log/" % item, trgt % "/var/log/" % item)) return false;
@@ -3127,7 +3125,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 if(! cpdir(srcdir % "/var/log/" % item, "/.sbsystemcopy/var/log/" % item)) return false;
                 break;
             case Isfile:
-                if(! like(item, QSL() << "*.0_" << "*.1_" << "*.gz_" << "*.old_"))
+                if(! like(item, QSL() << "*.gz_" << "*.old_") && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                 {
                     crtfile("/.sbsystemcopy/var/log/" % item, NULL);
                     if(! cpertime(srcdir % "/var/log/" % item, "/.sbsystemcopy/var/log/" % item)) return false;
@@ -3345,7 +3343,7 @@ bool sb::thrdlvprpr(bool &iudata)
                     ++ThrdLng;
                     break;
                 case Isfile:
-                    if(! like(item, QSL() << "*.0_" << "*.1_" << "*.gz_" << "*.old_"))
+                    if(! like(item, QSL() << "*.gz_" << "*.old_") && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                     {
                         crtfile("/var/.sblvtmp/var/" % item, NULL);
                         if(! cpertime("/var/" % item, "/var/.sblvtmp/var/" % item)) return false;

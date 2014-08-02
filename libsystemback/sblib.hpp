@@ -84,6 +84,7 @@ public:
     static bool remove(QStr path);
     static bool lock(uchar type);
     static bool exist(QStr path);
+    static bool isnum(QStr txt);
     static void unlock(uchar type);
     static void delay(ushort msec);
     static void print(QStr txt);

@@ -750,7 +750,7 @@ void sb::pupgrade()
                 {
                     QStr pre(left(iname, 4));
 
-                    if(pre.at(1).isNumber() && pre.at(2).isNumber() && pre.at(3) == '_')
+                    if(pre.at(1).isDigit() && pre.at(2).isDigit() && pre.at(3) == '_')
                     {
                         if(pre.at(0) == 'S')
                         {
@@ -1119,8 +1119,7 @@ bool sb::recrmdir(QStr path, bool slimit)
                     QDir().rmdir(fpath);
                     break;
                 case Isfile:
-                    if(slimit)
-                        if(QFile(fpath).size() > 8000000) continue;
+                    if(slimit && QFile(fpath).size() > 8000000) continue;
                 default:
                     QFile::remove(fpath);
                 }
@@ -2982,10 +2981,9 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                             case 2:
                                 goto nitem_3;
                             }
-
-                            break;
                         case Islink:
                             QFile::remove("/.sbsystemcopy" % cdir % '/' % item);
+                            break;
                         case Isdir:
                             recrmdir("/.sbsystemcopy" % cdir % '/' % item);
                         }

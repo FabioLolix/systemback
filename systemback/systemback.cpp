@@ -2390,7 +2390,10 @@ start:;
         if(guname() != ui->username->text())
         {
             if(isdir("/.sbsystemcopy/home/" % guname()))
+            {
+                if(sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) goto error;
                 if(! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text())) goto error;
+            }
 
             file.setFileName("/.sbsystemcopy/etc/group");
             file.open(QIODevice::ReadOnly);

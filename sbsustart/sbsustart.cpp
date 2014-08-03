@@ -57,7 +57,7 @@ start:;
     }
 
     QStr usr(getenv("USER")), cmd((qApp->arguments().value(1) == "systemback") ? "systemback authorization " : "sbscheduler ");
-    cmd.append(usr);
+    usr.isEmpty() ? cmd.append("root") : cmd.append(usr);
 
     if(getuid() + getgid() == 0)
     {

@@ -93,7 +93,7 @@ start:;
         if(sb::left(sb::fload(pfile), 7) == "restart")
         {
             sb::unlock(sb::Schdlrlock);
-            sb::exec("sbscheduler", NULL, true, true);
+            sb::exec("sbscheduler " % qApp->arguments().value(1), NULL, true, true);
             break;
         }
 
@@ -123,7 +123,7 @@ start:;
             {
                 QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), xpath(getenv("XAUTHORITY")), usrhm(getenv("HOME"));
 
-                if((! xpath.isEmpty() && QFile(xpath).copy(xauth)) || (isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                if((! xpath.isEmpty() && QFile(xpath).copy(xauth)) || (isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
                 {
                     sb::exec("systemback schedule " % sb::schdle[6], "XAUTHORITY=" % xauth);
                     QFile::remove(xauth);

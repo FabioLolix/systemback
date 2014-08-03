@@ -61,7 +61,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     {
         sstart = false;
 
-        if(getuid() != 0)
+        if(getuid() + getgid() > 0)
             dialog = 17;
         else if(! sb::lock(sb::Sblock))
             dialog = 1;
@@ -263,7 +263,6 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             ui->adminpasswordtext->resize(fontMetrics().width(ui->adminpasswordtext->text()) + 7, 32);
             ui->adminpassword->move(ui->adminpasswordtext->x() + ui->adminpasswordtext->width(), ui->adminpassword->y());
             ui->adminpassword->resize(336 - ui->adminpassword->x(), ui->adminpassword->height());
-
             QFile file("/etc/group");
             file.open(QIODevice::ReadOnly);
 
@@ -725,8 +724,7 @@ void systemback::unitimer()
 
             if(ui->installpanel->isVisible())
             {
-                if(ui->installmenu->isEnabled() && ui->fullnamepipe->isVisible() && ui->usernamepipe->isVisible() && ui->hostnamepipe->isVisible() && ui->passwordpipe->isVisible() && (ui->rootpassword1->text().isEmpty() || ui->rootpasswordpipe->isVisible()))
-                    if(! ui->installnext->isEnabled()) ui->installnext->setEnabled(true);
+                if(ui->installmenu->isEnabled() && ui->fullnamepipe->isVisible() && ui->usernamepipe->isVisible() && ui->hostnamepipe->isVisible() && ui->passwordpipe->isVisible() && (ui->rootpassword1->text().isEmpty() || ui->rootpasswordpipe->isVisible()) && ! ui->installnext->isEnabled()) ui->installnext->setEnabled(true);
             }
             else if(ui->livecreatepanel->isVisible())
             {
@@ -2279,8 +2277,7 @@ start:;
         else if(nohmcpy ? ! sb::scopy(0, NULL, NULL) : ui->userdatafilescopy->isChecked() ? ! sb::scopy(1, NULL, NULL) : ! sb::scopy(2, NULL, NULL))
             goto error;
 
-        if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == "on")
-            if(! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", "storagedir=" % sb::sdir[0] % "\nliveworkdir=" % sb::sdir[2] % "\npointsnumber=" % QStr::number(sb::pnumber) % "\ntimer=off\nschedule=" % sb::schdle[1] % ':' % sb::schdle[2] % ':' % sb::schdle[3] % ':' % sb::schdle[4] % "\nsilentmode=" % sb::schdle[5] % "\nwindowposition=" % sb::schdle[6] % '\n')) goto error;
+        if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == "on" && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", "storagedir=" % sb::sdir[0] % "\nliveworkdir=" % sb::sdir[2] % "\npointsnumber=" % QStr::number(sb::pnumber) % "\ntimer=off\nschedule=" % sb::schdle[1] % ':' % sb::schdle[2] % ':' % sb::schdle[3] % ':' % sb::schdle[4] % "\nsilentmode=" % sb::schdle[5] % "\nwindowposition=" % sb::schdle[6] % '\n')) goto error;
     }
     else if(pname == tr("Live image"))
     {
@@ -2821,7 +2818,7 @@ start:;
             if(stract == 0)
             {
                 if(prun.isEmpty()) return;
-                 stract = 1;
+                stract = 1;
             }
             else
             {
@@ -2846,7 +2843,7 @@ start:;
             if(stract == 0)
             {
                 if(prun.isEmpty()) return;
-                 stract = 1;
+                stract = 1;
             }
             else
             {
@@ -4989,15 +4986,7 @@ void systemback::on_copymenu_clicked()
     ui->copypanel->show();
     ui->function1->setText(tr("System copy"));
     ui->copyback->setFocus();
-
-    if(nwidth > 698)
-    {
-        if(nwidth < 850)
-            ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465, false) : windowmove(nwidth, 465, false);
-        else
-            windowmove(850, 465, false);
-    }
-
+    if(nwidth > 698) (nwidth < 850) ? ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465, false) : windowmove(nwidth, 465, false) : windowmove(850, 465, false);
     setMinimumSize(698, 465);
     setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
 
@@ -6148,14 +6137,7 @@ void systemback::on_dialogok_clicked()
             {
                 ui->copyback->setFocus();
                 short nwidth(156 + ui->partitionsettings->horizontalHeader()->sectionSize(0) + ui->partitionsettings->horizontalHeader()->sectionSize(1) + ui->partitionsettings->horizontalHeader()->sectionSize(2) + ui->partitionsettings->horizontalHeader()->sectionSize(3) + ui->partitionsettings->horizontalHeader()->sectionSize(4) + ui->partitionsettings->horizontalHeader()->sectionSize(5) + ui->partitionsettings->horizontalHeader()->sectionSize(6));
-
-                if(nwidth > 698)
-                {
-                    if(nwidth < 850)
-                        ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465) : windowmove(nwidth, 465);
-                    else
-                        windowmove(850, 465);
-                }
+                if(nwidth > 698) (nwidth < 850) ? ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465) : windowmove(nwidth, 465) : windowmove(850, 465);
             }
             else
             {
@@ -6971,15 +6953,7 @@ void systemback::on_installnext_clicked()
     ui->installpanel->hide();
     ui->copypanel->show();
     ui->copyback->setFocus();
-
-    if(nwidth > 698)
-    {
-        if(nwidth < 850)
-            ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465, false) : windowmove(nwidth, 465, false);
-        else
-            windowmove(850, 465, false);
-    }
-
+    if(nwidth > 698) (nwidth < 850) ? ui->partitionsettings->verticalScrollBar()->isVisible() ? windowmove(nwidth + ui->partitionsettings->verticalScrollBar()->width() + 3, 465, false) : windowmove(nwidth, 465, false) : windowmove(850, 465, false);
     setMinimumSize(698, 465);
     setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
 
@@ -8535,11 +8509,7 @@ start:;
     while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive"))
     {
         ++ncount;
-
-        if(ncount == 1)
-            ifname.append("_1");
-        else
-            ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(ncount);
+        (ncount == 1) ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(ncount);
     }
 
     if(prun.isEmpty()) goto exit;

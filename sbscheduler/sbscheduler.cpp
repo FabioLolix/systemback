@@ -58,7 +58,7 @@ start:;
         goto error;
     }
 
-    if(getuid() != 0)
+    if(getuid() + getgid() > 0)
     {
         rv = 2;
         goto error;
@@ -76,7 +76,7 @@ start:;
         goto error;
     }
 
-    if(daemon(0, 0) != 0)
+    if(daemon(0, 0) == -1)
     {
         rv = 5;
         goto error;

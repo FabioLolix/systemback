@@ -648,13 +648,13 @@ uchar sb::exec(QStr cmd, QStr envv, bool silent, bool bckgrnd)
         case 3:
             if(ThrdLng == 0)
             {
-                QStr itms(rodir(sb::sdir[2] % "/.sblivesystemcreate"));
+                QStr itms(rodir(sdir[2] % "/.sblivesystemcreate"));
                 QTS in(&itms, QIODevice::ReadOnly);
 
                 while(! in.atEnd())
                 {
                     QStr line(in.readLine()), item(right(line, - instr(line, "_")));
-                    if(left(line, instr(line, "_") - 1).toShort() == Isfile) ThrdLng += fsize(sb::sdir[2] % "/.sblivesystemcreate/" % item);
+                    if(left(line, instr(line, "_") - 1).toShort() == Isfile) ThrdLng += fsize(sdir[2] % "/.sblivesystemcreate/" % item);
                 }
             }
             else if(isfile(ThrdStr[0]))
@@ -869,9 +869,7 @@ void sb::supgrade()
                             for(ushort b(1) ; b < 101 ; ++b)
                             {
                                 QStr subk(kernel % '-' % QStr::number(kver.toShort() - b));
-
-                                for(short c(dlst.count() - 1) ; c > -1 ; --c)
-                                    if(dlst.at(c).startsWith("vmlinuz-" % subk % '-')) rklist.append(' ' % subk % "-*");
+                                for(short c(dlst.count() - 1) ; c > -1 ; --c) if(dlst.at(c).startsWith("vmlinuz-" % subk % '-')) rklist.append(' ' % subk % "-*");
                             }
                         }
                     }
@@ -1135,8 +1133,7 @@ bool sb::recrmdir(QStr path, bool slimit)
                 QDir().rmdir(fpath);
                 break;
             case DT_REG:
-                if(slimit)
-                    if(QFile(fpath).size() > 8000000) continue;
+                if(slimit && QFile(fpath).size() > 8000000) continue;
             default:
                 QFile::remove(fpath);
             }
@@ -1911,9 +1908,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                                 recrmdir(trgt % cdir % '/' % item);
                             }
 
-                            if(! cplink(srcdir % cdir % '/' % item, trgt % cdir % '/' % item))
-                                if(! fspchk(trgt)) return false;
-
+                            if(! cplink(srcdir % cdir % '/' % item, trgt % cdir % '/' % item) && ! fspchk(trgt)) return false;
                             break;
                         case Isdir:
                             switch(stype(trgt % cdir % '/' % item)) {
@@ -2284,9 +2279,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
                             recrmdir(trgt % "/home/" % usr % '/' % item);
                         }
 
-                        if(! cplink(srcdir % "/home/" % usr % '/' % item, trgt % "/home/" % usr % '/' % item))
-                            if(! fspchk(trgt)) return false;
-
+                        if(! cplink(srcdir % "/home/" % usr % '/' % item, trgt % "/home/" % usr % '/' % item) && ! fspchk(trgt)) return false;
                         break;
                     case Isdir:
                         switch(stype(trgt % "/home/" % usr % '/' % item)) {
@@ -3327,9 +3320,7 @@ bool sb::thrdlvprpr(bool &iudata)
                     ++ThrdLng;
                     break;
                 case Isfile:
-                    if(issmfs("/var/.sblvtmp", "/var/" % item))
-                        if(link(QStr("/var/" % item).toStdString().c_str(), QStr("/var/.sblvtmp/var/" % item).toStdString().c_str()) == -1) return false;
-
+                    if(issmfs("/var/.sblvtmp", "/var/" % item) && link(QStr("/var/" % item).toStdString().c_str(), QStr("/var/.sblvtmp/var/" % item).toStdString().c_str()) == -1) return false;
                     ++ThrdLng;
                 }
             }

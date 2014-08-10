@@ -12,4 +12,5 @@ HEADERS += sblib.hpp \
     sblib_global.hpp
 
 LIBS += -lmount \
-    -lblkid
+    -lblkid \
+    -lparted

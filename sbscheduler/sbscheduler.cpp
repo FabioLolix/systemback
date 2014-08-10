@@ -117,7 +117,7 @@ start:;
                 goto next;
             }
 
-            if(sb::schdle[5] == "on" || ! isfile("/usr/bin/systemback"))
+            if(sb::schdle[5] == "on" || ! sb::execsrch("systemback"))
                 newrestorepoint();
             else
             {

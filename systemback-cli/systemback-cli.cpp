@@ -130,7 +130,7 @@ start:
             rv = uinit();
             if(rv > 0) goto error;
             sb::pupgrade();
-            if(! newrestorepoint()) rv = (sb::dfree(sb::sdir[1]) < 104857600) ? 8 : 9;
+            if(! newrestorepoint()) rv = sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
             endwin();
         }
         else if(sb::like(qApp->arguments().value(1), QSL() << "_-s_" << "_--storagedir_"))
@@ -164,7 +164,7 @@ start:
 uchar systemback::uinit()
 {
     initscr();
-    uchar rv(has_colors() ? (LINES < 24 || COLS < 80) ? 12 : 0 : 11);
+    uchar rv(has_colors() ? LINES < 24 || COLS < 80 ? 12 : 0 : 11);
 
     if(rv > 0)
     {
@@ -288,7 +288,7 @@ uchar systemback::clistart()
             break;
         case 'g':
         case 'G':
-            if(! newrestorepoint()) return (sb::dfree(sb::sdir[1]) < 104857600) ? 8 : 9;
+            if(! newrestorepoint()) return sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
             clear();
             return clistart();
         case 'q':
@@ -334,7 +334,10 @@ uchar systemback::storagedir()
     else
     {
         QStr ndir(qApp->arguments().value(2));
-        if(qApp->arguments().count() > 3) for(uchar a(3); a < qApp->arguments().count(); ++a) ndir.append(' ' % qApp->arguments().value(a));
+
+        if(qApp->arguments().count() > 3)
+            for(uchar a(3); a < qApp->arguments().count(); ++a) ndir.append(' ' % qApp->arguments().value(a));
+
         if(sb::like(ndir, QSL() << "*/systemback_" << "*/_" << "_/bin_" << "_/bin/*" << "_/boot_" << "_/boot/*" << "_/cdrom_" << "_/cdrom/*" << "_/dev_" << "_/dev/*" << "_/etc_" << "_/etc/*" << "_/lib_" << "_/lib/*" << "_/lib32_" << "_/lib32/*" << "_/lib64_" << "_/lib64/*" << "_/opt_" << "_/opt/*" << "_/proc_" << "_/proc/*" << "_/root_" << "_/root/*" << "_/run_" << "_/run/*" << "_/sbin_" << "_/sbin/*" << "_/selinux_" << "_/selinux/*" << "_/srv_" << "_/sys/*" << "_/tmp_" << "_/tmp/*" << "_/usr_" << "_/usr/*" << "_/var_" << "_/var/*") || sb::fload("/etc/passwd").contains(':' % ndir % ':')) return 5;
         if(! sb::islnxfs(ndir)) return 5;
 
@@ -613,12 +616,12 @@ uchar systemback::restore()
             attron(COLOR_PAIR(1));
             printw(QStr("\n\n " % tr("Restore with the following restore method:")).toStdString().c_str());
             attron(COLOR_PAIR(4));
-            (rmode == 1) ? printw(QStr("\n\n  " % tr("Full restore")).toStdString().c_str()) : printw(QStr("\n\n  " % tr("System files restore")).toStdString().c_str());
+            printw(QStr("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore"))).toStdString().c_str());
             printw(QStr("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-            (fsave == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
+            printw(QStr(' ' % yn[fsave == 1 ? 0 : 1]).toStdString().c_str());
             attron(COLOR_PAIR(3));
 
-            if(isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/usr/sbin/update-grub2"))
+            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
             {
                 printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
                 attron(COLOR_PAIR(2));
@@ -643,14 +646,14 @@ uchar systemback::restore()
                 attron(COLOR_PAIR(1));
                 printw(QStr("\n\n " % tr("Restore with the following restore method:")).toStdString().c_str());
                 attron(COLOR_PAIR(4));
-                (rmode == 1) ? printw(QStr("\n\n  " % tr("Full restore")).toStdString().c_str()) : printw(QStr("\n\n  " % tr("System files restore")).toStdString().c_str());
+                printw(QStr("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore"))).toStdString().c_str());
                 printw(QStr("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-                (fsave == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
+                printw(QStr(' ' % yn[fsave == 1 ? 0 : 1]).toStdString().c_str());
                 printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-                (greinst == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
+                printw(QStr(' ' % yn[greinst == 1 ? 0 : 1]).toStdString().c_str());
             }
         }
-        else if(isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/usr/sbin/update-grub2"))
+        else if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
         {
             printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
             attron(COLOR_PAIR(2));
@@ -675,9 +678,9 @@ uchar systemback::restore()
             attron(COLOR_PAIR(1));
             printw(QStr("\n\n " % tr("Restore with the following restore method:")).toStdString().c_str());
             attron(COLOR_PAIR(4));
-            (rmode == 1) ? printw(QStr("\n\n  " % tr("Full restore")).toStdString().c_str()) : printw(QStr("\n\n  " % tr("System files restore")).toStdString().c_str());
+            printw(QStr("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore"))).toStdString().c_str());
             printw(QStr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")).toStdString().c_str());
-            (greinst == 1) ? printw(QStr(' ' % yn[0]).toStdString().c_str()) : printw(QStr(' ' % yn[1]).toStdString().c_str());
+            printw(QStr(' ' % yn[greinst == 1 ? 0 : 1]).toStdString().c_str());
         }
     }
 
@@ -768,7 +771,7 @@ uchar systemback::restore()
     }
 
     attron(COLOR_PAIR(3));
-    (rmode < 3) ? printw(QStr("\n\n " % tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.")).toStdString().c_str()) : printw(QStr("\n\n " % tr("Press 'ENTER' key to quit.")).toStdString().c_str());
+    printw(QStr("\n\n " % (rmode < 3 ? tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit."))).toStdString().c_str());
     attron(COLOR_PAIR(2));
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
@@ -777,7 +780,7 @@ uchar systemback::restore()
     {
         switch(getch()) {
         case '\n':
-            if(rmode < 3) isfile("/sbin/reboot") ? sb::exec("reboot", NULL, false, true) : sb::exec("systemctl reboot", NULL, false, true);
+            if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", NULL, false, true);
             return 0;
         case 'q':
         case 'Q':

@@ -280,6 +280,7 @@ private slots:
 
 protected:
     bool eventFilter(QObject *, QEvent *ev);
+    void keyReleaseEvent(QKeyEvent *ev);
     void keyPressEvent(QKeyEvent *ev);
     void closeEvent(QCloseEvent *ev);
 };

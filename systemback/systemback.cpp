@@ -31,6 +31,14 @@
 #include <X11/Xlib.h>
 #include <unistd.h>
 
+#ifdef KeyRelease
+#undef KeyRelease
+#endif
+
+#ifdef KeyPress
+#undef KeyPress
+#endif
+
 systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
     ui->setupUi(this);
@@ -572,7 +580,7 @@ void systemback::unitimer()
                     ui->excludemenu->setEnabled(true);
                     ui->schedulemenu->setEnabled(true);
                     pname = tr("Currently running system");
-                    ui->functionmenunext->setFocus();
+                    ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
                 }
             }
 
@@ -3600,6 +3608,10 @@ void systemback::keyPressEvent(QKeyEvent *ev)
         break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
+    {
+        QKeyEvent press(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+        qApp->sendEvent(qApp->focusObject(), &press);
+
         if(ui->sbpanel->isVisible())
         {
             if(ui->point1->hasFocus())
@@ -3661,8 +3673,6 @@ void systemback::keyPressEvent(QKeyEvent *ev)
             else if(ui->point15->hasFocus() && ui->pointpipe15->isChecked())
                 on_pointrename_clicked();
         }
-        else if(ui->passwordinputok->hasFocus())
-            on_passwordinputok_clicked();
         else if(ui->dirchoose->hasFocus())
             ui->dirchoose->currentItem()->setExpanded(! ui->dirchoose->currentItem()->isExpanded());
         else if(ui->mountpoint->hasFocus())
@@ -3720,6 +3730,7 @@ void systemback::keyPressEvent(QKeyEvent *ev)
         }
 
         break;
+    }
     case Qt::Key_F5:
         if(ui->sbpanel->isVisible())
         {
@@ -3818,6 +3829,16 @@ void systemback::keyPressEvent(QKeyEvent *ev)
             on_additem_clicked();
         else if(ui->excludedlist->hasFocus())
             on_removeitem_clicked();
+    }
+}
+
+void systemback::keyReleaseEvent(QKeyEvent *ev)
+{
+    switch(ev->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+        QKeyEvent release(QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier);
+        qApp->sendEvent(qApp->focusObject(), &release);
     }
 }
 

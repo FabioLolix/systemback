@@ -72,13 +72,13 @@ public:
     static bool cpfile(QStr sourcefile, QStr newfile);
     static bool cplink(QStr sourcelink, QStr newlink);
     static bool access(QStr path, uchar mode = Read);
+    static bool crtfile(QStr path, QStr txt = NULL);
     static bool setpflag(QStr partition, QStr flag);
     static bool cpdir(QStr sourcedir, QStr newdir);
     static bool crtrpoint(QStr sdir, QStr pname);
     static bool exclcheck(QSL elist, QStr item);
     static bool issmfs(QStr item1, QStr item2);
     static bool lcomp(QStr link1, QStr link2);
-    static bool crtfile(QStr path, QStr txt);
     static bool ilike(short num, QSIL lst);
     static bool like(QStr txt, QSL lst);
     static bool mkptable(QStr device);

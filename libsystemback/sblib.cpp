@@ -78,11 +78,10 @@ void sb::delay(ushort msec)
     QTime time;
     time.start();
 
-    while(ushort(time.elapsed()) < msec)
-    {
+    do {
         msleep(10);
         qApp->processEvents();
-    }
+    } while(ushort(time.elapsed()) < msec);
 }
 
 QStr sb::left(QStr txt, short len)
@@ -252,17 +251,17 @@ bool sb::lock(uchar type)
     case Sblock:
     {
         QStr lfile(isdir("/run") ? "/run/systemback.lock" : "/var/run/systemback.lock");
-        if(! exist(lfile)) crtfile(lfile, NULL);
+        if(! exist(lfile)) crtfile(lfile);
         sblock = open(lfile.toStdString().c_str(), O_RDWR);
         return lockf(sblock, F_TLOCK, 0) == 0;
     }
     case Dpkglock:
-        if(! exist("/var/lib/dpkg/lock")) crtfile("/var/lib/dpkg/lock", NULL);
+        if(! exist("/var/lib/dpkg/lock")) crtfile("/var/lib/dpkg/lock");
         dpkglock = open("/var/lib/dpkg/lock", O_RDWR);
         return lockf(dpkglock, F_TLOCK, 0) == 0;
     case Schdlrlock:
         QStr lfile(isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock");
-        if(! exist(lfile)) crtfile(lfile, NULL);
+        if(! exist(lfile)) crtfile(lfile);
         schdlrlock = open(lfile.toStdString().c_str(), O_RDWR);
         return lockf(schdlrlock, F_TLOCK, 0) == 0;
     }
@@ -307,7 +306,7 @@ bool sb::remove(QStr path)
 bool sb::islnxfs(QStr dirpath)
 {
     QStr fpath(dirpath % '/' % rndstr() % "_sbdirtestfile");
-    if(! crtfile(fpath, NULL)) return false;
+    if(! crtfile(fpath)) return false;
     chmod(fpath.toStdString().c_str(), 0776);
     struct stat64 fstat;
     stat64(fpath.toStdString().c_str(), &fstat);
@@ -369,7 +368,7 @@ void sb::cfgread()
         sdir[0] = "/home";
         cfgupdt = true;
         if(! isdir("/home/Systemback")) QDir().mkdir("/home/Systemback");
-        if(! isfile("/home/Systemback/.sbschedule")) crtfile("/home/Systemback/.sbschedule", NULL);
+        if(! isfile("/home/Systemback/.sbschedule")) crtfile("/home/Systemback/.sbschedule");
     }
 
     if(sdir[2].isEmpty())
@@ -1333,7 +1332,7 @@ bool sb::recrmdir(QStr path, bool slimit)
     }
 
     closedir(dir);
-    return QDir().rmdir(path) ? true : slimit;
+    return ThrdKill ? false : QDir().rmdir(path) ? true : slimit;
 }
 
 QStr sb::rodir(QStr path, bool hidden)
@@ -1839,7 +1838,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
             case Isfile:
                 if(! like(item, QSL() << "*.gz_" << "*.old_") && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                 {
-                    crtfile(trgt % "/var/log/" % item, NULL);
+                    crtfile(trgt % "/var/log/" % item);
                     if(! cpertime("/var/log/" % item, trgt % "/var/log/" % item)) return false;
                 }
             }
@@ -3297,7 +3296,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             case Isfile:
                 if(! like(item, QSL() << "*.gz_" << "*.old_") && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                 {
-                    crtfile("/.sbsystemcopy/var/log/" % item, NULL);
+                    crtfile("/.sbsystemcopy/var/log/" % item);
                     if(! cpertime(srcdir % "/var/log/" % item, "/.sbsystemcopy/var/log/" % item)) return false;
                 }
             }
@@ -3513,7 +3512,7 @@ bool sb::thrdlvprpr(bool &iudata)
                 case Isfile:
                     if(! like(item, QSL() << "*.gz_" << "*.old_") && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                     {
-                        crtfile("/var/.sblvtmp/var/" % item, NULL);
+                        crtfile("/var/.sblvtmp/var/" % item);
                         if(! cpertime("/var/" % item, "/var/.sblvtmp/var/" % item)) return false;
                         ++ThrdLng[0];
                     }

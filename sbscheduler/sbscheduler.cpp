@@ -102,7 +102,7 @@ start:;
 
         if(! isfile(sb::sdir[1] % "/.sbschedule"))
         {
-            sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+            sb::crtfile(sb::sdir[1] % "/.sbschedule");
             goto next;
         }
 
@@ -256,7 +256,7 @@ void scheduler::newrestorepoint()
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return;
 end:;
-    sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+    sb::crtfile(sb::sdir[1] % "/.sbschedule");
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }

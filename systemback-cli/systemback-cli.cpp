@@ -364,7 +364,7 @@ uchar systemback::storagedir()
             QDir().mkdir(sb::sdir[1]);
         }
 
-        if(! isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+        if(! isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule");
         sb::print("\n " % tr("The specified storage directory path is set.") % "\n\n");
     }
 
@@ -495,7 +495,7 @@ start:;
     }
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
-    sb::crtfile(sb::sdir[1] % "/.sbschedule", NULL);
+    sb::crtfile(sb::sdir[1] % "/.sbschedule");
     prun = tr("Emptying cache");
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");

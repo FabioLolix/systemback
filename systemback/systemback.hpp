@@ -50,12 +50,12 @@ public:
 private:
     Ui::systemback *ui;
 
-    QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *wrndtimer;
+    QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer, *wrndtimer;
     QStr cpoint, points, pname, prun, dialogdev, hash, grub;
     short wgeom[6];
     char busycnt;
     uchar dialog, wround, ppipe;
-    bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt;
+    bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
     bool minside(QPoint pos, QRect geom);
@@ -106,6 +106,7 @@ private slots:
     void hmpg1move();
     void hmpg2move();
     void emailmove();
+    void interrupt();
     void unitimer();
     void wpressed();
     void wdblclck();

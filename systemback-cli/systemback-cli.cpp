@@ -224,7 +224,7 @@ uchar systemback::clistart()
     if(! pname.isEmpty()) pname.clear();
     if(sb::Progress != -1) sb::Progress = -1;
 
-    do {
+    do
         switch(getch()) {
         case '1':
             cpoint = "S01";
@@ -295,7 +295,7 @@ uchar systemback::clistart()
         case 'Q':
             return 0;
         }
-    } while(pname.isEmpty());
+    while(pname.isEmpty());
 
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, QStr("Systemback " % tr("basic restore UI")).toStdString().c_str());
@@ -309,8 +309,7 @@ uchar systemback::clistart()
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
 
-    while(true)
-    {
+    for(;;)
         switch(getch()) {
         case '1':
             if(! pointdelete()) return 13;
@@ -324,7 +323,6 @@ uchar systemback::clistart()
             clear();
             return clistart();
         }
-    }
 }
 
 uchar systemback::storagedir()
@@ -542,7 +540,7 @@ uchar systemback::restore()
     refresh();
     uchar rmode(0);
 
-    do {
+    do
         switch(getch()) {
         case 'c':
         case 'C':
@@ -560,7 +558,7 @@ uchar systemback::restore()
         case '4':
             rmode = 4;
         }
-    } while(rmode == 0);
+    while(rmode == 0);
 
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, QStr("Systemback " % tr("basic restore UI")).toStdString().c_str());
@@ -777,7 +775,6 @@ uchar systemback::restore()
     refresh();
 
     while(true)
-    {
         switch(getch()) {
         case '\n':
             if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", NULL, false, true);
@@ -786,7 +783,6 @@ uchar systemback::restore()
         case 'Q':
             if(rmode < 3) return 0;
         }
-    }
 }
 
 void systemback::progpercent()

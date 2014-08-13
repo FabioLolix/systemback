@@ -39,7 +39,7 @@ public:
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], trn[2];
     static quint64 ThrdLng[2];
-    static const uchar Unknow = 0, Read = 1, Write = 2, Exec = 3, Notexist = 4, Isfile = 5, Isdir = 6, Islink = 7, Isblock = 8, Sblock = 1, Dpkglock = 2, Schdlrlock = 3, Remove = 1, Copy = 2, Sync = 3, Mount = 4, Umount = 5, Readprttns = 6, Readlvprttns = 7, Ruuid = 8, Dsize = 9, Setpflag = 10, Mkptable = 11, Mkpart = 12, Crtrpoint = 13, Srestore = 14, Scopy = 15, Lvprpr = 16;
+    static const uchar Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknow = 5, Read = 0, Write = 1, Exec = 2, Sblock = 0, Dpkglock = 1, Schdlrlock = 2, Norm = 0, All = 1, Mixed = 2, Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvprttns = 6, Ruuid = 7, Dsize = 8, Setpflag = 9, Mkptable = 10, Mkpart = 11, Crtrpoint = 12, Srestore = 13, Scopy = 14, Lvprpr = 15;
     static uchar pnumber;
     static char Progress;
     static bool ExecKill, ThrdKill;
@@ -66,6 +66,7 @@ public:
     static bool srestore(uchar mthd, QStr usr, QStr srcdir, QStr trgt, bool sfstab = false);
     static bool mkpart(QStr device, quint64 start = 0, quint64 length = 0);
     static bool mount(QStr device, QStr mpoint, QStr moptions = NULL);
+    static bool like(QStr txt, QSL lst, uchar mode = Norm);
     static bool execsrch(QStr fname, QStr prepath = NULL);
     static bool scopy(uchar mthd, QStr usr, QStr srcdir);
     static bool cpertime(QStr sourceitem, QStr newitem);
@@ -80,7 +81,6 @@ public:
     static bool issmfs(QStr item1, QStr item2);
     static bool lcomp(QStr link1, QStr link2);
     static bool ilike(short num, QSIL lst);
-    static bool like(QStr txt, QSL lst);
     static bool mkptable(QStr device);
     static bool lvprpr(bool iudata);
     static bool umount(QStr device);

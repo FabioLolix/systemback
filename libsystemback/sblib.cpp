@@ -104,30 +104,80 @@ QStr sb::mid(QStr txt, ushort start, ushort len)
     return NULL;
 }
 
-bool sb::like(QStr txt, QSL lst)
+bool sb::like(QStr txt, QSL lst, uchar mode)
 {
-    for(uchar a(0) ; a < lst.count() ; ++a)
-    {
-        QStr stxt(lst.at(a));
-
-        if(stxt.startsWith('*'))
+    switch(mode) {
+    case Norm:
+        for(uchar a(0) ; a < lst.count() ; ++a)
         {
-            if(stxt.endsWith('*'))
+            QStr stxt(lst.at(a));
+
+            if(stxt.startsWith('*'))
             {
-                if(txt.contains(stxt.mid(1, stxt.length() - 2))) return true;
+                if(stxt.endsWith('*'))
+                {
+                    if(txt.contains(stxt.mid(1, stxt.length() - 2))) return true;
+                }
+                else if(txt.endsWith(stxt.mid(1, stxt.length() - 2)))
+                    return true;
             }
-            else if(txt.endsWith(stxt.mid(1, stxt.length() - 2)))
+            else if(stxt.endsWith('*'))
+            {
+                if(txt.startsWith(stxt.mid(1, stxt.length() - 2))) return true;
+            }
+            else if(txt == stxt.mid(1, stxt.length() - 2))
                 return true;
         }
-        else if(stxt.endsWith('*'))
-        {
-            if(txt.startsWith(stxt.mid(1, stxt.length() - 2))) return true;
-        }
-        else if(txt == stxt.mid(1, stxt.length() - 2))
-            return true;
-    }
 
-    return false;
+        return false;
+    case All:
+        for(uchar a(0) ; a < lst.count() ; ++a)
+        {
+            QStr stxt(lst.at(a));
+
+            if(stxt.startsWith('*'))
+            {
+                if(stxt.endsWith('*'))
+                {
+                    if(! txt.contains(stxt.mid(1, stxt.length() - 2))) return false;
+                }
+                else if(! txt.endsWith(stxt.mid(1, stxt.length() - 2)))
+                    return false;
+            }
+            else if(stxt.endsWith('*'))
+            {
+                if(! txt.startsWith(stxt.mid(1, stxt.length() - 2))) return false;
+            }
+            else if(txt != stxt.mid(1, stxt.length() - 2))
+                return false;
+        }
+
+        return true;
+    case Mixed:
+    {
+        QSL alst, nlst;
+
+        for(uchar a(0) ; a < lst.count() ; ++a)
+        {
+            QStr stxt(lst.at(a));
+
+            switch(stxt.at(0).toLatin1()) {
+            case '+':
+                alst.append(right(stxt, -1));
+                break;
+            case '-':
+                nlst.append(right(stxt, -1));
+                break;
+            default:
+                return false;
+            }
+        }
+
+        return like(txt, alst, All) && like(txt, nlst) ? true : false;
+    }
+    default:
+        return false;
+    }
 }
 
 bool sb::ilike(short num, QSIL lst)
@@ -336,7 +386,6 @@ void sb::cfgread()
                 QSL vals(cval.split(':'));
 
                 for(uchar a(0) ; a < vals.count() ; ++a)
-                {
                     switch(a) {
                     case 0:
                         schdle[1] = vals.at(0);
@@ -350,7 +399,6 @@ void sb::cfgread()
                     case 3:
                         schdle[4] = vals.at(3);
                     }
-                }
             }
             else if(cline.startsWith("pointsnumber="))
                 pnumber = cval.toShort();
@@ -491,11 +539,19 @@ bool sb::cpfile(QStr sourcefile, QStr newfile)
         ThrdType = Copy;
         ThrdStr[0] = sourcefile;
         ThrdStr[1] = newfile;
+        ThrdLng[0] = sfstat.st_size;
         SBThrd.start();
         thrdelay();
     }
-    else if(! QFile(sourcefile).copy(newfile))
-        return false;
+    else
+    {
+        QFile in(sourcefile), out(newfile);
+        if(! in.open(QFile::ReadOnly) || ! out.open(QFile::WriteOnly)) return false;
+        char buf[sfstat.st_size > 1048576 ? 1048576 : sfstat.st_size];
+
+        while(! in.atEnd())
+            if(! out.write(buf, in.read(buf, sizeof buf))) return false;
+    }
 
     if(stat64(newfile.toStdString().c_str(), &nfstat) == -1 || sfstat.st_size != nfstat.st_size) return false;
     if((sfstat.st_uid != nfstat.st_uid || sfstat.st_gid != nfstat.st_gid) && chown(newfile.toStdString().c_str(), sfstat.st_uid, sfstat.st_gid) == -1) return false;
@@ -642,7 +698,7 @@ uchar sb::exec(QStr cmd, QStr envv, bool silent, bool bckgrnd)
         rprcnt = 2;
     else if(cmd.startsWith("tar -cf"))
         rprcnt = 3;
-    else if(cmd.startsWith("tar -xf") && cmd.endsWith("--no-same-permissions"))
+    else if(like(cmd, QSL() << "_tar -xf*" << "*--no-same-permissions_", All))
         rprcnt = 4;
 
     if(rprcnt > 0) Progress = 0;
@@ -904,7 +960,7 @@ void sb::supgrade()
 {
     exec("apt-get update");
 
-    while(true)
+    for(;;)
     {
         if(exec(QSL() << "apt-get install -fym --force-yes" << "dpkg --configure -a" << "apt-get dist-upgrade --no-install-recommends -ym --force-yes" << "apt-get autoremove --purge -y") == 0)
         {
@@ -1008,13 +1064,11 @@ bool sb::pisrng(QStr pname)
     struct dirent *ent;
 
     while((ent = readdir(dir)))
-    {
         if(! like(ent->d_name, QSL() << "_._" << "_.._") && ent->d_type == DT_DIR && isnum(QStr(ent->d_name)) && islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
         {
             closedir(dir);
             return true;
         }
-    }
 
     closedir(dir);
     return false;
@@ -1096,8 +1150,17 @@ void sb::run()
 
         break;
     case Copy:
-        QFile(ThrdStr[0]).copy(ThrdStr[1]);
+    {
+        QFile in(ThrdStr[0]), out(ThrdStr[1]);
+
+        if(in.open(QFile::ReadOnly) && out.open(QFile::WriteOnly))
+        {
+            char buf[ThrdLng[0] > 1048576 ? 1048576 : ThrdLng[0]];
+            while(! in.atEnd()) out.write(buf, in.read(buf, sizeof buf));
+        }
+
         break;
+    }
     case Sync:
         sync();
         break;
@@ -1211,13 +1274,11 @@ void sb::run()
             bool rv(false);
 
             while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
-            {
                 if(QStr(ped_partition_get_path(prt)) == ThrdStr[0])
                 {
                     if(ped_partition_set_flag(prt, ped_partition_flag_get_by_name(ThrdStr[1].toStdString().c_str()), 1) == 1 && ped_disk_commit_to_dev(dsk) == 1) rv = true;
                     ped_disk_commit_to_os(dsk);
                 }
-            }
 
             ped_disk_destroy(dsk);
             ped_device_destroy(dev);
@@ -1251,7 +1312,6 @@ void sb::run()
             bool rv(false);
 
             while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
-            {
                 if(prt->type == PED_PARTITION_FREESPACE && prt->geom.length >= 2048)
                 {
                     quint64 ends(prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : prt->geom.end);
@@ -1260,7 +1320,6 @@ void sb::run()
                     ped_disk_commit_to_os(dsk);
                     break;
                 }
-            }
 
             ped_disk_destroy(dsk);
             ped_device_destroy(dev);
@@ -1290,7 +1349,6 @@ bool sb::recrmdir(QStr path, bool slimit)
     struct dirent *ent;
 
     while(! ThrdKill && (ent = readdir(dir)))
-    {
         if(! like(ent->d_name, QSL() << "_._" << "_.._"))
         {
             QStr fpath(path % '/' % QStr(ent->d_name));
@@ -1329,7 +1387,6 @@ bool sb::recrmdir(QStr path, bool slimit)
                 QFile::remove(fpath);
             }
         }
-    }
 
     closedir(dir);
     return ThrdKill ? false : QDir().rmdir(path) ? true : slimit;
@@ -1350,7 +1407,6 @@ void sb::sbdir(QStr path, uchar oplen, bool hidden)
     struct dirent *ent;
 
     while(! ThrdKill && (ent = readdir(dir)))
-    {
         if(! like(ent->d_name, QSL() << "_._" << "_.._") && (! hidden || QStr(ent->d_name).startsWith('.')))
         {
             switch(ent->d_type) {
@@ -1380,7 +1436,6 @@ void sb::sbdir(QStr path, uchar oplen, bool hidden)
                 }
             }
         }
-    }
 
     closedir(dir);
 }
@@ -1729,7 +1784,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
                 if(Progress < cperc) Progress = cperc;
                 ThrdDbg = '@' % cdir % '/' % item;
 
-                if(! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (QStr(cdir % '/' % item).startsWith("/var/cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && exist(cdir % '/' % item))
+                if(! like(cdir % '/' % item, QSL() << "+_/var/cache/apt/*" << "-*.bin_" << "-*.bin.*", Mixed) && ! like(cdir % '/' % item, QSL() << "_/var/cache/apt/archives/*" << "*.deb_", All) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && exist(cdir % '/' % item))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:
@@ -3105,7 +3160,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 if(Progress < cperc) Progress = cperc;
                 ThrdDbg = '@' % cdir % '/' % item;
 
-                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! (QStr(cdir % '/' % item).startsWith("/etc/udev/rules.d") && item.contains("-persistent-"))) && (! srcdir.isEmpty() || exist(cdir % '/' % item)))
+                if(! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*") && ! exclcheck(elist, QStr(cdir % '/' % item)) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! like(cdir % '/' % item, QSL() << "_/etc/udev/rules.d*" << "*-persistent-*", All)) && (! srcdir.isEmpty() || exist(cdir % '/' % item)))
                 {
                     switch(left(line, instr(line, "_") - 1).toShort()) {
                     case Islink:
@@ -3486,7 +3541,7 @@ bool sb::thrdlvprpr(bool &iudata)
         {
             ThrdDbg = "@/var/" % item;
 
-            if(! (item.startsWith("cache/apt/") && (item.endsWith(".bin") || item.contains(".bin."))) && ! (item.startsWith("cache/apt/archives/") && item.endsWith(".deb")) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, item))
+            if(! like(item, QSL() << "+_cache/apt/*" << "-*.bin_" << "-*.bin.*", Mixed) && ! like(item, QSL() << "_cache/apt/archives/*" << "*.deb_", All) && ! like(item, QSL() << "_lost+found_" << "_lost+found/*" << "*/lost+found_" << "*/lost+found/*" << "_Systemback_" << "_Systemback/*" << "*/Systemback_" << "*/Systemback/*" << "*.dpkg-old_" << "*~_" << "*~/*") && ! exclcheck(elist, item))
             {
                 switch(left(line, instr(line, "_") - 1).toShort()) {
                 case Islink:

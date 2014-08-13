@@ -6998,7 +6998,6 @@ void systemback::on_installnext_clicked()
             }
 
             for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-            {
                 if(ui->partitionsettings->item(a, 3)->text() == "/home" && ! ui->partitionsettings->item(a, 4)->text().isEmpty())
                 {
                     ui->partitionsettings->item(a, 4)->setText(NULL);
@@ -7006,7 +7005,6 @@ void systemback::on_installnext_clicked()
                     nohmcpy = false;
                     break;
                 }
-            }
         }
     }
 }
@@ -7246,13 +7244,11 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
         else if(arg1 != "SWAP")
         {
             for(uchar a(0) ; a < ui->partitionsettings->verticalHeader()->count() ; ++a)
-            {
                 if(ui->partitionsettings->item(a, 4)->text() == arg1)
                 {
                     check = true;
                     break;
                 }
-            }
         }
 
         if(check)
@@ -7298,9 +7294,7 @@ void systemback::on_repairpartitionupdate_clicked()
     ui->repaircover->show();
 
     for(uchar a(0) ; a < ui->partitionsettings->verticalHeader()->count() ; ++a)
-    {
         if(ui->partitionsettings->item(a, 3)->text().startsWith("/mnt")) sb::umount(ui->partitionsettings->item(a, 0)->text());
-    }
 
     sb::fssync();
     ui->repairmountpoint->clear();

@@ -88,7 +88,7 @@ start:;
     if(! sb::crtfile(pfile, QStr::number(qApp->applicationPid()))) goto error;
     sleep(300);
 
-    while(true)
+    for(;;)
     {
         if(sb::left(sb::fload(pfile), 7) == "restart")
         {

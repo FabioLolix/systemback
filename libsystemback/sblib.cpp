@@ -27,6 +27,7 @@
 #include <QDir>
 #include <parted/parted.h>
 #include <sys/resource.h>
+#include <sys/sendfile.h>
 #include <blkid/blkid.h>
 #include <sys/statvfs.h>
 #include <sys/ioctl.h>
@@ -260,10 +261,10 @@ uchar sb::stype(QStr path)
     }
 }
 
-QStr sb::ruuid(QStr partition)
+QStr sb::ruuid(QStr part)
 {
     ThrdType = Ruuid;
-    ThrdStr[0] = partition;
+    ThrdStr[0] = part;
     SBThrd.start();
     thrdelay();
     return ThrdStr[1];
@@ -272,7 +273,7 @@ QStr sb::ruuid(QStr partition)
 QStr sb::rlink(QStr path)
 {
     struct stat64 lnkstat;
-    lstat64(path.toStdString().c_str(), &lnkstat);
+    if(lstat64(path.toStdString().c_str(), &lnkstat) == -1) return NULL;
     char rpath[lnkstat.st_size];
     rpath[readlink(path.toStdString().c_str(), rpath, sizeof rpath)] = '\0';
     return rpath;
@@ -281,7 +282,7 @@ QStr sb::rlink(QStr path)
 QStr sb::fload(QStr path)
 {
     QFile file(path);
-    file.open(QIODevice::ReadOnly);
+    if(! file.open(QIODevice::ReadOnly)) return NULL;
     return file.readAll();
 }
 
@@ -289,8 +290,7 @@ bool sb::crtfile(QStr path, QStr txt)
 {
     if(! ilike(stype(path), QSIL() << Notexist << Isfile) || ! isdir(path.left(path.lastIndexOf('/')))) return false;
     QFile file(path);
-    file.open(QFile::WriteOnly | QFile::Truncate);
-    if(file.write(txt.toLocal8Bit()) == -1) return false;
+    if(! file.open(QFile::WriteOnly | QFile::Truncate) || file.write(txt.toLocal8Bit()) == -1) return false;
     file.flush();
     return true;
 }
@@ -301,18 +301,15 @@ bool sb::lock(uchar type)
     case Sblock:
     {
         QStr lfile(isdir("/run") ? "/run/systemback.lock" : "/var/run/systemback.lock");
-        if(! exist(lfile)) crtfile(lfile);
-        sblock = open(lfile.toStdString().c_str(), O_RDWR);
+        if((! exist(lfile) && ! crtfile(lfile)) || (sblock = open(lfile.toStdString().c_str(), O_RDWR)) == -1) return false;
         return lockf(sblock, F_TLOCK, 0) == 0;
     }
     case Dpkglock:
-        if(! exist("/var/lib/dpkg/lock")) crtfile("/var/lib/dpkg/lock");
-        dpkglock = open("/var/lib/dpkg/lock", O_RDWR);
+        if((! exist("/var/lib/dpkg/lock") && ! crtfile("/var/lib/dpkg/lock")) || (dpkglock = open("/var/lib/dpkg/lock", O_RDWR)) == -1) return false;
         return lockf(dpkglock, F_TLOCK, 0) == 0;
     case Schdlrlock:
         QStr lfile(isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock");
-        if(! exist(lfile)) crtfile(lfile);
-        schdlrlock = open(lfile.toStdString().c_str(), O_RDWR);
+        if((! exist(lfile) && ! crtfile(lfile)) || (schdlrlock = open(lfile.toStdString().c_str(), O_RDWR)) == -1) return false;
         return lockf(schdlrlock, F_TLOCK, 0) == 0;
     }
 
@@ -356,12 +353,11 @@ bool sb::remove(QStr path)
 bool sb::islnxfs(QStr dirpath)
 {
     QStr fpath(dirpath % '/' % rndstr() % "_sbdirtestfile");
-    if(! crtfile(fpath)) return false;
-    chmod(fpath.toStdString().c_str(), 0776);
+    if(! crtfile(fpath) || chmod(fpath.toStdString().c_str(), 0776) == -1) return false;
     struct stat64 fstat;
-    stat64(fpath.toStdString().c_str(), &fstat);
+    bool err(stat64(fpath.toStdString().c_str(), &fstat) == -1);
     QFile::remove(fpath);
-    return fstat.st_mode == 33278;
+    return err ? false : fstat.st_mode == 33278;
 }
 
 void sb::cfgread()
@@ -371,44 +367,44 @@ void sb::cfgread()
     if(isfile("/etc/systemback.conf"))
     {
         QFile file("/etc/systemback.conf");
-        file.open(QIODevice::ReadOnly);
 
-        while(! file.atEnd())
-        {
-            QStr cline(file.readLine().trimmed()), cval(right(cline, - instr(cline, "=")));
-
-            if(cline.startsWith("storagedir="))
-                sdir[0] = cval;
-            else if(cline.startsWith("liveworkdir="))
-                sdir[2] = cval;
-            else if(cline.startsWith("schedule="))
+        if(file.open(QIODevice::ReadOnly))
+            while(! file.atEnd())
             {
-                QSL vals(cval.split(':'));
+                QStr cline(file.readLine().trimmed()), cval(right(cline, - instr(cline, "=")));
 
-                for(uchar a(0) ; a < vals.count() ; ++a)
-                    switch(a) {
-                    case 0:
-                        schdle[1] = vals.at(0);
-                        break;
-                    case 1:
-                        schdle[2] = vals.at(1);
-                        break;
-                    case 2:
-                        schdle[3] = vals.at(2);
-                        break;
-                    case 3:
-                        schdle[4] = vals.at(3);
-                    }
+                if(cline.startsWith("storagedir="))
+                    sdir[0] = cval;
+                else if(cline.startsWith("liveworkdir="))
+                    sdir[2] = cval;
+                else if(cline.startsWith("schedule="))
+                {
+                    QSL vals(cval.split(':'));
+
+                    for(uchar a(0) ; a < vals.count() ; ++a)
+                        switch(a) {
+                        case 0:
+                            schdle[1] = vals.at(0);
+                            break;
+                        case 1:
+                            schdle[2] = vals.at(1);
+                            break;
+                        case 2:
+                            schdle[3] = vals.at(2);
+                            break;
+                        case 3:
+                            schdle[4] = vals.at(3);
+                        }
+                }
+                else if(cline.startsWith("pointsnumber="))
+                    pnumber = cval.toShort();
+                else if(cline.startsWith("timer="))
+                    schdle[0] = cval;
+                else if(cline.startsWith("silentmode="))
+                    schdle[5] = cval;
+                else if(cline.startsWith("windowposition="))
+                    schdle[6] = cval;
             }
-            else if(cline.startsWith("pointsnumber="))
-                pnumber = cval.toShort();
-            else if(cline.startsWith("timer="))
-                schdle[0] = cval;
-            else if(cline.startsWith("silentmode="))
-                schdle[5] = cval;
-            else if(cline.startsWith("windowposition="))
-                schdle[6] = cval;
-        }
     }
 
     if(sdir[0].isEmpty())
@@ -489,23 +485,23 @@ bool sb::setpflag(QStr partition, QStr flag)
     return ThrdRslt;
 }
 
-bool sb::mkptable(QStr device)
+bool sb::mkptable(QStr dev)
 {
-    if(device.length() > 9) return false;
+    if(dev.length() > 9) return false;
     ThrdType = Mkptable;
-    ThrdStr[0] = device;
+    ThrdStr[0] = dev;
     SBThrd.start();
     thrdelay();
     return ThrdRslt;
 }
 
-bool sb::mkpart(QStr device, quint64 start, quint64 length)
+bool sb::mkpart(QStr dev, quint64 start, quint64 len)
 {
-    if(device.length() > 9) return false;
+    if(dev.length() > 9) return false;
     ThrdType = Mkpart;
-    ThrdStr[0] = device;
+    ThrdStr[0] = dev;
     ThrdLng[0] = start;
-    ThrdLng[1] = length;
+    ThrdLng[1] = len;
     SBThrd.start();
     thrdelay();
     return ThrdRslt;
@@ -529,31 +525,39 @@ bool sb::cpertime(QStr sourcepath, QStr destpath)
     return true;
 }
 
-bool sb::cpfile(QStr sourcefile, QStr newfile)
+bool sb::cpfile(QStr srcfile, QStr newfile)
 {
     struct stat64 sfstat, nfstat;
-    if(stat64(sourcefile.toStdString().c_str(), &sfstat) == -1) return false;
+    if(stat64(srcfile.toStdString().c_str(), &sfstat) == -1) return false;
 
-    if(! SBThrd.isRunning())
+    if(SBThrd.isRunning())
     {
-        ThrdType = Copy;
-        ThrdStr[0] = sourcefile;
-        ThrdStr[1] = newfile;
-        ThrdLng[0] = sfstat.st_size;
-        SBThrd.start();
-        thrdelay();
+        int src, dst;
+        if((src = open(srcfile.toStdString().c_str(), O_RDONLY)) == -1) return false;
+        bool err(true);
+
+        if((dst = open(newfile.toStdString().c_str(), O_WRONLY | O_CREAT, sfstat.st_mode)) != -1)
+        {
+            if(sendfile(dst, src, 0, sfstat.st_size) == sfstat.st_size) err = false;
+            close(dst);
+        }
+
+        close(src);
+        if(err) return false;
     }
     else
     {
-        QFile in(sourcefile), out(newfile);
-        if(! in.open(QFile::ReadOnly) || ! out.open(QFile::WriteOnly)) return false;
-        char buf[sfstat.st_size > 1048576 ? 1048576 : sfstat.st_size];
-
-        while(! in.atEnd())
-            if(! out.write(buf, in.read(buf, sizeof buf))) return false;
+        ThrdType = Copy;
+        ThrdStr[0] = srcfile;
+        ThrdStr[1] = newfile;
+        ThrdLng[0] = sfstat.st_size;
+        ThrdLng[1] = sfstat.st_mode;
+        SBThrd.start();
+        thrdelay();
+        if(! ThrdRslt) return false;
     }
 
-    if(stat64(newfile.toStdString().c_str(), &nfstat) == -1 || sfstat.st_size != nfstat.st_size) return false;
+    if(stat64(newfile.toStdString().c_str(), &nfstat) == -1) return false;
     if((sfstat.st_uid != nfstat.st_uid || sfstat.st_gid != nfstat.st_gid) && chown(newfile.toStdString().c_str(), sfstat.st_uid, sfstat.st_gid) == -1) return false;
     if(sfstat.st_mode != nfstat.st_mode && chmod(newfile.toStdString().c_str(), sfstat.st_mode) == -1) return false;
     struct utimbuf sftimes;
@@ -564,18 +568,19 @@ bool sb::cpfile(QStr sourcefile, QStr newfile)
 
 bool sb::lcomp(QStr link1, QStr link2)
 {
-    if(rlink(link1) != rlink(link2)) return false;
+    QStr lnk(rlink(link1));
+    if(lnk != rlink(link2) || lnk.isEmpty()) return false;
     struct stat64 l1stat, l2stat;;
     if(ilike(-1, QSIL() << lstat64(link1.toStdString().c_str(), &l1stat) << lstat64(link2.toStdString().c_str(), &l2stat))) return false;
     if(l1stat.st_mtim.tv_sec != l2stat.st_mtim.tv_sec) return false;
     return true;
 }
 
-bool sb::cplink(QStr sourcelink, QStr newlink)
+bool sb::cplink(QStr srclink, QStr newlink)
 {
-    if(! QFile::link(rlink(sourcelink), newlink)) return false;
+    if(! QFile::link(rlink(srclink), newlink)) return false;
     struct stat64 sistat;
-    if(lstat64(sourcelink.toStdString().c_str(), &sistat) == -1) return false;
+    if(lstat64(srclink.toStdString().c_str(), &sistat) == -1) return false;
     struct timeval sitimes[2];
     sitimes[0].tv_sec = sistat.st_atim.tv_sec;
     sitimes[1].tv_sec = sistat.st_mtim.tv_sec;
@@ -583,12 +588,10 @@ bool sb::cplink(QStr sourcelink, QStr newlink)
     return lutimes(newlink.toStdString().c_str(), sitimes) == 0;
 }
 
-bool sb::cpdir(QStr sourcedir, QStr newdir)
+bool sb::cpdir(QStr srcdir, QStr newdir)
 {
     struct stat64 sdstat, ndstat;
-    if(stat64(sourcedir.toStdString().c_str(), &sdstat) == -1) return false;
-    if(mkdir(newdir.toStdString().c_str(), sdstat.st_mode) == -1) return false;
-    if(stat64(newdir.toStdString().c_str(), &ndstat) == -1) return false;
+    if(stat64(srcdir.toStdString().c_str(), &sdstat) == -1 || mkdir(newdir.toStdString().c_str(), sdstat.st_mode) == -1 || stat64(newdir.toStdString().c_str(), &ndstat) == -1) return false;
     if((sdstat.st_uid != ndstat.st_uid || sdstat.st_gid != ndstat.st_gid) && chown(newdir.toStdString().c_str(), sdstat.st_uid, sdstat.st_gid) == -1) return false;
     if(sdstat.st_mode != ndstat.st_mode && chmod(newdir.toStdString().c_str(), sdstat.st_mode) == -1) return false;
     struct utimbuf sdtimes;
@@ -604,13 +607,19 @@ void sb::fssync()
     thrdelay();
 }
 
-quint64 sb::devsize(QStr device)
+quint64 sb::devsize(QStr dev)
 {
     quint64 bsize;
-    int dev(open(device.toStdString().c_str(), O_RDONLY));
-    ioctl(dev, BLKGETSIZE64, &bsize);
-    close(dev);
-    return bsize;
+    int odev;
+    bool err(false);
+
+    if((odev = open(dev.toStdString().c_str(), O_RDONLY)) != -1)
+    {
+        if(ioctl(odev, BLKGETSIZE64, &bsize) == -1) err = true;
+        close(odev);
+    }
+
+    return err ? 0 : bsize;
 }
 
 bool sb::mcheck(QStr item)
@@ -641,21 +650,21 @@ bool sb::mcheck(QStr item)
         return mnts.contains(' ' % item % ' ');
 }
 
-bool sb::mount(QStr device, QStr mpoint, QStr moptions)
+bool sb::mount(QStr dev, QStr mpoint, QStr moptns)
 {
     ThrdType = Mount;
-    ThrdStr[0] = device;
+    ThrdStr[0] = dev;
     ThrdStr[1] = mpoint;
-    ThrdStr[2] = moptions;
+    ThrdStr[2] = moptns;
     SBThrd.start();
     thrdelay();
     return ThrdRslt;
 }
 
-bool sb::umount(QStr device)
+bool sb::umount(QStr dev)
 {
     ThrdType = Umount;
-    ThrdStr[0] = device;
+    ThrdStr[0] = dev;
     SBThrd.start();
     thrdelay();
     return ThrdRslt;
@@ -676,13 +685,13 @@ bool sb::issmfs(QStr item1, QStr item2)
     return i1stat.st_dev == i2stat.st_dev;
 }
 
-bool sb::execsrch(QStr fname, QStr prepath)
+bool sb::execsrch(QStr fname, QStr ppath)
 {
     QSL plst(QStr(getenv("PATH")).split(':'));
-    if(! prepath.isEmpty()) prepath.append('/');
+    if(! ppath.isEmpty()) ppath.append('/');
 
     for(uchar a(0) ; a < plst.count() ; ++a)
-        if(isfile(prepath % plst.at(a) % '/' % fname)) return true;
+        if(isfile(ppath % plst.at(a) % '/' % fname)) return true;
 
     return false;
 }
@@ -1151,12 +1160,18 @@ void sb::run()
         break;
     case Copy:
     {
-        QFile in(ThrdStr[0]), out(ThrdStr[1]);
+        int src, dst;
+        ThrdRslt = false;
 
-        if(in.open(QFile::ReadOnly) && out.open(QFile::WriteOnly))
+        if((src = open(ThrdStr[0].toStdString().c_str(), O_RDONLY)) != -1)
         {
-            char buf[ThrdLng[0] > 1048576 ? 1048576 : ThrdLng[0]];
-            while(! in.atEnd()) out.write(buf, in.read(buf, sizeof buf));
+            if((dst = open(ThrdStr[1].toStdString().c_str(), O_WRONLY | O_CREAT, ThrdLng[1])) != -1)
+            {
+                if(sendfile(dst, src, 0, ThrdLng[0]) == qint64(ThrdLng[0])) ThrdRslt = true;
+                close(dst);
+            }
+
+            close(src);
         }
 
         break;
@@ -1232,12 +1247,17 @@ void sb::run()
 
             if(item.startsWith("usb-") && islink("/dev/disk/by-id/" % item))
             {
-                QStr path(rlink("/dev/disk/by-id/" % item)), dname(right(path, - rinstr(path, "/")));
+                QStr path(rlink("/dev/disk/by-id/" % item));
 
-                if(dname.length() == 3 && like(dname, QSL() << "_sd*" << "_hd*"))
+                if(! path.isEmpty())
                 {
-                    quint64 size(devsize("/dev/" % dname));
-                    if(size < 109951162777600) devs.append("/dev/" % dname % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
+                    QStr dname(right(path, - rinstr(path, "/")));
+
+                    if(dname.length() == 3 && like(dname, QSL() << "_sd*" << "_hd*"))
+                    {
+                        quint64 size(devsize("/dev/" % dname));
+                        if(size < 109951162777600) devs.append("/dev/" % dname % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
+                    }
                 }
             }
         }
@@ -1254,15 +1274,6 @@ void sb::run()
         blkid_probe_lookup_value(pr, "UUID", &uuid, NULL);
         blkid_free_probe(pr);
         ThrdStr[1] = uuid;
-        break;
-    }
-    case Dsize:
-    {
-        quint64 bsize;
-        int dev(open(ThrdStr[0].toStdString().c_str(), O_RDONLY));
-        ioctl(dev, BLKGETSIZE64, &bsize);
-        close(dev);
-        ThrdLng[0] = bsize;
         break;
     }
     case Setpflag:
@@ -1485,7 +1496,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     QSL usrs;
     uint anum(0);
     QFile file("/etc/passwd");
-    file.open(QIODevice::ReadOnly);
+    if(! file.open(QIODevice::ReadOnly)) return false;
 
     while(! file.atEnd())
     {
@@ -1531,7 +1542,7 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
     if(! QDir().mkdir(trgt)) return false;
     QSL elist(QSL() << ".sbuserdata" << ".cache/gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
     file.setFileName("/etc/systemback.excludes");
-    file.open(QIODevice::ReadOnly);
+    if(! file.open(QIODevice::ReadOnly)) return false;
 
     while(! file.atEnd())
     {
@@ -1838,12 +1849,12 @@ bool sb::thrdcrtrpoint(QStr &sdir, QStr &pname)
         {
             dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
             file.setFileName("/etc/fstab");
-            file.open(QIODevice::ReadOnly);
+            if(! file.open(QIODevice::ReadOnly)) return false;
 
             for(uchar a(0) ; a < dlst.count() ; ++a)
             {
                 QStr item(dlst.at(a));
-                if(a > 0) file.open(QIODevice::ReadOnly);
+                if(a > 0 && ! file.open(QIODevice::ReadOnly)) return false;
 
                 while(! file.atEnd())
                 {
@@ -2295,7 +2306,7 @@ bool sb::thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sf
     {
         QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
         QFile file(srcdir % "/etc/systemback.excludes");
-        file.open(QIODevice::ReadOnly);
+        if(! file.open(QIODevice::ReadOnly)) return false;
 
         while(! file.atEnd())
         {
@@ -2643,7 +2654,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 if(srcdir.isEmpty())
                 {
                     QFile file("/etc/passwd");
-                    file.open(QIODevice::ReadOnly);
+                    if(! file.open(QIODevice::ReadOnly)) return false;
 
                     while(! file.atEnd())
                     {
@@ -2751,7 +2762,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
     uchar cperc;
     QSL elist(QSL() << ".cache/gvfs" << ".gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority");
     QFile file(srcdir % "/etc/systemback.excludes");
-    file.open(QIODevice::ReadOnly);
+    if(! file.open(QIODevice::ReadOnly)) return false;
 
     while(! file.atEnd())
     {
@@ -2769,7 +2780,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
         if(! mid.isEmpty())
         {
             file.setFileName(srcdir % mid);
-            file.open(QIODevice::ReadOnly);
+            if(! file.open(QIODevice::ReadOnly)) return false;
             QStr line(file.readLine().trimmed());
             if(line.length() == 32) macid = line;
             file.close();
@@ -2917,7 +2928,7 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
                 if(mthd > 1 && isfile(srcdir % "/home/" % usr % "/.config/user-dirs.dirs"))
                 {
                     QFile file(srcdir % "/home/" % usr % "/.config/user-dirs.dirs");
-                    file.open(QIODevice::ReadOnly);
+                    if(! file.open(QIODevice::ReadOnly)) return false;
 
                     while(! file.atEnd())
                     {
@@ -3264,12 +3275,12 @@ bool sb::thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir)
             {
                 dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
                 file.setFileName("/etc/fstab");
-                file.open(QIODevice::ReadOnly);
+                if(! file.open(QIODevice::ReadOnly)) return false;
 
                 for(uchar a(0) ; a < dlst.count() ; ++a)
                 {
                     QStr item(dlst.at(a));
-                    if(a > 0) file.open(QIODevice::ReadOnly);
+                    if(a > 0 && ! file.open(QIODevice::ReadOnly)) return false;
 
                     while(! file.atEnd())
                     {
@@ -3483,12 +3494,12 @@ bool sb::thrdlvprpr(bool &iudata)
     {
         QSL dlst(QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot));
         QFile file("/etc/fstab");
-        file.open(QIODevice::ReadOnly);
+        if(! file.open(QIODevice::ReadOnly)) return false;
 
         for(uchar a(0) ; a < dlst.count() ; ++a)
         {
             QStr item(dlst.at(a));
-            if(a > 0) file.open(QIODevice::ReadOnly);
+            if(a > 0 && ! file.open(QIODevice::ReadOnly)) return false;
 
             while(! file.atEnd())
             {
@@ -3591,7 +3602,7 @@ bool sb::thrdlvprpr(bool &iudata)
     if(! cpertime("/var", "/var/.sblvtmp/var")) return false;
     QSL usrs;
     QFile file("/etc/passwd");
-    file.open(QIODevice::ReadOnly);
+    if(! file.open(QIODevice::ReadOnly)) return false;
 
     while(! file.atEnd())
     {
@@ -3642,7 +3653,7 @@ bool sb::thrdlvprpr(bool &iudata)
     if(ThrdKill) return false;
     elist = QSL() << ".sbuserdata" << ".cache/gvfs" << ".local/share/Trash/files/" << ".local/share/Trash/info/" << ".Xauthority" << ".ICEauthority";
     file.setFileName("/etc/systemback.excludes");
-    file.open(QIODevice::ReadOnly);
+    if(! file.open(QIODevice::ReadOnly)) return false;
 
     while(! file.atEnd())
     {
@@ -3774,7 +3785,7 @@ bool sb::thrdlvprpr(bool &iudata)
         if(! iudata && isfile("/home/" % udir % "/.config/user-dirs.dirs"))
         {
             file.setFileName("/home/" % udir % "/.config/user-dirs.dirs");
-            file.open(QIODevice::ReadOnly);
+            if(! file.open(QIODevice::ReadOnly)) return false;
 
             while(! file.atEnd())
             {

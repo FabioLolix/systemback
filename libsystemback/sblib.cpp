@@ -606,16 +606,19 @@ bool sb::cpfile(QStr srcfile, QStr newfile)
     {
         int src, dst;
         if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
-        bool err(false);
+        bool err;
 
-        if((dst = open(newfile.toStdString().c_str(), O_WRONLY | O_CREAT, sfstat.st_mode)) != -1)
+        if(! (err = (dst = open(newfile.toStdString().c_str(), O_WRONLY | O_CREAT, sfstat.st_mode)) == -1))
         {
-            qint64 size(0);
+            if(sfstat.st_size > 0)
+            {
+                qint64 size(0);
 
-            do {
-                qint64 csize(size);
-                if((size += sendfile(dst, src, 0, sfstat.st_size - size)) == csize) err = true;
-            } while(! err && size < sfstat.st_size);
+                do {
+                    qint64 csize(size);
+                    if((size += sendfile(dst, src, 0, sfstat.st_size - size)) == csize) err = true;
+                } while(! err && size < sfstat.st_size);
+            }
 
             close(dst);
         }
@@ -1246,18 +1249,20 @@ void sb::run()
     case Copy:
     {
         int src, dst;
-        ThrdRslt = true;
 
-        if((src = open(ThrdStr[0].toStdString().c_str(), O_RDONLY | O_NOATIME)) != -1)
+        if((ThrdRslt = (src = open(ThrdStr[0].toStdString().c_str(), O_RDONLY | O_NOATIME)) != -1))
         {
-            if((dst = open(ThrdStr[1].toStdString().c_str(), O_WRONLY | O_CREAT, ThrdLng[1])) != -1)
+            if((ThrdRslt = (dst = open(ThrdStr[1].toStdString().c_str(), O_WRONLY | O_CREAT, ThrdLng[1])) != -1))
             {
-                quint64 size(0);
+                if(ThrdLng[0] > 0)
+                {
+                    quint64 size(0);
 
-                do {
-                    quint64 csize(size);
-                    if((size += sendfile(dst, src, 0, ThrdLng[0] - size)) == csize) ThrdRslt = false;
-                } while(ThrdRslt && size < ThrdLng[0]);
+                    do {
+                        quint64 csize(size);
+                        if((size += sendfile(dst, src, 0, ThrdLng[0] - size)) == csize) ThrdRslt = false;
+                    } while(ThrdRslt && size < ThrdLng[0]);
+                }
 
                 close(dst);
             }

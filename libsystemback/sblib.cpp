@@ -310,15 +310,15 @@ bool sb::lock(uchar type)
     case Sblock:
     {
         QStr lfile(isdir("/run") ? "/run/systemback.lock" : "/var/run/systemback.lock");
-        if((sblock = open(lfile.toStdString().c_str(), O_RDWR | O_CREAT)) == -1) return false;
+        if((sblock = open(lfile.toStdString().c_str(), O_RDWR | O_CREAT, 0644)) == -1) return false;
         return lockf(sblock, F_TLOCK, 0) == 0;
     }
     case Dpkglock:
-        if((dpkglock = open("/var/lib/dpkg/lock", O_RDWR | O_CREAT)) == -1) return false;
+        if((dpkglock = open("/var/lib/dpkg/lock", O_RDWR | O_CREAT, 0644)) == -1) return false;
         return lockf(dpkglock, F_TLOCK, 0) == 0;
     case Schdlrlock:
         QStr lfile(isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock");
-        if((schdlrlock = open(lfile.toStdString().c_str(), O_RDWR | O_CREAT)) == -1) return false;
+        if((schdlrlock = open(lfile.toStdString().c_str(), O_RDWR | O_CREAT, 0644)) == -1) return false;
         return lockf(schdlrlock, F_TLOCK, 0) == 0;
     }
 

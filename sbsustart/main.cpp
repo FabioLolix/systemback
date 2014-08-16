@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
         QStr emsg((arg1 == "systemback") ? "Cannot start Systemback graphical user interface!" : "Cannot start Systemback scheduler daemon!");
         emsg.append("\n\nUnable to get root permissions.");
-        if(sb::exec("zenity --title=Systemback --error --text=\"" % emsg % "\"", NULL, false, true) == 255) sb::exec("kdialog --title=Systemback --error=\"" % emsg % "\"", NULL, false, true);
+        sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % "\"", NULL, false, true);
         return 1;
     }
 

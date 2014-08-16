@@ -19,6 +19,7 @@
 
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
+#define _FILE_OFFSET_BITS 64
 #define QTS QTextStream
 #define QSL QStringList
 #define QSIL QList<short>
@@ -54,6 +55,7 @@ public:
     static QStr rlink(QStr path);
     static QStr fload(QStr path);
     static QStr getarch();
+    static QStr ckname();
     static quint64 devsize(QStr dev);
     static quint64 dfree(QStr path);
     static quint64 fsize(QStr path);
@@ -76,6 +78,7 @@ public:
     static bool cplink(QStr srclink, QStr newlink);
     static bool cpdir(QStr srcddir, QStr newdir);
     static bool crtrpoint(QStr sdir, QStr pname);
+    static bool pisrng(QStr pname, ushort &pid);
     static bool exclcheck(QSL elist, QStr item);
     static bool setpflag(QStr part, QStr flag);
     static bool issmfs(QStr item1, QStr item2);
@@ -91,6 +94,8 @@ public:
     static bool lock(uchar type);
     static bool exist(QStr path);
     static bool isnum(QStr txt);
+    static bool ickernel();
+    static bool efiprob();
     static void unlock(uchar type);
     static void delay(ushort msec);
     static void print(QStr txt);
@@ -99,6 +104,7 @@ public:
     static void supgrade();
     static void cfgwrite();
     static void thrdelay();
+    static void xrestart();
     static void cfgread();
     static void fssync();
 

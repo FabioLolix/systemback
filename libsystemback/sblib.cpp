@@ -30,12 +30,14 @@
 #include <sys/sendfile.h>
 #include <blkid/blkid.h>
 #include <sys/statvfs.h>
+#include <sys/utsname.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <linux/fs.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <signal.h>
 #include <utime.h>
 #include <fcntl.h>
 
@@ -62,6 +64,13 @@ QStr sb::getarch()
     default:
         return "arch?";
     }
+}
+
+QStr sb::ckname()
+{
+    struct utsname snfo;
+    uname(&snfo);
+    return snfo.release;
 }
 
 void sb::print(QStr txt)
@@ -224,8 +233,8 @@ QStr sb::rndstr(uchar vlen)
 
 bool sb::exist(QStr path)
 {
-    struct stat64 buf;
-    return lstat64(path.toStdString().c_str(), &buf) == 0;
+    struct stat buf;
+    return lstat(path.toStdString().c_str(), &buf) == 0;
 }
 
 bool sb::access(QStr path, uchar mode)
@@ -244,8 +253,8 @@ bool sb::access(QStr path, uchar mode)
 
 uchar sb::stype(QStr path)
 {
-    struct stat64 buf;
-    if(lstat64(path.toStdString().c_str(), &buf) == -1) return Notexist;
+    struct stat buf;
+    if(lstat(path.toStdString().c_str(), &buf) == -1) return Notexist;
 
     switch(buf.st_mode & S_IFMT) {
     case S_IFREG:
@@ -272,8 +281,8 @@ QStr sb::ruuid(QStr part)
 
 QStr sb::rlink(QStr path)
 {
-    struct stat64 lnkstat;
-    if(lstat64(path.toStdString().c_str(), &lnkstat) == -1) return NULL;
+    struct stat lnkstat;
+    if(lstat(path.toStdString().c_str(), &lnkstat) == -1) return NULL;
     char rpath[lnkstat.st_size];
     rpath[readlink(path.toStdString().c_str(), rpath, sizeof rpath)] = '\0';
     return rpath;
@@ -301,15 +310,15 @@ bool sb::lock(uchar type)
     case Sblock:
     {
         QStr lfile(isdir("/run") ? "/run/systemback.lock" : "/var/run/systemback.lock");
-        if((! exist(lfile) && ! crtfile(lfile)) || (sblock = open(lfile.toStdString().c_str(), O_RDWR)) == -1) return false;
+        if((sblock = open(lfile.toStdString().c_str(), O_RDWR | O_CREAT)) == -1) return false;
         return lockf(sblock, F_TLOCK, 0) == 0;
     }
     case Dpkglock:
-        if((! exist("/var/lib/dpkg/lock") && ! crtfile("/var/lib/dpkg/lock")) || (dpkglock = open("/var/lib/dpkg/lock", O_RDWR)) == -1) return false;
+        if((dpkglock = open("/var/lib/dpkg/lock", O_RDWR | O_CREAT)) == -1) return false;
         return lockf(dpkglock, F_TLOCK, 0) == 0;
     case Schdlrlock:
         QStr lfile(isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock");
-        if((! exist(lfile) && ! crtfile(lfile)) || (schdlrlock = open(lfile.toStdString().c_str(), O_RDWR)) == -1) return false;
+        if((schdlrlock = open(lfile.toStdString().c_str(), O_RDWR | O_CREAT)) == -1) return false;
         return lockf(schdlrlock, F_TLOCK, 0) == 0;
     }
 
@@ -332,8 +341,8 @@ void sb::unlock(uchar type)
 
 quint64 sb::dfree(QStr path)
 {
-    struct statvfs64 dstat;
-    return statvfs64(path.toStdString().c_str(), &dstat) == -1 ? 0 : dstat.f_bavail * dstat.f_bsize;
+    struct statvfs dstat;
+    return statvfs(path.toStdString().c_str(), &dstat) == -1 ? 0 : dstat.f_bavail * dstat.f_bsize;
 }
 
 quint64 sb::fsize(QStr path)
@@ -354,10 +363,67 @@ bool sb::islnxfs(QStr dirpath)
 {
     QStr fpath(dirpath % '/' % rndstr() % "_sbdirtestfile");
     if(! crtfile(fpath) || chmod(fpath.toStdString().c_str(), 0776) == -1) return false;
-    struct stat64 fstat;
-    bool err(stat64(fpath.toStdString().c_str(), &fstat) == -1);
+    struct stat fstat;
+    bool err(stat(fpath.toStdString().c_str(), &fstat) == -1);
     QFile::remove(fpath);
     return err ? false : fstat.st_mode == 33278;
+}
+
+bool sb::ickernel()
+{
+    QStr ckernel(ckname());
+
+    if(isfile("/lib/modules/" % ckernel % "/modules.order"))
+    {
+        QFile file("/lib/modules/" % ckernel % "/modules.order");
+
+        if(file.open(QIODevice::ReadOnly))
+            while(! file.atEnd())
+                if(like(file.readLine().trimmed(), QSL() << "*aufs.ko_" << "*overlayfs.ko_" << "*unionfs.ko_")) return true;
+    }
+
+    if(isfile("/lib/modules/" % ckernel % "/modules.builtin"))
+    {
+        QFile file("/lib/modules/" % ckernel % "/modules.builtin");
+
+        if(file.open(QIODevice::ReadOnly))
+            while(! file.atEnd())
+                if(like(file.readLine().trimmed(), QSL() << "*aufs.ko_" << "*overlayfs.ko_" << "*unionfs.ko_")) return true;
+    }
+
+    return false;
+}
+
+bool sb::efiprob()
+{
+    if(getarch() == "amd64")
+    {
+        if(isdir("/sys/firmware/efi")) return true;
+        QStr ckernel(ckname());
+
+        if(isfile("/lib/modules/" % ckernel % "/modules.builtin"))
+        {
+            QFile file("/lib/modules/" % ckernel % "/modules.builtin");
+
+            if(file.open(QIODevice::ReadOnly))
+                while(! file.atEnd())
+                    if(file.readLine().trimmed().endsWith("efivars.ko")) return false;
+        }
+
+        if(isfile("/proc/modules") && ! fload("/proc/modules").contains("efivars ") && isfile("/lib/modules/" % ckernel % "/modules.order"))
+        {
+            QFile file("/lib/modules/" % ckernel % "/modules.order");
+
+            if(file.open(QIODevice::ReadOnly))
+                while(! file.atEnd())
+                {
+                    QStr cline(file.readLine().trimmed());
+                    if(cline.endsWith("efivars.ko") && isfile("/lib/modules/" % ckernel % '/' % cline) && exec("modprobe efivars", NULL, true) == 0 && isdir("/sys/firmware/efi")) return true;
+                }
+        }
+    }
+
+    return false;
 }
 
 void sb::cfgread()
@@ -474,6 +540,12 @@ void sb::cfgwrite()
     crtfile("/etc/systemback.conf", "storagedir=" % sdir[0] % "\nliveworkdir=" % sdir[2] % "\npointsnumber=" % QStr::number(pnumber) % "\ntimer=" % schdle[0] % "\nschedule=" % schdle[1] % ":" % schdle[2] % ":" % schdle[3] % ":" % schdle[4] % "\nsilentmode=" % schdle[5] % "\nwindowposition=" % schdle[6] % '\n');
 }
 
+void sb::xrestart()
+{
+    ushort pid;
+    if(pisrng("Xorg", pid)) kill(pid, SIGTERM);
+}
+
 bool sb::setpflag(QStr partition, QStr flag)
 {
     if(partition.length() < 9) return false;
@@ -509,8 +581,8 @@ bool sb::mkpart(QStr dev, quint64 start, quint64 len)
 
 bool sb::cpertime(QStr sourcepath, QStr destpath)
 {
-    struct stat64 sistat, distat;
-    if(ilike(-1, QSIL() << stat64(sourcepath.toStdString().c_str(), &sistat) << stat64(destpath.toStdString().c_str(), &distat))) return false;
+    struct stat sistat, distat;
+    if(ilike(-1, QSIL() << stat(sourcepath.toStdString().c_str(), &sistat) << stat(destpath.toStdString().c_str(), &distat))) return false;
     if((sistat.st_uid != distat.st_uid || sistat.st_gid != distat.st_gid) && chown(destpath.toStdString().c_str(), sistat.st_uid, sistat.st_gid) == -1) return false;
     if(sistat.st_mode != distat.st_mode && chmod(destpath.toStdString().c_str(), sistat.st_mode) == -1) return false;
 
@@ -527,18 +599,24 @@ bool sb::cpertime(QStr sourcepath, QStr destpath)
 
 bool sb::cpfile(QStr srcfile, QStr newfile)
 {
-    struct stat64 sfstat, nfstat;
-    if(stat64(srcfile.toStdString().c_str(), &sfstat) == -1) return false;
+    struct stat sfstat, nfstat;
+    if(stat(srcfile.toStdString().c_str(), &sfstat) == -1) return false;
 
     if(SBThrd.isRunning())
     {
         int src, dst;
-        if((src = open(srcfile.toStdString().c_str(), O_RDONLY)) == -1) return false;
-        bool err(true);
+        if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
+        bool err(false);
 
         if((dst = open(newfile.toStdString().c_str(), O_WRONLY | O_CREAT, sfstat.st_mode)) != -1)
         {
-            if(sendfile(dst, src, 0, sfstat.st_size) == sfstat.st_size) err = false;
+            qint64 size(0);
+
+            do {
+                qint64 csize(size);
+                if((size += sendfile(dst, src, 0, sfstat.st_size - size)) == csize) err = true;
+            } while(! err && size < sfstat.st_size);
+
             close(dst);
         }
 
@@ -557,7 +635,7 @@ bool sb::cpfile(QStr srcfile, QStr newfile)
         if(! ThrdRslt) return false;
     }
 
-    if(stat64(newfile.toStdString().c_str(), &nfstat) == -1) return false;
+    if(stat(newfile.toStdString().c_str(), &nfstat) == -1) return false;
     if((sfstat.st_uid != nfstat.st_uid || sfstat.st_gid != nfstat.st_gid) && chown(newfile.toStdString().c_str(), sfstat.st_uid, sfstat.st_gid) == -1) return false;
     if(sfstat.st_mode != nfstat.st_mode && chmod(newfile.toStdString().c_str(), sfstat.st_mode) == -1) return false;
     struct utimbuf sftimes;
@@ -570,8 +648,8 @@ bool sb::lcomp(QStr link1, QStr link2)
 {
     QStr lnk(rlink(link1));
     if(lnk != rlink(link2) || lnk.isEmpty()) return false;
-    struct stat64 l1stat, l2stat;;
-    if(ilike(-1, QSIL() << lstat64(link1.toStdString().c_str(), &l1stat) << lstat64(link2.toStdString().c_str(), &l2stat))) return false;
+    struct stat l1stat, l2stat;;
+    if(ilike(-1, QSIL() << lstat(link1.toStdString().c_str(), &l1stat) << lstat(link2.toStdString().c_str(), &l2stat))) return false;
     if(l1stat.st_mtim.tv_sec != l2stat.st_mtim.tv_sec) return false;
     return true;
 }
@@ -579,8 +657,8 @@ bool sb::lcomp(QStr link1, QStr link2)
 bool sb::cplink(QStr srclink, QStr newlink)
 {
     if(! QFile::link(rlink(srclink), newlink)) return false;
-    struct stat64 sistat;
-    if(lstat64(srclink.toStdString().c_str(), &sistat) == -1) return false;
+    struct stat sistat;
+    if(lstat(srclink.toStdString().c_str(), &sistat) == -1) return false;
     struct timeval sitimes[2];
     sitimes[0].tv_sec = sistat.st_atim.tv_sec;
     sitimes[1].tv_sec = sistat.st_mtim.tv_sec;
@@ -590,8 +668,8 @@ bool sb::cplink(QStr srclink, QStr newlink)
 
 bool sb::cpdir(QStr srcdir, QStr newdir)
 {
-    struct stat64 sdstat, ndstat;
-    if(stat64(srcdir.toStdString().c_str(), &sdstat) == -1 || mkdir(newdir.toStdString().c_str(), sdstat.st_mode) == -1 || stat64(newdir.toStdString().c_str(), &ndstat) == -1) return false;
+    struct stat sdstat, ndstat;
+    if(stat(srcdir.toStdString().c_str(), &sdstat) == -1 || mkdir(newdir.toStdString().c_str(), sdstat.st_mode) == -1 || stat(newdir.toStdString().c_str(), &ndstat) == -1) return false;
     if((sdstat.st_uid != ndstat.st_uid || sdstat.st_gid != ndstat.st_gid) && chown(newdir.toStdString().c_str(), sdstat.st_uid, sdstat.st_gid) == -1) return false;
     if(sdstat.st_mode != ndstat.st_mode && chmod(newdir.toStdString().c_str(), sdstat.st_mode) == -1) return false;
     struct utimbuf sdtimes;
@@ -672,16 +750,16 @@ bool sb::umount(QStr dev)
 
 uchar sb::fcomp(QStr file1, QStr file2)
 {
-    struct stat64 f1stat, f2stat;
-    if(ilike(-1, QSIL() << stat64(file1.toStdString().c_str(), &f1stat) << stat64(file2.toStdString().c_str(), &f2stat))) return false;
+    struct stat f1stat, f2stat;
+    if(ilike(-1, QSIL() << stat(file1.toStdString().c_str(), &f1stat) << stat(file2.toStdString().c_str(), &f2stat))) return false;
     if(f1stat.st_size == f2stat.st_size && f1stat.st_mtim.tv_sec == f2stat.st_mtim.tv_sec) return f1stat.st_mode == f2stat.st_mode && f1stat.st_uid == f2stat.st_uid && f1stat.st_gid == f2stat.st_gid ? 2 : 1;
     return 0;
 }
 
 bool sb::issmfs(QStr item1, QStr item2)
 {
-    struct stat64 i1stat, i2stat;
-    if(ilike(-1, QSIL() << stat64(item1.toStdString().c_str(), &i1stat) << stat64(item2.toStdString().c_str(), &i2stat))) return false;
+    struct stat i1stat, i2stat;
+    if(ilike(-1, QSIL() << stat(item1.toStdString().c_str(), &i1stat) << stat(item2.toStdString().c_str(), &i2stat))) return false;
     return i1stat.st_dev == i2stat.st_dev;
 }
 
@@ -1069,12 +1147,19 @@ void sb::thrdelay()
 
 bool sb::pisrng(QStr pname)
 {
+    ushort pid;
+    return pisrng(pname, pid);
+}
+
+bool sb::pisrng(QStr pname, ushort &pid)
+{
     DIR *dir(opendir("/proc"));
     struct dirent *ent;
 
     while((ent = readdir(dir)))
         if(! like(ent->d_name, QSL() << "_._" << "_.._") && ent->d_type == DT_DIR && isnum(QStr(ent->d_name)) && islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
         {
+            pid = QStr(ent->d_name).toShort();
             closedir(dir);
             return true;
         }
@@ -1161,13 +1246,19 @@ void sb::run()
     case Copy:
     {
         int src, dst;
-        ThrdRslt = false;
+        ThrdRslt = true;
 
-        if((src = open(ThrdStr[0].toStdString().c_str(), O_RDONLY)) != -1)
+        if((src = open(ThrdStr[0].toStdString().c_str(), O_RDONLY | O_NOATIME)) != -1)
         {
             if((dst = open(ThrdStr[1].toStdString().c_str(), O_WRONLY | O_CREAT, ThrdLng[1])) != -1)
             {
-                if(sendfile(dst, src, 0, ThrdLng[0]) == qint64(ThrdLng[0])) ThrdRslt = true;
+                quint64 size(0);
+
+                do {
+                    quint64 csize(size);
+                    if((size += sendfile(dst, src, 0, ThrdLng[0] - size)) == csize) ThrdRslt = false;
+                } while(ThrdRslt && size < ThrdLng[0]);
+
                 close(dst);
             }
 

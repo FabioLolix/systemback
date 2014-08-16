@@ -25,7 +25,6 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QDir>
-#include <sys/utsname.h>
 #include <sys/stat.h>
 #include <sys/swap.h>
 #include <X11/Xlib.h>
@@ -543,18 +542,10 @@ void systemback::unitimer()
                 file.close();
                 ui->repairmountpoint->addItems(QSL() << NULL << "/mnt" << "/mnt/home" << "/mnt/boot");
 
-                if(sb::getarch() == "amd64")
+                if(sb::efiprob())
                 {
-                    if(isdir("/sys/firmware/efi"))
-                    {
-                        grub = "efi-amd64";
-                        ui->repairmountpoint->addItem("/mnt/boot/efi");
-                    }
-                    else
-                    {
-                        sb::exec("modprobe efivars", NULL, true);
-                        if(isdir("/sys/firmware/efi")) grub = "efi-amd64";
-                    }
+                    grub = "efi-amd64";
+                    ui->repairmountpoint->addItem("/mnt/boot/efi");
                 }
 
                 ui->repairmountpoint->addItems(QSL() << "/mnt/usr" << "/mnt/var" << "/mnt/opt" << "/mnt/usr/local");
@@ -591,7 +582,7 @@ void systemback::unitimer()
 
             pointupgrade();
             if(sstart) ui->schedulerstart->setEnabled(true);
-            ickernel = (sb::exec("modprobe -n overlayfs", NULL, true) == 0 || sb::exec("modprobe -n aufs", NULL, true) == 0 || sb::exec("modprobe -n unionfs", NULL, true) == 0 || sb::execsrch("unionfs-fuse"));
+            ickernel = sb::ickernel() || sb::execsrch("unionfs-fuse");
             busy(false);
             utimer->start();
         }
@@ -1295,7 +1286,7 @@ void systemback::hmpg1released()
     if(ui->homepage1->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage1->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"/usr/bin/xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), NULL, false, true);
+        sb::exec("su -c \"xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -1319,7 +1310,7 @@ void systemback::hmpg2released()
     if(ui->homepage2->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage2->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"/usr/bin/xdg-open https://launchpad.net/systemback &\" " % guname(), NULL, false, true);
+        sb::exec("su -c \"xdg-open https://launchpad.net/systemback &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -1343,7 +1334,7 @@ void systemback::emailreleased()
     if(ui->email->foregroundRole() == QPalette::Highlight)
     {
         ui->email->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"/usr/bin/xdg-email nemh@freemail.hu &\" " % guname(), NULL, false, true);
+        sb::exec("su -c \"xdg-email nemh@freemail.hu &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -1367,7 +1358,7 @@ void systemback::dntreleased()
     if(ui->donate->foregroundRole() == QPalette::Highlight)
     {
         ui->donate->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"/usr/bin/xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), NULL, false, true);
+        sb::exec("su -c \"xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), NULL, false, true);
     }
 }
 
@@ -6223,7 +6214,7 @@ void systemback::on_dialogok_clicked()
     }
     else if(ui->dialogok->text() == tr("X restart"))
     {
-        sb::exec("pkill -x Xorg", NULL, true, false);
+        sb::xrestart();
         close();
     }
 }
@@ -8551,9 +8542,7 @@ exit:
 start:;
     statustart();
     prun = tr("Creating Live system") % '\n' % tr("process") % " 1/3";
-    struct utsname snfo;
-    uname(&snfo);
-    QStr ckernel(snfo.release), lvtype(isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live"), ifname;
+    QStr ckernel(sb::ckname()), lvtype(isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live"), ifname;
 
     if(sb::exist(sb::sdir[2] % "/.sblivesystemcreate"))
     {

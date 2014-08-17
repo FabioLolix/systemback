@@ -264,6 +264,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             ui->adminpassword->move(ui->adminpasswordtext->x() + ui->adminpasswordtext->width(), ui->adminpassword->y());
             ui->adminpassword->resize(336 - ui->adminpassword->x(), ui->adminpassword->height());
             QFile file("/etc/group");
+
             if(file.open(QIODevice::ReadOnly))
             {
                 while(! file.atEnd())
@@ -1512,6 +1513,7 @@ void systemback::pointupgrade()
         if(! ui->point3->isEnabled())
         {
             ui->point3->setEnabled(true);
+            if(sb::pnumber == 3 && ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet("background-color: rgb(255, 103, 103)");
             ui->point3->setText(sb::pnames[2]);
         }
         else if(ui->point3->text() != sb::pnames[2])
@@ -1520,6 +1522,7 @@ void systemback::pointupgrade()
     else if(ui->point3->isEnabled())
     {
         ui->point3->setDisabled(true);
+        if(! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(NULL);
         if(ui->point3->text() != tr("empty")) ui->point3->setText(tr("empty"));
     }
 
@@ -2836,7 +2839,7 @@ start:;
     }
 
     if(intrrpt) goto error;
-    quint64 size(sb::fsize(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive"));
+    ullong size(sb::fsize(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive"));
     QStr lrdir;
 
     if(size < 4294967295)
@@ -4009,7 +4012,7 @@ void systemback::on_dialogcancel_clicked()
 
 void systemback::on_pnumber3_clicked()
 {
-    if(sb::pnumber != 3)
+    if(sb::pnumber > 3)
     {
         sb::pnumber = 3;
         if(! cfgupdt) cfgupdt = true;
@@ -4369,7 +4372,7 @@ void systemback::on_pnumber8_clicked()
 
 void systemback::on_pnumber9_clicked()
 {
-    if(sb::pnumber != 9)
+    if(sb::pnumber < 9)
     {
         sb::pnumber = 9;
         if(! cfgupdt) cfgupdt = true;
@@ -5067,12 +5070,12 @@ void systemback::on_livecreatemenu_clicked()
             {
                 if(sb::stype(sb::sdir[2] % '/' % sb::left(iname, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(iname, -6) % "iso") > 0)
                 {
-                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(quint64(sb::fsize(sb::sdir[2] % '/' % iname) * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB, sblive+iso)"));
+                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(ullong(sb::fsize(sb::sdir[2] % '/' % iname) * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB, sblive+iso)"));
                     ui->livelist->addItem(lwi);
                 }
                 else
                 {
-                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(quint64(sb::fsize(sb::sdir[2] % '/' % iname) * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB, sblive)"));
+                    QLWI *lwi(new QLWI(sb::left(iname, -7) % " (" % QStr::number(ullong(sb::fsize(sb::sdir[2] % '/' % iname) * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB, sblive)"));
                     ui->livelist->addItem(lwi);
                 }
 
@@ -5247,7 +5250,7 @@ void systemback::on_partitionupdate_clicked()
         if(path.length() > 8)
         {
             QStr fsystem(dts.at(1)), label(dts.at(2)), uuid(dts.at(3));
-            quint64 bsize(dts.at(4).toULongLong());
+            ullong bsize(dts.at(4).toULongLong());
             ui->grubinstallcopy->addItem(path);
             ui->grubreinstallrestore->addItem(path);
             ui->grubreinstallrepair->addItem(path);
@@ -5258,11 +5261,11 @@ void systemback::on_partitionupdate_clicked()
             QTblWI *size(new QTblWI);
 
             if(bsize < 1048576000)
-                size->setText(QStr::number(quint64(bsize * 100.0 / 1024.0 / 1024.0 + .5) / 100.0) % " MiB");
+                size->setText(QStr::number(ullong(bsize * 100.0 / 1024.0 / 1024.0 + .5) / 100.0) % " MiB");
             else if(bsize < 1073741824000)
-                size->setText(QStr::number(quint64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB");
+                size->setText(QStr::number(ullong(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB");
             else
-                size->setText(QStr::number(quint64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " TiB");
+                size->setText(QStr::number(ullong(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " TiB");
 
             size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
             ui->partitionsettings->setItem(sn, 1, size);
@@ -5858,7 +5861,7 @@ void systemback::on_livedevicesupdate_clicked()
     {
         QSL dts(dlst.at(a).split('\n'));
         QStr path(dts.at(0)), dname(dts.at(1));
-        quint64 bsize(dts.at(2).toULongLong());
+        ullong bsize(dts.at(2).toULongLong());
         ++sn;
         ui->livedevices->setRowCount(sn + 1);
         QTblWI *dev(new QTblWI(path));
@@ -5866,11 +5869,11 @@ void systemback::on_livedevicesupdate_clicked()
         QTblWI *size(new QTblWI);
 
         if(bsize < 1048576000)
-            size->setText(QStr::number(quint64(bsize * 100.0 / 1024.0 / 1024.0 + .5) / 100.0) % " MiB");
+            size->setText(QStr::number(ullong(bsize * 100.0 / 1024.0 / 1024.0 + .5) / 100.0) % " MiB");
         else if(bsize < 1073741824000)
-            size->setText(QStr::number(quint64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB");
+            size->setText(QStr::number(ullong(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " GiB");
         else
-            size->setText(QStr::number(quint64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " TiB");
+            size->setText(QStr::number(ullong(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0 + .5) / 100.0) % " TiB");
 
         size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         ui->livedevices->setItem(sn, 1, size);
@@ -6796,7 +6799,7 @@ void systemback::on_livelist_currentItemChanged(QLWI *current)
         if(isfile(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"))
         {
             if(! ui->livedelete->isEnabled()) ui->livedelete->setEnabled(true);
-            quint64 isize(sb::fsize(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"));
+            ullong isize(sb::fsize(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"));
 
             if(isize > 0 && isize < 4294967295 && isize * 2 + 104857600 < sb::dfree(sb::sdir[2]) && ! sb::exist(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".iso"))
             {
@@ -8036,7 +8039,7 @@ void systemback::on_userdatainclude_clicked(bool checked)
 {
     if(checked)
     {
-        quint64 hfree(sb::dfree("/home"));
+        ullong hfree(sb::dfree("/home"));
         QFile file("/etc/passwd");
 
         if(hfree > 104857600 && sb::dfree("/root") > 104857600 && file.open(QIODevice::ReadOnly))
@@ -8189,136 +8192,29 @@ start:;
         }
     }
 
-    if(! ui->point10->styleSheet().isEmpty()) ++ppipe;
-    if(! ui->point9->styleSheet().isEmpty()) ++ppipe;
-    if(! ui->point8->styleSheet().isEmpty()) ++ppipe;
-    if(! ui->point7->styleSheet().isEmpty()) ++ppipe;
-    if(! ui->point6->styleSheet().isEmpty()) ++ppipe;
-    if(! ui->point5->styleSheet().isEmpty()) ++ppipe;
-    if(! ui->point4->styleSheet().isEmpty()) ++ppipe;
-    if(! ui->point3->styleSheet().isEmpty()) ++ppipe;
+    for(uchar a(9) ; a > 1 ; --a)
+        if(! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true)) ++ppipe;
 
     if(ppipe > 0)
     {
         uchar dnum(0);
 
-        if(! ui->point10->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/.DELETED_" % sb::pnames[9]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[9])) goto error;
-            if(intrrpt) goto error;
-        }
-
-        if(! ui->point9->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/.DELETED_" % sb::pnames[8]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[8])) goto error;
-            if(intrrpt) goto error;
-        }
-
-        if(! ui->point8->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/.DELETED_" % sb::pnames[7]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[7])) goto error;
-            if(intrrpt) goto error;
-        }
-
-        if(! ui->point7->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/.DELETED_" % sb::pnames[6]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[6])) goto error;
-            if(intrrpt) goto error;
-        }
-
-        if(! ui->point6->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/.DELETED_" % sb::pnames[5]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[5])) goto error;
-            if(intrrpt) goto error;
-        }
-
-        if(! ui->point5->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/.DELETED_" % sb::pnames[4]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[4])) goto error;
-            if(intrrpt) goto error;
-        }
-
-        if(! ui->point4->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/.DELETED_" % sb::pnames[3]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[3])) goto error;
-            if(intrrpt) goto error;
-        }
-
-        if(! ui->point3->styleSheet().isEmpty())
-        {
-            ++dnum;
-            prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-            QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/.DELETED_" % sb::pnames[2]);
-            if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[2])) goto error;
-            if(intrrpt) goto error;
-        }
+        for(uchar a(9) ; a > 1 ; --a)
+            if(! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true))
+            {
+                ++dnum;
+                prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
+                if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+                if(intrrpt) goto error;
+            }
     }
 
     prun = tr("Creating restore point");
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
     if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) goto error;
 
-    if(isdir(sb::sdir[1] % "/S01_" % sb::pnames[0]))
-    {
-        if(! QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/S02_" % sb::pnames[0])) goto error;
-
-        if(isdir(sb::sdir[1] % "/S02_" % sb::pnames[1]))
-        {
-            if(! QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/S03_" % sb::pnames[1])) goto error;
-
-            if(isdir(sb::sdir[1] % "/S03_" % sb::pnames[2]))
-            {
-                if(! QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/S04_" % sb::pnames[2])) goto error;
-
-                if(isdir(sb::sdir[1] % "/S04_" % sb::pnames[3]))
-                {
-                    if(! QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/S05_" % sb::pnames[3])) goto error;
-
-                    if(isdir(sb::sdir[1] % "/S05_" % sb::pnames[4]))
-                    {
-                        if(! QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/S06_" % sb::pnames[4])) goto error;
-
-                        if(isdir(sb::sdir[1] % "/S06_" % sb::pnames[5]))
-                        {
-                            if(! QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/S07_" % sb::pnames[5])) goto error;
-
-                            if(isdir(sb::sdir[1] % "/S07_" % sb::pnames[6]))
-                            {
-                                if(! QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/S08_" % sb::pnames[6])) goto error;
-
-                                if(isdir(sb::sdir[1] % "/S08_" % sb::pnames[7]))
-                                {
-                                    if(! QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S09_" % sb::pnames[7])) goto error;
-                                    if(isdir(sb::sdir[1] % "/S09_" % sb::pnames[8]) && ! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S10_" % sb::pnames[8])) goto error;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    for(uchar a(0) ; a < 9 && isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) goto error;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
@@ -8360,139 +8256,71 @@ start:;
     statustart();
     uchar dnum(0);
 
-    if(ui->pointpipe10->isChecked())
+    for(short a(9) ; a > -1 ; --a)
     {
+        switch(a) {
+        case 9:
+            if(! ui->pointpipe10->isChecked()) continue;
+            break;
+        case 8:
+            if(! ui->pointpipe9->isChecked()) continue;
+            break;
+        case 7:
+            if(! ui->pointpipe8->isChecked()) continue;
+            break;
+        case 6:
+            if(! ui->pointpipe7->isChecked()) continue;
+            break;
+        case 5:
+            if(! ui->pointpipe6->isChecked()) continue;
+            break;
+        case 4:
+            if(! ui->pointpipe5->isChecked()) continue;
+            break;
+        case 3:
+            if(! ui->pointpipe4->isChecked()) continue;
+            break;
+        case 2:
+            if(! ui->pointpipe3->isChecked()) continue;
+            break;
+        case 1:
+            if(! ui->pointpipe2->isChecked()) continue;
+            break;
+        case 0:
+            if(! ui->pointpipe1->isChecked()) continue;
+        }
+
         ++dnum;
         prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/.DELETED_" % sb::pnames[9])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[9])) goto error;
+        if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
         if(intrrpt) goto error;
+        sb::delay(3000);
     }
 
-    if(ui->pointpipe9->isChecked())
+    for(uchar a(10) ; a < 15 ; ++a)
     {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/.DELETED_" % sb::pnames[8])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[8])) goto error;
-        if(intrrpt) goto error;
-    }
+        switch(a) {
+        case 10:
+            if(! ui->pointpipe11->isChecked()) continue;
+            break;
+        case 11:
+            if(! ui->pointpipe12->isChecked()) continue;
+            break;
+        case 12:
+            if(! ui->pointpipe13->isChecked()) continue;
+            break;
+        case 13:
+            if(! ui->pointpipe14->isChecked()) continue;
+            break;
+        case 14:
+            if(! ui->pointpipe15->isChecked()) continue;
+        }
 
-    if(ui->pointpipe8->isChecked())
-    {
         ++dnum;
         prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/.DELETED_" % sb::pnames[7])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[7])) goto error;
+        if(! QFile::rename(sb::sdir[1] % "/H0" % QStr::number(a - 9) % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
         if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe7->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/.DELETED_" % sb::pnames[6])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[6])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe6->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/.DELETED_" % sb::pnames[5])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[5])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe5->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/.DELETED_" % sb::pnames[4])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[4])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe4->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/.DELETED_" % sb::pnames[3])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[3])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe3->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/.DELETED_" % sb::pnames[2])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[2])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe2->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/.DELETED_" % sb::pnames[1])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[1])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe1->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/.DELETED_" % sb::pnames[0])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[0])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe11->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H01_" % sb::pnames[10], sb::sdir[1] % "/.DELETED_" % sb::pnames[10])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[10])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe12->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H02_" % sb::pnames[11], sb::sdir[1] % "/.DELETED_" % sb::pnames[11])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[11])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe13->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H03_" % sb::pnames[12], sb::sdir[1] % "/.DELETED_" % sb::pnames[12])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[12])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe14->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H04_" % sb::pnames[13], sb::sdir[1] % "/.DELETED_" % sb::pnames[13])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[13])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    if(ui->pointpipe15->isChecked())
-    {
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H05_" % sb::pnames[14], sb::sdir[1] % "/.DELETED_" % sb::pnames[14])) goto error;
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[14])) goto error;
-        if(intrrpt) goto error;
+        sb::delay(3000);
     }
 
     pointupgrade();

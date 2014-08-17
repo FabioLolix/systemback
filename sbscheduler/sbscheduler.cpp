@@ -152,53 +152,8 @@ void scheduler::newrestorepoint()
         if(sb::like(iname, QSL() << "_.DELETED_*" << "_.S00_*") && ! sb::remove(sb::sdir[1] % '/' % iname)) return;
     }
 
-    if(! sb::pnames[9].isEmpty())
-    {
-        QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/.DELETED_" % sb::pnames[9]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[9])) return;
-    }
-
-    if(! sb::pnames[8].isEmpty() && sb::pnumber < 10)
-    {
-        QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/.DELETED_" % sb::pnames[8]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[8])) return;
-    }
-
-    if(! sb::pnames[7].isEmpty() && sb::pnumber < 9)
-    {
-        QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/.DELETED_" % sb::pnames[7]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[7])) return;
-    }
-
-    if(! sb::pnames[6].isEmpty() && sb::pnumber < 8)
-    {
-        QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/.DELETED_" % sb::pnames[6]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[6])) return;
-    }
-
-    if(! sb::pnames[5].isEmpty() && sb::pnumber < 7)
-    {
-        QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/.DELETED_" % sb::pnames[5]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[5])) return;
-    }
-
-    if(! sb::pnames[4].isEmpty() && sb::pnumber < 6)
-    {
-        QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/.DELETED_" % sb::pnames[4]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[4])) return;
-    }
-
-    if(! sb::pnames[3].isEmpty() && sb::pnumber < 5)
-    {
-        QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/.DELETED_" % sb::pnames[3]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[3])) return;
-    }
-
-    if(! sb::pnames[2].isEmpty() && sb::pnumber == 3)
-    {
-        QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/.DELETED_" % sb::pnames[2]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[2])) return;
-    }
+    for(uchar a(9) ; a > 1 ; --a)
+        if((! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true)) && ! (QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) && sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]))) return;
 
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
 
@@ -213,46 +168,8 @@ void scheduler::newrestorepoint()
         return;
     }
 
-    if(isdir(sb::sdir[1] % "/S01_" % sb::pnames[0]))
-    {
-        if(! QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/S02_" % sb::pnames[0])) return;
-
-        if(isdir(sb::sdir[1] % "/S02_" % sb::pnames[1]))
-        {
-            if(! QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/S03_" % sb::pnames[1])) return;
-
-            if(isdir(sb::sdir[1] % "/S03_" % sb::pnames[2]))
-            {
-                if(! QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/S04_" % sb::pnames[2])) return;
-
-                if(isdir(sb::sdir[1] % "/S04_" % sb::pnames[3]))
-                {
-                    if(! QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/S05_" % sb::pnames[3])) return;
-
-                    if(isdir(sb::sdir[1] % "/S05_" % sb::pnames[4]))
-                    {
-                        if(! QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/S06_" % sb::pnames[4])) return;
-
-                        if(isdir(sb::sdir[1] % "/S06_" % sb::pnames[5]))
-                        {
-                            if(! QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/S07_" % sb::pnames[5])) return;
-
-                            if(isdir(sb::sdir[1] % "/S07_" % sb::pnames[6]))
-                            {
-                                if(! QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/S08_" % sb::pnames[6])) return;
-
-                                if(isdir(sb::sdir[1] % "/S08_" % sb::pnames[7]))
-                                {
-                                    if(! QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S09_" % sb::pnames[7])) return;
-                                    if(isdir(sb::sdir[1] % "/S09_" % sb::pnames[8]) && ! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S10_" % sb::pnames[8])) return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    for(uchar a(0) ; a < 9 && isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return;
 end:;

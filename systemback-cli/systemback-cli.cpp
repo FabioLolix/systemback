@@ -336,8 +336,7 @@ uchar systemback::storagedir()
         if(qApp->arguments().count() > 3)
             for(uchar a(3); a < qApp->arguments().count(); ++a) ndir.append(' ' % qApp->arguments().value(a));
 
-        if(sb::like(ndir, QSL() << "*/systemback_" << "*/_" << "_/bin_" << "_/bin/*" << "_/boot_" << "_/boot/*" << "_/cdrom_" << "_/cdrom/*" << "_/dev_" << "_/dev/*" << "_/etc_" << "_/etc/*" << "_/lib_" << "_/lib/*" << "_/lib32_" << "_/lib32/*" << "_/lib64_" << "_/lib64/*" << "_/opt_" << "_/opt/*" << "_/proc_" << "_/proc/*" << "_/root_" << "_/root/*" << "_/run_" << "_/run/*" << "_/sbin_" << "_/sbin/*" << "_/selinux_" << "_/selinux/*" << "_/srv_" << "_/sys/*" << "_/tmp_" << "_/tmp/*" << "_/usr_" << "_/usr/*" << "_/var_" << "_/var/*") || sb::fload("/etc/passwd").contains(':' % ndir % ':')) return 5;
-        if(! sb::islnxfs(ndir)) return 5;
+        if(sb::like(ndir, QSL() << "*/systemback_" << "*/_" << "_/bin_" << "_/bin/*" << "_/boot_" << "_/boot/*" << "_/cdrom_" << "_/cdrom/*" << "_/dev_" << "_/dev/*" << "_/etc_" << "_/etc/*" << "_/lib_" << "_/lib/*" << "_/lib32_" << "_/lib32/*" << "_/lib64_" << "_/lib64/*" << "_/opt_" << "_/opt/*" << "_/proc_" << "_/proc/*" << "_/root_" << "_/root/*" << "_/run_" << "_/run/*" << "_/sbin_" << "_/sbin/*" << "_/selinux_" << "_/selinux/*" << "_/srv_" << "_/sys/*" << "_/tmp_" << "_/tmp/*" << "_/usr_" << "_/usr/*" << "_/var_" << "_/var/*") || sb::fload("/etc/passwd").contains(':' % ndir % ':') || ! sb::islnxfs(ndir)) return 5;
 
         if(sb::sdir[0] != ndir)
         {
@@ -391,106 +390,19 @@ start:;
         }
     }
 
-    if(! sb::pnames[9].isEmpty())
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/.DELETED_" % sb::pnames[9]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[9])) goto error;
-    }
-
-    if(! sb::pnames[8].isEmpty() && sb::pnumber < 10)
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/.DELETED_" % sb::pnames[8]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[8])) goto error;
-    }
-
-    if(! sb::pnames[7].isEmpty() && sb::pnumber < 9)
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/.DELETED_" % sb::pnames[7]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[7])) goto error;
-    }
-
-    if(! sb::pnames[6].isEmpty() && sb::pnumber < 8)
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/.DELETED_" % sb::pnames[6]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[6])) goto error;
-    }
-
-    if(! sb::pnames[5].isEmpty() && sb::pnumber < 7)
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/.DELETED_" % sb::pnames[5]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[5])) goto error;
-    }
-
-    if(! sb::pnames[4].isEmpty() && sb::pnumber < 6)
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/.DELETED_" % sb::pnames[4]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[4])) goto error;
-    }
-
-    if(! sb::pnames[3].isEmpty() && sb::pnumber < 5)
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/.DELETED_" % sb::pnames[3]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[3])) goto error;
-    }
-
-    if(! sb::pnames[2].isEmpty() && sb::pnumber == 3)
-    {
-        prun = tr("Deleting old restore point(s)");
-        QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/.DELETED_" % sb::pnames[2]);
-        if(! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[2])) goto error;
-    }
+    for(uchar a(9) ; a > 1 ; --a)
+        if(! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true))
+        {
+            if(prun != tr("Deleting old restore point(s)")) prun = tr("Deleting old restore point(s)");
+            if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+        }
 
     prun = tr("Creating restore point");
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
     if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) goto error;
 
-    if(isdir(sb::sdir[1] % "/S01_" % sb::pnames[0]))
-    {
-        if(! QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/S02_" % sb::pnames[0])) goto error;
-
-        if(isdir(sb::sdir[1] % "/S02_" % sb::pnames[1]))
-        {
-            if(! QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/S03_" % sb::pnames[1])) goto error;
-
-            if(isdir(sb::sdir[1] % "/S03_" % sb::pnames[2]))
-            {
-                if(! QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/S04_" % sb::pnames[2])) goto error;
-
-                if(isdir(sb::sdir[1] % "/S04_" % sb::pnames[3]))
-                {
-                    if(! QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/S05_" % sb::pnames[3])) goto error;
-
-                    if(isdir(sb::sdir[1] % "/S05_" % sb::pnames[4]))
-                    {
-                        if(! QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/S06_" % sb::pnames[4])) goto error;
-
-                        if(isdir(sb::sdir[1] % "/S06_" % sb::pnames[5]))
-                        {
-                            if(! QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/S07_" % sb::pnames[5])) goto error;
-
-                            if(isdir(sb::sdir[1] % "/S07_" % sb::pnames[6]))
-                            {
-                                if(! QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/S08_" % sb::pnames[6])) goto error;
-
-                                if(isdir(sb::sdir[1] % "/S08_" % sb::pnames[7]))
-                                {
-                                    if(! QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S09_" % sb::pnames[7])) goto error;
-                                    if(isdir(sb::sdir[1] % "/S09_" % sb::pnames[8]) && ! QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S10_" % sb::pnames[8])) goto error;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    for(uchar a(0) ; a < 9 && isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) goto error;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
@@ -774,7 +686,7 @@ uchar systemback::restore()
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
 
-    while(true)
+    for(;;)
         switch(getch()) {
         case '\n':
             if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", NULL, false, true);
@@ -814,44 +726,18 @@ void systemback::progpercent()
 
 void systemback::progress()
 {
-    progpercent();
-    if(! ptimer->isActive()) return;
-    clear();
-    attron(COLOR_PAIR(2));
-    mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, QStr("Systemback " % tr("basic restore UI")).toStdString().c_str());
-    attron(COLOR_PAIR(1));
-    mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, QStr(prun % pbar % "    ").toStdString().c_str());
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
-    refresh();
-    sb::delay(500);
-    progpercent();
-    if(! ptimer->isActive()) return;
-    clear();
-    mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, QStr("Systemback " % tr("basic restore UI")).toStdString().c_str());
-    attron(COLOR_PAIR(1));
-    mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, QStr(prun % pbar % " .  ").toStdString().c_str());
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
-    refresh();
-    sb::delay(500);
-    progpercent();
-    if(! ptimer->isActive()) return;
-    clear();
-    mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, QStr("Systemback " % tr("basic restore UI")).toStdString().c_str());
-    attron(COLOR_PAIR(1));
-    mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, QStr(prun % pbar % " .. ").toStdString().c_str());
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
-    refresh();
-    sb::delay(500);
-    progpercent();
-    if(! ptimer->isActive()) return;
-    clear();
-    mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, QStr("Systemback " % tr("basic restore UI")).toStdString().c_str());
-    attron(COLOR_PAIR(1));
-    mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, QStr(prun % pbar % " ...").toStdString().c_str());
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
-    refresh();
+    for(uchar a(0) ; a < 4 ; ++a)
+    {
+        progpercent();
+        if(! ptimer->isActive()) return;
+        clear();
+        attron(COLOR_PAIR(2));
+        mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, QStr("Systemback " % tr("basic restore UI")).toStdString().c_str());
+        attron(COLOR_PAIR(1));
+        mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, QStr(prun % pbar % ' ' % (a == 0 ? "   " : a == 1 ? ".  " : a == 2 ? ".. " : "...")).toStdString().c_str());
+        attron(COLOR_PAIR(2));
+        mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+        refresh();
+        if(a < 3) sb::delay(500);
+    }
 }

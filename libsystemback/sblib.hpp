@@ -20,17 +20,23 @@
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
 #define _FILE_OFFSET_BITS 64
-#define QTS QTextStream
-#define QSL QStringList
-#define QSIL QList<short>
-#define QStr QString
 #define isfile(path) QFileInfo(path).isFile()
 #define isdir(path) QFileInfo(path).isDir()
 #define islink(path) QFileInfo(path).isSymLink()
 
 #include "sblib_global.hpp"
+#include <QTextStream>
 #include <QStringList>
 #include <QThread>
+
+typedef QTextStream QTS;
+typedef QStringList QSL;
+typedef QList<short> QSIL;
+typedef QString QStr;
+typedef long long llong;
+typedef unsigned long long ullong;
+typedef const char cchar;
+typedef const unsigned char cuchar;
 
 class SHARED_EXPORT_IMPORT sb : public QThread
 {
@@ -39,8 +45,8 @@ public:
 
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], trn[2];
-    static quint64 ThrdLng[2];
-    static const uchar Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknow = 5, Read = 0, Write = 1, Exec = 2, Sblock = 0, Dpkglock = 1, Schdlrlock = 2, Norm = 0, All = 1, Mixed = 2, Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvprttns = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Crtrpoint = 11, Srestore = 12, Scopy = 13, Lvprpr = 14;
+    static ullong ThrdLng[2];
+    static cuchar Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknow = 5, Read = 0, Write = 1, Exec = 2, Sblock = 0, Dpkglock = 1, Schdlrlock = 2, Norm = 0, All = 1, Mixed = 2, Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvprttns = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Crtrpoint = 11, Srestore = 12, Scopy = 13, Lvprpr = 14;
     static uchar pnumber;
     static char Progress;
     static bool ExecKill, ThrdKill;
@@ -56,9 +62,9 @@ public:
     static QStr fload(QStr path);
     static QStr getarch();
     static QStr ckname();
-    static quint64 devsize(QStr dev);
-    static quint64 dfree(QStr path);
-    static quint64 fsize(QStr path);
+    static ullong devsize(QStr dev);
+    static ullong dfree(QStr path);
+    static ullong fsize(QStr path);
     static ushort rinstr(QStr txt, QStr stxt, ushort start = 0);
     static ushort instr(QStr txt, QStr stxt, ushort start = 1);
     static uchar exec(QStr cmd, QStr envv = NULL, bool silent = false, bool bckgrnd = false);
@@ -66,7 +72,7 @@ public:
     static uchar stype(QStr path);
     static uchar exec(QSL cmds);
     static bool srestore(uchar mthd, QStr usr, QStr srcdir, QStr trgt, bool sfstab = false);
-    static bool mkpart(QStr dev, quint64 start = 0, quint64 len = 0);
+    static bool mkpart(QStr dev, ullong start = 0, ullong len = 0);
     static bool mount(QStr dev, QStr mpoint, QStr moptns = NULL);
     static bool like(QStr txt, QSL lst, uchar mode = Norm);
     static bool scopy(uchar mthd, QStr usr, QStr srcdir);
@@ -114,7 +120,7 @@ protected:
 private:
     static QSL ThrdSlst;
     static QStr odlst;
-    static char sblock, dpkglock, schdlrlock;
+    static int sblock[3];
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 

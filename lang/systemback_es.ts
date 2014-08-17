@@ -1018,9 +1018,9 @@
         <location filename="../systemback/systemback.cpp" line="608"/>
         <location filename="../systemback/systemback.cpp" line="635"/>
         <location filename="../systemback/systemback.cpp" line="663"/>
-        <location filename="../systemback/systemback.cpp" line="8372"/>
-        <location filename="../systemback/systemback.cpp" line="8541"/>
-        <location filename="../systemback/systemback.cpp" line="8551"/>
+        <location filename="../systemback/systemback.cpp" line="8370"/>
+        <location filename="../systemback/systemback.cpp" line="8539"/>
+        <location filename="../systemback/systemback.cpp" line="8549"/>
         <source>Creating Live system</source>
         <translation>Creando sistema Live</translation>
     </message>
@@ -1033,7 +1033,7 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="663"/>
         <location filename="../systemback/systemback.cpp" line="8294"/>
-        <location filename="../systemback/systemback.cpp" line="8320"/>
+        <location filename="../systemback/systemback.cpp" line="8319"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="423"/>
         <source>Deleting restore point</source>
         <translation>Eliminando punto de restauración</translation>
@@ -1079,9 +1079,9 @@
         <location filename="../systemback/systemback.cpp" line="2953"/>
         <location filename="../systemback/systemback.cpp" line="6112"/>
         <location filename="../systemback/systemback.cpp" line="8222"/>
-        <location filename="../systemback/systemback.cpp" line="8327"/>
-        <location filename="../systemback/systemback.cpp" line="8593"/>
-        <location filename="../systemback/systemback.cpp" line="8649"/>
+        <location filename="../systemback/systemback.cpp" line="8325"/>
+        <location filename="../systemback/systemback.cpp" line="8591"/>
+        <location filename="../systemback/systemback.cpp" line="8647"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="409"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="428"/>
         <source>Emptying cache</source>
@@ -1259,7 +1259,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8662"/>
+        <location filename="../systemback/systemback.cpp" line="8660"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1506,55 +1506,55 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="608"/>
         <location filename="../systemback/systemback.cpp" line="635"/>
-        <location filename="../systemback/systemback.cpp" line="8372"/>
-        <location filename="../systemback/systemback.cpp" line="8541"/>
-        <location filename="../systemback/systemback.cpp" line="8551"/>
-        <location filename="../systemback/systemback.cpp" line="8618"/>
-        <location filename="../systemback/systemback.cpp" line="8633"/>
+        <location filename="../systemback/systemback.cpp" line="8370"/>
+        <location filename="../systemback/systemback.cpp" line="8539"/>
+        <location filename="../systemback/systemback.cpp" line="8549"/>
+        <location filename="../systemback/systemback.cpp" line="8616"/>
+        <location filename="../systemback/systemback.cpp" line="8631"/>
         <source>process</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8563"/>
-        <location filename="../systemback/systemback.cpp" line="8564"/>
+        <location filename="../systemback/systemback.cpp" line="8561"/>
+        <location filename="../systemback/systemback.cpp" line="8562"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Arrancar sistema Live sin el archivo xorg.conf</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="8569"/>
         <location filename="../systemback/systemback.cpp" line="8571"/>
-        <location filename="../systemback/systemback.cpp" line="8573"/>
-        <location filename="../systemback/systemback.cpp" line="8576"/>
+        <location filename="../systemback/systemback.cpp" line="8574"/>
         <source>Boot Live system</source>
         <translation>Arrancar sistema Live</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="8569"/>
         <location filename="../systemback/systemback.cpp" line="8571"/>
-        <location filename="../systemback/systemback.cpp" line="8573"/>
-        <location filename="../systemback/systemback.cpp" line="8576"/>
+        <location filename="../systemback/systemback.cpp" line="8574"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Arrancar sistema Live en modo grafico seguro</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="8569"/>
         <location filename="../systemback/systemback.cpp" line="8571"/>
-        <location filename="../systemback/systemback.cpp" line="8573"/>
-        <location filename="../systemback/systemback.cpp" line="8576"/>
+        <location filename="../systemback/systemback.cpp" line="8574"/>
         <source>Boot Live in debug mode</source>
         <translation>Arrancar en modo de depuracion</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8572"/>
+        <location filename="../systemback/systemback.cpp" line="8570"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Pulse la tecla &apos;E&apos; para editar</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8576"/>
+        <location filename="../systemback/systemback.cpp" line="8574"/>
         <source>Press TAB key to edit</source>
         <translation>Pulse la tecla TAB para editar</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="608"/>
-        <location filename="../systemback/systemback.cpp" line="8618"/>
-        <location filename="../systemback/systemback.cpp" line="8633"/>
+        <location filename="../systemback/systemback.cpp" line="8616"/>
+        <location filename="../systemback/systemback.cpp" line="8631"/>
         <source>Converting Live system image</source>
         <translation>Convirtiendo imagen del sistema Live</translation>
     </message>

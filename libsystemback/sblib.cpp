@@ -52,6 +52,7 @@ bool sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdBool, sb::ThrdRslt;
 sb::sb(QThread *parent) : QThread(parent)
 {
     setenv("PATH", "/usr/lib/systemback:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", 1);
+    umask(0);
 }
 
 QStr sb::getarch()
@@ -573,8 +574,13 @@ bool sb::cpertime(QStr sourcepath, QStr destpath)
 {
     struct stat istat[2];
     if(ilike(-1, QSIL() << stat(sourcepath.toStdString().c_str(), &istat[0]) << stat(destpath.toStdString().c_str(), &istat[1]))) return false;
-    if((istat[0].st_uid != istat[1].st_uid || istat[0].st_gid != istat[1].st_gid) && chown(destpath.toStdString().c_str(), istat[0].st_uid, istat[0].st_gid) == -1) return false;
-    if(istat[0].st_mode != istat[1].st_mode && chmod(destpath.toStdString().c_str(), istat[0].st_mode) == -1) return false;
+
+    if(istat[0].st_uid != istat[1].st_uid || istat[0].st_gid != istat[1].st_gid)
+    {
+        if(chown(destpath.toStdString().c_str(), istat[0].st_uid, istat[0].st_gid) == -1 || ((istat[0].st_mode != (istat[0].st_mode & ~(S_ISUID | S_ISGID)) || istat[0].st_mode != istat[1].st_mode) && chmod(destpath.toStdString().c_str(), istat[0].st_mode) == -1)) return false;
+    }
+    else if(istat[0].st_mode != istat[1].st_mode && chmod(destpath.toStdString().c_str(), istat[0].st_mode) == -1)
+        return false;
 
     if(istat[0].st_atim.tv_sec != istat[1].st_atim.tv_sec || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec)
     {
@@ -589,8 +595,8 @@ bool sb::cpertime(QStr sourcepath, QStr destpath)
 
 bool sb::cpfile(QStr srcfile, QStr newfile)
 {
-    struct stat fstat[2];
-    if(stat(srcfile.toStdString().c_str(), &fstat[0]) == -1) return false;
+    struct stat fstat;
+    if(stat(srcfile.toStdString().c_str(), &fstat) == -1) return false;
 
     if(SBThrd.isRunning())
     {
@@ -598,16 +604,16 @@ bool sb::cpfile(QStr srcfile, QStr newfile)
         if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
         bool err;
 
-        if(! (err = (dst = open(newfile.toStdString().c_str(), O_WRONLY | O_CREAT, fstat[0].st_mode)) == -1))
+        if(! (err = (dst = open(newfile.toStdString().c_str(), O_WRONLY | O_CREAT, fstat.st_mode)) == -1))
         {
-            if(fstat[0].st_size > 0)
+            if(fstat.st_size > 0)
             {
                 llong size(0);
 
                 do {
                     llong csize(size);
-                    if((size += sendfile(dst, src, NULL, fstat[0].st_size - size)) == csize) err = true;
-                } while(! err && size < fstat[0].st_size);
+                    if((size += sendfile(dst, src, NULL, fstat.st_size - size)) == csize) err = true;
+                } while(! err && size < fstat.st_size);
             }
 
             close(dst);
@@ -621,19 +627,17 @@ bool sb::cpfile(QStr srcfile, QStr newfile)
         ThrdType = Copy;
         ThrdStr[0] = srcfile;
         ThrdStr[1] = newfile;
-        ThrdLng[0] = fstat[0].st_size;
-        ThrdLng[1] = fstat[0].st_mode;
+        ThrdLng[0] = fstat.st_size;
+        ThrdLng[1] = fstat.st_mode;
         SBThrd.start();
         thrdelay();
         if(! ThrdRslt) return false;
     }
 
-    if(stat(newfile.toStdString().c_str(), &fstat[1]) == -1) return false;
-    if((fstat[0].st_uid != fstat[1].st_uid || fstat[0].st_gid != fstat[1].st_gid) && chown(newfile.toStdString().c_str(), fstat[0].st_uid, fstat[0].st_gid) == -1) return false;
-    if(fstat[0].st_mode != fstat[1].st_mode && chmod(newfile.toStdString().c_str(), fstat[0].st_mode) == -1) return false;
+    if(fstat.st_uid + fstat.st_gid > 0 && (chown(newfile.toStdString().c_str(), fstat.st_uid, fstat.st_gid) == -1 || (fstat.st_mode != (fstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newfile.toStdString().c_str(), fstat.st_mode) == -1))) return false;
     struct utimbuf sftimes;
-    sftimes.actime = fstat[0].st_atim.tv_sec;
-    sftimes.modtime = fstat[0].st_mtim.tv_sec;
+    sftimes.actime = fstat.st_atim.tv_sec;
+    sftimes.modtime = fstat.st_mtim.tv_sec;
     return utime(newfile.toStdString().c_str(), &sftimes) == 0;
 }
 
@@ -661,13 +665,12 @@ bool sb::cplink(QStr srclink, QStr newlink)
 
 bool sb::cpdir(QStr srcdir, QStr newdir)
 {
-    struct stat dstat[2];
-    if(stat(srcdir.toStdString().c_str(), &dstat[0]) == -1 || mkdir(newdir.toStdString().c_str(), dstat[0].st_mode) == -1 || stat(newdir.toStdString().c_str(), &dstat[1]) == -1) return false;
-    if((dstat[0].st_uid != dstat[1].st_uid || dstat[0].st_gid != dstat[1].st_gid) && chown(newdir.toStdString().c_str(), dstat[0].st_uid, dstat[0].st_gid) == -1) return false;
-    if(dstat[0].st_mode != dstat[1].st_mode && chmod(newdir.toStdString().c_str(), dstat[0].st_mode) == -1) return false;
+    struct stat dstat;
+    if(stat(srcdir.toStdString().c_str(), &dstat) == -1 || mkdir(newdir.toStdString().c_str(), dstat.st_mode) == -1) return false;
+    if(dstat.st_uid + dstat.st_gid > 0 && (chown(newdir.toStdString().c_str(), dstat.st_uid, dstat.st_gid) == -1 || (dstat.st_mode != (dstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newdir.toStdString().c_str(), dstat.st_mode) == -1))) return false;
     struct utimbuf sdtimes;
-    sdtimes.actime = dstat[0].st_atim.tv_sec;
-    sdtimes.modtime = dstat[0].st_mtim.tv_sec;
+    sdtimes.actime = dstat.st_atim.tv_sec;
+    sdtimes.modtime = dstat.st_mtim.tv_sec;
     return utime(newdir.toStdString().c_str(), &sdtimes) == 0;
 }
 

@@ -2059,7 +2059,7 @@
        <enum>QComboBox::AdjustToContents</enum>
       </property>
      </widget>
-     <widget class="QPushButton" name="timerback">
+     <widget class="QPushButton" name="schedulerback">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -6625,7 +6625,7 @@
   <tabstop>livecreateback</tabstop>
   <tabstop>repairback</tabstop>
   <tabstop>excludeback</tabstop>
-  <tabstop>timerback</tabstop>
+  <tabstop>schedulerback</tabstop>
   <tabstop>aboutback</tabstop>
   <tabstop>licenseback</tabstop>
   <tabstop>dirchooseok</tabstop>

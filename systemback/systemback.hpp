@@ -207,6 +207,7 @@ private slots:
     void on_systemrestore_clicked();
     void on_password2_textChanged();
     void on_livecreatenew_clicked();
+    void on_schedulerback_clicked();
     void on_dialogcancel_clicked();
     void on_schedulemenu_clicked();
     void on_pointexclude_clicked();
@@ -256,7 +257,6 @@ private slots:
     void on_dirrefresh_clicked();
     void on_pnumber10_clicked();
     void on_aboutmenu_clicked();
-    void on_timerback_clicked();
     void on_aboutback_clicked();
     void on_interrupt_clicked();
     void on_pnumber3_clicked();

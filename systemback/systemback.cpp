@@ -2187,7 +2187,7 @@ start:;
 
     for(uchar a(0) ; a < ui->partitionsettings->verticalHeader()->count() ; ++a)
         if(! ui->partitionsettings->item(a, 4)->text().isEmpty() && (ui->partitionsettings->item(a, 4)->text() != "/home" || ui->partitionsettings->item(a, 3)->text().isEmpty()))
-            msort.append(ui->partitionsettings->item(a, 4)->text() % (ui->partitionsettings->item(a, 6)->text() == "x" ? QStr(' ' % ui->partitionsettings->item(a, 5)->text() % ' ') : " - ") % ui->partitionsettings->item(a, 0)->text());
+            msort.append(ui->partitionsettings->item(a, 4)->text() % (ui->partitionsettings->item(a, 6)->text() == "x" ? QStr('\n' % ui->partitionsettings->item(a, 5)->text() % '\n') : "\n-\n") % ui->partitionsettings->item(a, 0)->text());
 
     msort.sort();
     if(! isdir("/.sbsystemcopy") && ! QDir().mkdir("/.sbsystemcopy")) goto error;
@@ -2195,7 +2195,7 @@ start:;
 
     for(uchar a(0) ; a < msort.count() ; ++a)
     {
-        QSL cval(msort.at(a).split(' '));
+        QSL cval(msort.at(a).split('\n'));
         QStr mpoint(cval.at(0)), fsystem(cval.at(1)), part(cval.at(2));
         if(sb::mcheck(part)) sb::umount(part);
         if(intrrpt) goto exit;
@@ -5161,7 +5161,7 @@ void systemback::on_schedulemenu_clicked()
     ui->sbpanel->hide();
     ui->schedulepanel->show();
     ui->function1->setText(tr("Schedule"));
-    ui->timerback->setFocus();
+    ui->schedulerback->setFocus();
     repaint();
 }
 
@@ -5461,12 +5461,12 @@ void systemback::on_excludeback_clicked()
     repaint();
 }
 
-void systemback::on_timerback_clicked()
+void systemback::on_schedulerback_clicked()
 {
     ui->schedulepanel->hide();
     ui->sbpanel->show();
     ui->function1->setText("Systemback");
-    ui->functionmenunext->setFocus();
+    ui->functionmenuback->setFocus();
     repaint();
 }
 
@@ -5475,7 +5475,7 @@ void systemback::on_aboutback_clicked()
     ui->aboutpanel->hide();
     ui->sbpanel->show();
     ui->function1->setText("Systemback");
-    ui->functionmenunext->setFocus();
+    ui->functionmenuback->setFocus();
     repaint();
 }
 
@@ -6983,6 +6983,7 @@ void systemback::on_installnext_clicked()
     if(nwidth > 698) windowmove(nwidth < 850 ? nwidth : 850, 465, false);
     setMinimumSize(698, 465);
     setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+    if(ui->mountpoint->currentText().startsWith("/home/")) ui->mountpoint->setCurrentText(NULL);
 
     if(ui->partitionsettings->currentItem())
     {
@@ -7234,7 +7235,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
         ui->format->setEnabled(true);
     }
 
-    if(arg1.isEmpty() || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text())
+    if(arg1.isEmpty() || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")))
     {
         if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
     }

@@ -184,7 +184,7 @@ bool sb::like(QStr txt, QSL lst, uchar mode)
             }
         }
 
-        return like(txt, alst, All) && like(txt, nlst) ? true : false;
+        return like(txt, alst, All) && like(txt, nlst);
     }
     default:
         return false;
@@ -214,7 +214,7 @@ bool sb::isnum(QStr txt)
     for(uchar a(0) ; a < txt.length() ; ++a)
         if(! txt.at(a).isDigit()) return false;
 
-    return txt.isEmpty() ? false : true;
+    return ! txt.isEmpty();
 }
 
 QStr sb::rndstr(uchar vlen)
@@ -362,25 +362,17 @@ bool sb::islnxfs(QStr dirpath)
 
 bool sb::ickernel()
 {
-    QStr ckernel(ckname());
+    QStr ckernel(ckname()), fend[2] = {"order", "builtin"};
 
-    if(isfile("/lib/modules/" % ckernel % "/modules.order"))
-    {
-        QFile file("/lib/modules/" % ckernel % "/modules.order");
+    for(uchar a(0) ; a < 2 ; ++a)
+        if(isfile("/lib/modules/" % ckernel % "/modules." % fend[a]))
+        {
+            QFile file("/lib/modules/" % ckernel % "/modules." % fend[a]);
 
-        if(file.open(QIODevice::ReadOnly))
-            while(! file.atEnd())
-                if(like(file.readLine().trimmed(), QSL() << "*aufs.ko_" << "*overlayfs.ko_" << "*unionfs.ko_")) return true;
-    }
-
-    if(isfile("/lib/modules/" % ckernel % "/modules.builtin"))
-    {
-        QFile file("/lib/modules/" % ckernel % "/modules.builtin");
-
-        if(file.open(QIODevice::ReadOnly))
-            while(! file.atEnd())
-                if(like(file.readLine().trimmed(), QSL() << "*aufs.ko_" << "*overlayfs.ko_" << "*unionfs.ko_")) return true;
-    }
+            if(file.open(QIODevice::ReadOnly))
+                while(! file.atEnd())
+                    if(like(file.readLine().trimmed(), QSL() << "*aufs.ko_" << "*overlayfs.ko_" << "*unionfs.ko_")) return true;
+        }
 
     return false;
 }
@@ -604,7 +596,7 @@ bool sb::cpfile(QStr srcfile, QStr newfile)
         if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
         bool err;
 
-        if(! (err = (dst = open(newfile.toStdString().c_str(), O_WRONLY | O_CREAT, fstat.st_mode)) == -1))
+        if(! (err = (dst = creat(newfile.toStdString().c_str(), fstat.st_mode)) == -1))
         {
             if(fstat.st_size > 0)
             {
@@ -765,7 +757,10 @@ bool sb::execsrch(QStr fname, QStr ppath)
     if(! ppath.isEmpty()) ppath.append('/');
 
     for(uchar a(0) ; a < plst.count() ; ++a)
-        if(isfile(ppath % plst.at(a) % '/' % fname)) return true;
+    {
+        QStr fpath(ppath % plst.at(a) % '/' % fname);
+        if(isfile(fpath)) return access(fpath, Exec);
+    }
 
     return false;
 }
@@ -927,20 +922,20 @@ void sb::pupgrade()
 
             for(uchar a(0) ; a < dlst.count() ; ++a)
             {
-                QStr iname(dlst.at(a));
+                QStr item(dlst.at(a));
 
-                if(! islink(sdir[1] % '/' % iname) && ! iname.contains(' '))
+                if(! islink(sdir[1] % '/' % item) && ! item.contains(' '))
                 {
-                    QStr pre(left(iname, 4));
+                    QStr pre(left(item, 4));
 
                     if(pre.at(1).isDigit() && pre.at(2).isDigit() && pre.at(3) == '_')
                     {
                         if(pre.at(0) == 'S')
                         {
-                            if(pre.at(1) == '0' || mid(pre, 2, 2) == "10") pnames[mid(pre, 2, 2).toShort() - 1] = right(iname, -4);
+                            if(pre.at(1) == '0' || mid(pre, 2, 2) == "10") pnames[mid(pre, 2, 2).toShort() - 1] = right(item, -4);
                         }
                         else if(pre.at(0) == 'H' && pre.at(1) == '0' && like(pre.at(2), QSL() << "_1_" << "_2_" << "_3_" << "_4_" << "_5_"))
-                            pnames[9 + mid(pre, 3, 1).toShort()] = right(iname, -4);
+                            pnames[9 + mid(pre, 3, 1).toShort()] = right(item, -4);
                     }
                 }
             }
@@ -1161,7 +1156,7 @@ void sb::run()
 
         if((ThrdRslt = (src = open(ThrdStr[0].toStdString().c_str(), O_RDONLY | O_NOATIME)) != -1))
         {
-            if((ThrdRslt = (dst = open(ThrdStr[1].toStdString().c_str(), O_WRONLY | O_CREAT, ThrdLng[1])) != -1))
+            if((ThrdRslt = (dst = creat(ThrdStr[1].toStdString().c_str(), ThrdLng[1])) != -1))
             {
                 if(ThrdLng[0] > 0)
                 {
@@ -1309,7 +1304,7 @@ void sb::run()
         {
             PedDevice *dev(ped_device_get(ThrdStr[0].toStdString().c_str()));
             PedDisk *dsk(ped_disk_new_fresh(dev, ped_disk_type_get("msdos")));
-            bool rv(ped_disk_commit_to_dev(dsk) == 1 ? true : false);
+            bool rv(ped_disk_commit_to_dev(dsk) == 1);
             ped_disk_commit_to_os(dsk);
             ped_disk_destroy(dsk);
             ped_device_destroy(dev);

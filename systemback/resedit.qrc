@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>pictures/back.png</file>
-        <file>pictures/bigresize.png</file>
-        <file>pictures/border.png</file>
         <file>pictures/dialogerror.png</file>
         <file>pictures/dialoginfo.png</file>
         <file>pictures/dialogquestion.png</file>
@@ -18,7 +16,7 @@
         <file>pictures/menunext.png</file>
         <file>pictures/next.png</file>
         <file>pictures/ok.png</file>
-        <file>pictures/passwordpicture.png</file>
+        <file>pictures/passwordlogo.png</file>
         <file>pictures/resize.png</file>
         <file>pictures/rightarrow.png</file>
         <file>pictures/systemback.png</file>

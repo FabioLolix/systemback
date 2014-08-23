@@ -20,6 +20,10 @@
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
 #define _FILE_OFFSET_BITS 64
+#define QTS QTextStream
+#define QSL QStringList
+#define QSIL QList<short>
+#define QStr QString
 #define isfile(path) QFileInfo(path).isFile()
 #define isdir(path) QFileInfo(path).isDir()
 #define islink(path) QFileInfo(path).isSymLink()
@@ -29,10 +33,6 @@
 #include <QStringList>
 #include <QThread>
 
-typedef QTextStream QTS;
-typedef QStringList QSL;
-typedef QList<short> QSIL;
-typedef QString QStr;
 typedef long long llong;
 typedef unsigned long long ullong;
 typedef const char cchar;

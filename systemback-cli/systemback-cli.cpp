@@ -381,12 +381,12 @@ start:;
 
     for(uchar a(0) ; a < dlst.count() ; ++a)
     {
-        QStr iname(dlst.at(a));
+        QStr item(dlst.at(a));
 
-        if(sb::like(iname, QSL() << "_.DELETED_*" << "_.S00_*"))
+        if(sb::like(item, QSL() << "_.DELETED_*" << "_.S00_*"))
         {
             if(prun != tr("Deleting incomplete restore point")) prun = tr("Deleting incomplete restore point");
-            if(! sb::remove(sb::sdir[1] % '/' % iname)) goto error;
+            if(! sb::remove(sb::sdir[1] % '/' % item)) goto error;
         }
     }
 

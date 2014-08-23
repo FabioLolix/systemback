@@ -273,33 +273,20 @@
        <number>80</number>
       </property>
      </widget>
-     <widget class="QLabel" name="fullnamepipe">
-      <property name="geometry">
-       <rect>
-        <x>640</x>
-        <y>32</y>
-        <width>40</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
      <widget class="QLabel" name="usernamepipe">
       <property name="geometry">
        <rect>
-        <x>640</x>
-        <y>104</y>
-        <width>40</width>
-        <height>32</height>
+        <x>647</x>
+        <y>108</y>
+        <width>26</width>
+        <height>24</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -308,14 +295,17 @@
      <widget class="QLabel" name="passwordpipe">
       <property name="geometry">
        <rect>
-        <x>328</x>
-        <y>176</y>
-        <width>40</width>
-        <height>32</height>
+        <x>335</x>
+        <y>180</y>
+        <width>26</width>
+        <height>24</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -324,14 +314,17 @@
      <widget class="QLabel" name="rootpasswordpipe">
       <property name="geometry">
        <rect>
-        <x>328</x>
-        <y>248</y>
-        <width>40</width>
-        <height>32</height>
+        <x>335</x>
+        <y>252</y>
+        <width>26</width>
+        <height>24</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -340,30 +333,17 @@
      <widget class="QLabel" name="hostnamepipe">
       <property name="geometry">
        <rect>
-        <x>640</x>
-        <y>320</y>
-        <width>40</width>
-        <height>32</height>
+        <x>647</x>
+        <y>324</y>
+        <width>26</width>
+        <height>24</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="fullnameerror">
-      <property name="geometry">
-       <rect>
-        <x>640</x>
-        <y>32</y>
-        <width>40</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -372,14 +352,17 @@
      <widget class="QLabel" name="usernameerror">
       <property name="geometry">
        <rect>
-        <x>640</x>
-        <y>104</y>
-        <width>40</width>
-        <height>32</height>
+        <x>647</x>
+        <y>107</y>
+        <width>26</width>
+        <height>26</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -388,14 +371,17 @@
      <widget class="QLabel" name="passworderror">
       <property name="geometry">
        <rect>
-        <x>328</x>
-        <y>176</y>
-        <width>40</width>
-        <height>32</height>
+        <x>335</x>
+        <y>179</y>
+        <width>26</width>
+        <height>26</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -404,14 +390,17 @@
      <widget class="QLabel" name="rootpassworderror">
       <property name="geometry">
        <rect>
-        <x>328</x>
-        <y>248</y>
-        <width>40</width>
-        <height>32</height>
+        <x>335</x>
+        <y>251</y>
+        <width>26</width>
+        <height>26</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -420,14 +409,17 @@
      <widget class="QLabel" name="hostnameerror">
       <property name="geometry">
        <rect>
-        <x>640</x>
-        <y>320</y>
-        <width>40</width>
-        <height>32</height>
+        <x>647</x>
+        <y>323</y>
+        <width>26</width>
+        <height>26</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -529,14 +521,50 @@
        <enum>QLineEdit::Password</enum>
       </property>
      </widget>
-     <zorder>fullnameerror</zorder>
+     <widget class="QLabel" name="fullnameerror">
+      <property name="geometry">
+       <rect>
+        <x>647</x>
+        <y>35</y>
+        <width>26</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="fullnamepipe">
+      <property name="geometry">
+       <rect>
+        <x>647</x>
+        <y>36</y>
+        <width>26</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
      <zorder>hostnameerror</zorder>
      <zorder>rootpassworderror</zorder>
      <zorder>passworderror</zorder>
      <zorder>usernameerror</zorder>
      <zorder>hostnamepipe</zorder>
      <zorder>usernamepipe</zorder>
-     <zorder>fullnamepipe</zorder>
      <zorder>passwordpipe</zorder>
      <zorder>rootpasswordpipe</zorder>
      <zorder>label_8</zorder>
@@ -553,6 +581,8 @@
      <zorder>rootpassword1</zorder>
      <zorder>rootpassword2</zorder>
      <zorder>fullname</zorder>
+     <zorder>fullnameerror</zorder>
+     <zorder>fullnamepipe</zorder>
     </widget>
     <widget class="QWidget" name="livecreatepanel" native="true">
      <property name="geometry">
@@ -725,14 +755,17 @@
      <widget class="QLabel" name="livenamepipe">
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>104</y>
-        <width>40</width>
-        <height>32</height>
+        <x>287</x>
+        <y>108</y>
+        <width>26</width>
+        <height>24</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -741,14 +774,17 @@
      <widget class="QLabel" name="livenameerror">
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>104</y>
-        <width>40</width>
-        <height>32</height>
+        <x>287</x>
+        <y>107</y>
+        <width>26</width>
+        <height>26</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -802,9 +838,9 @@
      <widget class="QLabel" name="label_20">
       <property name="geometry">
        <rect>
-        <x>157</x>
+        <x>390</x>
         <y>416</y>
-        <width>531</width>
+        <width>300</width>
         <height>24</height>
        </rect>
       </property>
@@ -839,8 +875,8 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>24</width>
-        <height>24</height>
+        <width>23</width>
+        <height>23</height>
        </size>
       </property>
      </widget>
@@ -1169,18 +1205,6 @@
         <height>32</height>
        </rect>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>112</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>112</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -1196,18 +1220,6 @@
         <width>208</width>
         <height>32</height>
        </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>208</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>208</width>
-        <height>32</height>
-       </size>
       </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
@@ -1242,8 +1254,8 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>25</width>
-        <height>25</height>
+        <width>26</width>
+        <height>26</height>
        </size>
       </property>
      </widget>
@@ -1271,8 +1283,8 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>24</width>
-        <height>24</height>
+        <width>23</width>
+        <height>23</height>
        </size>
       </property>
      </widget>
@@ -1335,12 +1347,6 @@
       <property name="minimumSize">
        <size>
         <width>112</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
         <height>32</height>
        </size>
       </property>
@@ -1547,12 +1553,6 @@
         <height>32</height>
        </size>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -1648,9 +1648,9 @@
      <widget class="QLabel" name="itemstext">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>8</x>
         <y>64</y>
-        <width>320</width>
+        <width>304</width>
         <height>32</height>
        </rect>
       </property>
@@ -1670,9 +1670,9 @@
      <widget class="QLabel" name="excludedtext">
       <property name="geometry">
        <rect>
-        <x>376</x>
+        <x>384</x>
         <y>64</y>
-        <width>320</width>
+        <width>304</width>
         <height>32</height>
        </rect>
       </property>
@@ -1717,7 +1717,7 @@
       <property name="iconSize">
        <size>
         <width>24</width>
-        <height>24</height>
+        <height>22</height>
        </size>
       </property>
      </widget>
@@ -1749,16 +1749,16 @@
       <property name="iconSize">
        <size>
         <width>24</width>
-        <height>24</height>
+        <height>22</height>
        </size>
       </property>
      </widget>
      <widget class="QLabel" name="kendektext">
       <property name="geometry">
        <rect>
-        <x>157</x>
+        <x>390</x>
         <y>416</y>
-        <width>533</width>
+        <width>300</width>
         <height>24</height>
        </rect>
       </property>
@@ -1861,6 +1861,9 @@
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/resize.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -2043,12 +2046,6 @@
         <height>32</height>
        </size>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -2088,9 +2085,9 @@
      <widget class="QLabel" name="label_27">
       <property name="geometry">
        <rect>
-        <x>157</x>
+        <x>390</x>
         <y>416</y>
-        <width>533</width>
+        <width>300</width>
         <height>24</height>
        </rect>
       </property>
@@ -2147,7 +2144,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2188,7 +2185,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2229,7 +2226,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2270,7 +2267,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2311,7 +2308,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2352,7 +2349,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2492,7 +2489,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2533,7 +2530,7 @@
        <property name="iconSize">
         <size>
          <width>24</width>
-         <height>24</height>
+         <height>12</height>
         </size>
        </property>
        <property name="autoRepeat">
@@ -2750,6 +2747,9 @@
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/logo.png</pixmap>
       </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QPushButton" name="aboutback">
       <property name="geometry">
@@ -2809,9 +2809,9 @@
      <widget class="QLabel" name="label_35">
       <property name="geometry">
        <rect>
-        <x>309</x>
+        <x>390</x>
         <y>416</y>
-        <width>381</width>
+        <width>300</width>
         <height>24</height>
        </rect>
       </property>
@@ -2863,9 +2863,9 @@
      <widget class="QLabel" name="label_37">
       <property name="geometry">
        <rect>
-        <x>157</x>
+        <x>390</x>
         <y>416</y>
-        <width>533</width>
+        <width>300</width>
         <height>24</height>
        </rect>
       </property>
@@ -2949,8 +2949,8 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>24</width>
-        <height>24</height>
+        <width>23</width>
+        <height>23</height>
        </size>
       </property>
       <property name="flat">
@@ -3034,6 +3034,9 @@
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/resize.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -4489,7 +4492,7 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>16</width>
+        <width>15</width>
         <height>16</height>
        </size>
       </property>
@@ -4518,7 +4521,7 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>16</width>
+        <width>15</width>
         <height>16</height>
        </size>
       </property>
@@ -4526,9 +4529,9 @@
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>222</x>
+        <x>390</x>
         <y>416</y>
-        <width>468</width>
+        <width>300</width>
         <height>24</height>
        </rect>
       </property>
@@ -4565,6 +4568,11 @@
          <width>210</width>
          <height>28</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <kerning>false</kerning>
+        </font>
        </property>
        <property name="cursor">
         <cursorShape>ArrowCursor</cursorShape>
@@ -4878,12 +4886,6 @@
         <height>32</height>
        </size>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -4991,12 +4993,6 @@
         <height>32</height>
        </size>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -5077,12 +5073,6 @@
       <property name="minimumSize">
        <size>
         <width>112</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
         <height>32</height>
        </size>
       </property>
@@ -5205,18 +5195,6 @@
         <height>32</height>
        </rect>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>112</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -5258,18 +5236,6 @@
         <height>32</height>
        </rect>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>112</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -5284,7 +5250,7 @@
       <property name="geometry">
        <rect>
         <x>586</x>
-        <y>200</y>
+        <y>202</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -5329,8 +5295,8 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>24</width>
-        <height>24</height>
+        <width>23</width>
+        <height>23</height>
        </size>
       </property>
      </widget>
@@ -5365,7 +5331,7 @@
       <property name="iconSize">
        <size>
         <width>24</width>
-        <height>24</height>
+        <height>22</height>
        </size>
       </property>
      </widget>
@@ -5396,7 +5362,7 @@
        <rect>
         <x>8</x>
         <y>318</y>
-        <width>311</width>
+        <width>246</width>
         <height>20</height>
        </rect>
       </property>
@@ -5405,6 +5371,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Transfer user configuration files</string>
       </property>
       <property name="tristate">
        <bool>true</bool>
@@ -5441,12 +5410,6 @@
       <property name="minimumSize">
        <size>
         <width>112</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
         <height>32</height>
        </size>
       </property>
@@ -5549,12 +5512,6 @@
         <height>32</height>
        </size>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>32</height>
-       </size>
-      </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
@@ -5651,6 +5608,9 @@
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/resize.png</pixmap>
       </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
@@ -5665,23 +5625,6 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="usersettingscopytext">
-      <property name="geometry">
-       <rect>
-        <x>33</x>
-        <y>319</y>
-        <width>655</width>
-        <height>19</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Transfer user configuration and data files</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::RichText</enum>
-      </property>
-     </widget>
-     <zorder>usersettingscopytext</zorder>
      <zorder>grubinstallcopydisable</zorder>
      <zorder>partitionsettingstext</zorder>
      <zorder>umount</zorder>
@@ -6008,14 +5951,17 @@
      <widget class="QLabel" name="label_38">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>80</width>
-        <height>80</height>
+        <x>10</x>
+        <y>10</y>
+        <width>60</width>
+        <height>60</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/dialoginfo.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -6205,14 +6151,17 @@
      <widget class="QLabel" name="dialoginfo">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>80</width>
-        <height>80</height>
+        <x>10</x>
+        <y>10</y>
+        <width>60</width>
+        <height>60</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/dialoginfo.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -6221,14 +6170,17 @@
      <widget class="QLabel" name="dialogquestion">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>80</width>
-        <height>80</height>
+        <x>10</x>
+        <y>10</y>
+        <width>60</width>
+        <height>60</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/dialogquestion.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -6237,14 +6189,17 @@
      <widget class="QLabel" name="dialogerror">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>80</width>
-        <height>80</height>
+        <x>10</x>
+        <y>10</y>
+        <width>60</width>
+        <height>60</height>
        </rect>
       </property>
       <property name="pixmap">
        <pixmap resource="resedit.qrc">:/pictures/dialogerror.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -6363,14 +6318,17 @@
     <widget class="QLabel" name="label_41">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>80</width>
-       <height>72</height>
+       <x>8</x>
+       <y>4</y>
+       <width>64</width>
+       <height>64</height>
       </rect>
      </property>
      <property name="pixmap">
-      <pixmap resource="resedit.qrc">:/pictures/passwordpicture.png</pixmap>
+      <pixmap resource="resedit.qrc">:/pictures/passwordlogo.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -6427,13 +6385,7 @@
      <property name="minimumSize">
       <size>
        <width>112</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>32</height>
+       <height>0</height>
       </size>
      </property>
      <property name="cursor">
@@ -6461,7 +6413,7 @@
       <rect>
        <x>85</x>
        <y>128</y>
-       <width>251</width>
+       <width>250</width>
        <height>32</height>
       </rect>
      </property>
@@ -6475,14 +6427,17 @@
     <widget class="QLabel" name="adminpasswordpipe">
      <property name="geometry">
       <rect>
-       <x>336</x>
-       <y>128</y>
-       <width>38</width>
-       <height>32</height>
+       <x>342</x>
+       <y>132</y>
+       <width>26</width>
+       <height>24</height>
       </rect>
      </property>
      <property name="pixmap">
       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -6491,14 +6446,17 @@
     <widget class="QLabel" name="adminpassworderror">
      <property name="geometry">
       <rect>
-       <x>336</x>
-       <y>128</y>
-       <width>38</width>
-       <height>32</height>
+       <x>342</x>
+       <y>131</y>
+       <width>26</width>
+       <height>26</height>
       </rect>
      </property>
      <property name="pixmap">
       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

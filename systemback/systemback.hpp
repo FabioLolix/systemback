@@ -50,9 +50,10 @@ public:
 private:
     Ui::systemback *ui;
 
-    QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer, *wrndtimer;
+    static cuchar Strgdr = 0, Lvwrkdr = 1, Dpath = 2, Rpnts = 3, Normal = 100, High = 147, Max = 200;
+    QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash, grub;
-    short wgeom[6];
+    short wgeom[6], sfctr;
     char busycnt;
     uchar dialog, wround, ppipe;
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
@@ -71,8 +72,10 @@ private:
     void restore();
     void repair();
 
+    ushort ss(ushort size);
+    void fontcheck(uchar wdgt);
+
 private slots:
-    void wsizeworkaround();
     void apokkeyreleased();
     void schedulertimer();
     void hmpg1released();

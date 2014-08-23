@@ -148,8 +148,8 @@ void scheduler::newrestorepoint()
 
     for(uchar a(0) ; a < dlst.count() ; ++a)
     {
-        QStr iname(dlst.at(a));
-        if(sb::like(iname, QSL() << "_.DELETED_*" << "_.S00_*") && ! sb::remove(sb::sdir[1] % '/' % iname)) return;
+        QStr item(dlst.at(a));
+        if(sb::like(item, QSL() << "_.DELETED_*" << "_.S00_*") && ! sb::remove(sb::sdir[1] % '/' % item)) return;
     }
 
     for(uchar a(9) ; a > 1 ; --a)

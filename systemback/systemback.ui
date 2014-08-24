@@ -6385,7 +6385,7 @@
      <property name="minimumSize">
       <size>
        <width>112</width>
-       <height>0</height>
+       <height>32</height>
       </size>
      </property>
      <property name="cursor">

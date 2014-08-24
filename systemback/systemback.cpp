@@ -54,10 +54,11 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         font.setFamily(fonts.families().contains("Ubuntu") ? "Ubuntu" : "FreeSans");
         font.setPixelSize(ss(15));
         setFont(font);
-        font.setPixelSize(ss(17));
-        ui->passwordtitletext->setFont(font);
         font.setPixelSize(ss(27));
         ui->buttonspanel->setFont(font);
+        font.setPixelSize(ss(17));
+        font.setBold(true);
+        ui->passwordtitletext->setFont(font);
 
         if(sfctr > Normal)
         {

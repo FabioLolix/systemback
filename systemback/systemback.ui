@@ -2949,8 +2949,8 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>23</width>
-        <height>23</height>
+        <width>21</width>
+        <height>21</height>
        </size>
       </property>
       <property name="flat">

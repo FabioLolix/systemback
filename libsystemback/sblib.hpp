@@ -20,10 +20,6 @@
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
 #define _FILE_OFFSET_BITS 64
-#define QTS QTextStream
-#define QSL QStringList
-#define QSIL QList<short>
-#define QStr QString
 #define isfile(path) QFileInfo(path).isFile()
 #define isdir(path) QFileInfo(path).isDir()
 #define islink(path) QFileInfo(path).isSymLink()
@@ -33,10 +29,15 @@
 #include <QStringList>
 #include <QThread>
 
-typedef long long llong;
+typedef QTextStream QTS;
+typedef QStringList QSL;
+typedef QList<short> QSIL;
+typedef QString QStr;
 typedef unsigned long long ullong;
-typedef const char cchar;
+typedef long long llong;
 typedef const unsigned char cuchar;
+typedef const char cchar;
+typedef signed char schar;
 
 class SHARED_EXPORT_IMPORT sb : public QThread
 {

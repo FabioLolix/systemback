@@ -48,7 +48,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     if(! sb::like(font().family(), QSL() << "_Ubuntu_" << "_FreeSans_") || fontInfo().pixelSize() != 15)
     {
         sfctr = fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal;
-        while(sfctr > Normal && (qApp->desktop()->width() - 30 < ss(698) || qApp->desktop()->height() - 30 < ss(465))) sfctr = sfctr == Max ? High : Normal;
+        while(sfctr > Normal && (qApp->desktop()->width() - ss(30) < ss(698) || qApp->desktop()->height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
         QFont font;
         QFontDatabase fonts;
         font.setFamily(fonts.families().contains("Ubuntu") ? "Ubuntu" : "FreeSans");
@@ -71,7 +71,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
             QList<QPushButton *> pbtns(findChildren<QPushButton *>());
 
-            for(char a(0) ; a < pbtns.count() ; ++a)
+            for(schar a(0) ; a < pbtns.count() ; ++a)
             {
                 QPushButton *pbtn(pbtns.at(a));
                 pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
@@ -92,22 +92,11 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             optn.init(ui->pointpipe1);
             QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
             QList<QCheckBox *> ckbxs(findChildren<QCheckBox *>());
-
-            for(char a(0) ; a < ckbxs.count() ; ++a)
-            {
-                QCheckBox *ckbx(ckbxs.at(a));
-                ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
-            }
-
+            for(schar a(0) ; a < ckbxs.count() ; ++a) ckbxs.at(a)->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
             optn.init(ui->pnumber3);
             nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
             QList<QRadioButton *> rbtns(findChildren<QRadioButton *>());
-
-            for(char a(0) ; a < rbtns.count() ; ++a)
-            {
-                QRadioButton *crbtn(rbtns.at(a));
-                crbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
-            }
+            for(schar a(0) ; a < rbtns.count() ; ++a) rbtns.at(a)->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
         }
     }
     else
@@ -941,7 +930,7 @@ void systemback::fontcheck(uchar wdgt)
     case Rpnts:
         QList<QLineEdit *> lndts(ui->sbpanel->findChildren<QLineEdit *>());
 
-        for(char a(0) ; a < lndts.count() ; ++a)
+        for(schar a(0) ; a < lndts.count() ; ++a)
         {
             QWidget *clndt(lndts.at(a));
             if(clndt->font().pixelSize() != ss(15)) clndt->setFont(font());
@@ -1099,14 +1088,14 @@ void systemback::wreleased()
     if(size() != qApp->desktop()->availableGeometry().size())
     {
         if(x() < 0)
-            wgeom[0] = 30;
+            wgeom[0] = ss(30);
         else if(x() > qApp->desktop()->width() - width())
-            wgeom[0] = qApp->desktop()->width() - width() - 30;
+            wgeom[0] = qApp->desktop()->width() - width() - ss(30);
 
         if(y() < 0)
-            wgeom[1] = 30;
+            wgeom[1] = ss(30);
         else if(y() > qApp->desktop()->height() - height())
-            wgeom[1] = qApp->desktop()->height() - height() - 30;
+            wgeom[1] = qApp->desktop()->height() - height() - ss(30);
 
         if(x() != wgeom[0] || y() != wgeom[1]) move(wgeom[0], wgeom[1]);
     }
@@ -1119,7 +1108,7 @@ void systemback::wdblclck()
         if(size() == qApp->desktop()->availableGeometry().size())
         {
             setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
-            setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+            setMaximumSize(qApp->desktop()->availableGeometry().width() - ss(60), qApp->desktop()->availableGeometry().height() - ss(60));
         }
         else
         {
@@ -1233,7 +1222,7 @@ void systemback::wmaxreleased()
         else
         {
             setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
-            setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+            setMaximumSize(qApp->desktop()->availableGeometry().width() - ss(60), qApp->desktop()->availableGeometry().height() - ss(60));
         }
     }
 
@@ -3399,8 +3388,8 @@ void systemback::dialogopen()
         else
         {
             if(sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
-            wgeom[0] = qApp->desktop()->width() / 2 - 253;
-            wgeom[1] = qApp->desktop()->height() / 2 - 100;
+            wgeom[0] = qApp->desktop()->width() / 2 - ss(253);
+            wgeom[1] = qApp->desktop()->height() / 2 - ss(100);
             wgeom[2] = ui->dialogpanel->width();
             wgeom[3] = ui->dialogpanel->height();
             setFixedSize(wgeom[2], wgeom[3]);
@@ -3438,7 +3427,7 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
     {
         ui->resizepanel->show();
         repaint();
-        short wmvxy[2], rghtlmt(qApp->desktop()->width() - wgeom[2] - 30), bttmlmt(qApp->desktop()->height() - wgeom[3] - 30);
+        short wmvxy[2], rghtlmt(qApp->desktop()->width() - wgeom[2] - ss(30)), bttmlmt(qApp->desktop()->height() - wgeom[3] - ss(30));
         wmvxy[0] = x() + (width() - wgeom[2]) / 2;
 
         if(wmvxy[0] < ss(30))
@@ -5248,7 +5237,7 @@ void systemback::on_excludemenu_clicked()
     ui->function1->setText(tr("Exclude"));
     ui->excludeback->setFocus();
     repaint();
-    setMaximumSize(qApp->desktop()->availableGeometry().width() - 60, qApp->desktop()->availableGeometry().height() - 60);
+    setMaximumSize(qApp->desktop()->availableGeometry().width() - ss(60), qApp->desktop()->availableGeometry().height() - ss(60));
 }
 
 void systemback::on_schedulemenu_clicked()
@@ -8357,7 +8346,7 @@ start:;
     statustart();
     uchar dnum(0);
 
-    for(short a(9) ; a > -1 ; --a)
+    for(schar a(9) ; a > -1 ; --a)
     {
         switch(a) {
         case 9:

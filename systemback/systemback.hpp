@@ -59,10 +59,12 @@ private:
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
+    ushort ss(ushort size);
     bool minside(QPoint pos, QRect geom);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
     void setwontop(bool state = true);
     void busy(bool state = true);
+    void fontcheck(uchar wdgt);
     void pointupgrade();
     void accesserror();
     void statustart();
@@ -71,9 +73,6 @@ private:
     void livewrite();
     void restore();
     void repair();
-
-    ushort ss(ushort size);
-    void fontcheck(uchar wdgt);
 
 private slots:
     void apokkeyreleased();

@@ -32,9 +32,11 @@
 typedef QTextStream QTS;
 typedef QStringList QSL;
 typedef QList<short> QSIL;
+typedef const QString cQStr;
 typedef QString QStr;
 typedef unsigned long long ullong;
 typedef long long llong;
+typedef const short cshort;
 typedef const unsigned char cuchar;
 typedef const char cchar;
 typedef signed char schar;

@@ -379,7 +379,7 @@ start:;
     ptimer->start();
     QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-    for(QStr item : dlst)
+    for(cQStr &item : dlst)
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
         {
             if(prun != tr("Deleting incomplete restore point")) prun = tr("Deleting incomplete restore point");

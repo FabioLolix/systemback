@@ -5235,8 +5235,9 @@ void systemback::on_partitionupdate_clicked()
     {
         ui->filesystem->setDisabled(true);
         ui->format->setDisabled(true);
-        if(ui->umount->isEnabled()) ui->umount->setDisabled(true);
-    }
+     }
+
+    if(ui->umount->isEnabled()) ui->umount->setDisabled(true);
 
     if(nohmcpy)
     {

@@ -45,7 +45,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     unity = sb::pisrng("unity-panel-service");
     uchkd = nrxth = nohmcpy = cfgupdt = utblock = intrrpt = false;
 
-    if(! sb::like(font().family(), QSL() << "_Ubuntu_" << "_FreeSans_") || fontInfo().pixelSize() != 15)
+    if(! sb::like(font().family(), {"_Ubuntu_", "_FreeSans_"}) || fontInfo().pixelSize() != 15)
     {
         sfctr = fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal;
         while(sfctr > Normal && (qApp->desktop()->width() - ss(30) < ss(698) || qApp->desktop()->height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
@@ -63,21 +63,9 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         if(sfctr > Normal)
         {
             QList<QWidget *> wdgts(findChildren<QWidget *>());
-
-            for(short a(0) ; a < wdgts.count() ; ++a)
-            {
-                QWidget *cwdgts(wdgts.at(a));
-                cwdgts->setGeometry(ss(cwdgts->x()), ss(cwdgts->y()), ss(cwdgts->width()), ss(cwdgts->height()));
-            }
-
+            for(QWidget *wdgt : wdgts) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
             QList<QPushButton *> pbtns(findChildren<QPushButton *>());
-
-            for(schar a(0) ; a < pbtns.count() ; ++a)
-            {
-                QPushButton *pbtn(pbtns.at(a));
-                pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
-            }
-
+            for(QPushButton *pbtn : pbtns) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
             ui->includeusers->setMinimumSize(ss(112), ss(32));
             ui->grubreinstallrestore->setMinimumSize(ui->includeusers->minimumSize());
             ui->grubreinstallrestoredisable->setMinimumSize(ui->includeusers->minimumSize());
@@ -93,11 +81,11 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             optn.init(ui->pointpipe1);
             QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
             QList<QCheckBox *> ckbxs(findChildren<QCheckBox *>());
-            for(schar a(0) ; a < ckbxs.count() ; ++a) ckbxs.at(a)->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+            for(QCheckBox *ckbx : ckbxs) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
             optn.init(ui->pnumber3);
             nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
             QList<QRadioButton *> rbtns(findChildren<QRadioButton *>());
-            for(schar a(0) ; a < rbtns.count() ; ++a) rbtns.at(a)->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+            for(QRadioButton *rbtn : rbtns) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
         }
     }
     else
@@ -225,7 +213,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         QPalette pal(ui->license->palette());
         pal.setBrush(QPalette::Base, pal.background());
         ui->license->setPalette(pal);
-        ui->partitionsettings->setHorizontalHeaderLabels(QSL() << tr("Partition") << tr("Size") << tr("Label") << tr("Current mount point") << tr("New mount point") << tr("Filesystem") << tr("Format"));
+        ui->partitionsettings->setHorizontalHeaderLabels({tr("Partition"), tr("Size"), tr("Label"), tr("Current mount point"), tr("New mount point"), tr("Filesystem"), tr("Format")});
         QFont font;
         font.setPixelSize(ss(14));
         ui->partitionsettings->horizontalHeader()->setFont(font);
@@ -233,7 +221,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         ui->partitionsettings->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
         ui->partitionsettings->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Fixed);
         ui->partitionsettings->horizontalHeader()->setSectionResizeMode(6, QHeaderView::Fixed);
-        ui->livedevices->setHorizontalHeaderLabels(QSL() << tr("Partition") << tr("Size") << tr("Device") << tr("Format"));
+        ui->livedevices->setHorizontalHeaderLabels({tr("Partition"), tr("Size"), tr("Device"), tr("Format")});
         ui->livedevices->horizontalHeader()->setFont(font);
         ui->livedevices->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
         ui->livedevices->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
@@ -320,16 +308,13 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                 {
                     QStr usrs(file.readLine().trimmed());
 
-                    if(sb::like(usrs, QSL() << "_sudo:*" << "_admins:*"))
+                    if(sb::like(usrs, {"_sudo:*", "_admins:*"}))
                     {
                         usrs = sb::right(usrs, - sb::rinstr(usrs, ":"));
                         QSL lst(usrs.split(','));
 
-                        for(uchar a(0) ; a < lst.count() ; ++a)
-                        {
-                            QStr usr(lst.at(a));
+                        for(QStr usr : lst)
                             if(! usr.isEmpty() && ui->admins->findText(usr) == -1) ui->admins->addItem(usr);
-                        }
                     }
                 }
 
@@ -512,7 +497,7 @@ void systemback::unitimer()
                 ui->repaircover->hide();
                 if(sb::schdle[0] == "on") ui->schedulerstate->click();
                 if(sb::schdle[5] == "on") ui->silentmode->setChecked(true);
-                ui->windowposition->addItems(QSL() << tr("Top left") << tr("Top right") << tr("Center") << tr("Bottom left") << tr("Bottom right"));
+                ui->windowposition->addItems({tr("Top left"), tr("Top right"), tr("Center"), tr("Bottom left"), tr("Bottom right")});
 
                 if(sb::schdle[6] == "topright")
                     ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Top right")));
@@ -570,7 +555,7 @@ void systemback::unitimer()
                 ui->pointexclude->resize(fontMetrics().width(ui->pointexclude->text()) + ss(28), ui->pointexclude->height());
                 ui->liveexclude->resize(fontMetrics().width(ui->liveexclude->text()) + ss(28), ui->liveexclude->height());
                 ui->silentmode->resize(fontMetrics().width(ui->silentmode->text()) + ss(28), ui->silentmode->height());
-                ui->filesystem->addItems(QSL() << "ext4" << "ext3" << "ext2");
+                ui->filesystem->addItems({"ext4", "ext3", "ext2"});
                 if(sb::execsrch("mkfs.btrfs")) ui->filesystem->addItem("btrfs");
                 if(sb::execsrch("mkfs.reiserfs")) ui->filesystem->addItem("reiserfs");
                 if(sb::execsrch("mkfs.jfs")) ui->filesystem->addItem("jfs");
@@ -579,7 +564,7 @@ void systemback::unitimer()
                 file.open(QIODevice::ReadOnly);
                 ui->systembackversion->setText(file.readLine().trimmed() % "_Qt" % (QStr(qVersion()) == QStr(QT_VERSION_STR) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_' % sb::getarch());
                 file.close();
-                ui->repairmountpoint->addItems(QSL() << NULL << "/mnt" << "/mnt/home" << "/mnt/boot");
+                ui->repairmountpoint->addItems({NULL, "/mnt", "/mnt/home", "/mnt/boot"});
 
                 if(sb::efiprob())
                 {
@@ -587,7 +572,7 @@ void systemback::unitimer()
                     ui->repairmountpoint->addItem("/mnt/boot/efi");
                 }
 
-                ui->repairmountpoint->addItems(QSL() << "/mnt/usr" << "/mnt/var" << "/mnt/opt" << "/mnt/usr/local");
+                ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
                 ui->repairmountpoint->setCurrentIndex(1);
                 on_partitionupdate_clicked();
                 on_livedevicesupdate_clicked();
@@ -643,7 +628,7 @@ void systemback::unitimer()
                 ui->processrun->setText(prun % points);
             }
 
-            if(sb::like(prun, QSL() << '_' % tr("Creating restore point") % '_' << '_' % tr("Restoring the full system") % '_' << '_' % tr("Restoring the system files") % '_' << '_' % tr("Restoring user(s) configuration files") % '_' << '_' % tr("Repairing the system files") % '_' << '_' % tr("Repairing the full system") % '_' << '_' % tr("Copying the system") % '_' << '_' % tr("Installing the system") % '_' << '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3_" << '_' % tr("Writing Live image to USB device") % '_' << '_' % tr("Converting Live system image") % "\n*"))
+            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3_", '_' % tr("Writing Live image to USB device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
             {
                 if(ui->interruptdisable->isVisible())
                 {
@@ -651,7 +636,7 @@ void systemback::unitimer()
                     ui->interrupt->show();
                 }
 
-                char cperc(sb::Progress);
+                schar cperc(sb::Progress);
 
                 if(cperc != -1)
                 {
@@ -686,7 +671,7 @@ void systemback::unitimer()
                     ui->interrupt->show();
                 }
 
-                char cperc(sb::Progress);
+                schar cperc(sb::Progress);
 
                 if(cperc != -1)
                 {
@@ -698,7 +683,7 @@ void systemback::unitimer()
             }
             else
             {
-                if(sb::like(prun, QSL() << '_' % tr("Deleting restore point") % "*" << '_' % tr("Deleting old restore point") % "*" << '_' % tr("Deleting incomplete restore point") % '_' << '_' % tr("Creating Live system") % "\n*"))
+                if(sb::like(prun, {'_' % tr("Deleting restore point") % "*", '_' % tr("Deleting old restore point") % "*", '_' % tr("Deleting incomplete restore point") % '_', '_' % tr("Creating Live system") % "\n*"}))
                 {
                     if(ui->interruptdisable->isVisible())
                     {
@@ -931,11 +916,8 @@ void systemback::fontcheck(uchar wdgt)
     case Rpnts:
         QList<QLineEdit *> lndts(ui->sbpanel->findChildren<QLineEdit *>());
 
-        for(schar a(0) ; a < lndts.count() ; ++a)
-        {
-            QWidget *clndt(lndts.at(a));
-            if(clndt->font().pixelSize() != ss(15)) clndt->setFont(font());
-        }
+        for(QWidget *lndt : lndts)
+            if(lndt->font().pixelSize() != ss(15)) lndt->setFont(font());
     }
 }
 
@@ -970,23 +952,19 @@ QStr systemback::guname()
             while(! file.atEnd())
             {
                 QStr usr(file.readLine().trimmed());
-                if(sb::like(usr, QSL() << "*:x:1000:10*" << "*:x:1001:10*" << "*:x:1002:10*" << "*:x:1003:10*" << "*:x:1004:10*" << "*:x:1005:10*" << "*:x:1006:10*" << "*:x:1007:10*" << "*:x:1008:10*" << "*:x:1009:10*" << "*:x:1010:10*" << "*:x:1011:10*" << "*:x:1012:10*" << "*:x:1013:10*" << "*:x:1014:10*" << "*:x:1015:10*")) usrs.append(sb::left(usr, sb::instr(usr, ":") -1));
+                if(sb::like(usr, {"*:x:1000:10*", "*:x:1001:10*", "*:x:1002:10*", "*:x:1003:10*", "*:x:1004:10*", "*:x:1005:10*", "*:x:1006:10*", "*:x:1007:10*", "*:x:1008:10*", "*:x:1009:10*", "*:x:1010:10*", "*:x:1011:10*", "*:x:1012:10*", "*:x:1013:10*", "*:x:1014:10*", "*:x:1015:10*"})) usrs.append(sb::left(usr, sb::instr(usr, ":") -1));
             }
 
             file.close();
         }
 
-        for(uchar a(0) ; a < usrs.count() ; ++a)
-        {
-            QStr usr(usrs.at(a));
-
+        for(QStr usr : usrs)
             if(isdir("/home/" % usr))
             {
                 ui->admins->addItem(usr);
                 ui->admins->setCurrentIndex(ui->admins->findText(usr));
                 goto ok;
             }
-        }
 
         if(usrs.count() > 0)
         {
@@ -1074,7 +1052,7 @@ void systemback::schedulertimer()
 void systemback::dialogtimer()
 {
     ui->dialognumber->setText(QStr::number(sb::left(ui->dialognumber->text(), -1).toShort() - 1) % "s");
-    if(ui->dialognumber->text() == "0s" && sb::like(ui->dialogok->text(), QSL() << '_' % tr("Reboot") % '_' << '_' % tr("X restart") % '_')) on_dialogok_clicked();
+    if(ui->dialognumber->text() == "0s" && sb::like(ui->dialogok->text(), {'_' % tr("Reboot") % '_', '_' % tr("X restart") % '_'})) on_dialogok_clicked();
 }
 
 void systemback::wpressed()
@@ -1994,7 +1972,7 @@ start:;
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(! sb::ilike(dialog, QSIL() << 23 << 60))
+        if(! sb::ilike(dialog, {23, 60}))
         {
             switch(mthd) {
             case 1:
@@ -2180,7 +2158,7 @@ start:;
             sb::fssync();
             sb::crtfile("/proc/sys/vm/drop_caches", "3");
 
-            if(sb::ilike(dialog, QSIL() << 5 << 6 << 41))
+            if(sb::ilike(dialog, {5, 6, 41}))
             {
                 if(ppipe == 1 && isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
                 dialog = ui->fullrepair->isChecked() ? 12 : 13;
@@ -2202,14 +2180,14 @@ void systemback::systemcopy()
 error:;
     if(intrrpt) goto exit;
 
-    if(sb::ilike(dialog, QSIL() << 22 << 34))
+    if(sb::ilike(dialog, {22, 34}))
     {
         sb::umount("/.sbsystemcopy/dev");
         sb::umount("/.sbsystemcopy/dev/pts");
         sb::umount("/.sbsystemcopy/proc");
         sb::umount("/.sbsystemcopy/sys");
     }
-    else if(! sb::ilike(dialog, QSIL() << 31 << 36 << 51 << 52 << 53 << 54))
+    else if(! sb::ilike(dialog, {31, 36, 51, 52, 53, 54}))
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && (! isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800))
         {
@@ -2228,7 +2206,7 @@ error:;
     while(! in.atEnd())
     {
         QStr cline(in.readLine());
-        if(sb::like(cline, QSL() << "* /.sbsystemcopy*" << "* /.systembacklivepoint *")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -2244,7 +2222,7 @@ exit:
     while(! in.atEnd())
     {
         QStr cline(in.readLine());
-        if(sb::like(cline, QSL() << "* /.sbsystemcopy*" << "* /.systembacklivepoint *")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -2264,9 +2242,9 @@ start:;
     if(! isdir("/.sbsystemcopy") && ! QDir().mkdir("/.sbsystemcopy")) goto error;
     ushort rv;
 
-    for(uchar a(0) ; a < msort.count() ; ++a)
+    for(QStr vals : msort)
     {
-        QSL cval(msort.at(a).split('\n'));
+        QSL cval(vals.split('\n'));
         QStr mpoint(cval.at(0)), fsystem(cval.at(1)), part(cval.at(2));
         if(sb::mcheck(part)) sb::umount(part);
         if(intrrpt) goto exit;
@@ -2309,22 +2287,17 @@ start:;
         {
             if(! isdir("/.sbsystemcopy" % mpoint))
             {
-                QStr fdir("/.sbsystemcopy");
+                QStr path("/.sbsystemcopy");
                 QSL plst(mpoint.split('/'));
 
-                for(uchar b(0) ; b < plst.count() ; ++b)
+                for(QStr cpath : plst)
                 {
-                    QStr cdir(plst.at(b));
+                    path.append('/' % cpath);
 
-                    if(! cdir.isEmpty())
+                    if(! isdir(path) && ! QDir().mkdir(path))
                     {
-                        fdir.append('/' % cdir);
-
-                        if(! isdir(fdir) && ! QDir().mkdir(fdir))
-                        {
-                            QFile::rename(fdir, fdir % '_' % sb::rndstr());
-                            if(! QDir().mkdir(fdir)) goto error;
-                        }
+                        QFile::rename(path, path % '_' % sb::rndstr());
+                        if(! QDir().mkdir(path)) goto error;
                     }
                 }
             }
@@ -2572,26 +2545,21 @@ start:;
             {
                 QSL uslst(cline.split(':'));
                 QStr nline;
-                uchar cter(0);
 
                 for(uchar a(0) ; a < uslst.count() ; ++a)
-                {
-                    ++cter;
-
-                    switch(cter) {
-                    case 1:
+                    switch(a) {
+                    case 0:
                         nline.append(ui->username->text() % ':');
                         break;
-                    case 5:
+                    case 4:
                         nline.append(ui->fullname->text() % ",,,:");
                         break;
-                    case 6:
+                    case 5:
                         nline.append("/home/" % ui->username->text() % ':');
                         break;
                     default:
                         nline.append(uslst.at(a) % ':');
                     }
-                }
 
                 nfile.append(sb::left(nline, -1) % '\n');
             }
@@ -2615,23 +2583,18 @@ start:;
             {
                 QSL uslst(cline.split(':'));
                 QStr nline;
-                uchar cter(0);
 
                 for(uchar a(0) ; a < uslst.count() ; ++a)
-                {
-                    ++cter;
-
-                    switch(cter) {
-                    case 1:
+                    switch(a) {
+                    case 0:
                         nline.append(ui->username->text() % ':');
                         break;
-                    case 2:
+                    case 1:
                         nline.append(QStr(crypt(ui->password1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str())) % ':');
                         break;
                     default:
                         nline.append(uslst.at(a) % ':');
                     }
-                }
 
                 nfile.append(sb::left(nline, -1) % '\n');
             }
@@ -2639,20 +2602,15 @@ start:;
             {
                 QSL uslst(cline.split(':'));
                 QStr nline;
-                uchar cter(0);
 
                 for(uchar a(0) ; a < uslst.count() ; ++a)
-                {
-                    ++cter;
-
-                    switch(cter) {
-                    case 2:
+                    switch(a) {
+                    case 1:
                         nline.append((ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(ui->rootpassword1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str()))) % ':');
                         break;
                     default:
                         nline.append(uslst.at(a) % ':');
                     }
-                }
 
                 nfile.append(sb::left(nline, -1) % '\n');
             }
@@ -2714,7 +2672,7 @@ start:;
                 {
                     QStr cline(file.readLine().trimmed());
 
-                    if(sb::like(cline, QSL() << "* /home *" << "*\t/home *" << "* /home\t*" << "*\t/home\t*" << "* /home/ *" << "*\t/home/ *" << "* /home/\t*" << "*\t/home/\t*"))
+                    if(sb::like(cline, {"* /home *", "*\t/home *", "* /home\t*", "*\t/home\t*", "* /home/ *", "*\t/home/ *", "* /home/\t*", "*\t/home/\t*"}))
                     {
                         fstabtxt.append("# /home\n" % cline % '\n');
                         break;
@@ -2729,7 +2687,7 @@ start:;
 
                 if(ui->partitionsettings->item(a, 4)->text() == "/")
                 {
-                    if(sb::like(ui->partitionsettings->item(a, 5)->text(), QSL() << "_ext4_" << "_ext3_" << "_ext2_" << "_jfs_" << "_xfs_"))
+                    if(sb::like(ui->partitionsettings->item(a, 5)->text(), {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}))
                         fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   /   " % ui->partitionsettings->item(a, 5)->text() % "   defaults,errors=remount-ro   0   1\n");
                     else if(ui->partitionsettings->item(a, 5)->text() == "reiserfs")
                         fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   /   " % ui->partitionsettings->item(a, 5)->text() % "   notail   0   1\n");
@@ -2757,7 +2715,7 @@ start:;
         {
             QStr cline(file.readLine().trimmed());
 
-            if(sb::like(cline, QSL() << "*/dev/cdrom*" << "*/dev/sr*"))
+            if(sb::like(cline, {"*/dev/cdrom*", "*/dev/sr*"}))
                 fstabtxt.append("# cdrom\n" % cline % '\n');
             else if(cline.contains("/dev/fd"))
                 fstabtxt.append("# floppy\n" % cline % '\n');
@@ -2889,9 +2847,9 @@ start:;
     {
         QSL dlst(QDir("/dev").entryList(QDir::System));
 
-        for(ushort a(0) ; a < dlst.count() ; ++a)
+        for(QStr sitem : dlst)
         {
-            QStr item("/dev/" % dlst.at(a));
+            QStr item("/dev/" % sitem);
 
             if(item.length() > 8 && item.startsWith(ldev))
                 while(sb::mcheck(item)) sb::umount(item);
@@ -5028,7 +4986,7 @@ void systemback::on_restoremenu_clicked()
     }
 
     if(ui->includeusers->count() > 0) ui->includeusers->clear();
-    ui->includeusers->addItems(QSL() << tr("Everyone") << "root");
+    ui->includeusers->addItems({tr("Everyone"), "root"});
     if(! ui->restorenext->isEnabled()) ui->restorenext->setEnabled(true);
     ui->sbpanel->hide();
     ui->restorepanel->show();
@@ -5090,7 +5048,7 @@ void systemback::on_copymenu_clicked()
         ui->userdatafilescopy->show();
     }
 
-    if(sb::like(pname, QSL() << '_' % tr("Currently running system") % '_' << '_' % tr("Live image") % '_'))
+    if(sb::like(pname, {'_' % tr("Currently running system") % '_', '_' % tr("Live image") % '_'}))
     {
         if(! ui->userdatafilescopy->isEnabled()) ui->userdatafilescopy->setEnabled(true);
     }
@@ -5147,10 +5105,8 @@ void systemback::on_livecreatemenu_clicked()
     {
         QSL dlst(QDir(sb::sdir[2]).entryList(QDir::Files | QDir::Hidden));
 
-        for(ushort a(0) ; a < dlst.count() ; ++a)
+        for(QStr item : dlst)
         {
-            QStr item(dlst.at(a));
-
             if(! islink(sb::sdir[2] % '/' % item) && ! item.contains(' ') && sb::fsize(sb::sdir[2] % '/' % item) > 0 && item.endsWith(".sblive"))
             {
                 if(sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") > 0)
@@ -5265,9 +5221,9 @@ void systemback::on_partitionupdate_clicked()
     ui->copycover->show();
     if(ui->copynext->isEnabled()) ui->copynext->setDisabled(true);
     if(ui->mountpoint->count() > 0) ui->mountpoint->clear();
-    ui->mountpoint->addItems(QSL() << NULL << "/" << "/home" << "/boot");
+    ui->mountpoint->addItems({NULL, "/", "/home", "/boot"});
     if(grub == "efi-amd64") ui->mountpoint->addItem("/boot/efi");
-    ui->mountpoint->addItems(QSL() << "/tmp" << "/usr" << "/var" << "/srv" << "/opt" << "/usr/local" << "SWAP");
+    ui->mountpoint->addItems({"/tmp", "/usr", "/var", "/srv", "/opt", "/usr/local", "SWAP"});
 
     if(ui->mountpoint->isEnabled())
     {
@@ -5285,7 +5241,7 @@ void systemback::on_partitionupdate_clicked()
     if(nohmcpy)
     {
         nohmcpy = false;
-        if(sb::like(pname, QSL() << '_' % tr("Currently running system") % '_' << '_' % tr("Live image") % '_')) ui->userdatafilescopy->setEnabled(true);
+        if(sb::like(pname, {'_' % tr("Currently running system") % '_', '_' % tr("Live image") % '_'})) ui->userdatafilescopy->setEnabled(true);
     }
 
     if(ui->partitionsettings->rowCount() > 0) ui->partitionsettings->clearContents();
@@ -5305,15 +5261,14 @@ void systemback::on_partitionupdate_clicked()
         ui->grubreinstallrepair->clear();
     }
 
-    ui->grubinstallcopy->addItems(QSL() << "Auto" << tr("Disabled"));
-    ui->grubreinstallrestore->addItems(QSL() << "Auto" << tr("Disabled"));
-    ui->grubreinstallrepair->addItems(QSL() << "Auto" << tr("Disabled"));
+    ui->grubinstallcopy->addItems({"Auto", tr("Disabled")});
+    ui->grubreinstallrestore->addItems({"Auto", tr("Disabled")});
+    ui->grubreinstallrepair->addItems({"Auto", tr("Disabled")});
     QSL plst(sb::readprttns());
 
-    for(ushort a(0) ; a < plst.count() ; ++a)
+    for(QStr dts : plst)
     {
-        QSL dts(plst.at(a).split('\n'));
-        QStr path(dts.at(0));
+        QStr path(dts.split('\n').at(0));
 
         if(path.length() == 8)
         {
@@ -5323,13 +5278,13 @@ void systemback::on_partitionupdate_clicked()
         }
     }
 
-    char sn(-1);
+    schar sn(-1);
     QStr mntlst(sb::fload("/proc/self/mounts")), swplst;
     if(isfile("/proc/swaps")) swplst = sb::fload("/proc/swaps");
 
-    for(ushort a(0) ; a < plst.count() ; ++a)
+    for(QStr cdts : plst)
     {
-        QSL dts(plst.at(a).split('\n'));
+        QSL dts(cdts.split('\n'));
         QStr path(dts.at(0));
 
         if(path.length() > 8)
@@ -5444,7 +5399,7 @@ void systemback::on_umount_clicked()
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, QSL() << "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % " *" << "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % "/*")) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+            if(sb::like(cline, {"* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
         }
 
         mnts[0] = sb::fload("/proc/self/mounts");
@@ -5940,11 +5895,11 @@ void systemback::on_livedevicesupdate_clicked()
     ui->livecreatecover->show();
     if(ui->livedevices->rowCount() > 0) ui->livedevices->clearContents();
     QSL dlst(sb::readlvprttns());
-    char sn(-1);
+    schar sn(-1);
 
-    for(uchar a(0) ; a < dlst.count() ; ++a)
+    for(QStr cdts : dlst)
     {
-        QSL dts(dlst.at(a).split('\n'));
+        QSL dts(cdts.split('\n'));
         QStr path(dts.at(0)), dname(dts.at(1));
         ullong bsize(dts.at(2).toULongLong());
         ++sn;
@@ -6028,11 +5983,8 @@ void systemback::on_pointexclude_clicked()
                 {
                     QSL dlst(QDir("/home/" % usr).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                    for(ushort a(0) ; a < dlst.count() ; ++a)
-                    {
-                        QStr item(dlst.at(a));
-
-                        if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, QSL() << "_.gvfs_" << "_.Xauthority_" << "_.ICEauthority_"))
+                    for(QStr item : dlst)
+                        if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}))
                         {
                             if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
                             {
@@ -6045,17 +5997,13 @@ void systemback::on_pointexclude_clicked()
                                     ui->itemslist->addTopLevelItem(twi);
                                     QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                                    for(ushort a(0) ; a < sdlst.count() ; ++a)
-                                    {
-                                        QStr sitem(sdlst.at(a));
-
+                                    for(QStr sitem : sdlst)
                                         if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
                                         {
                                             QTrWI *ctwi(new QTrWI);
                                             ctwi->setText(0, sitem);
                                             twi->addChild(ctwi);
                                         }
-                                    }
                                 }
                                 else
                                     ui->itemslist->addTopLevelItem(twi);
@@ -6069,14 +6017,12 @@ void systemback::on_pointexclude_clicked()
                                     QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
                                     for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
 
-                                    for(ushort b(0) ; b < sdlst.count() ; ++b)
+                                    for(QStr sitem : sdlst)
                                     {
-                                        QStr sitem(sdlst.at(b));
-
                                         if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
                                         {
-                                            for(ushort c(0) ; c < itmlst.count() ; ++c)
-                                                if(itmlst.at(c) == sitem) goto unext;
+                                            for(QStr citem : itmlst)
+                                                if(citem == sitem) goto unext;
 
                                             QTrWI *sctwi(new QTrWI);
                                             sctwi->setText(0, sitem);
@@ -6088,7 +6034,6 @@ void systemback::on_pointexclude_clicked()
                                 }
                             }
                         }
-                    }
                 }
             }
         }
@@ -6098,11 +6043,8 @@ void systemback::on_pointexclude_clicked()
 
     QSL dlst(QDir("/root").entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-    for(ushort a(0) ; a < dlst.count() ; ++a)
-    {
-        QStr item(dlst.at(a));
-
-        if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, QSL() << "_.gvfs_" << "_.Xauthority_" << "_.ICEauthority_"))
+    for(QStr item : dlst)
+        if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}))
         {
             if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
             {
@@ -6115,17 +6057,13 @@ void systemback::on_pointexclude_clicked()
                     ui->itemslist->addTopLevelItem(twi);
                     QSL sdlst(QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                    for(ushort a(0) ; a < sdlst.count() ; ++a)
-                    {
-                        QStr sitem(sdlst.at(a));
-
+                    for(QStr sitem : sdlst)
                         if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
                         {
                             QTrWI *ctwi(new QTrWI);
                             ctwi->setText(0, sitem);
                             twi->addChild(ctwi);
                         }
-                    }
                 }
                 else
                     ui->itemslist->addTopLevelItem(twi);
@@ -6139,14 +6077,12 @@ void systemback::on_pointexclude_clicked()
                     QSL sdlst(QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
                     for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
 
-                    for(ushort b(0) ; b < sdlst.count() ; ++b)
+                    for(QStr sitem : sdlst)
                     {
-                        QStr sitem(sdlst.at(b));
-
                         if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
                         {
-                            for(ushort c(0) ; c < itmlst.count() ; ++c)
-                                if(itmlst.at(c) == sitem) goto rnext;
+                            for(QStr citem : itmlst)
+                                if(citem == sitem) goto rnext;
 
                             QTrWI *sctwi(new QTrWI);
                             sctwi->setText(0, sitem);
@@ -6158,7 +6094,6 @@ void systemback::on_pointexclude_clicked()
                 }
             }
         }
-    }
 
     ui->itemslist->sortItems(0, Qt::AscendingOrder);
     if(! ui->excludeback->hasFocus()) ui->excludeback->setFocus();
@@ -6184,10 +6119,7 @@ void systemback::on_dialogok_clicked()
             statustart();
             QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-            for(uchar a(0) ; a < dlst.count() ; ++a)
-            {
-                QStr item(dlst.at(a));
-
+            for(QStr item : dlst)
                 if(item.startsWith(".S00_"))
                 {
                     prun = tr("Deleting incomplete restore point");
@@ -6227,7 +6159,6 @@ void systemback::on_dialogok_clicked()
 
                     return;
                 }
-            }
 
             if(sstart)
             {
@@ -6240,7 +6171,7 @@ void systemback::on_dialogok_clicked()
         }
         else if(! utimer->isActive() || sstart)
             close();
-        else if(sb::ilike(dialog, QSIL() << 3 << 21 << 26 << 27 << 28 << 29 << 31 << 35 << 36 << 39 << 40 << 42 << 43 << 44 << 45 << 46 << 47 << 48 << 49 << 51 << 52 << 53 << 54 << 55 << 56 << 57 << 58 << 59))
+        else if(sb::ilike(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
         {
             ui->dialogpanel->hide();
             ui->mainpanel->show();
@@ -6514,11 +6445,10 @@ void systemback::on_dirrefresh_clicked()
     busy();
     if(ui->dirchoose->topLevelItemCount() != 0) ui->dirchoose->clear();
     QStr pwdrs(sb::fload("/etc/passwd"));
-    QSL excl(QSL() << "bin" << "boot" << "cdrom" << "dev" << "etc" << "lib" << "lib32" << "lib64" << "opt" << "proc" << "root" << "run" << "sbin" << "selinux" << "srv" << "sys" << "tmp" << "usr" << "var"), dlst(QDir("/").entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
+    QSL excl({"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "srv", "sys", "tmp", "usr", "var"}), dlst(QDir("/").entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-    for(ushort a(0) ; a < dlst.count() ; ++a)
+    for(QStr item : dlst)
     {
-        QStr item(dlst.at(a));
         QTrWI *twi(new QTrWI);
         twi->setText(0, item);
 
@@ -6546,9 +6476,8 @@ void systemback::on_dirrefresh_clicked()
 
             QSL sdlst(QDir('/' % item).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-            for(ushort a(0) ; a < sdlst.count() ; ++a)
+            for(QStr sitem : sdlst)
             {
-                QStr sitem(sdlst.at(a));
                 QTrWI *ctwi(new QTrWI);
                 ctwi->setText(0, sitem);
 
@@ -6682,10 +6611,10 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
 
                                 QSL dlst(QDir(path % '/' % iname).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                                for(ushort b(0) ; b < dlst.count() ; ++b)
+                                for(QStr cdir : dlst)
                                 {
                                     QTrWI *sctwi(new QTrWI);
-                                    sctwi->setText(0, dlst.at(b));
+                                    sctwi->setText(0, cdir);
                                     ctwi->addChild(sctwi);
                                 }
                             }
@@ -6929,7 +6858,7 @@ void systemback::on_livedelete_clicked()
 
 void systemback::on_livedevices_currentItemChanged(QTblWI *current, QTblWI *previous)
 {
-    char prow(previous ? previous->row() : -1);
+    schar prow(previous ? previous->row() : -1);
 
     if(current && current->row() != prow)
     {
@@ -7105,7 +7034,7 @@ void systemback::on_installnext_clicked()
 
 void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI *previous)
 {
-    char prow(previous ? previous->row() : -1);
+    schar prow(previous ? previous->row() : -1);
 
     if(current)
     {
@@ -7193,7 +7122,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
                 bool mntcheck(false);
 
-                if(sb::like(ui->partitionsettings->item(current->row(), 3)->text(), QSL() << '_' % tr("Multiple mount points") % '_' << "_/cdrom_" << "_/live/image_" << "_/lib/live/mount/medium_"))
+                if(sb::like(ui->partitionsettings->item(current->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
                     mntcheck = true;
                 else if(isfile("/etc/fstab"))
                 {
@@ -7204,7 +7133,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                         {
                             QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                            if(sb::like(cline.replace("\\040", " "), QSL() << "* " % ui->partitionsettings->item(current->row(), 3)->text() % " *" << "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"))
+                            if(sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(current->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"}))
                             {
                                 mntcheck = true;
                                 break;
@@ -7236,7 +7165,7 @@ void systemback::on_changepartition_clicked()
             ui->copynext->setDisabled(true);
             ui->mountpoint->addItem("/");
         }
-        else if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text(), QSL() << "_/home_" << "_/boot_" << "_/boot/efi_" << "_/tmp_" << "_/usr_" << "_/usr/local_" << "_/var_" << "_/srv_" << "_/opt_"))
+        else if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text(), {"_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_"}))
             ui->mountpoint->addItem(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
     }
 
@@ -7311,7 +7240,7 @@ void systemback::on_format_clicked(bool checked)
 
 void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
 {
-    if(sb::like(arg1, QSL() << "_/boot/efi_" << "_SWAP_") || sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), QSL() << "_/home_" << "_SWAP_"))
+    if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}) || sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/home_", "_SWAP_"}))
     {
         if(ui->filesystem->isEnabled())
         {
@@ -7349,7 +7278,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
         {
             if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
         }
-        else if(sb::like(arg1, QSL() << "_/_" << "_/home_" << "_/boot_" << "_/boot/efi_" << "_/tmp_" << "_/usr_" << "_/usr/local_" << "_/var_" << "_/srv_" << "_/opt_" << "_SWAP_"))
+        else if(sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
         {
             if(! ui->changepartition->isEnabled()) ui->changepartition->setEnabled(true);
         }
@@ -7357,7 +7286,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
         {
             if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
 
-            if(arg1.startsWith('/') && ! sb::like(arg1, QSL() << "* *" << "*'*" << "*\"*" << "*//*" << "*/_"))
+            if(arg1.startsWith('/') && ! sb::like(arg1, {"* *", "*'*", "*\"*", "*//*", "*/_"}))
             {
                 sb::delay(300);
 
@@ -7392,9 +7321,9 @@ void systemback::on_repairpartitionupdate_clicked()
 
     sb::fssync();
     ui->repairmountpoint->clear();
-    ui->repairmountpoint->addItems(QSL() << NULL << "/mnt" << "/mnt/home" << "/mnt/boot");
+    ui->repairmountpoint->addItems({NULL, "/mnt", "/mnt/home", "/mnt/boot"});
     if(grub == "efi-amd64") ui->repairmountpoint->addItem("/mnt/boot/efi");
-    ui->repairmountpoint->addItems(QSL() << "/mnt/usr" << "/mnt/var" << "/mnt/opt" << "/mnt/usr/local");
+    ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
     ui->repairmountpoint->setCurrentIndex(1);
     on_systemrepair_clicked();
     on_partitionupdate_clicked();
@@ -7406,13 +7335,13 @@ void systemback::on_repairpartitionupdate_clicked()
 
 void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
 {
-    if(ui->repairpartition->count() == 0 || ! arg1.startsWith("/mnt") || sb::like(arg1, QSL() << "* *" << "*'*" << "*\"*" << "*//*" << "*/_") || (! sb::mcheck("/mnt") && arg1 != "/mnt") || sb::mcheck(arg1 % '/'))
+    if(ui->repairpartition->count() == 0 || ! arg1.startsWith("/mnt") || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*", "*/_"}) || (! sb::mcheck("/mnt") && arg1 != "/mnt") || sb::mcheck(arg1 % '/'))
     {
         if(ui->repairmount->isEnabled()) ui->repairmount->setDisabled(true);
     }
     else
     {
-        if(sb::like(arg1, QSL() << "_/mnt_" << "_/mnt/home_" << "_/mnt/boot_" << "_/mnt/boot/efi_" << "_/mnt/usr_" << "_/mnt/usr/local_" << "_/mnt/var_" << "_/mnt/opt_"))
+        if(sb::like(arg1, {"_/mnt_", "_/mnt/home_", "_/mnt/boot_", "_/mnt/boot/efi_", "_/mnt/usr_", "_/mnt/usr/local_", "_/mnt/var_", "_/mnt/opt_"}))
         {
             if(! ui->repairmount->isEnabled()) ui->repairmount->setEnabled(true);
         }
@@ -7444,13 +7373,13 @@ void systemback::on_repairmount_clicked()
         QStr path;
         QSL plst(sb::right(ui->repairmountpoint->currentText(), -5).split('/'));
 
-        for(uchar a(0) ; a < plst.count() ; ++a)
+        for(QStr cpath : plst)
         {
-            path.append('/' % plst.at(a));
+            path.append('/' % cpath);
 
-            if(! isdir("/mnt" % path))
+            if(! isdir("/mnt/" % path) && ! QDir().mkdir("/mnt" % path))
             {
-                if(sb::exist("/mnt" % path)) QFile::rename("/mnt" % path, "/mnt" % path % '_' % sb::rndstr());
+                QFile::rename("/mnt" % path, "/mnt" % path % '_' % sb::rndstr());
                 QDir().mkdir("/mnt" % path);
             }
         }
@@ -7509,7 +7438,7 @@ void systemback::on_livename_textChanged(const QStr &arg1)
             ui->livename->setFont(font);
         }
 
-        if(arg1.isEmpty() || arg1.size() > 32 || sb::like(arg1, QSL() << "* *" << "*'*" << "*\"*" << "*_.iso" << "*.Iso_" << "*.ISo_" << "*.IsO_" << "*.ISO_" << "*.iSo_" << "*.iSO_" << "*.isO_"))
+        if(arg1.isEmpty() || arg1.size() > 32 || sb::like(arg1, {"* *", "*'*", "*\"*", "*_.iso", "*.Iso_", "*.ISo_", "*.IsO_", "*.ISO_", "*.iSo_", "*.iSO_", "*.isO_"}))
         {
             if(! ui->livenameerror->isVisible()) ui->livenameerror->show();
         }
@@ -7575,16 +7504,14 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
                                 QSL dlst(QDir("/home/" % usr % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
                                 for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
 
-                                for(ushort c(0) ; c < dlst.count() ; ++c)
+                                for(QStr siname : dlst)
                                 {
-                                    QStr siname(dlst.at(c));
-
                                     if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
                                     {
-                                        for(ushort d(0) ; d < itmlst.count() ; ++d)
-                                            if(itmlst.at(d) == siname)
+                                        for(ushort b(0) ; b < itmlst.count() ; ++b)
+                                            if(itmlst.at(b) == siname)
                                             {
-                                                itmlst.removeAt(d);
+                                                itmlst.removeAt(b);
                                                 goto unext;
                                             }
 
@@ -7619,16 +7546,14 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
                     QSL dlst(QDir("/root" % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
                     for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
 
-                    for(ushort c(0) ; c < dlst.count() ; ++c)
+                    for(QStr siname : dlst)
                     {
-                        QStr siname(dlst.at(c));
-
                         if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
                         {
-                            for(ushort d(0) ; d < itmlst.count() ; ++d)
-                                if(itmlst.at(d) == siname)
+                            for(ushort b(0) ; b < itmlst.count() ; ++b)
+                                if(itmlst.at(b) == siname)
                                 {
-                                    itmlst.removeAt(d);
+                                    itmlst.removeAt(b);
                                     goto rnext;
                                 }
 
@@ -7745,7 +7670,7 @@ void systemback::on_fullname_textChanged(const QStr &arg1)
 
         if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
     }
-    else if(sb::like(arg1, QSL() << "_ *" << "* _" << "*  *" << "_-*" << "*/*" << "*:*" << "*#*" << "*,*" << "*'*" << "*\"*"))
+    else if(sb::like(arg1, {"_ *", "* _", "*  *", "_-*", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
     {
         if(! ui->fullnameerror->isVisible())
         {
@@ -7775,7 +7700,7 @@ void systemback::on_username_textChanged(const QStr &arg1)
         {
             if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
         }
-        else if(sb::like(arg1, QSL() << "_-*" << "* *" << "*/*" << "*:*" << "*#*" << "*,*" << "*'*" << "*\"*"))
+        else if(sb::like(arg1, {"_-*", "* *", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
         {
             if(! ui->usernameerror->isVisible()) ui->usernameerror->show();
         }
@@ -8271,17 +8196,13 @@ start:;
     statustart();
     QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-    for(uchar a(0) ; a < dlst.count() ; ++a)
-    {
-        QStr item(dlst.at(a));
-
-        if(sb::like(item, QSL() << "_.DELETED_*" << "_.S00_*"))
+    for(QStr item : dlst)
+        if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
         {
             if(prun != tr("Deleting incomplete restore point")) prun = tr("Deleting incomplete restore point");
             if(! sb::remove(sb::sdir[1] % '/' % item)) goto error;
             if(intrrpt) goto error;
         }
-    }
 
     for(uchar a(9) ; a > 1 ; --a)
         if(! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true)) ++ppipe;
@@ -8495,18 +8416,13 @@ start:;
         if(cline.startsWith(guname() % ':'))
         {
             QSL uslst(cline.split(':'));
-            uchar cter(0);
 
             for(uchar a(0) ; a < uslst.count() ; ++a)
-            {
-                ++cter;
-
-                if(cter == 5)
+                if(a == 4)
                 {
                     fname = sb::left(uslst.at(a), sb::instr(uslst.at(a), ",") - 1);
                     break;
                 }
-            }
 
             break;
         }
@@ -8549,11 +8465,8 @@ start:;
         QSL dlst(QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files));
         if(intrrpt) goto exit;
 
-        for(uchar a(0) ; a < dlst.count() ; ++a)
-        {
-            QStr item(dlst.at(a));
-            if(! sb::like(item, QSL() << "*integrity_check_" << "*mountpoints_" << "*fstab_" << "*swap_" << "*xconfig_" << "*networking_" << "*disable_update_notifier_" << "*disable_hibernation_" << "*disable_kde_services_" << "*fix_language_selector_" << "*disable_trackerd_" << "*disable_updateinitramfs_" << "*kubuntu_disable_restart_notifications_" << "*kubuntu_mobile_session_") && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
-        }
+        for(QStr item : dlst)
+            if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
     }
     else if(isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
     {
@@ -8580,11 +8493,8 @@ start:;
     {
         QSL dlst(QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files));
 
-        for(uchar a(0) ; a < dlst.count() ; ++a)
-        {
-            QStr item(dlst.at(a));
-            if(! sb::like(item, QSL() << "*integrity_check_" << "*mountpoints_" << "*fstab_" << "*swap_" << "*xconfig_" << "*networking_" << "*disable_update_notifier_" << "*disable_hibernation_" << "*disable_kde_services_" << "*fix_language_selector_" << "*disable_trackerd_" << "*disable_updateinitramfs_" << "*kubuntu_disable_restart_notifications_" << "*kubuntu_mobile_session_") && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
-        }
+        for(QStr item : dlst)
+            if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
     }
     else if(isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
     {
@@ -8606,14 +8516,11 @@ start:;
     if(! sb::cpfile("/usr/lib/syslinux/vesamenu.c32",sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) goto error;
     if(! sb::cpfile("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png")) goto error;
     if(! sb::lvprpr(ui->userdatainclude->isChecked())) goto error;
-    QSL dlst(QSL() << "/.sblvtmp/cdrom" << "/.sblvtmp/dev" << "/.sblvtmp/mnt" << "/.sblvtmp/proc" << "/.sblvtmp/run" << "/.sblvtmp/srv" << "/.sblvtmp/sys" << "/.sblvtmp/tmp" << "/bin" << "/boot" << "/etc" << "/lib" << "/lib32" << "/lib64" << "/opt" << "/sbin" << "/selinux" << "/usr" << "/initrd.img" << "/initrd.img.old" << "/vmlinuz" << "/vmlinuz.old");
+    QSL dlst({"/.sblvtmp/cdrom", "/.sblvtmp/dev", "/.sblvtmp/mnt", "/.sblvtmp/proc", "/.sblvtmp/run", "/.sblvtmp/srv", "/.sblvtmp/sys", "/.sblvtmp/tmp", "/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"});
     QStr ide;
 
-    for(uchar a(0) ; a < dlst.count() ; ++a)
-    {
-        QStr item(dlst.at(a));
+    for(QStr item : dlst)
         if(sb::exist(item)) ide.append(' ' % item);
-    }
 
     if(isdir(sb::sdir[2] % "/.sblivesystemcreate/userdata"))
     {

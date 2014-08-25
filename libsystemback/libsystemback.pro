@@ -2,6 +2,8 @@ QT -= gui
 
 TARGET = systemback
 
+CONFIG += c++11
+
 TEMPLATE = lib
 
 DEFINES += SYSTEMBACK_LIBRARY

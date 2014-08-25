@@ -49,7 +49,7 @@ public:
     static ullong ThrdLng[2];
     static cuchar Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknow = 5, Read = 0, Write = 1, Exec = 2, Sblock = 0, Dpkglock = 1, Schdlrlock = 2, Norm = 0, All = 1, Mixed = 2, Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvprttns = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Crtrpoint = 11, Srestore = 12, Scopy = 13, Lvprpr = 14;
     static uchar pnumber;
-    static char Progress;
+    static schar Progress;
     static bool ExecKill, ThrdKill;
 
     static QSL readlvprttns();

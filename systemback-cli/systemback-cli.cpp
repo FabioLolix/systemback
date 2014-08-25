@@ -89,7 +89,7 @@ error:
     qApp->exit(rv);
     return;
 start:
-    if(sb::like(qApp->arguments().value(1), QSL() << "_-h_" << "_--help_"))
+    if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
         sb::print(help);
     else if(getuid() + getgid() > 0)
     {
@@ -119,7 +119,7 @@ start:
             rv = clistart();
             endwin();
         }
-        else if(sb::like(qApp->arguments().value(1), QSL() << "_-n_" << "_--newrestorepoint_"))
+        else if(sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}))
         {
             if(! isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
             {
@@ -133,16 +133,16 @@ start:
             if(! newrestorepoint()) rv = sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
             endwin();
         }
-        else if(sb::like(qApp->arguments().value(1), QSL() << "_-s_" << "_--storagedir_"))
+        else if(sb::like(qApp->arguments().value(1), {"_-s_", "_--storagedir_"}))
             rv = storagedir();
-        else if(sb::like(qApp->arguments().value(1), QSL() << "_-u_" << "_--upgrade_"))
+        else if(sb::like(qApp->arguments().value(1), {"_-u_", "_--upgrade_"}))
         {
             sb::unlock(sb::Dpkglock);
             sb::trn[0] = tr("An error occurred while upgrading the system!");
             sb::trn[1] = tr("Restart upgrade ...");
             sb::supgrade();
         }
-        else if(sb::like(qApp->arguments().value(1), QSL() << "_-v_" << "_--version_"))
+        else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
         {
             QFile file(":version");
             file.open(QIODevice::ReadOnly);
@@ -336,7 +336,7 @@ uchar systemback::storagedir()
         if(qApp->arguments().count() > 3)
             for(uchar a(3); a < qApp->arguments().count(); ++a) ndir.append(' ' % qApp->arguments().value(a));
 
-        if(sb::like(ndir, QSL() << "*/systemback_" << "*/_" << "_/bin_" << "_/bin/*" << "_/boot_" << "_/boot/*" << "_/cdrom_" << "_/cdrom/*" << "_/dev_" << "_/dev/*" << "_/etc_" << "_/etc/*" << "_/lib_" << "_/lib/*" << "_/lib32_" << "_/lib32/*" << "_/lib64_" << "_/lib64/*" << "_/opt_" << "_/opt/*" << "_/proc_" << "_/proc/*" << "_/root_" << "_/root/*" << "_/run_" << "_/run/*" << "_/sbin_" << "_/sbin/*" << "_/selinux_" << "_/selinux/*" << "_/srv_" << "_/sys/*" << "_/tmp_" << "_/tmp/*" << "_/usr_" << "_/usr/*" << "_/var_" << "_/var/*") || sb::fload("/etc/passwd").contains(':' % ndir % ':') || ! sb::islnxfs(ndir)) return 5;
+        if(sb::like(ndir, {"*/systemback_", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"}) || sb::fload("/etc/passwd").contains(':' % ndir % ':') || ! sb::islnxfs(ndir)) return 5;
 
         if(sb::sdir[0] != ndir)
         {
@@ -379,16 +379,12 @@ start:;
     ptimer->start();
     QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-    for(uchar a(0) ; a < dlst.count() ; ++a)
-    {
-        QStr item(dlst.at(a));
-
-        if(sb::like(item, QSL() << "_.DELETED_*" << "_.S00_*"))
+    for(QStr item : dlst)
+        if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
         {
             if(prun != tr("Deleting incomplete restore point")) prun = tr("Deleting incomplete restore point");
             if(! sb::remove(sb::sdir[1] % '/' % item)) goto error;
         }
-    }
 
     for(uchar a(9) ; a > 1 ; --a)
         if(! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true))
@@ -511,9 +507,9 @@ uchar systemback::restore()
             do {
                 QChar gtch(getch());
 
-                if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
+                if(sb::like(gtch.toUpper(), {"_Y_", '_' % yn[0] % '_'}))
                     fsave = 1;
-                else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
+                else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
                     fsave = 2;
             } while(fsave == 0);
 
@@ -541,9 +537,9 @@ uchar systemback::restore()
                 do {
                     QChar gtch(getch());
 
-                    if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
+                    if(sb::like(gtch.toUpper(), {"_Y_", '_' % yn[0] % '_'}))
                         greinst = 1;
-                    else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
+                    else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
                         greinst = 2;
                 } while(greinst == 0);
 
@@ -573,9 +569,9 @@ uchar systemback::restore()
             do {
                 QChar gtch(getch());
 
-                if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
+                if(sb::like(gtch.toUpper(), {"_Y_", '_' % yn[0] % '_'}))
                     greinst = 1;
-                else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
+                else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
                     greinst = 2;
             } while(greinst == 0);
 
@@ -604,9 +600,9 @@ uchar systemback::restore()
     do {
         QChar gtch(getch());
 
-        if(sb::like(gtch.toUpper(), QSL() << "_Y_" << '_' % yn[0] % '_'))
+        if(sb::like(gtch.toUpper(), {"_Y_", '_' % yn[0] % '_'}))
             rstart = true;
-        else if(sb::like(gtch.toUpper(), QSL() << "_N_" << '_' % yn[1] % '_'))
+        else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
             return 6;
     } while(! rstart);
 
@@ -699,9 +695,9 @@ uchar systemback::restore()
 
 void systemback::progpercent()
 {
-    if(sb::like(prun, QSL() << '_' % tr("Creating restore point") % '_' << '_' % tr("Restoring the full system") % '_' << '_' % tr("Restoring the system files") % '_' << '_' % tr("Restoring users configuration files") % '_'))
+    if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring users configuration files") % '_'}))
     {
-        char cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toShort()), cperc(sb::Progress);
+        schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toShort()), cperc(sb::Progress);
 
         if(cperc == -1)
         {

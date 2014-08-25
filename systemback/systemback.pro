@@ -2,6 +2,8 @@ QT += core gui widgets
 
 TARGET = systemback
 
+CONFIG += c++11
+
 TEMPLATE = app
 
 SOURCES += main.cpp \

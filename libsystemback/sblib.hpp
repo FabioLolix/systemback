@@ -19,96 +19,77 @@
 
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
-#define _FILE_OFFSET_BITS 64
-#define isfile(path) QFileInfo(path).isFile()
-#define isdir(path) QFileInfo(path).isDir()
-#define islink(path) QFileInfo(path).isSymLink()
 
 #include "sblib_global.hpp"
-#include <QTextStream>
-#include <QStringList>
+#include "sbtypedef.hpp"
 #include <QThread>
-
-typedef QTextStream QTS;
-typedef QStringList QSL;
-typedef QList<short> QSIL;
-typedef const QString cQStr;
-typedef QString QStr;
-typedef unsigned long long ullong;
-typedef long long llong;
-typedef const short cshort;
-typedef const unsigned char cuchar;
-typedef const char cchar;
-typedef signed char schar;
 
 class SHARED_EXPORT_IMPORT sb : public QThread
 {
 public:
-    explicit sb(QThread *parent = 0);
+    explicit sb(QThread *parent = nullptr);
 
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], trn[2];
     static ullong ThrdLng[2];
-    static cuchar Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknow = 5, Read = 0, Write = 1, Exec = 2, Sblock = 0, Dpkglock = 1, Schdlrlock = 2, Norm = 0, All = 1, Mixed = 2, Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvprttns = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Crtrpoint = 11, Srestore = 12, Scopy = 13, Lvprpr = 14;
+    static cuchar Notexist, Isfile, Isdir, Islink, Isblock, Unknow, Read, Write, Exec, Sblock, Dpkglock, Schdlrlock, Norm, All, Mixed, Remove, Copy, Sync, Mount, Umount, Readprttns, Readlvprttns, Ruuid, Setpflag, Mkptable, Mkpart, Crtrpoint, Srestore, Scopy, Lvprpr;
     static uchar pnumber;
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
-    static QSL readlvprttns();
-    static QSL readprttns();
-    static QStr mid(QStr txt, ushort start, ushort len);
-    static QStr right(QStr txt, short len);
-    static QStr left(QStr txt, short len);
-    static QStr rndstr(uchar vlen = 10);
-    static QStr ruuid(QStr part);
-    static QStr rlink(QStr path);
-    static QStr fload(QStr path);
+    static QStr mid(cQStr &txt, cushort &start, cushort &len);
+    static QStr right(cQStr &txt, cshort &len);
+    static QStr left(cQStr &txt, cshort &len);
+    static QStr rndstr(cuchar &vlen = 10);
+    static QStr ruuid(cQStr &part);
+    static QStr rlink(cQStr &path);
+    static QStr fload(cQStr &path);
     static QStr getarch();
     static QStr ckname();
-    static ullong devsize(QStr dev);
-    static ullong dfree(QStr path);
-    static ullong fsize(QStr path);
-    static ushort rinstr(QStr txt, QStr stxt, ushort start = 0);
-    static ushort instr(QStr txt, QStr stxt, ushort start = 1);
-    static uchar exec(QStr cmd, QStr envv = NULL, bool silent = false, bool bckgrnd = false);
-    static uchar fcomp(QStr file1, QStr file2);
-    static uchar stype(QStr path);
-    static uchar exec(QSL cmds);
-    static bool srestore(uchar mthd, QStr usr, QStr srcdir, QStr trgt, bool sfstab = false);
-    static bool mkpart(QStr dev, ullong start = 0, ullong len = 0);
-    static bool mount(QStr dev, QStr mpoint, QStr moptns = NULL);
-    static bool like(QStr txt, QSL lst, uchar mode = Norm);
-    static bool scopy(uchar mthd, QStr usr, QStr srcdir);
-    static bool execsrch(QStr fname, QStr ppath = NULL);
-    static bool cpertime(QStr srcitem, QStr newitem);
-    static bool access(QStr path, uchar mode = Read);
-    static bool crtfile(QStr path, QStr txt = NULL);
-    static bool cpfile(QStr srcfile, QStr newfile);
-    static bool cplink(QStr srclink, QStr newlink);
-    static bool cpdir(QStr srcddir, QStr newdir);
-    static bool crtrpoint(QStr sdir, QStr pname);
-    static bool pisrng(QStr pname, ushort &pid);
-    static bool exclcheck(QSL elist, QStr item);
-    static bool setpflag(QStr part, QStr flag);
-    static bool issmfs(QStr item1, QStr item2);
-    static bool lcomp(QStr link1, QStr link2);
-    static bool ilike(short num, QSIL lst);
-    static bool lvprpr(bool iudata);
-    static bool mkptable(QStr dev);
-    static bool islnxfs(QStr path);
-    static bool pisrng(QStr pname);
-    static bool mcheck(QStr item);
-    static bool remove(QStr path);
-    static bool umount(QStr dev);
-    static bool lock(uchar type);
-    static bool exist(QStr path);
-    static bool isnum(QStr txt);
+    static ullong devsize(cQStr &dev);
+    static ullong dfree(cQStr &path);
+    static ushort rinstr(cQStr &txt, cQStr &stxt, cushort &start = 0);
+    static ushort instr(cQStr &txt, cQStr &stxt, cushort &start = 1);
+    static uchar exec(cQStr &cmd, cQStr &envv = NULL, cbool &silent = false, cbool &bckgrnd = false);
+    static uchar fcomp(cQStr &file1, cQStr &file2);
+    static uchar stype(cQStr &path);
+    static uchar exec(cQSL &cmds);
+    static bool srestore(cuchar &mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, cbool &sfstab = false);
+    static bool mkpart(cQStr &dev, cullong &start = 0, cullong &len = 0);
+    static bool mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = NULL);
+    static bool like(cQStr &txt, cQSL &lst, cuchar &mode = Norm);
+    static bool scopy(cuchar &mthd, cQStr &usr, cQStr &srcdir);
+    static bool execsrch(cQStr &fname, cQStr &ppath = NULL);
+    static bool pisrng(cQStr &pname, ushort *pid = nullptr);
+    static bool cpertime(cQStr &srcitem, cQStr &newitem);
+    static bool access(cQStr &path, cuchar &mode = Read);
+    static bool crtfile(cQStr &path, cQStr &txt = NULL);
+    static bool cpfile(cQStr &srcfile, cQStr &newfile);
+    static bool cplink(cQStr &srclink, cQStr &newlink);
+    static bool cpdir(cQStr &srcddir, cQStr &newdir);
+    static bool crtrpoint(cQStr &sdir, cQStr &pname);
+    static bool exclcheck(cQSL &elist, cQStr &item);
+    static bool setpflag(cQStr &part, cQStr &flag);
+    static bool issmfs(cQStr &item1,cQStr &item2);
+    static bool lcomp(cQStr &link1, cQStr &link2);
+    static bool ilike(cshort &num, cQSIL &lst);
+    static bool lvprpr(cbool &iudata);
+    static bool mkptable(cQStr &dev);
+    static bool islnxfs(cQStr &path);
+    static bool remove(cQStr &path);
+    static bool mcheck(cQStr &item);
+    static bool umount(cQStr &dev);
+    static bool exist(cQStr &path);
+    static bool lock(cuchar &type);
+    static bool isnum(cQStr &txt);
     static bool ickernel();
     static bool efiprob();
-    static void unlock(uchar type);
-    static void delay(ushort msec);
-    static void print(QStr txt);
-    static void error(QStr txt);
+    static void readlvprttns(QSL &strlst);
+    static void readprttns(QSL &strlst);
+    static void delay(cushort &msec);
+    static void unlock(cuchar &type);
+    static void print(cQStr &txt);
+    static void error(cQStr &txt);
     static void pupgrade();
     static void supgrade();
     static void cfgwrite();
@@ -121,21 +102,20 @@ protected:
     void run();
 
 private:
-    static QSL ThrdSlst;
-    static QStr odlst;
+    static QSL *ThrdSlst;
     static int sblock[3];
-    static uchar ThrdType, ThrdChr;
-    static bool ThrdBool, ThrdRslt;
+    static cuchar *ThrdType, *ThrdChr;
+    static cbool *ThrdBool;
+    static bool ThrdRslt;
 
-    static QStr rodir(QStr path, bool hidden = false);
-    static void sbdir(QStr path, uchar oplen, bool hidden = false);
-    QSL odir(QStr path, bool hidden = false);
-    bool thrdsrestore(uchar &mthd, QStr &usr, QStr &srcdir, QStr &trgt, bool &sfstab);
-    bool thrdscopy(uchar &mthd, QStr &usr, QStr &srcdir);
-    bool recrmdir(QStr path, bool slimit = false);
-    bool thrdcrtrpoint(QStr &sdir, QStr &pname);
-    bool thrdlvprpr(bool &iudata);
-    bool fspchk(QStr &dir);
+    static bool rodir(QStr &str, cQStr &path, cbool &hidden = false, cuchar &oplen = 0);
+    static bool odir(QSL &strlst, cQStr &path, cbool &hidden = false);
+    bool thrdsrestore(cuchar &mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, cbool &sfstab);
+    bool thrdscopy(cuchar &mthd, cQStr &usr, cQStr &srcdir);
+    bool recrmdir(cQStr &path, cbool &slimit = false);
+    bool thrdcrtrpoint(cQStr &sdir, cQStr &pname);
+    bool thrdlvprpr(cbool &iudata);
+    bool fspchk(cQStr &dir);
 };
 
 #endif // SBLIB_HPP

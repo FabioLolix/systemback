@@ -44,13 +44,13 @@ class systemback : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit systemback(QWidget *parent = 0);
+    explicit systemback(QWidget *parent = nullptr);
     ~systemback();
 
 private:
     Ui::systemback *ui;
 
-    static cuchar Strgdr = 0, Lvwrkdr = 1, Dpath = 2, Rpnts = 3, Normal = 100, High = 147, Max = 200;
+    static cuchar Strgdr, Lvwrkdr, Dpath, Rpnts, Normal, High, Max;
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash, grub;
     short wgeom[6], sfctr;
@@ -59,12 +59,12 @@ private:
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
-    ushort ss(ushort size);
-    bool minside(QPoint pos, QRect geom);
-    void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
-    void setwontop(bool state = true);
-    void busy(bool state = true);
-    void fontcheck(uchar wdgt);
+    ushort ss(cushort &size);
+    bool minside(cQPoint &pos, cQRect &geom);
+    void windowmove(cushort &nwidth, cushort &nheight, cbool &fxdw = true);
+    void setwontop(cbool &state = true);
+    void busy(cbool &state = true);
+    void fontcheck(cuchar &wdgt);
     void pointupgrade();
     void accesserror();
     void statustart();
@@ -293,7 +293,7 @@ class lblevent : public QLabel
     Q_OBJECT
 
 public:
-    explicit lblevent(QWidget *parent = 0);
+    explicit lblevent(QWidget *parent = nullptr);
 
     short MouseX, MouseY;
 
@@ -322,7 +322,7 @@ class pnlevent : public QWidget
     Q_OBJECT
 
 public:
-    explicit pnlevent(QWidget *parent = 0);
+    explicit pnlevent(QWidget *parent = nullptr);
 
 protected:
     void leaveEvent(QEvent *);
@@ -336,7 +336,7 @@ class lndtevent : public QLineEdit
     Q_OBJECT
 
 public:
-    explicit lndtevent(QWidget *parent = 0);
+    explicit lndtevent(QWidget *parent = nullptr);
 
 protected:
     void focusOutEvent(QFocusEvent *ev);
@@ -350,7 +350,7 @@ class chckbxevent : public QCheckBox
     Q_OBJECT
 
 public:
-    explicit chckbxevent(QWidget *parent = 0);
+    explicit chckbxevent(QWidget *parent = nullptr);
 
 protected:
     void enterEvent(QEvent *);

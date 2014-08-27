@@ -31,7 +31,7 @@ public slots:
     void main();
 
 private:
-    bool clrenv(QStr xpath, QStr usrhm, bool gtk);
+    bool clrenv(cQStr &xpath, cQStr &usrhm);
 };
 
 #endif // SBSUSTART_HPP

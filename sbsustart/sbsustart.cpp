@@ -21,6 +21,7 @@
 #include <QCoreApplication>
 #include <QStringBuilder>
 #include <QFileInfo>
+#include <QProcess>
 #include <unistd.h>
 
 void sbsustart::main()
@@ -56,57 +57,54 @@ start:;
         goto error;
     }
 
-    QStr usr(getenv("USER")), cmd(qApp->arguments().value(1) == "systemback" ? "systemback authorization " : "sbscheduler ");
-    cmd.append(usr.isEmpty() ? "root" : usr);
+    QStr usr(qEnvironmentVariableIsEmpty("USER") ? "root" : qgetenv("USER")), cmd((qApp->arguments().value(1) == "systemback" ? "systemback authorization " : "sbscheduler ") % usr);
 
-    if(getuid() + getgid() == 0)
+    if(getuid() + getgid() > 0)
     {
-        if(qApp->arguments().value(2) == "gtk+") setenv("QT_STYLE_OVERRIDE", "gtk+", 1);
-    }
-    else if(cmd.startsWith("systemback"))
-    {
-        QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), xpath(getenv("XAUTHORITY")), usrhm(getenv("HOME"));
-
-        if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1)
+        if(cmd.startsWith("systemback"))
         {
-            rv = 4;
+            QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
+
+            if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! qgetenv("PATH").startsWith("/usr/lib/systemback"))
+            {
+                rv = 4;
+                goto error;
+            }
+
+            if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (usrhm.isEmpty() || ! isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
+            {
+                rv = 3;
+                goto error;
+            }
+
+            if(! clrenv(xauth, "/root"))
+            {
+                sb::remove(xauth);
+                rv = 4;
+                goto error;
+            }
+        }
+        else if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! clrenv(qgetenv("XAUTHORITY"), qgetenv("HOME")))
+        {
+            rv = 5;
             goto error;
         }
-
-        if((xpath.isEmpty() || ! QFile(xpath).copy(xauth)) && (usrhm.isEmpty() || ! isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
-        {
-            rv = 3;
-            goto error;
-        }
-
-        if(! clrenv(xauth, "/root", (qApp->arguments().value(2) == "gtk+")))
-        {
-            sb::remove(xauth);
-            rv = 4;
-            goto error;
-        }
-    }
-    else if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! clrenv(getenv("XAUTHORITY"), getenv("HOME"), (qApp->arguments().value(2) == "gtk+")))
-    {
-        rv = 5;
-        goto error;
     }
 
+    if(qApp->arguments().value(2) == "gtk+") qputenv("QT_STYLE_OVERRIDE", "gtk+");
     qApp->exit(sb::exec(cmd));
 }
 
-bool sbsustart::clrenv(QStr xpath, QStr usrhm, bool gtk)
+bool sbsustart::clrenv(cQStr &xpath, cQStr &usrhm)
 {
-    QStr dsply(getenv("DISPLAY")), pth(getenv("PATH")), lng(getenv("LANG"));
-    if(clearenv() == -1) return false;
-    if(! dsply.isEmpty()) setenv("DISPLAY", dsply.toStdString().c_str(), 1);
-    setenv("HOME", usrhm.isEmpty() ? "/root" : usrhm.toStdString().c_str(), 1);
-    if(! lng.isEmpty()) setenv("LANG", lng.toStdString().c_str(), 1);
-    setenv("LOGNAME", "root", 1);
-    if(! pth.isEmpty()) setenv("PATH", pth.toStdString().c_str(), 1);
-    setenv("SHELL", "/bin/bash", 1);
-    setenv("USER", "root", 1);
-    if(! xpath.isEmpty()) setenv("XAUTHORITY", xpath.toStdString().c_str(), 1);
-    if(gtk) setenv("QT_STYLE_OVERRIDE", "gtk+", 1);
+    QSL envvs(QProcess::systemEnvironment());
+
+    for(cQStr &cvar : envvs)
+    {
+        QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
+        if(! sb::like(var, {"_DISPLAY*", "_PATH*", "_LANG*"}) && ! qunsetenv(var.toStdString().c_str())) return false;
+    }
+
+    if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.isEmpty() ? "/root" : usrhm.toLocal8Bit()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || (! xpath.isEmpty() && ! qputenv("XAUTHORITY", xpath.toLocal8Bit()))) return false;
     return true;
 }

@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     {
         QStr arg1(argv[1]);
 
-        if(arg1.isEmpty() || ! sb::like(arg1, QSL() << "_systemback_" << "_scheduler_"))
+        if(arg1.isEmpty() || ! sb::like(arg1, {"_systemback_", "_scheduler_"}))
         {
             sb::error("\n Missing, wrong or too much argument(s).\n\n");
             return 2;

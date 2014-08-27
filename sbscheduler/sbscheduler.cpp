@@ -144,13 +144,14 @@ start:;
 
 void scheduler::newrestorepoint()
 {
+    sb::pupgrade();
     QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
     for(cQStr &item : dlst)
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}) && ! sb::remove(sb::sdir[1] % '/' % item)) return;
 
     for(uchar a(9) ; a > 1 ; --a)
-        if((! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true)) && ! (QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) && sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]))) return;
+        if(! sb::pnames[a].isEmpty() && (a < 9 ? a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3 : true) && ! (QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) && sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]))) return;
 
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
 

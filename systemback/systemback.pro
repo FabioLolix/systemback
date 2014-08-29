@@ -9,7 +9,11 @@ TEMPLATE = app
 SOURCES += main.cpp \
     systemback.cpp
 
-HEADERS += systemback.hpp
+HEADERS += systemback.hpp \
+    chckbxevent.hpp \
+    lblevent.hpp \
+    lndtevent.hpp \
+    pnlevent.hpp
 
 FORMS += systemback.ui
 

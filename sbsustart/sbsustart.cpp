@@ -20,7 +20,6 @@
 #include "sbsustart.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
-#include <QFileInfo>
 #include <QProcess>
 #include <unistd.h>
 
@@ -71,7 +70,7 @@ start:;
                 goto error;
             }
 
-            if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (usrhm.isEmpty() || ! isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
+            if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (usrhm.isEmpty() || ! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
             {
                 rv = 3;
                 goto error;

@@ -28,10 +28,6 @@
 #include <QListWidgetItem>
 #include <QTreeWidgetItem>
 #include <QMainWindow>
-#include <QKeyEvent>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QLabel>
 #include <QTimer>
 
 namespace Ui
@@ -47,10 +43,16 @@ public:
     explicit systemback(QWidget *parent = nullptr);
     ~systemback();
 
+protected:
+    bool eventFilter(QObject *, QEvent *ev);
+    void keyReleaseEvent(QKeyEvent *ev);
+    void keyPressEvent(QKeyEvent *ev);
+    void closeEvent(QCloseEvent *ev);
+
 private:
     Ui::systemback *ui;
 
-    static cuchar Strgdr, Lvwrkdr, Dpath, Rpnts, Normal, High, Max;
+    static cuchar Strgdr{0}, Lvwrkdr{1}, Dpath{2}, Rpnts{3}, Normal{100}, High{147}, Max{200};
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash, grub;
     short wgeom[6], sfctr;
@@ -59,12 +61,12 @@ private:
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
-    ushort ss(cushort &size);
+    ushort ss(ushort size);
     bool minside(cQPoint &pos, cQRect &geom);
-    void windowmove(cushort &nwidth, cushort &nheight, cbool &fxdw = true);
-    void setwontop(cbool &state = true);
-    void busy(cbool &state = true);
-    void fontcheck(cuchar &wdgt);
+    void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
+    void setwontop(bool state = true);
+    void busy(bool state = true);
+    void fontcheck(uchar wdgt);
     void pointupgrade();
     void accesserror();
     void statustart();
@@ -280,85 +282,6 @@ private slots:
     void on_umount_clicked();
     void on_hourup_clicked();
     void on_dayup_clicked();
-
-protected:
-    bool eventFilter(QObject *, QEvent *ev);
-    void keyReleaseEvent(QKeyEvent *ev);
-    void keyPressEvent(QKeyEvent *ev);
-    void closeEvent(QCloseEvent *ev);
-};
-
-class lblevent : public QLabel
-{
-    Q_OBJECT
-
-public:
-    explicit lblevent(QWidget *parent = nullptr);
-
-    short MouseX, MouseY;
-
-private:
-    bool MousePressed;
-
-protected:
-    void mouseDoubleClickEvent(QMouseEvent *ev);
-    void mouseReleaseEvent(QMouseEvent *ev);
-    void mousePressEvent(QMouseEvent *ev);
-    void mouseMoveEvent(QMouseEvent *);
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
-
-signals:
-    void Mouse_Released();
-    void Mouse_DblClick();
-    void Mouse_Pressed();
-    void Mouse_Enter();
-    void Mouse_Leave();
-    void Mouse_Move();
-};
-
-class pnlevent : public QWidget
-{
-    Q_OBJECT
-
-public:
-    explicit pnlevent(QWidget *parent = nullptr);
-
-protected:
-    void leaveEvent(QEvent *);
-
-signals:
-    void Mouse_Leave();
-};
-
-class lndtevent : public QLineEdit
-{
-    Q_OBJECT
-
-public:
-    explicit lndtevent(QWidget *parent = nullptr);
-
-protected:
-    void focusOutEvent(QFocusEvent *ev);
-
-signals:
-    void Focus_Out();
-};
-
-class chckbxevent : public QCheckBox
-{
-    Q_OBJECT
-
-public:
-    explicit chckbxevent(QWidget *parent = nullptr);
-
-protected:
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
-
-signals:
-    void Mouse_Enter();
-    void Mouse_Leave();
 };
 
 #endif // SYSTEMBACK_HPP

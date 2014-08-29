@@ -121,7 +121,7 @@ start:
         }
         else if(sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}))
         {
-            if(! isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
+            if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
             {
                 rv = 10;
                 goto error;
@@ -340,13 +340,13 @@ uchar systemback::storagedir()
 
         if(sb::sdir[0] != ndir)
         {
-            if(isdir(sb::sdir[1]))
+            if(sb::isdir(sb::sdir[1]))
             {
                 QSL dlst(QDir(sb::sdir[1]).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
                 if(dlst.count() == 0)
                     QDir().rmdir(sb::sdir[1]);
-                else if(dlst.count() == 1 && isfile(sb::sdir[1] % "/.sbschedule"))
+                else if(dlst.count() == 1 && sb::isfile(sb::sdir[1] % "/.sbschedule"))
                     sb::remove(sb::sdir[1]);
             }
 
@@ -355,13 +355,13 @@ uchar systemback::storagedir()
             sb::sdir[1] = sb::sdir[0] % "/Systemback";
         }
 
-        if(! isdir(sb::sdir[1]) && ! QDir().mkdir(sb::sdir[1]))
+        if(! sb::isdir(sb::sdir[1]) && ! QDir().mkdir(sb::sdir[1]))
         {
             QFile::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
             QDir().mkdir(sb::sdir[1]);
         }
 
-        if(! isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule");
+        if(! sb::isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule");
         sb::print("\n " % tr("The specified storage directory path is set.") % "\n\n");
     }
 
@@ -397,7 +397,7 @@ start:;
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
     if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) goto error;
 
-    for(uchar a(0) ; a < 9 && isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
         if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) goto error;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
@@ -497,7 +497,7 @@ uchar systemback::restore()
 
     if(rmode < 3)
     {
-        if(isfile("/etc/fstab"))
+        if(sb::isfile("/etc/fstab"))
         {
             printw(QStr("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)")).toStdString().c_str());
             attron(COLOR_PAIR(2));

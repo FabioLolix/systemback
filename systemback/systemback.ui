@@ -6547,23 +6547,23 @@
   <customwidget>
    <class>pnlevent</class>
    <extends>QWidget</extends>
-   <header location="global">systemback.hpp</header>
+   <header location="global">pnlevent.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>lblevent</class>
    <extends>QLabel</extends>
-   <header location="global">systemback.hpp</header>
+   <header location="global">lblevent.hpp</header>
   </customwidget>
   <customwidget>
    <class>lndtevent</class>
    <extends>QLineEdit</extends>
-   <header location="global">systemback.hpp</header>
+   <header location="global">lndtevent.hpp</header>
   </customwidget>
   <customwidget>
    <class>chckbxevent</class>
    <extends>QCheckBox</extends>
-   <header location="global">systemback.hpp</header>
+   <header location="global">chckbxevent.hpp</header>
   </customwidget>
  </customwidgets>
  <tabstops>

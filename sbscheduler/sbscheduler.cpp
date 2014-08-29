@@ -64,7 +64,7 @@ start:;
         goto error;
     }
 
-    if(isfile("/cdrom/casper/filesystem.squashfs") || isfile("/live/image/live/filesystem.squashfs") || isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
+    if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/live/image/live/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
     {
         rv = 3;
         goto error;
@@ -84,7 +84,7 @@ start:;
 
     sb::delay(100);
     if(! sb::lock(sb::Schdlrlock)) goto error;
-    QStr pfile(isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
+    QStr pfile(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
     if(! sb::crtfile(pfile, QStr::number(qApp->applicationPid()))) goto error;
     sleep(300);
 
@@ -98,9 +98,9 @@ start:;
         }
 
         sb::cfgread();
-        if(! isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write)) goto next;
+        if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write)) goto next;
 
-        if(! isfile(sb::sdir[1] % "/.sbschedule"))
+        if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))
         {
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
             goto next;
@@ -123,7 +123,7 @@ start:;
             {
                 QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
 
-                if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
                 {
                     sb::exec("systemback schedule " % sb::schdle[6], "XAUTHORITY=" % xauth);
                     QFile::remove(xauth);
@@ -166,7 +166,7 @@ void scheduler::newrestorepoint()
         return;
     }
 
-    for(uchar a(0) ; a < 9 && isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
         if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return;

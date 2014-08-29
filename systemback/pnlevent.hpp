@@ -17,27 +17,28 @@
 
 ********************************************************************/
 
-#ifndef SBTYPEDEF_HPP
-#define SBTYPEDEF_HPP
-#define _FILE_OFFSET_BITS 64
+#ifndef PNLEVENT_HPP
+#define PNLEVENT_HPP
 
-#include <QTextStream>
-#include <QStringList>
+#include <QWidget>
 
-typedef QTextStream QTS;
-typedef const QStringList cQSL;
-typedef QStringList QSL;
-typedef const QList<short> cQSIL;
-typedef QList<short> QSIL;
-typedef const QString cQStr;
-typedef QString QStr;
-typedef const QChar cQChar;
-typedef const QRect cQRect;
-typedef const QPoint cQPoint;
-typedef unsigned long long ullong;
-typedef long long llong;
-typedef const unsigned char cuchar;
-typedef const char cchar;
-typedef signed char schar;
+class pnlevent : public QWidget
+{
+    Q_OBJECT
 
-#endif // SBTYPEDEF_HPP
+public:
+    explicit pnlevent(QWidget *parent = nullptr) : QWidget(parent) {}
+
+protected:
+    inline void leaveEvent(QEvent *);
+
+signals:
+    void Mouse_Leave();
+};
+
+inline void pnlevent::leaveEvent(QEvent *)
+{
+    emit Mouse_Leave();
+}
+
+#endif // PNLEVENT_HPP

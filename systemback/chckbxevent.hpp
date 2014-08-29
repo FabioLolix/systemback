@@ -17,27 +17,35 @@
 
 ********************************************************************/
 
-#ifndef SBTYPEDEF_HPP
-#define SBTYPEDEF_HPP
-#define _FILE_OFFSET_BITS 64
+#ifndef CHCKBXEVENT_HPP
+#define CHCKBXEVENT_HPP
 
-#include <QTextStream>
-#include <QStringList>
+#include <QCheckBox>
 
-typedef QTextStream QTS;
-typedef const QStringList cQSL;
-typedef QStringList QSL;
-typedef const QList<short> cQSIL;
-typedef QList<short> QSIL;
-typedef const QString cQStr;
-typedef QString QStr;
-typedef const QChar cQChar;
-typedef const QRect cQRect;
-typedef const QPoint cQPoint;
-typedef unsigned long long ullong;
-typedef long long llong;
-typedef const unsigned char cuchar;
-typedef const char cchar;
-typedef signed char schar;
+class chckbxevent : public QCheckBox
+{
+    Q_OBJECT
 
-#endif // SBTYPEDEF_HPP
+public:
+    explicit chckbxevent(QWidget *parent = nullptr) : QCheckBox(parent) {}
+
+protected:
+    inline void enterEvent(QEvent *);
+    inline void leaveEvent(QEvent *);
+
+signals:
+    void Mouse_Enter();
+    void Mouse_Leave();
+};
+
+inline void chckbxevent::enterEvent(QEvent *)
+{
+    emit Mouse_Enter();
+}
+
+inline void chckbxevent::leaveEvent(QEvent *)
+{
+    emit Mouse_Leave();
+}
+
+#endif // CHCKBXEVENT_HPP

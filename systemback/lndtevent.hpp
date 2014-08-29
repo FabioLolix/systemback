@@ -17,27 +17,29 @@
 
 ********************************************************************/
 
-#ifndef SBTYPEDEF_HPP
-#define SBTYPEDEF_HPP
-#define _FILE_OFFSET_BITS 64
+#ifndef LNDTEVENT_HPP
+#define LNDTEVENT_HPP
 
-#include <QTextStream>
-#include <QStringList>
+#include <QLineEdit>
 
-typedef QTextStream QTS;
-typedef const QStringList cQSL;
-typedef QStringList QSL;
-typedef const QList<short> cQSIL;
-typedef QList<short> QSIL;
-typedef const QString cQStr;
-typedef QString QStr;
-typedef const QChar cQChar;
-typedef const QRect cQRect;
-typedef const QPoint cQPoint;
-typedef unsigned long long ullong;
-typedef long long llong;
-typedef const unsigned char cuchar;
-typedef const char cchar;
-typedef signed char schar;
+class lndtevent : public QLineEdit
+{
+    Q_OBJECT
 
-#endif // SBTYPEDEF_HPP
+public:
+    explicit lndtevent(QWidget *parent = nullptr) : QLineEdit(parent) {}
+
+protected:
+    inline void focusOutEvent(QFocusEvent *ev);
+
+signals:
+    void Focus_Out();
+};
+
+inline void lndtevent::focusOutEvent(QFocusEvent *ev)
+{
+    QLineEdit::focusOutEvent(ev);
+    emit Focus_Out();
+}
+
+#endif // LNDTEVENT_HPP

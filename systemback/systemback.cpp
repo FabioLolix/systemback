@@ -857,7 +857,7 @@ void systemback::unitimer()
     }
 }
 
-ushort systemback::ss(ushort size)
+inline ushort systemback::ss(ushort size)
 {
     switch(sfctr) {
     case Max:
@@ -938,10 +938,9 @@ void systemback::busy(bool state)
     }
 }
 
-bool systemback::minside(cQPoint &wpos, cQRect &wgeom)
+inline bool systemback::minside(cQPoint &wpos, cQRect &wgeom)
 {
-    if(QCursor::pos().x() < pos().x() + wpos.x() || QCursor::pos().y() < pos().y() + wpos.y() || QCursor::pos().x() > pos().x() + wpos.x() + wgeom.width() || QCursor::pos().y() > pos().y() + wpos.y() + wgeom.height()) return false;
-    return true;
+    return QCursor::pos().x() < pos().x() + wpos.x() || QCursor::pos().y() < pos().y() + wpos.y() || QCursor::pos().x() > pos().x() + wpos.x() + wgeom.width() || QCursor::pos().y() > pos().y() + wpos.y() + wgeom.height() ? false : true;
 }
 
 QStr systemback::guname()
@@ -6385,7 +6384,7 @@ void systemback::on_dirrefresh_clicked()
             if(sb::isfile('/' % item % "/Systemback/.sbschedule") && ui->function1->text() == tr("Storage directory"))
             {
                 twi->setTextColor(0, Qt::green);
-                twi->setIcon(0, QIcon(QPixmap(":pictures/sb::isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                twi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
             }
 
             ui->dirchoose->addTopLevelItem(twi);
@@ -6528,7 +6527,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                                 if(sb::isfile(path % '/' % iname % '/' % "/Systemback/.sbschedule") && ui->function1->text() == tr("Storage directory"))
                                 {
                                     ctwi->setTextColor(0, Qt::green);
-                                    ctwi->setIcon(0, QIcon(QPixmap(":pictures/sb::isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                                    ctwi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                                 }
 
                                 QSL dlst(QDir(path % '/' % iname).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
@@ -8313,7 +8312,7 @@ start:;
 
     if(intrrpt) goto exit;
     if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::getarch() % '\n')) goto error;
-    if(! sb::cpfile("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) goto error;
+    if(! sb::copy("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) goto error;
     if(intrrpt) goto exit;
     QFile file("/etc/passwd");
     if(! file.open(QIODevice::ReadOnly)) goto error;
@@ -8421,10 +8420,10 @@ start:;
 
     irfsc = false;
     if(xmntry && ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) goto error;
-    if(! sb::cpfile("/boot/initrd.img-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/initrd.gz")) goto error;
-    if(! sb::cpfile("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin")) goto error;
-    if(! sb::cpfile("/usr/lib/syslinux/vesamenu.c32",sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) goto error;
-    if(! sb::cpfile("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png")) goto error;
+    if(! sb::copy("/boot/initrd.img-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/initrd.gz")) goto error;
+    if(! sb::copy("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin")) goto error;
+    if(! sb::copy("/usr/lib/syslinux/vesamenu.c32",sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) goto error;
+    if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png")) goto error;
     if(! sb::lvprpr(ui->userdatainclude->isChecked())) goto error;
     QSL dlst({"/.sblvtmp/cdrom", "/.sblvtmp/dev", "/.sblvtmp/mnt", "/.sblvtmp/proc", "/.sblvtmp/run", "/.sblvtmp/srv", "/.sblvtmp/sys", "/.sblvtmp/tmp", "/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"});
     QStr ide;
@@ -8473,9 +8472,9 @@ start:;
     if(sb::getarch() == "amd64" && sb::isfile("/usr/share/systemback/efi-amd64.bootfiles"))
     {
         if(sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0) goto error;
-        if(! sb::cpfile("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png")) goto error;
+        if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png")) goto error;
         if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n")) goto error;;
-        if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  sb::left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  sb::left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"sb::left\"}\n}\n")) goto error;
+        if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"left\"}\n}\n")) goto error;
         if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/loopback.cfg", "menuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz" % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n")) goto error;
     }
 

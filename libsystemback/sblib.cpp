@@ -636,52 +636,15 @@ void sb::cfgread()
     if(cfgupdt) cfgwrite();
 }
 
-bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
+bool sb::copy(cQStr &srcfile, cQStr &newfile)
 {
-    struct stat fstat;
-    if(stat(srcfile.toStdString().c_str(), &fstat) == -1) return false;
-
-    if(SBThrd.isRunning())
-    {
-        int src, dst;
-        if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
-        bool err;
-
-        if(! (err = (dst = creat(newfile.toStdString().c_str(), fstat.st_mode)) == -1))
-        {
-            if(fstat.st_size > 0)
-            {
-                llong size(0);
-
-                do {
-                    llong csize(size);
-                    if((size += sendfile(dst, src, NULL, fstat.st_size - size)) == csize) err = true;
-                } while(! err && size < fstat.st_size);
-            }
-
-            close(dst);
-        }
-
-        close(src);
-        if(err) return false;
-    }
-    else
-    {
-        ThrdType = Copy;
-        ThrdStr[0] = srcfile;
-        ThrdStr[1] = newfile;
-        ThrdLng[0] = fstat.st_size;
-        ThrdLng[1] = fstat.st_mode;
-        SBThrd.start();
-        thrdelay();
-        if(! ThrdRslt) return false;
-    }
-
-    if(fstat.st_uid + fstat.st_gid > 0 && (chown(newfile.toStdString().c_str(), fstat.st_uid, fstat.st_gid) == -1 || (fstat.st_mode != (fstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newfile.toStdString().c_str(), fstat.st_mode) == -1))) return false;
-    struct utimbuf sftimes;
-    sftimes.actime = fstat.st_atim.tv_sec;
-    sftimes.modtime = fstat.st_mtim.tv_sec;
-    return utime(newfile.toStdString().c_str(), &sftimes) == 0;
+    if(! isfile(srcfile)) return false;
+    ThrdType = Copy;
+    ThrdStr[0] = srcfile;
+    ThrdStr[1] = newfile;
+    SBThrd.start();
+    thrdelay();
+    return ThrdRslt;
 }
 
 QStr sb::ruuid(cQStr &part)
@@ -888,6 +851,38 @@ inline bool sb::cplink(cQStr &srclink, cQStr &newlink)
     return lutimes(newlink.toStdString().c_str(), sitimes) == 0;
 }
 
+inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
+{
+    struct stat fstat;
+    if(stat(srcfile.toStdString().c_str(), &fstat) == -1) return false;
+    int src, dst;
+    if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
+    bool err;
+
+    if(! (err = (dst = creat(newfile.toStdString().c_str(), fstat.st_mode)) == -1))
+    {
+        if(fstat.st_size > 0)
+        {
+            llong size(0);
+
+            do {
+                llong csize(size);
+                if((size += sendfile(dst, src, NULL, fstat.st_size - size)) == csize) err = true;
+            } while(! err && size < fstat.st_size);
+        }
+
+        close(dst);
+    }
+
+    close(src);
+    if(err) return false;
+    if(fstat.st_uid + fstat.st_gid > 0 && (chown(newfile.toStdString().c_str(), fstat.st_uid, fstat.st_gid) == -1 || (fstat.st_mode != (fstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newfile.toStdString().c_str(), fstat.st_mode) == -1))) return false;
+    struct utimbuf sftimes;
+    sftimes.actime = fstat.st_atim.tv_sec;
+    sftimes.modtime = fstat.st_mtim.tv_sec;
+    return utime(newfile.toStdString().c_str(), &sftimes) == 0;
+}
+
 inline bool sb::cpdir(cQStr &srcdir, cQStr &newdir)
 {
     struct stat dstat;
@@ -1065,31 +1060,8 @@ void sb::run()
 
         break;
     case Copy:
-    {
-        int src, dst;
-
-        if((ThrdRslt = (src = open(ThrdStr[0].toStdString().c_str(), O_RDONLY | O_NOATIME)) != -1))
-        {
-            if((ThrdRslt = (dst = creat(ThrdStr[1].toStdString().c_str(), ThrdLng[1])) != -1))
-            {
-                if(ThrdLng[0] > 0)
-                {
-                    ullong size(0);
-
-                    do {
-                        ullong csize(size);
-                        if((size += sendfile(dst, src, NULL, ThrdLng[0] - size)) == csize) ThrdRslt = false;
-                    } while(ThrdRslt && size < ThrdLng[0]);
-                }
-
-                close(dst);
-            }
-
-            close(src);
-        }
-
+        ThrdRslt = cpfile(ThrdStr[0], ThrdStr[1]);
         break;
-    }
     case Sync:
         sync();
         break;
@@ -2309,7 +2281,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             else if(isdir(srcdir % "/home/" % usr))
             {
                 usrs.append(usr);
-                if(! rodir(homeitms[0], mthd == 5 ? rootitms : srcdir % "/home/" % usr, mthd == 3)) return false;
+                if(mthd < 5 && ! rodir(homeitms[0], srcdir % "/home/" % usr, mthd == 3)) return false;
             }
         }
 
@@ -2372,7 +2344,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                 QStr tmpitms;
 
                 if(a < 5)
-                    cditms = &homeitms[a];
+                    cditms = mthd == 5 ? &rootitms : &homeitms[a];
                 else
                 {
                     if(! rodir(tmpitms, srcdir % "/home/" % usr, mthd == 2)) return false;
@@ -2470,9 +2442,9 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     if(ThrdKill) return false;
                 }
 
-                cditms->clear();
+                if(mthd < 5 && a < 5) cditms->clear();
 
-                if(mthd > 1 && isfile(srcdir % "/home/" % usr % "/.config/user-dirs.dirs"))
+                if(isfile(srcdir % "/home/" % usr % "/.config/user-dirs.dirs"))
                 {
                     QFile file(srcdir % "/home/" % usr % "/.config/user-dirs.dirs");
                     if(! file.open(QIODevice::ReadOnly)) return false;
@@ -2484,7 +2456,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                         if(! cline.startsWith('#') && cline.contains("$HOME"))
                         {
                             QStr dir(left(right(cline, - instr(cline, "/")), -1));
-                            if(isdir(srcdir % "/home/" % usr % '/' % dir)) cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir);
+                            if(isdir(srcdir % "/home/" % usr % '/' % dir) && ! isdir("/.sbsystemcopy/home/" % usr % '/' % dir)) cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir);
                         }
 
                         if(ThrdKill) return false;
@@ -2666,7 +2638,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                 if(! QDir().mkdir("/.sbsystemcopy" % cdir)) return false;
             }
 
-            cditms = &sysitms[0];
+            cditms = &sysitms[a];
             QTS in(cditms, QIODevice::ReadOnly);
 
             while(! in.atEnd())

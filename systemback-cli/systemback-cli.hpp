@@ -45,7 +45,6 @@ private:
     uchar uinit();
     bool newrestorepoint();
     bool pointdelete();
-    void progpercent();
 };
 
 #endif // SYSTEMBACKCLI_HPP

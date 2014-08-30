@@ -693,38 +693,34 @@ uchar systemback::restore()
         }
 }
 
-void systemback::progpercent()
-{
-    if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring users configuration files") % '_'}))
-    {
-        schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toShort()), cperc(sb::Progress);
-
-        if(cperc == -1)
-        {
-            if(pbar == " (?%)")
-                pbar = " ( %)";
-            else if(pbar.isEmpty() || pbar == " ( %)")
-                pbar = " (?%)";
-        }
-        else if(cperc < 100)
-        {
-            if(cbperc < cperc || (cbperc == 0 && pbar != "(0%)"))
-                pbar = " (" % QStr::number(cperc) % "%)";
-            else if(cperc == 99 && cbperc == 99)
-                pbar = " (100%)";
-        }
-        else if(cbperc < 100)
-            pbar = " (100%)";
-    }
-    else if(! pbar.isEmpty())
-        pbar.clear();
-}
-
 void systemback::progress()
 {
     for(uchar a(0) ; a < 4 ; ++a)
     {
-        progpercent();
+        if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring users configuration files") % '_'}))
+        {
+            schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toShort()), cperc(sb::Progress);
+
+            if(cperc == -1)
+            {
+                if(pbar == " (?%)")
+                    pbar = " ( %)";
+                else if(pbar.isEmpty() || pbar == " ( %)")
+                    pbar = " (?%)";
+            }
+            else if(cperc < 100)
+            {
+                if(cbperc < cperc || (cbperc == 0 && pbar != "(0%)"))
+                    pbar = " (" % QStr::number(cperc) % "%)";
+                else if(cperc == 99 && cbperc == 99)
+                    pbar = " (100%)";
+            }
+            else if(cbperc < 100)
+                pbar = " (100%)";
+        }
+        else if(! pbar.isEmpty())
+            pbar.clear();
+
         if(! ptimer->isActive()) return;
         clear();
         attron(COLOR_PAIR(2));

@@ -30,7 +30,7 @@ public:
     explicit lndtevent(QWidget *parent = nullptr) : QLineEdit(parent) {}
 
 protected:
-    inline void focusOutEvent(QFocusEvent *ev);
+    void focusOutEvent(QFocusEvent *ev);
 
 signals:
     void Focus_Out();

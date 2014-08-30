@@ -30,7 +30,7 @@ public:
     explicit pnlevent(QWidget *parent = nullptr) : QWidget(parent) {}
 
 protected:
-    inline void leaveEvent(QEvent *);
+    void leaveEvent(QEvent *);
 
 signals:
     void Mouse_Leave();

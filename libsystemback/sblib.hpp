@@ -63,7 +63,7 @@ public:
     static bool pisrng(cQStr &pname, ushort *pid = nullptr);
     static bool access(cQStr &path, cuchar mode = Read);
     static bool crtfile(cQStr &path, cQStr &txt = NULL);
-    static bool cpfile(cQStr &srcfile, cQStr &newfile);
+    static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
     static bool ilike(short num, cQSIL &lst);
@@ -110,6 +110,7 @@ private:
     static bool odir(QSL &strlst, cQStr &path, bool hidden = false);
     static bool cpertime(cQStr &srcitem, cQStr &newitem);
     static bool cplink(cQStr &srclink, cQStr &newlink);
+    static bool cpfile(cQStr &srcfile, cQStr &newfile);
     static bool cpdir(cQStr &srcddir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);
     static bool issmfs(cQStr &item1,cQStr &item2);

@@ -30,8 +30,8 @@ public:
     explicit chckbxevent(QWidget *parent = nullptr) : QCheckBox(parent) {}
 
 protected:
-    inline void enterEvent(QEvent *);
-    inline void leaveEvent(QEvent *);
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
 
 signals:
     void Mouse_Enter();

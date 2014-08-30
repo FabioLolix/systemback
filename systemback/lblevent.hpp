@@ -32,12 +32,12 @@ public:
     short MouseX, MouseY;
 
 protected:
-    inline void mouseDoubleClickEvent(QMouseEvent *ev);
-    inline void mouseReleaseEvent(QMouseEvent *ev);
-    inline void mousePressEvent(QMouseEvent *ev);
-    inline void mouseMoveEvent(QMouseEvent *);
-    inline void enterEvent(QEvent *);
-    inline void leaveEvent(QEvent *);
+    void mouseDoubleClickEvent(QMouseEvent *ev);
+    void mouseReleaseEvent(QMouseEvent *ev);
+    void mousePressEvent(QMouseEvent *ev);
+    void mouseMoveEvent(QMouseEvent *);
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
 
 private:
     bool MousePressed;

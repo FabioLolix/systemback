@@ -20,6 +20,7 @@
 #ifndef SBSCHEDULER_HPP
 #define SBSCHEDULER_HPP
 
+#include "../libsystemback/sblib.hpp"
 #include <QObject>
 
 class scheduler : public QObject

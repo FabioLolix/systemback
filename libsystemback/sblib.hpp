@@ -19,6 +19,7 @@
 
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
+#define _FILE_OFFSET_BITS 64
 
 #include "sblib_global.hpp"
 #include "sbtypedef.hpp"

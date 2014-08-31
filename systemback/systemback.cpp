@@ -870,7 +870,7 @@ inline ushort systemback::ss(ushort size)
         case 1:
             return 2;
         default:
-            ushort ssize(qRound(size * High / 100.0));
+            ushort ssize((size * High + 50) / 100);
 
             switch(size) {
             case 698:
@@ -5034,7 +5034,7 @@ void systemback::on_livecreatemenu_clicked()
 
         for(cQStr &item : dlst)
         {
-            if(! sb::islink(sb::sdir[2] % '/' % item) && ! item.contains(' ') && sb::fsize(sb::sdir[2] % '/' % item) > 0 && item.endsWith(".sblive"))
+            if(item.endsWith(".sblive") && ! item.contains(' ') && ! sb::islink(sb::sdir[2] % '/' % item) && sb::fsize(sb::sdir[2] % '/' % item) > 0)
             {
                 QLWI *lwi(new QLWI(sb::left(item, -7) % " (" % QStr::number(qRound64(sb::fsize(sb::sdir[2] % '/' % item) * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB, " % (sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") > 0 ? "sblive+iso" : "sblive") % ')'));
                 ui->livelist->addItem(lwi);
@@ -6381,7 +6381,7 @@ void systemback::on_dirrefresh_clicked()
         }
         else if(sb::islnxfs('/' % item))
         {
-            if(sb::isfile('/' % item % "/Systemback/.sbschedule") && ui->function1->text() == tr("Storage directory"))
+            if(ui->function1->text() == tr("Storage directory") && sb::isfile('/' % item % "/Systemback/.sbschedule"))
             {
                 twi->setTextColor(0, Qt::green);
                 twi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
@@ -6524,7 +6524,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                             }
                             else
                             {
-                                if(sb::isfile(path % '/' % iname % '/' % "/Systemback/.sbschedule") && ui->function1->text() == tr("Storage directory"))
+                                if(ui->function1->text() == tr("Storage directory") && sb::isfile(path % '/' % iname % '/' % "/Systemback/.sbschedule"))
                                 {
                                     ctwi->setTextColor(0, Qt::green);
                                     ctwi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
@@ -7251,7 +7251,7 @@ void systemback::on_repairpartitionupdate_clicked()
 
 void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
 {
-    if(ui->repairpartition->count() == 0 || ! arg1.startsWith("/mnt") || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*", "*/_"}) || (! sb::mcheck("/mnt") && arg1 != "/mnt") || sb::mcheck(arg1 % '/'))
+    if(ui->repairpartition->count() == 0 || ! arg1.startsWith("/mnt") || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*", "*/_"}) || (arg1 != "/mnt" && ! sb::mcheck("/mnt")) || sb::mcheck(arg1 % '/'))
     {
         if(ui->repairmount->isEnabled()) ui->repairmount->setDisabled(true);
     }
@@ -7835,8 +7835,7 @@ void systemback::on_dayup_clicked()
     ui->schedulerday->setText(sb::schdle[1] % ' ' % tr("day(s)"));
     if(! ui->daydown->isEnabled()) ui->daydown->setEnabled(true);
     if(sb::schdle[1] == "7") ui->dayup->setDisabled(true);
-    if(sb::schdle[3].toUShort() > 0 && ! ui->minutedown->isEnabled()) ui->minutedown->setEnabled(true);
-
+    if(! ui->minutedown->isEnabled() && sb::schdle[3].toUShort() > 0) ui->minutedown->setEnabled(true);
 }
 
 void systemback::on_daydown_clicked()
@@ -7856,7 +7855,7 @@ void systemback::on_daydown_clicked()
                 ui->schedulerminute->setText(sb::schdle[3] % ' ' % tr("minute(s)"));
             }
 
-            if(sb::schdle[3].toUShort() < 31 && ui->minutedown->isEnabled()) ui->minutedown->setDisabled(true);
+            if(ui->minutedown->isEnabled() && sb::schdle[3].toUShort() < 31) ui->minutedown->setDisabled(true);
         }
 
         ui->daydown->setDisabled(true);
@@ -7870,7 +7869,7 @@ void systemback::on_hourup_clicked()
     ui->schedulerhour->setText(sb::schdle[2] % ' ' % tr("hour(s)"));
     if(! ui->hourdown->isEnabled()) ui->hourdown->setEnabled(true);
     if(sb::schdle[2] == "23") ui->hourup->setDisabled(true);
-    if(sb::schdle[3].toUShort() > 0 && ! ui->minutedown->isEnabled()) ui->minutedown->setEnabled(true);
+    if(! ui->minutedown->isEnabled() && sb::schdle[3].toUShort() > 0) ui->minutedown->setEnabled(true);
 }
 
 void systemback::on_hourdown_clicked()
@@ -7890,7 +7889,7 @@ void systemback::on_hourdown_clicked()
                 ui->schedulerminute->setText(sb::schdle[3] % ' ' % tr("minute(s)"));
             }
 
-            if(sb::schdle[3].toUShort() < 31 && ui->minutedown->isEnabled()) ui->minutedown->setDisabled(true);
+            if(ui->minutedown->isEnabled() && sb::schdle[3].toUShort() < 31) ui->minutedown->setDisabled(true);
         }
 
         ui->hourdown->setDisabled(true);

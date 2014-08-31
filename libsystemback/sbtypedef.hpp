@@ -19,7 +19,6 @@
 
 #ifndef SBTYPEDEF_HPP
 #define SBTYPEDEF_HPP
-#define _FILE_OFFSET_BITS 64
 
 #include <QTextStream>
 #include <QStringList>

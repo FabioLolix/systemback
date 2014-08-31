@@ -15,6 +15,8 @@ SOURCES += main.cpp \
 
 HEADERS += sbscheduler.hpp
 
+QMAKE_CXXFLAGS_WARN_ON += -Wextra
+
 QMAKE_LFLAGS += -Wl,--rpath=/usr/lib/systemback
 
 LIBS += -L../libsystemback -lsystemback

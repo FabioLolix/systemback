@@ -13,7 +13,8 @@ HEADERS += systemback.hpp \
     chckbxevent.hpp \
     lblevent.hpp \
     lndtevent.hpp \
-    pnlevent.hpp
+    pnlevent.hpp \
+    tblwdgtevent.hpp
 
 FORMS += systemback.ui
 

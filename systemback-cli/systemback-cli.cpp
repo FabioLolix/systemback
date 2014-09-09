@@ -629,11 +629,11 @@ uchar systemback::restore()
     QTimer::singleShot(0, this, SLOT(progress()));
     ptimer->start();
     bool sfstab(fsave == 1);
-    sb::srestore(mthd, NULL, sb::sdir[1] % '/' % cpoint % '_' % pname, NULL, sfstab);
+    sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
 
     if(greinst == 1)
     {
-        sb::exec("update-grub", NULL, true);
+        sb::exec("update-grub", nullptr, true);
         QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
         QTS in(&mnts, QIODevice::ReadOnly);
 
@@ -650,7 +650,7 @@ uchar systemback::restore()
                 mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
         }
 
-        if(sb::exec("grub-install --force " % sb::left(mntdev, 8), NULL, true) > 0)
+        if(sb::exec("grub-install --force " % sb::left(mntdev, 8), nullptr, true) > 0)
         {
             ptimer->stop();
             return 7;
@@ -685,7 +685,7 @@ uchar systemback::restore()
     for(;;)
         switch(getch()) {
         case '\n':
-            if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", NULL, false, true);
+            if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, false, true);
             return 0;
         case 'q':
         case 'Q':

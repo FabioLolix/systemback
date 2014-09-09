@@ -26,6 +26,7 @@
 typedef QTextStream QTS;
 typedef const QStringList cQSL;
 typedef QStringList QSL;
+typedef QList<long long> QLIL;
 typedef const QList<short> cQSIL;
 typedef QList<short> QSIL;
 typedef const QString cQStr;
@@ -33,6 +34,7 @@ typedef QString QStr;
 typedef const QChar cQChar;
 typedef const QRect cQRect;
 typedef const QPoint cQPoint;
+typedef long double ldouble;
 typedef unsigned long long ullong;
 typedef long long llong;
 typedef const unsigned char cuchar;

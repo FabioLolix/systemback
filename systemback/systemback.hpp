@@ -95,8 +95,10 @@ private slots:
     void chsspressed();
     void dntreleased();
     void printdbgmsg();
+    void foutpsttngs();
     void wcreleased();
     void dntpressed();
+    void finpsttngs();
     void wreleased();
     void wmaxenter();
     void wmaxleave();
@@ -150,8 +152,10 @@ private slots:
     void on_includeusers_currentIndexChanged(const QStr &arg1);
     void on_filesystem_currentIndexChanged(const QStr &arg1);
     void on_mountpoint_currentTextChanged(const QStr &arg1);
+    void on_excludedlist_currentItemChanged(QLWI *current);
     void on_admins_currentIndexChanged(const QStr &arg1);
     void on_dirchoose_currentItemChanged(QTrWI *current);
+    void on_itemslist_currentItemChanged(QTrWI *current);
     void on_adminpassword_textChanged(const QStr &arg1);
     void on_rootpassword1_textChanged(const QStr &arg1);
     void on_livelist_currentItemChanged(QLWI *current);
@@ -184,22 +188,23 @@ private slots:
     void on_dirchoose_itemExpanded(QTrWI *item);
     void on_configurationfilesrestore_clicked();
     void on_itemslist_itemExpanded(QTrWI *item);
-    void on_excludedlist_currentItemChanged();
     void on_silentmode_clicked(bool checked);
-    void on_repairpartitionupdate_clicked();
-    void on_itemslist_currentItemChanged();
+    void on_repairpartitionrefresh_clicked();
     void on_format_clicked(bool checked);
-    void on_livedevicesupdate_clicked();
+    void on_livedevicesrefresh_clicked();
     void on_liveworkdirbutton_clicked();
     void on_rootpassword2_textChanged();
+    void on_partitionrefresh2_clicked();
+    void on_partitionrefresh3_clicked();
     void on_functionmenunext_clicked();
     void on_functionmenuback_clicked();
     void on_storagedirbutton_clicked();
     void on_passwordinputok_clicked();
-    void on_partitionupdate_clicked();
+    void on_partitionrefresh_clicked();
     void on_dirchoosecancel_clicked();
     void on_changepartition_clicked();
     void on_newrestorepoint_clicked();
+    void on_partitiondelete_clicked();
     void on_schedulerstart_clicked();
     void on_livecreatemenu_clicked();
     void on_livecreateback_clicked();
@@ -216,6 +221,8 @@ private slots:
     void on_schedulemenu_clicked();
     void on_pointexclude_clicked();
     void on_systemrepair_clicked();
+    void on_umountdelete_clicked();
+    void on_newpartition_clicked();
     void on_startcancel_clicked();
     void on_restoremenu_clicked();
     void on_installmenu_clicked();
@@ -279,9 +286,9 @@ private slots:
     void on_secondup_clicked();
     void on_additem_clicked();
     void on_daydown_clicked();
-    void on_umount_clicked();
     void on_hourup_clicked();
     void on_dayup_clicked();
+    void on_umount_clicked();
 };
 
 #endif // SYSTEMBACK_HPP

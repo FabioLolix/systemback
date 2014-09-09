@@ -92,7 +92,7 @@ start:;
         if(sb::left(sb::fload(pfile), 7) == "restart")
         {
             sb::unlock(sb::Schdlrlock);
-            sb::exec("sbscheduler " % qApp->arguments().value(1), NULL, true, true);
+            sb::exec("sbscheduler " % qApp->arguments().value(1), nullptr, true, true);
             break;
         }
 

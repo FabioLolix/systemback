@@ -45,7 +45,7 @@ error:
         emsg = tr("Cannot start Systemback scheduler daemon!") % "\n\n" % tr("Unable to get root permissions.");
     }
 
-    if(! emsg.isEmpty()) sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % "\"", NULL, false, true);
+    if(! emsg.isEmpty()) sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % "\"", nullptr, false, true);
     qApp->exit(rv);
     return;
 };

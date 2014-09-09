@@ -17,11 +17,11 @@
         <file>pictures/next.png</file>
         <file>pictures/ok.png</file>
         <file>pictures/passwordlogo.png</file>
+        <file>pictures/refresh.png</file>
         <file>pictures/resize.png</file>
         <file>pictures/rightarrow.png</file>
         <file>pictures/systemback.png</file>
         <file>pictures/up.png</file>
-        <file>pictures/update.png</file>
         <file>version</file>
     </qresource>
 </RCC>

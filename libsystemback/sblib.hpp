@@ -35,7 +35,11 @@ public:
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], trn[2];
     static ullong ThrdLng[2];
-    static cuchar Notexist{0}, Isfile{1}, Isdir{2}, Islink{3}, Isblock{4}, Unknow{5}, Read{0}, Write{1}, Exec{2}, Sblock{0}, Dpkglock{1}, Schdlrlock{2}, Norm{0}, All{1}, Mixed{2}, Remove{0}, Copy{1}, Sync{2}, Mount{3}, Umount{4}, Readprttns{5}, Readlvprttns{6}, Ruuid{7}, Setpflag{8}, Mkptable{9}, Mkpart{10}, Crtrpoint{11}, Srestore{12}, Scopy{13}, Lvprpr{14};
+    static cuchar Remove{0}, Copy{1}, Sync{2}, Mount{3}, Umount{4}, Readprttns{5}, Readlvprttns{6}, Ruuid{7}, Setpflag{8}, Mkptable{9}, Mkpart{10}, Delpart{11}, Crtrpoint{12}, Srestore{13}, Scopy{14}, Lvprpr{15},
+                  MSDOS{0}, GPT{1}, Clear{2}, Primary{3}, Extended{4}, Logical{5}, Freespace{6}, Emptyspace{7},
+                  Notexist{0}, Isfile{1}, Isdir{2}, Islink{3}, Isblock{4}, Unknow{5},
+                  Read{0}, Write{1}, Exec{2}, Sblock{0}, Dpkglock{1}, Schdlrlock{2},
+                  Norm{0}, All{1}, Mixed{2};
     static uchar pnumber;
     static schar Progress;
     static bool ExecKill, ThrdKill;
@@ -56,19 +60,19 @@ public:
     static uchar stype(cQStr &path);
     static uchar exec(cQSL &cmds);
     static bool srestore(cuchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);
+    static bool mkpart(cQStr &dev, ullong start = 0, ullong len = 0, uchar type = Primary);
     static bool mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = NULL);
-    static bool mkpart(cQStr &dev, ullong start = 0, ullong len = 0);
     static bool like(cQStr &txt, cQSL &lst, cuchar mode = Norm);
     static bool scopy(cuchar mthd, cQStr &usr, cQStr &srcdir);
     static bool execsrch(cQStr &fname, cQStr &ppath = NULL);
     static bool pisrng(cQStr &pname, ushort *pid = nullptr);
+    static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool access(cQStr &path, cuchar mode = Read);
     static bool crtfile(cQStr &path, cQStr &txt = NULL);
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
     static bool ilike(short num, cQSIL &lst);
-    static bool mkptable(cQStr &dev);
     static bool islnxfs(cQStr &path);
     static bool islink(cQStr &path);
     static bool isfile(cQStr &path);
@@ -95,6 +99,8 @@ public:
     static void cfgread();
     static void fssync();
 
+    static void delpart(cQStr &part);
+
 protected:
     void run();
 
@@ -105,6 +111,8 @@ private:
     static bool ThrdBool, ThrdRslt;
 
     static QStr rlink(cQStr &path);
+    static ullong psalign(ullong start, ushort ssize);
+    static ullong pealign(ullong end, ushort ssize);
     static ullong devsize(cQStr &dev);
     static uchar fcomp(cQStr &file1, cQStr &file2);
     static bool rodir(QStr &str, cQStr &path, bool hidden = false, cuchar oplen = 0);

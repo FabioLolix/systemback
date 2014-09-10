@@ -908,7 +908,7 @@
         <translation>Eszköz</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="333"/>
+        <location filename="../systemback/systemback.cpp" line="338"/>
         <location filename="../systemback/systemback.cpp" line="3351"/>
         <location filename="../systemback/systemback.cpp" line="3908"/>
         <source>scheduler</source>
@@ -1510,7 +1510,7 @@
         <translation>Mindenki</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="401"/>
+        <location filename="../systemback/systemback.cpp" line="406"/>
         <location filename="../systemback/systemback.cpp" line="5086"/>
         <source>Upgrading the system</source>
         <translation>A rendszer frissítése</translation>

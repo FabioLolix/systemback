@@ -185,6 +185,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         ppipe = busycnt = 0;
         irfsc = false;
         ui->dialogpanel->hide();
+        ui->statuspanel->move(0, 0);
         ui->storagedirbutton->hide();
         ui->storagedir->resize(ss(236), ss(28));
         ui->installpanel->move(ui->sbpanel->pos());
@@ -201,6 +202,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         ui->mainpanel->setBackgroundRole(QPalette::Foreground);
         ui->sbpanel->setBackgroundRole(QPalette::Background);
         ui->installpanel->setBackgroundRole(QPalette::Background);
+        ui->statuspanel->setBackgroundRole(QPalette::Foreground);
+        ui->substatuspanel->setBackgroundRole(QPalette::Background);
         ui->function1->setForegroundRole(QPalette::Base);
         ui->function2->setForegroundRole(QPalette::Base);
         ui->function4->setForegroundRole(QPalette::Base);
@@ -208,6 +211,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         ui->windowbutton2->setForegroundRole(QPalette::Base);
         ui->windowbutton4->setForegroundRole(QPalette::Base);
         ui->storagedirarea->setBackgroundRole(QPalette::Base);
+        ui->interrupt->setStyleSheet("QPushButton:enabled {color: red}");
         if(sb::isdir("/.systemback") && (sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/live/image/live/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))) on_installmenu_clicked();
         connect(ui->function1, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
         connect(ui->function1, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
@@ -328,8 +332,9 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             if(sstart)
             {
                 ui->mainpanel->hide();
-                ui->schedulerpanel->setBackgroundRole(QPalette::Foreground);
                 ui->schedulerpanel->move(0, 0);
+                ui->schedulerpanel->setBackgroundRole(QPalette::Foreground);
+                ui->subschedulerpanel->setBackgroundRole(QPalette::Background);
                 ui->function4->setText("Systemback " % tr("scheduler"));
 
                 if(qApp->arguments().value(2) == "topleft")
@@ -447,7 +452,6 @@ void systemback::unitimer()
             {
                 ui->storagedir->setText(sb::sdir[0]);
                 ui->liveworkdir->setText(sb::sdir[2]);
-                ui->statuspanel->move(0, 0);
                 ui->restorepanel->move(ui->sbpanel->pos());
                 ui->copypanel->move(ui->sbpanel->pos());
                 ui->livecreatepanel->move(ui->sbpanel->pos());
@@ -466,15 +470,11 @@ void systemback::unitimer()
                 ui->aboutpanel->setBackgroundRole(QPalette::Background);
                 ui->licensepanel->setBackgroundRole(QPalette::Background);
                 ui->choosepanel->setBackgroundRole(QPalette::Background);
-                ui->statuspanel->setBackgroundRole(QPalette::Foreground);
-                ui->substatuspanel->setBackgroundRole(QPalette::Background);
-                ui->subschedulerpanel->setBackgroundRole(QPalette::Background);
                 ui->liveworkdirarea->setBackgroundRole(QPalette::Base);
                 ui->schedulerday->setBackgroundRole(QPalette::Base);
                 ui->schedulerhour->setBackgroundRole(QPalette::Base);
                 ui->schedulerminute->setBackgroundRole(QPalette::Base);
                 ui->schedulersecond->setBackgroundRole(QPalette::Base);
-                ui->interrupt->setStyleSheet("QPushButton:enabled {color: red}");
                 ui->partitiondelete->setStyleSheet("QPushButton:enabled {color: red}");
                 QPalette pal(ui->license->palette());
                 pal.setBrush(QPalette::Base, pal.background());
@@ -1489,7 +1489,7 @@ void systemback::foutp15()
 
 void systemback::finpsttngs()
 {
-    if(ui->partitionsettings->currentItem())
+    if(ui->partitionsettings->currentItem() && sb::ilike(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text().toShort(), {sb::MSDOS, sb::GPT, sb::Extended}))
     {
         for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             if(ui->partitionsettings->item(a, 0)->background() == QPalette().color(QPalette::Inactive, QPalette::Highlight))
@@ -1502,7 +1502,7 @@ void systemback::finpsttngs()
 
 void systemback::foutpsttngs()
 {
-    if(ui->partitionsettings->currentItem())
+    if(ui->partitionsettings->currentItem() && sb::ilike(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text().toShort(), {sb::MSDOS, sb::GPT, sb::Extended}))
     {
         for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             if(ui->partitionsettings->item(a, 0)->background() == QPalette().highlight())

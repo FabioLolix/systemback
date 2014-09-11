@@ -794,12 +794,10 @@ void sb::delpart(cQStr &part)
     thrdelay();
 }
 
-inline QStr sb::rlink(cQStr &path)
+inline QStr sb::rlink(cQStr &path, ushort blen)
 {
-    struct stat istat;
-    if(lstat(path.toStdString().c_str(), &istat) == -1) return nullptr;
-    char rpath[istat.st_size];
-    rpath[readlink(path.toStdString().c_str(), rpath, sizeof rpath)] = '\0';
+    char rpath[blen];
+    rpath[readlink(path.toStdString().c_str(), rpath, blen)] = '\0';
     return rpath;
 }
 
@@ -861,9 +859,8 @@ inline bool sb::cpertime(cQStr &sourcepath, cQStr &destpath)
 
 inline bool sb::cplink(cQStr &srclink, cQStr &newlink)
 {
-    if(! QFile::link(rlink(srclink), newlink)) return false;
     struct stat sistat;
-    if(lstat(srclink.toStdString().c_str(), &sistat) == -1) return false;
+    if(lstat(srclink.toStdString().c_str(), &sistat) == -1 || ! QFile::link(rlink(srclink, sistat.st_size), newlink)) return false;
     struct timeval sitimes[2];
     sitimes[0].tv_sec = sistat.st_atim.tv_sec;
     sitimes[1].tv_sec = sistat.st_mtim.tv_sec;
@@ -895,8 +892,7 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
     }
 
     close(src);
-    if(err) return false;
-    if(fstat.st_uid + fstat.st_gid > 0 && (chown(newfile.toStdString().c_str(), fstat.st_uid, fstat.st_gid) == -1 || (fstat.st_mode != (fstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newfile.toStdString().c_str(), fstat.st_mode) == -1))) return false;
+    if(err || (fstat.st_uid + fstat.st_gid > 0 && (chown(newfile.toStdString().c_str(), fstat.st_uid, fstat.st_gid) == -1 || (fstat.st_mode != (fstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newfile.toStdString().c_str(), fstat.st_mode) == -1)))) return false;
     struct utimbuf sftimes;
     sftimes.actime = fstat.st_atim.tv_sec;
     sftimes.modtime = fstat.st_mtim.tv_sec;
@@ -906,8 +902,7 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
 inline bool sb::cpdir(cQStr &srcdir, cQStr &newdir)
 {
     struct stat dstat;
-    if(stat(srcdir.toStdString().c_str(), &dstat) == -1 || mkdir(newdir.toStdString().c_str(), dstat.st_mode) == -1) return false;
-    if(dstat.st_uid + dstat.st_gid > 0 && (chown(newdir.toStdString().c_str(), dstat.st_uid, dstat.st_gid) == -1 || (dstat.st_mode != (dstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newdir.toStdString().c_str(), dstat.st_mode) == -1))) return false;
+    if(stat(srcdir.toStdString().c_str(), &dstat) == -1 || mkdir(newdir.toStdString().c_str(), dstat.st_mode) == -1 || (dstat.st_uid + dstat.st_gid > 0 && (chown(newdir.toStdString().c_str(), dstat.st_uid, dstat.st_gid) == -1 || (dstat.st_mode != (dstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newdir.toStdString().c_str(), dstat.st_mode) == -1)))) return false;
     struct utimbuf sdtimes;
     sdtimes.actime = dstat.st_atim.tv_sec;
     sdtimes.modtime = dstat.st_mtim.tv_sec;
@@ -939,10 +934,10 @@ inline bool sb::issmfs(cQStr &item1, cQStr &item2)
 
 inline bool sb::lcomp(cQStr &link1, cQStr &link2)
 {
-    QStr lnk(rlink(link1));
-    if(lnk.isEmpty() || lnk != rlink(link2)) return false;
     struct stat istat[2];
-    return ilike(-1, QSIL() << lstat(link1.toStdString().c_str(), &istat[0]) << lstat(link2.toStdString().c_str(), &istat[1])) ? false : istat[0].st_mtim.tv_sec == istat[1].st_mtim.tv_sec;
+    if(ilike(-1, QSIL() << lstat(link1.toStdString().c_str(), &istat[0]) << lstat(link2.toStdString().c_str(), &istat[1])) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
+    QStr lnk(rlink(link1, istat[0].st_size));
+    return lnk.isEmpty() || lnk != rlink(link2, istat[1].st_size);
 }
 
 inline bool sb::isnum(cQStr &txt)
@@ -1219,11 +1214,11 @@ void sb::run()
         for(cQStr &item : dlst)
             if(item.startsWith("usb-") && islink("/dev/disk/by-id/" % item))
             {
-                QStr path(rlink("/dev/disk/by-id/" % item));
+                QStr path(rlink("/dev/disk/by-id/" % item, 10));
 
                 if(! path.isEmpty())
                 {
-                    QStr dname(right(path, - rinstr(path, "/")));
+                    QStr dname(right(path, -6));
 
                     if(dname.length() == 3 && like(dname, {"_sd*", "_hd*"}))
                     {
@@ -1293,7 +1288,7 @@ void sb::run()
 
             if(ThrdLng[0] > 0 && ThrdLng[1] > 0)
             {
-                PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size) + pealign(ThrdLng[1] / dev->sector_size, dev->sector_size)));
+                PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), ThrdLng[0] / dev->sector_size, (ThrdLng[0] + ThrdLng[1]) / dev->sector_size));
                 if(ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
                 ped_disk_commit_to_os(dsk);
             }
@@ -1349,19 +1344,21 @@ void sb::run()
 bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 {
     QStr sysitms[12], homeitms[5], rootitms;
-    if(isdir("/bin") && ! rodir(sysitms[0], "/bin")) return false;
-    if(isdir("/boot") && ! rodir(sysitms[1], "/boot")) return false;
-    if(isdir("/etc") && ! rodir(sysitms[2], "/etc")) return false;
-    if(isdir("/lib") && ! rodir(sysitms[3], "/lib")) return false;
-    if(isdir("/lib32") && ! rodir(sysitms[4], "/lib32")) return false;
-    if(isdir("/lib64") && ! rodir(sysitms[5], "/lib64")) return false;
-    if(isdir("/opt") && ! rodir(sysitms[6], "/opt")) return false;
-    if(isdir("/sbin") && ! rodir(sysitms[7], "/sbin")) return false;
-    if(isdir("/selinux") && ! rodir(sysitms[8], "/selinux")) return false;
-    if(isdir("/srv") && ! rodir(sysitms[9], "/srv")) return false;
-    if(isdir("/usr") && ! rodir(sysitms[10], "/usr")) return false;
-    if(isdir("/var") && ! rodir(sysitms[11], "/var")) return false;
-    if(isdir("/root") && ! rodir(rootitms, "/root", true)) return false;
+
+    if((isdir("/bin") && ! rodir(sysitms[0], "/bin")) ||
+        (isdir("/boot") && ! rodir(sysitms[1], "/boot")) ||
+        (isdir("/etc") && ! rodir(sysitms[2], "/etc")) ||
+        (isdir("/lib") && ! rodir(sysitms[3], "/lib")) ||
+        (isdir("/lib32") && ! rodir(sysitms[4], "/lib32")) ||
+        (isdir("/lib64") && ! rodir(sysitms[5], "/lib64")) ||
+        (isdir("/opt") && ! rodir(sysitms[6], "/opt")) ||
+        (isdir("/sbin") && ! rodir(sysitms[7], "/sbin")) ||
+        (isdir("/selinux") && ! rodir(sysitms[8], "/selinux")) ||
+        (isdir("/srv") && ! rodir(sysitms[9], "/srv")) ||
+        (isdir("/usr") && ! rodir(sysitms[10], "/usr")) ||
+        (isdir("/var") && ! rodir(sysitms[11], "/var")) ||
+        (isdir("/root") && ! rodir(rootitms, "/root", true))) return false;
+
     QSL usrs;
     uint anum(0);
     QFile file("/etc/passwd");
@@ -1718,8 +1715,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
             if(ThrdKill) return false;
         }
 
-        if(! cpertime("/var/log", trgt % "/var/log")) return false;
-        if(! cpertime("/var", trgt % "/var")) return false;
+        if(! cpertime("/var/log", trgt % "/var/log") || ! cpertime("/var", trgt % "/var")) return false;
     }
 
     ThrdDbg.clear();
@@ -1777,18 +1773,19 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
     if(mthd < 3)
     {
-        if(isdir(srcdir % "/bin") && ! rodir(sysitms[0], srcdir % "/bin")) return false;
-        if(isdir(srcdir % "/boot") && ! rodir(sysitms[1], srcdir % "/boot")) return false;
-        if(isdir(srcdir % "/etc") && ! rodir(sysitms[2], srcdir % "/etc")) return false;
-        if(isdir(srcdir % "/lib") && ! rodir(sysitms[3], srcdir % "/lib")) return false;
-        if(isdir(srcdir % "/lib32") && ! rodir(sysitms[4], srcdir % "/lib32")) return false;
-        if(isdir(srcdir % "/lib64") && ! rodir(sysitms[5], srcdir % "/lib64")) return false;
-        if(isdir(srcdir % "/opt") && ! rodir(sysitms[6], srcdir % "/opt")) return false;
-        if(isdir(srcdir % "/sbin") && ! rodir(sysitms[7], srcdir % "/sbin")) return false;
-        if(isdir(srcdir % "/selinux") && ! rodir(sysitms[8], srcdir % "/selinux")) return false;
-        if(isdir(srcdir % "/srv") && ! rodir(sysitms[9], srcdir % "/srv")) return false;
-        if(isdir(srcdir % "/usr") && ! rodir(sysitms[10], srcdir % "/usr")) return false;
-        if(isdir(srcdir % "/var") && ! rodir(sysitms[11], srcdir % "/var")) return false;
+        if((isdir(srcdir % "/bin") && ! rodir(sysitms[0], srcdir % "/bin")) ||
+            (isdir(srcdir % "/boot") && ! rodir(sysitms[1], srcdir % "/boot")) ||
+            (isdir(srcdir % "/etc") && ! rodir(sysitms[2], srcdir % "/etc")) ||
+            (isdir(srcdir % "/lib") && ! rodir(sysitms[3], srcdir % "/lib")) ||
+            (isdir(srcdir % "/lib32") && ! rodir(sysitms[4], srcdir % "/lib32")) ||
+            (isdir(srcdir % "/lib64") && ! rodir(sysitms[5], srcdir % "/lib64")) ||
+            (isdir(srcdir % "/opt") && ! rodir(sysitms[6], srcdir % "/opt")) ||
+            (isdir(srcdir % "/sbin") && ! rodir(sysitms[7], srcdir % "/sbin")) ||
+            (isdir(srcdir % "/selinux") && ! rodir(sysitms[8], srcdir % "/selinux")) ||
+            (isdir(srcdir % "/srv") && ! rodir(sysitms[9], srcdir % "/srv")) ||
+            (isdir(srcdir % "/usr") && ! rodir(sysitms[10], srcdir % "/usr")) ||
+            (isdir(srcdir % "/var") && ! rodir(sysitms[11], srcdir % "/var"))) return false;
+
         for(uchar a(0) ; a < 12 ; ++a) anum += sysitms[a].count('\n');
         Progress = 0;
         QSL dlst(QDir(trgt.isEmpty() ? "/" : trgt).entryList(QDir::Files));
@@ -2324,19 +2321,21 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 {
     QSL usrs;
     QStr sysitms[12], homeitms[5], rootitms;
-    if(isdir(srcdir % "/bin") && ! rodir(sysitms[0], srcdir % "/bin")) return false;
-    if(isdir(srcdir % "/boot") && ! rodir(sysitms[1], srcdir % "/boot")) return false;
-    if(isdir(srcdir % "/etc") && ! rodir(sysitms[2], srcdir % "/etc")) return false;
-    if(isdir(srcdir % "/lib") && ! rodir(sysitms[3], srcdir % "/lib")) return false;
-    if(isdir(srcdir % "/lib32") && ! rodir(sysitms[4], srcdir % "/lib32")) return false;
-    if(isdir(srcdir % "/lib64") && ! rodir(sysitms[5], srcdir % "/lib64")) return false;
-    if(isdir(srcdir % "/opt") && ! rodir(sysitms[6], srcdir % "/opt")) return false;
-    if(isdir(srcdir % "/sbin") && ! rodir(sysitms[7], srcdir % "/sbin")) return false;
-    if(isdir(srcdir % "/selinux") && ! rodir(sysitms[8], srcdir % "/selinux")) return false;
-    if(isdir(srcdir % "/srv") && ! rodir(sysitms[9], srcdir % "/srv")) return false;
-    if(isdir(srcdir % "/usr") && ! rodir(sysitms[10], srcdir % "/usr")) return false;
-    if(isdir(srcdir % "/var") && ! rodir(sysitms[11], srcdir % "/var")) return false;
-    if(isdir(srcdir % "/root") && ! (mthd == 5 ? rodir(rootitms, srcdir % "/etc/skel") : rodir(rootitms, srcdir % "/root", true))) return false;
+
+    if((isdir(srcdir % "/bin") && ! rodir(sysitms[0], srcdir % "/bin")) ||
+        (isdir(srcdir % "/boot") && ! rodir(sysitms[1], srcdir % "/boot")) ||
+        (isdir(srcdir % "/etc") && ! rodir(sysitms[2], srcdir % "/etc")) ||
+        (isdir(srcdir % "/lib") && ! rodir(sysitms[3], srcdir % "/lib")) ||
+        (isdir(srcdir % "/lib32") && ! rodir(sysitms[4], srcdir % "/lib32")) ||
+        (isdir(srcdir % "/lib64") && ! rodir(sysitms[5], srcdir % "/lib64")) ||
+        (isdir(srcdir % "/opt") && ! rodir(sysitms[6], srcdir % "/opt")) ||
+        (isdir(srcdir % "/sbin") && ! rodir(sysitms[7], srcdir % "/sbin")) ||
+        (isdir(srcdir % "/selinux") && ! rodir(sysitms[8], srcdir % "/selinux")) ||
+        (isdir(srcdir % "/srv") && ! rodir(sysitms[9], srcdir % "/srv")) ||
+        (isdir(srcdir % "/usr") && ! rodir(sysitms[10], srcdir % "/usr")) ||
+        (isdir(srcdir % "/var") && ! rodir(sysitms[11], srcdir % "/var")) ||
+        (isdir(srcdir % "/root") && ! (mthd == 5 ? rodir(rootitms, srcdir % "/etc/skel") : rodir(rootitms, srcdir % "/root", true)))) return false;
+
     uint anum(0);
     for(uchar a(0) ; a < 12 ; ++a) anum += sysitms[a].count('\n');
     anum += rootitms.count('\n');
@@ -2965,8 +2964,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             if(ThrdKill) return false;
         }
 
-        if(! cpertime(srcdir % "/var/log", "/.sbsystemcopy/var/log")) return false;
-        if(! cpertime(srcdir % "/var", "/.sbsystemcopy/var")) return false;
+        if(! cpertime(srcdir % "/var/log", "/.sbsystemcopy/var/log") || ! cpertime(srcdir % "/var", "/.sbsystemcopy/var")) return false;
     }
 
     if(srcdir == "/.systembacklivepoint" && isdir("/.systembacklivepoint/.systemback"))
@@ -3021,26 +3019,21 @@ bool sb::thrdlvprpr(bool iudata)
 
     ThrdLng[0] += sitms.count('\n');
     sitms.clear();
-    if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback")) return false;
-    if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
+    if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback") || ! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
 
     if(isdir("/etc/udev"))
     {
         if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev")) return false;
 
-        if(isdir("/etc/udev/rules.d"))
-        {
-            if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d")) return false;
-            if(isfile("/etc/udev/rules.d/70-persistent-cd.rules") && ! cpfile("/etc/udev/rules.d/70-persistent-cd.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-cd.rules")) return false;
-            if(isfile("/etc/udev/rules.d/70-persistent-net.rules") && ! cpfile("/etc/udev/rules.d/70-persistent-net.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-net.rules")) return false;
-            if(! cpertime("/etc/udev/rules.d", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d")) return false;
-        }
+        if(isdir("/etc/udev/rules.d") && (! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d") ||
+            (isfile("/etc/udev/rules.d/70-persistent-cd.rules") && ! cpfile("/etc/udev/rules.d/70-persistent-cd.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-cd.rules")) ||
+            (isfile("/etc/udev/rules.d/70-persistent-net.rules") && ! cpfile("/etc/udev/rules.d/70-persistent-net.rules", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d/70-persistent-net.rules")) ||
+            (! cpertime("/etc/udev/rules.d", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev/rules.d")))) return false;
 
         if(! cpertime("/etc/udev", sdir[2] % "/.sblivesystemcreate/.systemback/etc/udev")) return false;
     }
 
-    if(isfile("/etc/fstab") && ! cpfile("/etc/fstab", sdir[2] % "/.sblivesystemcreate/.systemback/etc/fstab")) return false;
-    if(! cpertime("/etc", sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
+    if((isfile("/etc/fstab") && ! cpfile("/etc/fstab", sdir[2] % "/.sblivesystemcreate/.systemback/etc/fstab")) || ! cpertime("/etc", sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
     if(exist("/.sblvtmp")) stype("/.sblvtmp") == Isdir ? recrmdir("/.sblvtmp") : QFile::remove("/.sblvtmp");
     if(! QDir().mkdir("/.sblvtmp")) return false;
     dlst = {"/cdrom", "/dev", "/mnt", "/proc", "/run", "/srv", "/sys", "/tmp"};
@@ -3061,8 +3054,7 @@ bool sb::thrdlvprpr(bool iudata)
     else if(exist("/media/.sblvtmp"))
        stype("/media/.sblvtmp") == Isdir ? recrmdir("/media/.sblvtmp") : QFile::remove("/media/.sblvtmp");
 
-    if(! QDir().mkdir("/media/.sblvtmp")) return false;
-    if(! QDir().mkdir("/media/.sblvtmp/media")) return false;
+    if(! QDir().mkdir("/media/.sblvtmp") || ! QDir().mkdir("/media/.sblvtmp/media")) return false;
     ++ThrdLng[0];
     if(ThrdKill) return false;
 
@@ -3112,8 +3104,7 @@ bool sb::thrdlvprpr(bool iudata)
     if(! rodir(varitms, "/var")) return false;
     QTS in(&varitms, QIODevice::ReadOnly);
     if(ThrdKill) return false;
-    if(! QDir().mkdir("/var/.sblvtmp")) return false;
-    if(! QDir().mkdir("/var/.sblvtmp/var")) return false;
+    if(! QDir().mkdir("/var/.sblvtmp") || ! QDir().mkdir("/var/.sblvtmp/var")) return false;
     ++ThrdLng[0];
     QSL elist({"cache/fontconfig/", "lib/dpkg/lock", "lib/udisks/mtab", "lib/ureadahead/", "log/", "run/", "tmp/"});
 
@@ -3211,14 +3202,10 @@ bool sb::thrdlvprpr(bool iudata)
     if(uhl)
     {
         if(exist("/home/.sbuserdata")) stype("/home/.sbuserdata") == Isdir ? recrmdir("/home/.sbuserdata") : QFile::remove("/home/.sbuserdata");
-        if(! QDir().mkdir("/home/.sbuserdata")) return false;
-        if(! QDir().mkdir("/home/.sbuserdata/home")) return false;
+        if(! QDir().mkdir("/home/.sbuserdata") || ! QDir().mkdir("/home/.sbuserdata/home")) return false;
     }
-    else
-    {
-        if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/userdata")) return false;
-        if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/userdata/home")) return false;
-    }
+    else if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/userdata") || ! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/userdata/home"))
+        return false;
 
     ++ThrdLng[0];
     if(ThrdKill) return false;

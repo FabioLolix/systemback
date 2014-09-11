@@ -110,7 +110,7 @@ private:
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 
-    static QStr rlink(cQStr &path);
+    static QStr rlink(cQStr &path, ushort blen);
     static ullong psalign(ullong start, ushort ssize);
     static ullong pealign(ullong end, ushort ssize);
     static ullong devsize(cQStr &dev);

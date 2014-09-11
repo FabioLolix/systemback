@@ -1489,28 +1489,22 @@ void systemback::foutp15()
 
 void systemback::finpsttngs()
 {
-    if(ui->partitionsettings->currentItem() && sb::ilike(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text().toShort(), {sb::MSDOS, sb::GPT, sb::Extended}))
-    {
-        for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-            if(ui->partitionsettings->item(a, 0)->background() == QPalette().color(QPalette::Inactive, QPalette::Highlight))
-            {
+    if(ui->partitionsettingspanel2->isVisible())
+        for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().color(QPalette::Inactive, QPalette::Highlight) ; ++a)
+        {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
-            }
-    }
+        }
 }
 
 void systemback::foutpsttngs()
 {
-    if(ui->partitionsettings->currentItem() && sb::ilike(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text().toShort(), {sb::MSDOS, sb::GPT, sb::Extended}))
-    {
-        for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-            if(ui->partitionsettings->item(a, 0)->background() == QPalette().highlight())
-            {
+    if(ui->partitionsettingspanel2->isVisible())
+        for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
+        {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().color(QPalette::Inactive, QPalette::Highlight));
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().color(QPalette::Inactive, QPalette::HighlightedText));
-            }
-    }
+        }
 }
 
 void systemback::center()
@@ -2242,7 +2236,7 @@ start:;
     prun = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? tr("Copying the system") : tr("Installing the system");
     QSL msort;
 
-    for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+    for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
         if(! ui->partitionsettings->item(a, 4)->text().isEmpty() && (ui->partitionsettings->item(a, 4)->text() != "/home" || ui->partitionsettings->item(a, 3)->text().isEmpty()))
             msort.append(ui->partitionsettings->item(a, 4)->text() % (ui->partitionsettings->item(a, 6)->text() == "x" ? QStr('\n' % ui->partitionsettings->item(a, 5)->text() % '\n') : "\n-\n") % ui->partitionsettings->item(a, 0)->text());
 
@@ -2468,12 +2462,7 @@ start:;
 
         if(guname() != ui->username->text())
         {
-            if(sb::isdir("/.sbsystemcopy/home/" % guname()))
-            {
-                if(sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) goto error;
-                if(! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text())) goto error;
-            }
-
+            if(sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text()))) goto error;
             file.setFileName("/.sbsystemcopy/etc/group");
             if(! file.open(QIODevice::ReadOnly)) goto error;
 
@@ -2657,8 +2646,7 @@ start:;
             if(intrrpt) goto exit;
         }
 
-        if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/bash\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " -o $rmuser = root ] || userdel $rmuser\ndone\n")) goto error;
-        if(! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
+        if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/bash\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " -o $rmuser = root ] || userdel $rmuser\ndone\n") || ! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
         if(intrrpt) goto exit;
         if(sb::exec("chroot /.sbsystemcopy /deluser") > 0) goto error;
         QFile::remove("/.sbsystemcopy/deluser");
@@ -2667,7 +2655,7 @@ start:;
     if(intrrpt) goto exit;
     QStr fstabtxt("# /etc/fstab: static file system information.\n#\n# Use 'blkid' to print the universally unique identifier for a\n# device; this may be used with UUID= as a more robust way to name devices\n# that works even if disks are added and removed. See fstab(5).\n#\n# <file system> <mount point>   <type>  <options>       <dump>  <pass>\n");
 
-    for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+    for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
     {
         if(! ui->partitionsettings->item(a, 4)->text().isEmpty())
         {
@@ -2917,20 +2905,11 @@ start:;
     }
 
     if(intrrpt) goto error;
-    if(sb::exec("dd if=/usr/lib/syslinux/mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0) goto error;
-    if(! sb::setpflag(ldev % '1', "boot") || ! sb::setpflag(ldev % '1', "lba")) goto error;
+    if(sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % '1', "boot") || ! sb::setpflag(ldev % '1', "lba")) goto error;
     if(intrrpt) goto error;
-
-    if(sb::exist("/.sblivesystemwrite"))
-    {
-        if(sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) goto error;
-        if(sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot")) goto error;
-        if(! sb::remove("/.sblivesystemwrite")) goto error;
-    }
-
+    if(sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite"))) goto error;
     if(intrrpt) goto error;
-    if(! QDir().mkdir("/.sblivesystemwrite")) goto error;
-    if(! QDir().mkdir("/.sblivesystemwrite/sblive")) goto error;
+    if(! QDir().mkdir("/.sblivesystemwrite") || ! QDir().mkdir("/.sblivesystemwrite/sblive")) goto error;
 
     if(! sb::mount(ldev % '1', "/.sblivesystemwrite/sblive"))
     {
@@ -5213,8 +5192,7 @@ void systemback::on_partitionrefresh_clicked()
     }
 
     schar sn(-1);
-    QStr mntlst(sb::fload("/proc/self/mounts")), swplst;
-    if(sb::isfile("/proc/swaps")) swplst = sb::fload("/proc/swaps");
+    QStr mntlst(sb::fload("/proc/self/mounts")), swplst(sb::fload("/proc/swaps"));
 
     for(cQStr &cdts : plst)
     {
@@ -5349,7 +5327,7 @@ void systemback::on_partitionrefresh_clicked()
                             mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                         }
                     }
-                    else if(! swplst.isEmpty() && QStr('\n' % swplst).contains('\n' % path % ' '))
+                    else if(QStr('\n' % swplst).contains('\n' % path % ' '))
                         mpt->setText("SWAP");
                 }
 
@@ -5466,7 +5444,7 @@ void systemback::on_umountdelete_clicked()
 
             mnts[0] = sb::fload("/proc/self/mounts");
 
-            for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+            for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             {
                 QStr mpt(ui->partitionsettings->item(a, 3)->text());
                 if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')) ui->partitionsettings->item(a, 3)->setText(nullptr);
@@ -5483,7 +5461,7 @@ void systemback::on_umountdelete_clicked()
                 ui->format->setEnabled(true);
             }
         }
-        else if(swapoff(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text().toStdString().c_str()) == 0)
+        else if(! QStr('\n' % sb::fload("/proc/swaps")).contains('\n' % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text() % ' ') || swapoff(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text().toStdString().c_str()) == 0)
         {
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->setText(nullptr);
             ui->umountdelete->setText(tr("! Delete !"));
@@ -5508,16 +5486,17 @@ void systemback::on_umount_clicked()
 {
     busy();
     ui->copycover->show();
-    bool ok(true);
     QStr mnts[2];
     mnts[0] = sb::fload("/proc/self/mounts");
     QTS in(&mnts[0], QIODevice::ReadOnly);
     while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
 
-    for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-        if(ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() && ! ui->partitionsettings->item(a, 3)->text().isEmpty())
+    for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
+        if(! ui->partitionsettings->item(a, 3)->text().isEmpty())
         {
-            if(ui->partitionsettings->item(a, 3)->text() != "SWAP")
+            if(ui->partitionsettings->item(a, 3)->text() == "SWAP")
+                swapoff(ui->partitionsettings->item(a, 0)->text().toStdString().c_str());
+            else
             {
                 in.setString(&mnts[1], QIODevice::ReadOnly);
 
@@ -5527,29 +5506,33 @@ void systemback::on_umount_clicked()
                     if(sb::like(cline, {"* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
                 }
             }
-            else if(swapoff(ui->partitionsettings->item(a, 0)->text().toStdString().c_str()) == 0)
-                ui->partitionsettings->item(a, 3)->setText(nullptr);
-            else if(ok)
-                ok = false;
         }
 
-    if(! ok) goto end;
     mnts[0] = sb::fload("/proc/self/mounts");
+    mnts[1] = sb::fload("/proc/swaps");
+    bool umntd(true);
 
-    for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+    for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
     {
         QStr mpt(ui->partitionsettings->item(a, 3)->text());
-        if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')) ui->partitionsettings->item(a, 3)->setText(nullptr);
+
+        if(! mpt.isEmpty())
+        {
+            if((mpt == "SWAP" && ! QStr('\n' % mnts[1]).contains('\n' % ui->partitionsettings->item(a, 0)->text() % ' ')) || (mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')))
+                ui->partitionsettings->item(a, 3)->setText(nullptr);
+            else if(umntd)
+                umntd = false;
+        }
     }
 
     sb::fssync();
 
-    for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-        if(ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text()) && ! ui->partitionsettings->item(a, 3)->text().isEmpty()) goto end;
+    if(umntd)
+    {
+        ui->umount->setDisabled(true);
+        ui->partitiondelete->setEnabled(true);
+    }
 
-    ui->umount->setDisabled(true);
-    ui->partitiondelete->setEnabled(true);
-end:
     ui->copycover->hide();
     busy(false);
 }
@@ -7143,7 +7126,7 @@ void systemback::on_installnext_clicked()
                 ui->mountpoint->setDisabled(true);
             }
 
-            for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+            for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
                 if(ui->partitionsettings->item(a, 3)->text() == "/home" && ! ui->partitionsettings->item(a, 4)->text().isEmpty())
                 {
                     ui->partitionsettings->item(a, 4)->setText(nullptr);
@@ -7159,8 +7142,8 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 {
     if(current && (! previous || current->row() != previous->row()))
     {
-        for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-            if(ui->partitionsettings->item(a, 0)->background() == QPalette().highlight())
+        if(ui->partitionsettingspanel2->isVisible())
+            for(ushort a(previous->row() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().base());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().text());
@@ -7186,36 +7169,35 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             bool mntd(false), mntcheck(false);
 
-            for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-                if(a > current->row() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::ilike(ui->partitionsettings->item(a, 7)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))))
+            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::ilike(ui->partitionsettings->item(a, 7)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
+            {
+                ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
+                ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
+
+                if(! mntcheck && ! ui->partitionsettings->item(a, 3)->text().isEmpty())
                 {
-                    ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
-                    ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
+                    if(! mntd) mntd = true;
 
-                    if(! mntcheck && ! ui->partitionsettings->item(a, 3)->text().isEmpty())
+                    if(sb::like(ui->partitionsettings->item(a, 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                        mntcheck = true;
+                    else if(sb::isfile("/etc/fstab"))
                     {
-                        if(! mntd) mntd = true;
+                        QFile file("/etc/fstab");
 
-                        if(sb::like(ui->partitionsettings->item(a, 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
-                            mntcheck = true;
-                        else if(sb::isfile("/etc/fstab"))
-                        {
-                            QFile file("/etc/fstab");
+                        if(file.open(QIODevice::ReadOnly))
+                            while(! file.atEnd())
+                            {
+                                QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                            if(file.open(QIODevice::ReadOnly))
-                                while(! file.atEnd())
+                                if(sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(a, 3)->text() % " *", "* " % ui->partitionsettings->item(a, 3)->text() % "/ *"}))
                                 {
-                                    QStr cline(file.readLine().trimmed().replace('\t', ' '));
-
-                                    if(sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(a, 3)->text() % " *", "* " % ui->partitionsettings->item(a, 3)->text() % "/ *"}))
-                                    {
-                                        mntcheck = true;
-                                        break;
-                                    }
+                                    mntcheck = true;
+                                    break;
                                 }
-                        }
+                            }
                     }
                 }
+            }
 
             if(mntd)
             {
@@ -7234,7 +7216,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
             break;
         }
         case sb::Freespace:
-            for(uchar a(0) ; a < ui->partitionsettings->rowCount() && pcount < 4 ; ++a)
+            for(ushort a(0) ; a < ui->partitionsettings->rowCount() && pcount < 4 ; ++a)
                 if(ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), 8)))
                 {
                     switch(ui->partitionsettings->item(a, 7)->text().toUShort()) {
@@ -7526,7 +7508,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
         if((ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
             check = true;
         else if(arg1 != "SWAP")
-            for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+            for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
                 if(ui->partitionsettings->item(a, 4)->text() == arg1)
                 {
                     check = true;
@@ -7575,7 +7557,7 @@ void systemback::on_repairpartitionrefresh_clicked()
     busy();
     ui->repaircover->show();
 
-    for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+    for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
         if(ui->partitionsettings->item(a, 3)->text().startsWith("/mnt")) sb::umount(ui->partitionsettings->item(a, 0)->text());
 
     sb::fssync();
@@ -8638,10 +8620,7 @@ start:;
         if(intrrpt) goto exit;
     }
 
-    if(! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate")) goto error;
-    if(! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/.disk")) goto error;
-    if(! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype)) goto error;
-    if(! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux")) goto error;
+    if(! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/.disk") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux")) goto error;
     ifname = ui->livename->text() == "auto" ? "systemback_live_" % QDateTime().currentDateTime().toString("yyyy-MM-dd") : ui->livename->text();
     uchar ncount(0);
 
@@ -8652,8 +8631,7 @@ start:;
     }
 
     if(intrrpt) goto exit;
-    if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::getarch() % '\n')) goto error;
-    if(! sb::copy("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) goto error;
+    if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::getarch() % '\n') || ! sb::copy("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) goto error;
     if(intrrpt) goto exit;
     QFile file("/etc/passwd");
     if(! file.open(QIODevice::ReadOnly)) goto error;
@@ -8760,12 +8738,16 @@ start:;
     }
 
     irfsc = false;
-    if(xmntry && ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) goto error;
-    if(! sb::copy("/boot/initrd.img-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/initrd.gz")) goto error;
-    if(! sb::copy("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin")) goto error;
-    if(! sb::copy("/usr/lib/syslinux/vesamenu.c32",sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) goto error;
-    if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png")) goto error;
-    if(! sb::lvprpr(ui->userdatainclude->isChecked())) goto error;
+    if((xmntry && ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) || ! sb::copy("/boot/initrd.img-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/initrd.gz")) goto error;
+
+    if(sb::isfile("/usr/lib/syslinux/isolinux.bin"))
+    {
+        if(! sb::copy("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) goto error;
+    }
+    else if(! sb::copy("/usr/lib/ISOLINUX/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/modules/bios/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32"))
+            goto error;
+
+    if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png") || ! sb::lvprpr(ui->userdatainclude->isChecked())) goto error;
     QSL dlst({"/.sblvtmp/cdrom", "/.sblvtmp/dev", "/.sblvtmp/mnt", "/.sblvtmp/proc", "/.sblvtmp/run", "/.sblvtmp/srv", "/.sblvtmp/sys", "/.sblvtmp/tmp", "/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"});
     QStr ide;
 
@@ -8810,14 +8792,10 @@ start:;
         srxorg = "label noxconf\n  menu label " % tr("Boot Live without xorg.conf file") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz noxconf quiet splash\n\n";
     }
 
-    if(sb::getarch() == "amd64" && sb::isfile("/usr/share/systemback/efi-amd64.bootfiles"))
-    {
-        if(sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0) goto error;
-        if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png")) goto error;
-        if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n")) goto error;;
-        if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"left\"}\n}\n")) goto error;
-        if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/loopback.cfg", "menuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz" % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n")) goto error;
-    }
+    if(sb::getarch() == "amd64" && sb::isfile("/usr/share/systemback/efi-amd64.bootfiles") && (sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0 || ! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png") ||
+        ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n") ||
+        ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"left\"}\n}\n") ||
+        ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/loopback.cfg", "menuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz" % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n"))) goto error;
 
     if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", "default vesamenu.c32\nprompt 0\ntimeout 100\n\nmenu title Systemback Live (" % ifname % ")\nmenu tabmsg " % tr("Press TAB key to edit") % "\nmenu background splash.png\n\nlabel live\n  menu label " % tr("Boot Live system") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz quiet splash\n\nlabel safe\n  menu label " % tr("Boot Live in safe graphics mode") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz xforcevesa nomodeset quiet splash\n\n" % srxorg % "label debug\n  menu label " % tr("Boot Live in debug mode") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz\n")) goto error;
     if(intrrpt) goto exit;
@@ -8862,8 +8840,7 @@ exit:;
 start:;
     statustart();
     prun = tr("Converting Live system image") % '\n' % tr("process") % " 1/2";
-    if(sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) goto error;
-    if(! QDir().mkdir(sb::sdir[2] % "/.sblivesystemconvert")) goto error;
+    if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemconvert")) goto error;
     sb::ThrdLng[0] = sb::fsize(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive");
     sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
 
@@ -8873,8 +8850,7 @@ start:;
         goto error;
     }
 
-    if(! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg")) goto error;
-    if(! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux")) goto error;
+    if(! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux")) goto error;
     if(intrrpt) goto exit;
     prun = tr("Converting Live system image") % '\n' % tr("process") % " 2/2";
     sb::Progress = -1;
@@ -8888,8 +8864,7 @@ start:;
     }
 
     if(intrrpt) goto exit;
-    if(sb::exec("isohybrid " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0) goto error;
-    if(! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
+    if(sb::exec("isohybrid " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(intrrpt) goto exit;
     prun = tr("Emptying cache");
@@ -8938,7 +8913,7 @@ void systemback::on_newpartition_clicked()
     {
         uchar pcount(0), fcount(0);
 
-        for(uchar a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+        for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             if(ui->partitionsettings->item(a, 0)->text().startsWith(dev))
             {
                 switch(ui->partitionsettings->item(a, 7)->text().toUShort()) {

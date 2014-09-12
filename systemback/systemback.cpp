@@ -708,21 +708,22 @@ void systemback::unitimer()
                 }
 
                 if(ppipe == 0 && pname == tr("Currently running system") && ! ui->newrestorepoint->isEnabled()) ui->newrestorepoint->setEnabled(true);
-                if(ui->point1->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S01_" % sb::pnames[0])) accesserror();
-                if(ui->point2->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S02_" % sb::pnames[1])) accesserror();
-                if(ui->point3->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S03_" % sb::pnames[2])) accesserror();
-                if(ui->point4->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S04_" % sb::pnames[3])) accesserror();
-                if(ui->point5->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S05_" % sb::pnames[4])) accesserror();
-                if(ui->point6->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S06_" % sb::pnames[5])) accesserror();
-                if(ui->point7->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S07_" % sb::pnames[6])) accesserror();
-                if(ui->point8->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S08_" % sb::pnames[7])) accesserror();
-                if(ui->point9->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S09_" % sb::pnames[8])) accesserror();
-                if(ui->point10->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S10_" % sb::pnames[9])) accesserror();
-                if(ui->point11->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H01_" % sb::pnames[10])) accesserror();
-                if(ui->point12->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H02_" % sb::pnames[11])) accesserror();
-                if(ui->point13->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H03_" % sb::pnames[12])) accesserror();
-                if(ui->point14->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H04_" % sb::pnames[13])) accesserror();
-                if(ui->point15->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H05_" % sb::pnames[14])) accesserror();
+
+                if((ui->point1->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S01_" % sb::pnames[0])) ||
+                    (ui->point2->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S02_" % sb::pnames[1])) ||
+                    (ui->point3->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S03_" % sb::pnames[2])) ||
+                    (ui->point4->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S04_" % sb::pnames[3])) ||
+                    (ui->point5->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S05_" % sb::pnames[4])) ||
+                    (ui->point6->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S06_" % sb::pnames[5])) ||
+                    (ui->point7->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S07_" % sb::pnames[6])) ||
+                    (ui->point8->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S08_" % sb::pnames[7])) ||
+                    (ui->point9->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S09_" % sb::pnames[8])) ||
+                    (ui->point10->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S10_" % sb::pnames[9])) ||
+                    (ui->point11->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H01_" % sb::pnames[10])) ||
+                    (ui->point12->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H02_" % sb::pnames[11])) ||
+                    (ui->point13->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H03_" % sb::pnames[12])) ||
+                    (ui->point14->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H04_" % sb::pnames[13])) ||
+                    (ui->point15->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H05_" % sb::pnames[14]))) accesserror();
             }
             else
             {

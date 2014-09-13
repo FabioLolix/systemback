@@ -56,7 +56,7 @@ start:;
         goto error;
     }
 
-    QStr usr(qEnvironmentVariableIsEmpty("USER") ? "root" : qgetenv("USER")), cmd((qApp->arguments().value(1) == "systemback" ? "systemback authorization " : "sbscheduler ") % usr);
+    QStr cmd((qApp->arguments().value(1) == "systemback" ? "systemback authorization " : "sbscheduler ") % (qEnvironmentVariableIsEmpty("USER") ? "root" : qgetenv("USER")));
 
     if(getuid() + getgid() > 0)
     {
@@ -96,9 +96,7 @@ start:;
 
 bool sbsustart::clrenv(cQStr &xpath, cQStr &usrhm)
 {
-    QSL envvs(QProcess::systemEnvironment());
-
-    for(cQStr &cvar : envvs)
+    for(cQStr &cvar : QProcess::systemEnvironment())
     {
         QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
         if(! sb::like(var, {"_DISPLAY*", "_PATH*", "_LANG*"}) && ! qunsetenv(var.toStdString().c_str())) return false;

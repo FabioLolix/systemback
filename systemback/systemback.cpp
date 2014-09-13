@@ -47,10 +47,9 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     if(! sb::like(font().family(), {"_Ubuntu_", "_FreeSans_"}) || fontInfo().pixelSize() != 15 || fontInfo().weight() != QFont::Normal || fontInfo().bold() || fontInfo().italic() || fontInfo().overline() || fontInfo().strikeOut() || fontInfo().underline())
     {
         sfctr = fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal;
-        while(sfctr > Normal && (qApp->desktop()->width() - ss(30) < ss(698) || qApp->desktop()->height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
+        { while(sfctr > Normal && (qApp->desktop()->width() - ss(30) < ss(698) || qApp->desktop()->height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
         QFont font;
-        QFontDatabase fonts;
-        font.setFamily(fonts.families().contains("Ubuntu") ? "Ubuntu" : "FreeSans");
+        font.setFamily(QFontDatabase().families().contains("Ubuntu") ? "Ubuntu" : "FreeSans");
         font.setPixelSize(ss(15));
         if(font.weight() != QFont::Normal) font.setWeight(QFont::Normal);
         if(font.bold()) font.setBold(false);
@@ -63,14 +62,12 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         ui->buttonspanel->setFont(font);
         font.setPixelSize(ss(17));
         font.setBold(true);
-        ui->passwordtitletext->setFont(font);
+        ui->passwordtitletext->setFont(font); }
 
         if(sfctr > Normal)
         {
-            QList<QWidget *> wdgts(findChildren<QWidget *>());
-            for(QWidget *wdgt : wdgts) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
-            QList<QPushButton *> pbtns(findChildren<QPushButton *>());
-            for(QPushButton *pbtn : pbtns) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
+            for(QWidget *wdgt : findChildren<QWidget *>()) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
+            for(QPushButton *pbtn : findChildren<QPushButton *>()) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
             ui->includeusers->setMinimumSize(ss(112), ss(32));
             ui->grubreinstallrestore->setMinimumSize(ui->includeusers->minimumSize());
             ui->grubreinstallrestoredisable->setMinimumSize(ui->includeusers->minimumSize());
@@ -85,12 +82,10 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             QStyleOption optn;
             optn.init(ui->pointpipe1);
             QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
-            QList<QCheckBox *> ckbxs(findChildren<QCheckBox *>());
-            for(QCheckBox *ckbx : ckbxs) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+            for(QCheckBox *ckbx : findChildren<QCheckBox *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
             optn.init(ui->pnumber3);
             nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
-            QList<QRadioButton *> rbtns(findChildren<QRadioButton *>());
-            for(QRadioButton *rbtn : rbtns) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+            for(QRadioButton *rbtn : findChildren<QRadioButton *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
         }
     }
     else
@@ -289,25 +284,25 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             ui->adminpasswordtext->resize(fontMetrics().width(ui->adminpasswordtext->text()) + ss(7), ui->adminpasswordtext->height());
             ui->adminpassword->move(ui->adminpasswordtext->x() + ui->adminpasswordtext->width(), ui->adminpassword->y());
             ui->adminpassword->resize(ss(336) - ui->adminpassword->x(), ui->adminpassword->height());
-            QFile file("/etc/group");
 
-            if(file.open(QIODevice::ReadOnly))
             {
-                while(! file.atEnd())
+                QFile file("/etc/group");
+
+                if(file.open(QIODevice::ReadOnly))
                 {
-                    QStr usrs(file.readLine().trimmed());
-
-                    if(sb::like(usrs, {"_sudo:*", "_admins:*"}))
+                    while(! file.atEnd())
                     {
-                        usrs = sb::right(usrs, - sb::rinstr(usrs, ":"));
-                        QSL lst(usrs.split(','));
+                        QStr usrs(file.readLine().trimmed());
 
-                        for(cQStr &usr : lst)
-                            if(! usr.isEmpty() && ui->admins->findText(usr) == -1) ui->admins->addItem(usr);
+                        if(sb::like(usrs, {"_sudo:*", "_admins:*"}))
+                        {
+                            usrs = sb::right(usrs, - sb::rinstr(usrs, ":"));
+
+                            for(cQStr &usr : usrs.split(','))
+                                if(! usr.isEmpty() && ui->admins->findText(usr) == -1) ui->admins->addItem(usr);
+                        }
                     }
                 }
-
-                file.close();
             }
 
             if(ui->admins->count() == 0)
@@ -476,22 +471,22 @@ void systemback::unitimer()
                 ui->schedulerminute->setBackgroundRole(QPalette::Base);
                 ui->schedulersecond->setBackgroundRole(QPalette::Base);
                 ui->partitiondelete->setStyleSheet("QPushButton:enabled {color: red}");
-                QPalette pal(ui->license->palette());
-                pal.setBrush(QPalette::Base, pal.background());
-                ui->license->setPalette(pal);
+                { QPalette pal(ui->license->palette());
+                    pal.setBrush(QPalette::Base, pal.background());
+                    ui->license->setPalette(pal); }
                 ui->partitionsettings->setHorizontalHeaderLabels({tr("Partition"), tr("Size"), tr("Label"), tr("Current mount point"), tr("New mount point"), tr("Filesystem"), tr("Format")});
                 ui->partitionsettings->setColumnHidden(7, true);
                 ui->partitionsettings->setColumnHidden(8, true);
                 ui->partitionsettings->setColumnHidden(9, true);
-                QFont font;
+                { QFont font;
                 font.setPixelSize(ss(14));
                 ui->partitionsettings->horizontalHeader()->setFont(font);
+                ui->livedevices->horizontalHeader()->setFont(font); }
                 ui->partitionsettings->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
                 ui->partitionsettings->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
                 ui->partitionsettings->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Fixed);
                 ui->partitionsettings->horizontalHeader()->setSectionResizeMode(6, QHeaderView::Fixed);
                 ui->livedevices->setHorizontalHeaderLabels({tr("Partition"), tr("Size"), tr("Device"), tr("Format")});
-                ui->livedevices->horizontalHeader()->setFont(font);
                 ui->livedevices->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
                 ui->livedevices->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
                 ui->livedevices->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Fixed);
@@ -574,10 +569,9 @@ void systemback::unitimer()
                 if(sb::execsrch("mkfs.reiserfs")) ui->filesystem->addItem("reiserfs");
                 if(sb::execsrch("mkfs.jfs")) ui->filesystem->addItem("jfs");
                 if(sb::execsrch("mkfs.xfs")) ui->filesystem->addItem("xfs");
-                QFile file(":version");
+                { QFile file(":version");
                 file.open(QIODevice::ReadOnly);
-                ui->systembackversion->setText(file.readLine().trimmed() % "_Qt" % (QStr(qVersion()) == QStr(QT_VERSION_STR) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_' % sb::getarch());
-                file.close();
+                ui->systembackversion->setText(file.readLine().trimmed() % "_Qt" % (QStr(qVersion()) == QStr(QT_VERSION_STR) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_' % sb::getarch()); }
                 ui->repairmountpoint->addItems({nullptr, "/mnt", "/mnt/home", "/mnt/boot"});
 
                 if(sb::efiprob())
@@ -905,9 +899,7 @@ void systemback::fontcheck(uchar wdgt)
         if(ui->dirpath->font().pixelSize() != ss(15)) ui->dirpath->setFont(font());
         break;
     case Rpnts:
-        QList<QLineEdit *> lndts(ui->sbpanel->findChildren<QLineEdit *>());
-
-        for(QWidget *lndt : lndts)
+        for(QWidget *lndt : ui->sbpanel->findChildren<QLineEdit *>())
             if(lndt->font().pixelSize() != ss(15)) lndt->setFont(font());
     }
 }
@@ -934,18 +926,17 @@ QStr systemback::guname()
 {
     if(! uchkd && (ui->admins->count() == 0 || ui->admins->currentText() == "root"))
     {
-        QFile file("/etc/passwd");
         QSL usrs;
 
-        if(file.open(QIODevice::ReadOnly))
         {
-            while(! file.atEnd())
-            {
-                QStr usr(file.readLine().trimmed());
-                if(sb::like(usr, {"*:x:1000:10*", "*:x:1001:10*", "*:x:1002:10*", "*:x:1003:10*", "*:x:1004:10*", "*:x:1005:10*", "*:x:1006:10*", "*:x:1007:10*", "*:x:1008:10*", "*:x:1009:10*", "*:x:1010:10*", "*:x:1011:10*", "*:x:1012:10*", "*:x:1013:10*", "*:x:1014:10*", "*:x:1015:10*"})) usrs.append(sb::left(usr, sb::instr(usr, ":") -1));
-            }
+            QFile file("/etc/passwd");
 
-            file.close();
+            if(file.open(QIODevice::ReadOnly))
+                while(! file.atEnd())
+                {
+                    QStr usr(file.readLine().trimmed());
+                    if(sb::like(usr, {"*:x:1000:10*", "*:x:1001:10*", "*:x:1002:10*", "*:x:1003:10*", "*:x:1004:10*", "*:x:1005:10*", "*:x:1006:10*", "*:x:1007:10*", "*:x:1008:10*", "*:x:1009:10*", "*:x:1010:10*", "*:x:1011:10*", "*:x:1012:10*", "*:x:1013:10*", "*:x:1014:10*", "*:x:1015:10*"})) usrs.append(sb::left(usr, sb::instr(usr, ":") -1));
+                }
         }
 
         for(cQStr &usr : usrs)
@@ -1493,18 +1484,18 @@ void systemback::finpsttngs()
     if(ui->partitionsettingspanel2->isVisible())
         for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().color(QPalette::Inactive, QPalette::Highlight) ; ++a)
         {
-                ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
-                ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
+            ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
+            ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
         }
 }
 
 void systemback::foutpsttngs()
 {
-    if(ui->partitionsettingspanel2->isVisible())
+    if(ui->partitionsettingspanel2->isVisibleTo(ui->copypanel))
         for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
         {
-                ui->partitionsettings->item(a, 0)->setBackground(QPalette().color(QPalette::Inactive, QPalette::Highlight));
-                ui->partitionsettings->item(a, 0)->setForeground(QPalette().color(QPalette::Inactive, QPalette::HighlightedText));
+            ui->partitionsettings->item(a, 0)->setBackground(QPalette().color(QPalette::Inactive, QPalette::Highlight));
+            ui->partitionsettings->item(a, 0)->setForeground(QPalette().color(QPalette::Inactive, QPalette::HighlightedText));
         }
 }
 
@@ -1941,20 +1932,24 @@ start:;
                     {
                         sb::exec("update-grub");
                         if(intrrpt) goto exit;
-                        QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
-                        QTS in(&mnts, QIODevice::ReadOnly);
+                        QStr mntdev;
 
-                        while(! in.atEnd())
                         {
-                            QStr cline(in.readLine());
+                            QStr mnts(sb::fload("/proc/self/mounts"));
+                            QTS in(&mnts, QIODevice::ReadOnly);
 
-                            if(cline.contains(" /boot "))
+                            while(! in.atEnd())
                             {
-                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                                break;
+                                QStr cline(in.readLine());
+
+                                if(cline.contains(" /boot "))
+                                {
+                                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                                    break;
+                                }
+                                else if(cline.contains(" / "))
+                                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
                             }
-                            else if(cline.contains(" / "))
-                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
                         }
 
                         if(intrrpt) goto exit;
@@ -2089,9 +2084,7 @@ start:;
                 QDir().mkdir("/.systembacklivepoint");
             }
 
-            QStr mdev(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? "/lib/live/mount/medium/live/filesystem.squashfs" : "/live/image/live/filesystem.squashfs");
-
-            if(! sb::mount(mdev, "/.systembacklivepoint", "loop"))
+            if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? "/lib/live/mount/medium/live/filesystem.squashfs" : "/live/image/live/filesystem.squashfs", "/.systembacklivepoint", "loop"))
             {
                 dialog = 55;
                 dialogopen();
@@ -2176,8 +2169,6 @@ start:;
 
 void systemback::systemcopy()
 {
-    QFile file;
-    QTS in;
     QStr mnts[2];
     goto start;
 error:;
@@ -2202,14 +2193,17 @@ error:;
     }
 
     mnts[0] = sb::fload("/proc/self/mounts");
-    in.setString(&mnts[0], QIODevice::ReadOnly);
-    while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-    in.setString(&mnts[1], QIODevice::ReadOnly);
 
-    while(! in.atEnd())
     {
-        QStr cline(in.readLine());
-        if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        QTS in(&mnts[0], QIODevice::ReadOnly);
+        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
+        in.setString(&mnts[1], QIODevice::ReadOnly);
+
+        while(! in.atEnd())
+        {
+            QStr cline(in.readLine());
+            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        }
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -2218,14 +2212,17 @@ error:;
     return;
 exit:
     mnts[0] = sb::fload("/proc/self/mounts");
-    in.setString(&mnts[0], QIODevice::ReadOnly);
-    while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-    in.setString(&mnts[1], QIODevice::ReadOnly);
 
-    while(! in.atEnd())
     {
-        QStr cline(in.readLine());
-        if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        QTS in(&mnts[0], QIODevice::ReadOnly);
+        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
+        in.setString(&mnts[1], QIODevice::ReadOnly);
+
+        while(! in.atEnd())
+        {
+            QStr cline(in.readLine());
+            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+        }
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -2291,9 +2288,8 @@ start:;
             if(! sb::isdir("/.sbsystemcopy" % mpoint))
             {
                 QStr path("/.sbsystemcopy");
-                QSL plst(mpoint.split('/'));
 
-                for(cQStr &cpath : plst)
+                for(cQStr &cpath : mpoint.split('/'))
                 {
                     path.append('/' % cpath);
 
@@ -2401,13 +2397,16 @@ start:;
 
             if(cfg.contains("timer=on"))
             {
-                in.setString(&cfg, QIODevice::ReadOnly);
                 QStr nconf;
 
-                while(! in.atEnd())
                 {
-                    QStr cline(in.readLine());
-                    nconf.append((cline == "timer=on" ? "timer=off" : cline) % '\n');
+                    QTS in(&cfg, QIODevice::ReadOnly);
+
+                    while(! in.atEnd())
+                    {
+                        QStr cline(in.readLine());
+                        nconf.append((cline == "timer=on" ? "timer=off" : cline) % '\n');
+                    }
                 }
 
                 if(! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", nconf)) goto error;
@@ -2440,13 +2439,16 @@ start:;
 
             if(cfg.contains("timer=on"))
             {
-                in.setString(&cfg, QIODevice::ReadOnly);
                 QStr nconf;
 
-                while(! in.atEnd())
                 {
-                    QStr cline(in.readLine());
-                    nconf.append((cline == "timer=on" ? "timer=off" : cline) % '\n');
+                    QTS in(&cfg, QIODevice::ReadOnly);
+
+                    while(! in.atEnd())
+                    {
+                        QStr cline(in.readLine());
+                        nconf.append((cline == "timer=on" ? "timer=off" : cline) % '\n');
+                    }
                 }
 
                 if(! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", nconf)) goto error;
@@ -2464,187 +2466,198 @@ start:;
         if(guname() != ui->username->text())
         {
             if(sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text()))) goto error;
-            file.setFileName("/.sbsystemcopy/etc/group");
-            if(! file.open(QIODevice::ReadOnly)) goto error;
 
-            while(! file.atEnd())
             {
-                QStr nline(file.readLine().trimmed());
-                if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
-                nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
-                if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
-                nfile.append(nline % '\n');
-                if(intrrpt) goto exit;
+                QFile file("/.sbsystemcopy/etc/group");
+                if(! file.open(QIODevice::ReadOnly)) goto error;
+
+                while(! file.atEnd())
+                {
+                    QStr nline(file.readLine().trimmed());
+                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                    nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
+                    nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
+                    if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
+                    nfile.append(nline % '\n');
+                    if(intrrpt) goto exit;
+                }
             }
 
-            file.close();
             if(! sb::crtfile("/.sbsystemcopy/etc/group", nfile)) goto error;
             nfile.clear();
-            file.setFileName("/.sbsystemcopy/etc/gshadow");
-            if(! file.open(QIODevice::ReadOnly)) goto error;
 
-            while(! file.atEnd())
             {
-                QStr nline(file.readLine().trimmed());
-                if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
-                nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
-                if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
-                nfile.append(nline % '\n');
-                if(intrrpt) goto exit;
+                QFile file("/.sbsystemcopy/etc/gshadow");
+                if(! file.open(QIODevice::ReadOnly)) goto error;
+
+                while(! file.atEnd())
+                {
+                    QStr nline(file.readLine().trimmed());
+                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                    nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
+                    nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
+                    if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
+                    nfile.append(nline % '\n');
+                    if(intrrpt) goto exit;
+                }
             }
 
-            file.close();
             if(! sb::crtfile("/.sbsystemcopy/etc/gshadow", nfile)) goto error;
             nfile.clear();
 
             if(sb::isfile("/.sbsystemcopy/etc/subuid") && sb::isfile("/.sbsystemcopy/etc/subgid"))
             {
-                file.setFileName("/.sbsystemcopy/etc/subuid");
-                if(! file.open(QIODevice::ReadOnly)) goto error;
-
-                while(! file.atEnd())
                 {
-                    QStr nline(file.readLine().trimmed());
-                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                    nfile.append(nline % '\n');
-                    if(intrrpt) goto exit;
+                    QFile file("/.sbsystemcopy/etc/subuid");
+                    if(! file.open(QIODevice::ReadOnly)) goto error;
+
+                    while(! file.atEnd())
+                    {
+                        QStr nline(file.readLine().trimmed());
+                        if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                        nfile.append(nline % '\n');
+                        if(intrrpt) goto exit;
+                    }
                 }
 
-                file.close();
                 if(! sb::crtfile("/.sbsystemcopy/etc/subuid", nfile)) goto error;
                 nfile.clear();
-                file.setFileName("/.sbsystemcopy/etc/subgid");
-                if(! file.open(QIODevice::ReadOnly)) goto error;
 
-                while(! file.atEnd())
                 {
-                    QStr nline(file.readLine().trimmed());
-                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                    nfile.append(nline % '\n');
-                    if(intrrpt) goto exit;
+                    QFile file("/.sbsystemcopy/etc/subgid");
+                    if(! file.open(QIODevice::ReadOnly)) goto error;
+
+                    while(! file.atEnd())
+                    {
+                        QStr nline(file.readLine().trimmed());
+                        if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                        nfile.append(nline % '\n');
+                        if(intrrpt) goto exit;
+                    }
                 }
 
-                file.close();
                 if(! sb::crtfile("/.sbsystemcopy/etc/subgid", nfile)) goto error;
                 nfile.clear();
             }
         }
 
-        file.setFileName("/.sbsystemcopy/etc/passwd");
-        if(! file.open(QIODevice::ReadOnly)) goto error;
-
-        while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
-
-            if(cline.startsWith(guname() % ':'))
-            {
-                QSL uslst(cline.split(':'));
-                QStr nline;
-
-                for(uchar a(0) ; a < uslst.count() ; ++a)
-                    switch(a) {
-                    case 0:
-                        nline.append(ui->username->text() % ':');
-                        break;
-                    case 4:
-                        nline.append(ui->fullname->text() % ",,,:");
-                        break;
-                    case 5:
-                        nline.append("/home/" % ui->username->text() % ':');
-                        break;
-                    default:
-                        nline.append(uslst.at(a) % ':');
-                    }
-
-                nfile.append(sb::left(nline, -1) % '\n');
-            }
-            else
-                nfile.append(cline % '\n');
-
-            if(intrrpt) goto exit;
-        }
-
-        file.close();
-        if(! sb::crtfile("/.sbsystemcopy/etc/passwd", nfile)) goto error;
-        nfile.clear();
-        file.setFileName("/.sbsystemcopy/etc/shadow");
-        if(! file.open(QIODevice::ReadOnly)) goto error;
-
-        while(! file.atEnd())
-        {
-            QStr cline(file.readLine().trimmed());
-
-            if(cline.startsWith(guname() % ':'))
-            {
-                QSL uslst(cline.split(':'));
-                QStr nline;
-
-                for(uchar a(0) ; a < uslst.count() ; ++a)
-                    switch(a) {
-                    case 0:
-                        nline.append(ui->username->text() % ':');
-                        break;
-                    case 1:
-                        nline.append(QStr(crypt(ui->password1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str())) % ':');
-                        break;
-                    default:
-                        nline.append(uslst.at(a) % ':');
-                    }
-
-                nfile.append(sb::left(nline, -1) % '\n');
-            }
-            else if(cline.startsWith("root:"))
-            {
-                QSL uslst(cline.split(':'));
-                QStr nline;
-
-                for(uchar a(0) ; a < uslst.count() ; ++a)
-                    switch(a) {
-                    case 1:
-                        nline.append((ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(ui->rootpassword1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str()))) % ':');
-                        break;
-                    default:
-                        nline.append(uslst.at(a) % ':');
-                    }
-
-                nfile.append(sb::left(nline, -1) % '\n');
-            }
-            else
-                nfile.append(cline % '\n');
-
-            if(intrrpt) goto exit;
-        }
-
-        file.close();
-        if(! sb::crtfile("/.sbsystemcopy/etc/shadow", nfile)) goto error;
-        nfile.clear();
-        file.setFileName("/.sbsystemcopy/etc/hostname");
-        if(! file.open(QIODevice::ReadOnly)) goto error;
-        QStr ohname(file.readLine().trimmed());
-        file.close();
-
-        if(ohname != ui->hostname->text())
-        {
-            if(! sb::crtfile("/.sbsystemcopy/etc/hostname", ui->hostname->text() % '\n')) goto error;
-            file.setFileName("/.sbsystemcopy/etc/hosts");
+            QFile file("/.sbsystemcopy/etc/passwd");
             if(! file.open(QIODevice::ReadOnly)) goto error;
 
             while(! file.atEnd())
             {
-                QStr nline(file.readLine().trimmed());
-                nline = nline.replace('\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
-                if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
-                nfile.append(nline % '\n');
+                QStr cline(file.readLine().trimmed());
+
+                if(cline.startsWith(guname() % ':'))
+                {
+                    QSL uslst(cline.split(':'));
+                    QStr nline;
+
+                    for(uchar a(0) ; a < uslst.count() ; ++a)
+                        switch(a) {
+                        case 0:
+                            nline.append(ui->username->text() % ':');
+                            break;
+                        case 4:
+                            nline.append(ui->fullname->text() % ",,,:");
+                            break;
+                        case 5:
+                            nline.append("/home/" % ui->username->text() % ':');
+                            break;
+                        default:
+                            nline.append(uslst.at(a) % ':');
+                        }
+
+                    nfile.append(sb::left(nline, -1) % '\n');
+                }
+                else
+                    nfile.append(cline % '\n');
+
                 if(intrrpt) goto exit;
             }
+        }
 
-            file.close();
-            if(! sb::crtfile("/.sbsystemcopy/etc/hosts", nfile)) goto error;
-            nfile.clear();
-            if(intrrpt) goto exit;
+        if(! sb::crtfile("/.sbsystemcopy/etc/passwd", nfile)) goto error;
+        nfile.clear();
+
+        {
+            QFile file("/.sbsystemcopy/etc/shadow");
+            if(! file.open(QIODevice::ReadOnly)) goto error;
+
+            while(! file.atEnd())
+            {
+                QStr cline(file.readLine().trimmed());
+
+                if(cline.startsWith(guname() % ':'))
+                {
+                    QSL uslst(cline.split(':'));
+                    QStr nline;
+
+                    for(uchar a(0) ; a < uslst.count() ; ++a)
+                        switch(a) {
+                        case 0:
+                            nline.append(ui->username->text() % ':');
+                            break;
+                        case 1:
+                            nline.append(QStr(crypt(ui->password1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str())) % ':');
+                            break;
+                        default:
+                            nline.append(uslst.at(a) % ':');
+                        }
+
+                    nfile.append(sb::left(nline, -1) % '\n');
+                }
+                else if(cline.startsWith("root:"))
+                {
+                    QSL uslst(cline.split(':'));
+                    QStr nline;
+
+                    for(uchar a(0) ; a < uslst.count() ; ++a)
+                        switch(a) {
+                        case 1:
+                            nline.append((ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(ui->rootpassword1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str()))) % ':');
+                            break;
+                        default:
+                            nline.append(uslst.at(a) % ':');
+                        }
+
+                    nfile.append(sb::left(nline, -1) % '\n');
+                }
+                else
+                    nfile.append(cline % '\n');
+
+                if(intrrpt) goto exit;
+            }
+        }
+
+        if(! sb::crtfile("/.sbsystemcopy/etc/shadow", nfile)) goto error;
+        nfile.clear();
+
+        {
+            QFile file("/.sbsystemcopy/etc/hostname");
+            if(! file.open(QIODevice::ReadOnly)) goto error;
+            QStr ohname(file.readLine().trimmed());
+
+            if(ohname != ui->hostname->text())
+            {
+                if(! sb::crtfile("/.sbsystemcopy/etc/hostname", ui->hostname->text() % '\n')) goto error;
+                file.setFileName("/.sbsystemcopy/etc/hosts");
+                if(! file.open(QIODevice::ReadOnly)) goto error;
+
+                while(! file.atEnd())
+                {
+                    QStr nline(file.readLine().trimmed());
+                    nline = nline.replace('\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
+                    if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
+                    nfile.append(nline % '\n');
+                    if(intrrpt) goto exit;
+                }
+
+                if(! sb::crtfile("/.sbsystemcopy/etc/hosts", nfile)) goto error;
+                nfile.clear();
+                if(intrrpt) goto exit;
+            }
         }
 
         if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/bash\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " -o $rmuser = root ] || userdel $rmuser\ndone\n") || ! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
@@ -2662,7 +2675,7 @@ start:;
         {
             if(ui->partitionsettings->item(a, 4)->text() == "/home" && ! ui->partitionsettings->item(a, 3)->text().isEmpty())
             {
-                file.setFileName("/etc/fstab");
+                QFile file("/etc/fstab");
                 if(! file.open(QIODevice::ReadOnly)) goto error;
 
                 while(! file.atEnd())
@@ -2675,8 +2688,6 @@ start:;
                         break;
                     }
                 }
-
-                file.close();
             }
             else
             {
@@ -2705,7 +2716,7 @@ start:;
 
     if(sb::isfile("/etc/fstab"))
     {
-        file.setFileName("/etc/fstab");
+        QFile file("/etc/fstab");
         if(! file.open(QIODevice::ReadOnly)) goto error;
 
         while(! file.atEnd())
@@ -2719,8 +2730,6 @@ start:;
 
             if(intrrpt) goto exit;
         }
-
-        file.close();
     }
 
     if(! sb::crtfile("/.sbsystemcopy/etc/fstab", fstabtxt)) goto error;
@@ -2739,19 +2748,22 @@ start:;
         {
             QStr mntdev;
             mnts[0] = sb::fload("/proc/self/mounts");
-            in.setString(&mnts[0], QIODevice::ReadOnly);
 
-            while(! in.atEnd())
             {
-                QStr cline(in.readLine());
+                QTS in(&mnts[0], QIODevice::ReadOnly);
 
-                if(cline.contains(" /.sbsystemcopy/boot "))
+                while(! in.atEnd())
                 {
-                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                    break;
+                    QStr cline(in.readLine());
+
+                    if(cline.contains(" /.sbsystemcopy/boot "))
+                    {
+                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                        break;
+                    }
+                    else if(cline.contains(" /.sbsystemcopy "))
+                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
                 }
-                else if(cline.contains(" /.sbsystemcopy "))
-                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
             }
 
             if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/bash\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
@@ -2778,14 +2790,17 @@ start:;
     if(intrrpt) goto exit;
     prun = tr("Emptying cache");
     mnts[0] = sb::fload("/proc/self/mounts");
-    in.setString(&mnts[0], QIODevice::ReadOnly);
-    while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-    in.setString(&mnts[1], QIODevice::ReadOnly);
 
-    while(! in.atEnd())
     {
-        QStr cline(in.readLine());
-        if(cline.contains(" /.sbsystemcopy")) sb::umount(sb::left(cline, sb::instr(cline, " ") -1));
+        QTS in(&mnts[0], QIODevice::ReadOnly);
+        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
+        in.setString(&mnts[1], QIODevice::ReadOnly);
+
+        while(! in.atEnd())
+        {
+            QStr cline(in.readLine());
+            if(cline.contains(" /.sbsystemcopy")) sb::umount(sb::left(cline, sb::instr(cline, " ") -1));
+        }
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -2842,9 +2857,7 @@ start:;
     }
     else if(sb::mcheck(ldev))
     {
-        QSL dlst(QDir("/dev").entryList(QDir::System));
-
-        for(cQStr &sitem : dlst)
+        for(cQStr &sitem : QDir("/dev").entryList(QDir::System))
         {
             QStr item("/dev/" % sitem);
 
@@ -2872,7 +2885,7 @@ start:;
     {
         lrdir = "sblive";
 
-        if(! sb::mkpart(ldev, 1048576))
+        if(! sb::mkpart(ldev))
         {
             dialog = 59;
             goto error;
@@ -2905,12 +2918,12 @@ start:;
         goto error;
     }
 
-    if(intrrpt) goto error;
-    if(sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % '1', "boot") || ! sb::setpflag(ldev % '1', "lba")) goto error;
-    if(intrrpt) goto error;
-    if(sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite"))) goto error;
-    if(intrrpt) goto error;
-    if(! QDir().mkdir("/.sblivesystemwrite") || ! QDir().mkdir("/.sblivesystemwrite/sblive")) goto error;
+    if(intrrpt ||
+        sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % '1', "boot") || ! sb::setpflag(ldev % '1', "lba") ||
+        intrrpt ||
+        (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite"))) ||
+        intrrpt ||
+        ! QDir().mkdir("/.sblivesystemwrite") || ! QDir().mkdir("/.sblivesystemwrite/sblive")) goto error;
 
     if(! sb::mount(ldev % '1', "/.sblivesystemwrite/sblive"))
     {
@@ -3807,22 +3820,21 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
 {
     ui->admins->resize(fontMetrics().width(arg1) + ss(30), ss(32));
     if(! hash.isEmpty()) hash.clear();
-    QFile file("/etc/shadow");
 
-    if(file.open(QIODevice::ReadOnly))
     {
-        while(! file.atEnd())
-        {
-            QStr cline(file.readLine().trimmed());
+        QFile file("/etc/shadow");
 
-            if(cline.startsWith(arg1 % ":"))
+        if(file.open(QIODevice::ReadOnly))
+            while(! file.atEnd())
             {
-                hash = sb::mid(cline, arg1.length() + 2, sb::instr(cline, ":", arg1.length() + 2) - arg1.length() - 2);
-                break;
-            }
-        }
+                QStr cline(file.readLine().trimmed());
 
-        file.close();
+                if(cline.startsWith(arg1 % ":"))
+                {
+                    hash = sb::mid(cline, arg1.length() + 2, sb::instr(cline, ":", arg1.length() + 2) - arg1.length() - 2);
+                    break;
+                }
+            }
     }
 
     if(ui->adminpassword->text().length() > 0) ui->adminpassword->clear();
@@ -5017,10 +5029,7 @@ void systemback::on_livecreatemenu_clicked()
     }
 
     if(sb::isdir(sb::sdir[2]))
-    {
-        QSL dlst(QDir(sb::sdir[2]).entryList(QDir::Files | QDir::Hidden));
-
-        for(cQStr &item : dlst)
+        for(cQStr &item : QDir(sb::sdir[2]).entryList(QDir::Files | QDir::Hidden))
         {
             if(item.endsWith(".sblive") && ! item.contains(' ') && ! sb::islink(sb::sdir[2] % '/' % item) && sb::fsize(sb::sdir[2] % '/' % item) > 0)
             {
@@ -5030,7 +5039,6 @@ void systemback::on_livecreatemenu_clicked()
 
             qApp->processEvents();
         }
-    }
 }
 
 void systemback::on_repairmenu_clicked()
@@ -5177,6 +5185,7 @@ void systemback::on_partitionrefresh_clicked()
     ui->grubinstallcopy->addItems({"Auto", tr("Disabled")});
     ui->grubreinstallrestore->addItems({"Auto", tr("Disabled")});
     ui->grubreinstallrepair->addItems({"Auto", tr("Disabled")});
+
     QSL plst;
     sb::readprttns(plst);
 
@@ -5487,42 +5496,45 @@ void systemback::on_umount_clicked()
 {
     busy();
     ui->copycover->show();
-    QStr mnts[2];
-    mnts[0] = sb::fload("/proc/self/mounts");
-    QTS in(&mnts[0], QIODevice::ReadOnly);
-    while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-
-    for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
-        if(! ui->partitionsettings->item(a, 3)->text().isEmpty())
-        {
-            if(ui->partitionsettings->item(a, 3)->text() == "SWAP")
-                swapoff(ui->partitionsettings->item(a, 0)->text().toStdString().c_str());
-            else
-            {
-                in.setString(&mnts[1], QIODevice::ReadOnly);
-
-                while(! in.atEnd())
-                {
-                    QStr cline(in.readLine());
-                    if(sb::like(cline, {"* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
-                }
-            }
-        }
-
-    mnts[0] = sb::fload("/proc/self/mounts");
-    mnts[1] = sb::fload("/proc/swaps");
     bool umntd(true);
 
-    for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
     {
-        QStr mpt(ui->partitionsettings->item(a, 3)->text());
+        QStr mnts[2];
+        mnts[0] = sb::fload("/proc/self/mounts");
+        { QTS in(&mnts[0], QIODevice::ReadOnly);
+        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n'); }
 
-        if(! mpt.isEmpty())
+        for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
+            if(! ui->partitionsettings->item(a, 3)->text().isEmpty())
+            {
+                if(ui->partitionsettings->item(a, 3)->text() == "SWAP")
+                    swapoff(ui->partitionsettings->item(a, 0)->text().toStdString().c_str());
+                else
+                {
+                    QTS in(&mnts[1], QIODevice::ReadOnly);
+
+                    while(! in.atEnd())
+                    {
+                        QStr cline(in.readLine());
+                        if(sb::like(cline, {"* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+                    }
+                }
+            }
+
+        mnts[0] = sb::fload("/proc/self/mounts");
+        mnts[1] = sb::fload("/proc/swaps");
+
+        for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
         {
-            if((mpt == "SWAP" && ! QStr('\n' % mnts[1]).contains('\n' % ui->partitionsettings->item(a, 0)->text() % ' ')) || (mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')))
-                ui->partitionsettings->item(a, 3)->setText(nullptr);
-            else if(umntd)
-                umntd = false;
+            QStr mpt(ui->partitionsettings->item(a, 3)->text());
+
+            if(! mpt.isEmpty())
+            {
+                if((mpt == "SWAP" && ! QStr('\n' % mnts[1]).contains('\n' % ui->partitionsettings->item(a, 0)->text() % ' ')) || (mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')))
+                    ui->partitionsettings->item(a, 3)->setText(nullptr);
+                else if(umntd)
+                    umntd = false;
+            }
         }
     }
 
@@ -6079,83 +6091,77 @@ void systemback::on_pointexclude_clicked()
     else
         sb::crtfile("/etc/systemback.excludes");
 
-    QFile file("/etc/passwd");
-
-    if(file.open(QIODevice::ReadOnly))
     {
-        while(! file.atEnd())
+        QFile file("/etc/passwd");
+
+        if(file.open(QIODevice::ReadOnly))
         {
-            QStr usr(file.readLine().trimmed());
-
-            if(usr.contains(":/home/"))
+            while(! file.atEnd())
             {
-                usr = sb::left(usr, sb::instr(usr, ":") -1);
+                QStr usr(file.readLine().trimmed());
 
-                if(sb::isdir("/home/" % usr))
+                if(usr.contains(":/home/"))
                 {
-                    QSL dlst(QDir("/home/" % usr).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
+                    usr = sb::left(usr, sb::instr(usr, ":") -1);
 
-                    for(cQStr &item : dlst)
-                        if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}))
-                        {
-                            if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
+                    if(sb::isdir("/home/" % usr))
+                        for(cQStr &item : QDir("/home/" % usr).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
+                            if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}))
                             {
-                                QTrWI *twi(new QTrWI);
-                                twi->setText(0, item);
-
-                                if(sb::access("/home/" % usr % '/' % item) && sb::stype("/home/" % usr % '/' % item) == sb::Isdir)
+                                if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
                                 {
-                                    twi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                                    ui->itemslist->addTopLevelItem(twi);
-                                    QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
+                                    QTrWI *twi(new QTrWI);
+                                    twi->setText(0, item);
 
-                                    for(cQStr &sitem : sdlst)
-                                        if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
-                                        {
-                                            QTrWI *ctwi(new QTrWI);
-                                            ctwi->setText(0, sitem);
-                                            twi->addChild(ctwi);
-                                        }
-                                }
-                                else
-                                    ui->itemslist->addTopLevelItem(twi);
-                            }
-                            else if(sb::access("/home/" % usr % '/' % item))
-                            {
-                                if(sb::stype("/home/" % usr % '/' % item) == sb::Isdir)
-                                {
-                                    QTrWI *ctwi(ui->itemslist->findItems(item, Qt::MatchExactly).at(0));
-                                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
-                                    QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
-                                    for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
-
-                                    for(cQStr &sitem : sdlst)
+                                    if(sb::access("/home/" % usr % '/' % item) && sb::stype("/home/" % usr % '/' % item) == sb::Isdir)
                                     {
-                                        if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                                        twi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                                        ui->itemslist->addTopLevelItem(twi);
+                                        QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
+
+                                        for(cQStr &sitem : sdlst)
+                                            if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                                            {
+                                                QTrWI *ctwi(new QTrWI);
+                                                ctwi->setText(0, sitem);
+                                                twi->addChild(ctwi);
+                                            }
+                                    }
+                                    else
+                                        ui->itemslist->addTopLevelItem(twi);
+                                }
+                                else if(sb::access("/home/" % usr % '/' % item))
+                                {
+                                    if(sb::stype("/home/" % usr % '/' % item) == sb::Isdir)
+                                    {
+                                        QTrWI *ctwi(ui->itemslist->findItems(item, Qt::MatchExactly).at(0));
+                                        if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
+                                        QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
+                                        for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
+
+                                        for(cQStr &sitem : sdlst)
                                         {
-                                            for(cQStr &citem : itmlst)
-                                                if(citem == sitem) goto unext;
+                                            if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                                            {
+                                                for(cQStr &citem : itmlst)
+                                                    if(citem == sitem) goto unext;
 
-                                            QTrWI *sctwi(new QTrWI);
-                                            sctwi->setText(0, sitem);
-                                            ctwi->addChild(sctwi);
+                                                QTrWI *sctwi(new QTrWI);
+                                                sctwi->setText(0, sitem);
+                                                ctwi->addChild(sctwi);
+                                            }
+
+                                        unext:;
                                         }
-
-                                    unext:;
                                     }
                                 }
                             }
-                        }
                 }
             }
         }
-
-        file.close();
     }
 
-    QSL dlst(QDir("/root").entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
-
-    for(cQStr &item : dlst)
+    for(cQStr &item : QDir("/root").entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
         if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}))
         {
             if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
@@ -6167,9 +6173,8 @@ void systemback::on_pointexclude_clicked()
                 {
                     twi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                     ui->itemslist->addTopLevelItem(twi);
-                    QSL sdlst(QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                    for(cQStr &sitem : sdlst)
+                    for(cQStr &sitem : QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
                         if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
                         {
                             QTrWI *ctwi(new QTrWI);
@@ -6186,10 +6191,10 @@ void systemback::on_pointexclude_clicked()
                 {
                     QTrWI *ctwi(ui->itemslist->findItems(item, Qt::MatchExactly).at(0));
                     if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                    QSL sdlst(QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
+                    QSL itmlst;
                     for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
 
-                    for(cQStr &sitem : sdlst)
+                    for(cQStr &sitem : QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
                     {
                         if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
                         {
@@ -6229,9 +6234,8 @@ void systemback::on_dialogok_clicked()
         else if(dialog == 16)
         {
             statustart();
-            QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-            for(cQStr &item : dlst)
+            for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
                 if(item.startsWith(".S00_"))
                 {
                     prun = tr("Deleting incomplete restore point");
@@ -6557,9 +6561,9 @@ void systemback::on_dirrefresh_clicked()
     busy();
     if(ui->dirchoose->topLevelItemCount() != 0) ui->dirchoose->clear();
     QStr pwdrs(sb::fload("/etc/passwd"));
-    QSL excl({"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "srv", "sys", "tmp", "usr", "var"}), dlst(QDir("/").entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
+    QSL excl({"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "srv", "sys", "tmp", "usr", "var"});
 
-    for(cQStr &item : dlst)
+    for(cQStr &item : QDir("/").entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
     {
         QTrWI *twi(new QTrWI);
         twi->setText(0, item);
@@ -6586,9 +6590,7 @@ void systemback::on_dirrefresh_clicked()
                 twi->setSelected(true);
             }
 
-            QSL sdlst(QDir('/' % item).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
-
-            for(cQStr &sitem : sdlst)
+            for(cQStr &sitem : QDir('/' % item).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
             {
                 QTrWI *ctwi(new QTrWI);
                 ctwi->setText(0, sitem);
@@ -6721,9 +6723,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                                     ctwi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                                 }
 
-                                QSL dlst(QDir(path % '/' % iname).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
-
-                                for(cQStr &cdir : dlst)
+                                for(cQStr &cdir : QDir(path % '/' % iname).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
                                 {
                                     QTrWI *sctwi(new QTrWI);
                                     sctwi->setText(0, cdir);
@@ -7144,10 +7144,10 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
     if(current && (! previous || current->row() != previous->row()))
     {
         if(ui->partitionsettingspanel2->isVisible())
-            for(ushort a(previous->row() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() == QPalette().highlight() ; ++a)
+            for(ushort a(previous->row() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
             {
-                ui->partitionsettings->item(a, 0)->setBackground(QPalette().base());
-                ui->partitionsettings->item(a, 0)->setForeground(QPalette().text());
+                ui->partitionsettings->item(a, 0)->setBackground(QBrush());
+                ui->partitionsettings->item(a, 0)->setForeground(QBrush());
             }
 
         uchar type(ui->partitionsettings->item(current->row(), 7)->text().toShort()), pcount(0);
@@ -7179,7 +7179,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 {
                     if(! mntd) mntd = true;
 
-                    if(sb::like(ui->partitionsettings->item(a, 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                    if(sb::sdir[0].startsWith(ui->partitionsettings->item(a, 3)->text()) || sb::like(ui->partitionsettings->item(a, 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
                         mntcheck = true;
                     else if(sb::isfile("/etc/fstab"))
                     {
@@ -7353,7 +7353,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
                 bool mntcheck(false);
 
-                if(sb::like(ui->partitionsettings->item(current->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                if(sb::sdir[0].startsWith(ui->partitionsettings->item(current->row(), 3)->text()) || sb::like(ui->partitionsettings->item(current->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
                     mntcheck = true;
                 else if(sb::isfile("/etc/fstab"))
                 {
@@ -7498,7 +7498,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
         ui->format->setEnabled(true);
     }
 
-    if(arg1.isEmpty() || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")))
+    if(arg1.isEmpty() || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong() < 268435456))
     {
         if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
     }
@@ -7612,17 +7612,19 @@ void systemback::on_repairmount_clicked()
     {
         busy();
         ui->repaircover->show();
-        QStr path;
-        QSL plst(sb::right(ui->repairmountpoint->currentText(), -5).split('/'));
 
-        for(cQStr &cpath : plst)
         {
-            path.append('/' % cpath);
+            QStr path;
 
-            if(! sb::isdir("/mnt/" % path) && ! QDir().mkdir("/mnt" % path))
+            for(cQStr &cpath : sb::right(ui->repairmountpoint->currentText(), -5).split('/'))
             {
-                QFile::rename("/mnt" % path, "/mnt" % path % '_' % sb::rndstr());
-                QDir().mkdir("/mnt" % path);
+                path.append('/' % cpath);
+
+                if(! sb::isdir("/mnt/" % path) && ! QDir().mkdir("/mnt" % path))
+                {
+                    QFile::rename("/mnt" % path, "/mnt" % path % '_' % sb::rndstr());
+                    QDir().mkdir("/mnt" % path);
+                }
             }
         }
 
@@ -7720,58 +7722,58 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
             path.prepend('/' % twi->text(0));
         }
 
-        QFile file("/etc/passwd");
-
-        if(file.open(QIODevice::ReadOnly))
         {
-            while(! file.atEnd())
+            QFile file("/etc/passwd");
+
+            if(file.open(QIODevice::ReadOnly))
             {
-                QStr usr(file.readLine().trimmed());
-
-                if(usr.contains(":/home/"))
+                while(! file.atEnd())
                 {
-                    usr = sb::left(usr, sb::instr(usr, ":") -1);
+                    QStr usr(file.readLine().trimmed());
 
-                    if(sb::stype("/home/" % usr % path) == sb::Isdir)
+                    if(usr.contains(":/home/"))
                     {
-                        for(ushort a(0) ; a < item->childCount() ; ++a)
+                        usr = sb::left(usr, sb::instr(usr, ":") -1);
+
+                        if(sb::stype("/home/" % usr % path) == sb::Isdir)
                         {
-                            QTrWI *ctwi(item->child(a));
-                            QStr iname(ctwi->text(0));
-
-                            if(sb::stype("/home/" % usr % path % '/' % iname) == sb::Isdir)
+                            for(ushort a(0) ; a < item->childCount() ; ++a)
                             {
-                                if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                                QSL dlst(QDir("/home/" % usr % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
-                                for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
+                                QTrWI *ctwi(item->child(a));
+                                QStr iname(ctwi->text(0));
 
-                                for(cQStr &siname : dlst)
+                                if(sb::stype("/home/" % usr % path % '/' % iname) == sb::Isdir)
                                 {
-                                    if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
+                                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                                    QSL itmlst;
+                                    for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
+
+                                    for(cQStr &siname : QDir("/home/" % usr % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
                                     {
-                                        for(ushort b(0) ; b < itmlst.count() ; ++b)
-                                            if(itmlst.at(b) == siname)
-                                            {
-                                                itmlst.removeAt(b);
-                                                goto unext;
-                                            }
+                                        if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
+                                        {
+                                            for(ushort b(0) ; b < itmlst.count() ; ++b)
+                                                if(itmlst.at(b) == siname)
+                                                {
+                                                    itmlst.removeAt(b);
+                                                    goto unext;
+                                                }
 
-                                        QTrWI *sctwi(new QTrWI);
-                                        sctwi->setText(0, siname);
-                                        ctwi->addChild(sctwi);
+                                            QTrWI *sctwi(new QTrWI);
+                                            sctwi->setText(0, siname);
+                                            ctwi->addChild(sctwi);
+                                        }
+
+                                    unext:;
                                     }
-
-                                unext:;
                                 }
-                            }
 
-                            ctwi->sortChildren(0, Qt::AscendingOrder);
+                                ctwi->sortChildren(0, Qt::AscendingOrder);
+                            }
                         }
                     }
                 }
             }
-
-            file.close();
         }
 
         if(sb::stype("/root" % path) == sb::Isdir)
@@ -7784,10 +7786,10 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
                 if(sb::stype("/root" % path % '/' % iname) == sb::Isdir)
                 {
                     if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                    QSL dlst(QDir("/root" % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
+                    QSL itmlst;
                     for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
 
-                    for(cQStr &siname : dlst)
+                    for(cQStr &siname : QDir("/root" % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
                     {
                         if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
                         {
@@ -7863,7 +7865,6 @@ void systemback::on_additem_clicked()
     {
         file.write(QStr(path % '\n').toLocal8Bit());
         file.flush();
-        file.close();
         ui->excludedlist->addItem(path);
         delete ui->itemslist->currentItem();
         if(ui->itemslist->currentItem()) ui->itemslist->currentItem()->setSelected(false);
@@ -8427,9 +8428,8 @@ error:;
     return;
 start:;
     statustart();
-    QSL dlst(QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot));
 
-    for(cQStr &item : dlst)
+    for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
         {
             if(prun != tr("Deleting incomplete restore point")) prun = tr("Deleting incomplete restore point");
@@ -8634,30 +8634,32 @@ start:;
     if(intrrpt) goto exit;
     if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::getarch() % '\n') || ! sb::copy("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) goto error;
     if(intrrpt) goto exit;
-    QFile file("/etc/passwd");
-    if(! file.open(QIODevice::ReadOnly)) goto error;
     QStr fname;
 
-    while(! file.atEnd())
     {
-        QStr cline(file.readLine().trimmed());
+        QFile file("/etc/passwd");
+        if(! file.open(QIODevice::ReadOnly)) goto error;
 
-        if(cline.startsWith(guname() % ':'))
+        while(! file.atEnd())
         {
-            QSL uslst(cline.split(':'));
+            QStr cline(file.readLine().trimmed());
 
-            for(uchar a(0) ; a < uslst.count() ; ++a)
-                if(a == 4)
-                {
-                    fname = sb::left(uslst.at(a), sb::instr(uslst.at(a), ",") - 1);
-                    break;
-                }
+            if(cline.startsWith(guname() % ':'))
+            {
+                QSL uslst(cline.split(':'));
 
-            break;
+                for(uchar a(0) ; a < uslst.count() ; ++a)
+                    if(a == 4)
+                    {
+                        fname = sb::left(uslst.at(a), sb::instr(uslst.at(a), ",") - 1);
+                        break;
+                    }
+
+                break;
+            }
         }
     }
 
-    file.close();
     if(intrrpt) goto exit;
     irfsc = true;
 
@@ -8667,7 +8669,7 @@ start:;
 
         if(sb::isfile("/etc/lsb-release"))
         {
-            file.setFileName("/etc/lsb-release");
+            QFile file("/etc/lsb-release");
             if(! file.open(QIODevice::ReadOnly)) goto error;
 
             while(! file.atEnd())
@@ -8681,20 +8683,17 @@ start:;
                 }
 
             }
-
-            file.close();
         }
 
         if(did.isEmpty()) did = "Ubuntu";
-        file.setFileName("/etc/hostname");
+        QFile file("/etc/hostname");
         if(! file.open(QIODevice::ReadOnly)) goto error;
         QStr hname(file.readLine().trimmed());
         file.close();
         if(! sb::crtfile("/etc/casper.conf", "USERNAME=\"" % guname() % "\"\nUSERFULLNAME=\"" % fname % "\"\nHOST=\"" % hname % "\"\nBUILD_SYSTEM=\"" % did % "\"\n\nexport USERNAME USERFULLNAME HOST BUILD_SYSTEM\n")) goto error;
-        QSL dlst(QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files));
         if(intrrpt) goto exit;
 
-        for(cQStr &item : dlst)
+        for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
             if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
     }
     else if(sb::isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
@@ -8719,12 +8718,8 @@ start:;
     uchar rv(sb::exec("update-initramfs -tck" % ckernel));
 
     if(lvtype == "casper")
-    {
-        QSL dlst(QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files));
-
-        for(cQStr &item : dlst)
+        for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
             if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
-    }
     else if(sb::isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
     {
         if(QFile::setPermissions("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
@@ -8749,10 +8744,9 @@ start:;
             goto error;
 
     if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png") || ! sb::lvprpr(ui->userdatainclude->isChecked())) goto error;
-    QSL dlst({"/.sblvtmp/cdrom", "/.sblvtmp/dev", "/.sblvtmp/mnt", "/.sblvtmp/proc", "/.sblvtmp/run", "/.sblvtmp/srv", "/.sblvtmp/sys", "/.sblvtmp/tmp", "/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"});
     QStr ide;
 
-    for(cQStr &item : dlst)
+    for(cQStr &item : {"/.sblvtmp/cdrom", "/.sblvtmp/dev", "/.sblvtmp/mnt", "/.sblvtmp/proc", "/.sblvtmp/run", "/.sblvtmp/srv", "/.sblvtmp/sys", "/.sblvtmp/tmp", "/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"})
         if(sb::exist(item)) ide.append(' ' % item);
 
     if(sb::isdir(sb::sdir[2] % "/.sblivesystemcreate/userdata"))

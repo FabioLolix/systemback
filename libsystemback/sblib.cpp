@@ -104,7 +104,7 @@ QStr sb::fload(cQStr &path)
     return file.readAll();
 }
 
-ullong sb::dfree(cQStr &path)
+inline ullong sb::dfree(cQStr &path)
 {
     struct statvfs dstat;
     return statvfs(path.toStdString().c_str(), &dstat) == -1 ? 0 : dstat.f_bavail * dstat.f_bsize;
@@ -254,9 +254,7 @@ void sb::xrestart()
 
 bool sb::execsrch(cQStr &fname, cQStr &ppath)
 {
-    QSL plst(QStr(qgetenv("PATH")).split(':'));
-
-    for(cQStr &path : plst)
+    for(cQStr &path : QStr(qgetenv("PATH")).split(':'))
     {
         QStr fpath(ppath % path % '/' % fname);
         if(isfile(fpath)) return access(fpath, Exec);
@@ -427,9 +425,7 @@ void sb::pupgrade()
 
         if(isdir(sdir[1]) && access(sdir[1], Write))
         {
-            QSL dlst(QDir(sdir[1]).entryList(QDir::Dirs | QDir::NoDotAndDotDot));
-
-            for(cQStr &item : dlst)
+            for(cQStr &item : QDir(sdir[1]).entryList(QDir::Dirs | QDir::NoDotAndDotDot))
                 if(! islink(sdir[1] % '/' % item) && ! item.contains(' '))
                 {
                     QStr pre(left(item, 4));
@@ -463,25 +459,28 @@ void sb::supgrade()
     {
         if(exec({"apt-get install -fym --force-yes", "dpkg --configure -a", "apt-get dist-upgrade --no-install-recommends -ym --force-yes", "apt-get autoremove --purge -y"}) == 0)
         {
-            QSL dlst(QDir("/boot").entryList(QDir::Files, QDir::Reversed));
             QStr rklist;
 
-            for(cQStr &item : dlst)
-                if(item.startsWith("vmlinuz-"))
-                {
-                    QStr vmlinuz(right(item, -8)), kernel(left(vmlinuz, instr(vmlinuz, "-") - 1)), kver(mid(vmlinuz, kernel.length() + 2, instr(vmlinuz, "-", kernel.length() + 2) - kernel.length() - 2));
+            {
+                QSL dlst(QDir("/boot").entryList(QDir::Files, QDir::Reversed));
 
-                    if(isnum(kver) && vmlinuz.startsWith(kernel % '-' % kver % '-') && ! rklist.contains(kernel % '-' % kver % "-*"))
+                for(cQStr &item : dlst)
+                    if(item.startsWith("vmlinuz-"))
                     {
-                        for(ushort a(1) ; a < 101 ; ++a)
-                        {
-                            QStr subk(kernel % '-' % QStr::number(kver.toShort() - a));
+                        QStr vmlinuz(right(item, -8)), kernel(left(vmlinuz, instr(vmlinuz, "-") - 1)), kver(mid(vmlinuz, kernel.length() + 2, instr(vmlinuz, "-", kernel.length() + 2) - kernel.length() - 2));
 
-                            for(cQStr &ritem : dlst)
-                                if(ritem.startsWith("vmlinuz-" % subk % '-')) rklist.append(' ' % subk % "-*");
+                        if(isnum(kver) && vmlinuz.startsWith(kernel % '-' % kver % '-') && ! rklist.contains(kernel % '-' % kver % "-*"))
+                        {
+                            for(ushort a(1) ; a < 101 ; ++a)
+                            {
+                                QStr subk(kernel % '-' % QStr::number(kver.toShort() - a));
+
+                                for(cQStr &ritem : dlst)
+                                    if(ritem.startsWith("vmlinuz-" % subk % '-')) rklist.append(' ' % subk % "-*");
+                            }
                         }
                     }
-                }
+            }
 
             uchar cproc(rklist.isEmpty() ? 0 : exec("apt-get autoremove --purge " % rklist));
 
@@ -508,17 +507,18 @@ void sb::supgrade()
 
                 if(! iplist.isEmpty()) exec("dpkg --purge " % iplist);
                 exec("apt-get clean");
-                QSL dlst(QDir("/var/cache/apt").entryList(QDir::Files));
 
-                for(uchar a(0) ; a < dlst.count() ; ++a)
                 {
-                    cQStr &item(dlst.at(a));
-                    if(item.contains(".bin.")) QFile::remove("/var/cache/apt/" % item);
+                    QSL dlst(QDir("/var/cache/apt").entryList(QDir::Files));
+
+                    for(uchar a(0) ; a < dlst.count() ; ++a)
+                    {
+                        cQStr &item(dlst.at(a));
+                        if(item.contains(".bin.")) QFile::remove("/var/cache/apt/" % item);
+                    }
                 }
 
-                dlst = QDir("/lib/modules").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-                for(cQStr &item : dlst)
+                for(cQStr &item : QDir("/lib/modules").entryList(QDir::Dirs | QDir::NoDotAndDotDot))
                     if(! exist("/boot/vmlinuz-" % item)) QDir("/lib/modules/" % item).removeRecursively();
 
                 break;
@@ -872,6 +872,8 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
 {
     struct stat fstat;
     if(stat(srcfile.toStdString().c_str(), &fstat) == -1) return false;
+    { QStr tdir(left(newfile, rinstr(newfile, "/") - 1));
+        if(dfree(tdir.isEmpty() ? "/" : tdir) < ullong(fstat.st_size + 10240)) return false; }
     int src, dst;
     if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
     bool err;
@@ -1104,9 +1106,9 @@ void sb::run()
     }
     case Readprttns:
     {
-        QSL dlst(QDir("/dev").entryList(QDir::System)), devs;
+        QSL devs;
 
-        for(cQStr &spath : dlst)
+        for(cQStr &spath : QDir("/dev").entryList(QDir::System))
         {
             QStr path("/dev/" % spath);
 
@@ -1184,7 +1186,7 @@ void sb::run()
                                 {
                                     switch(egeom.count()) {
                                     case 2:
-                                        if(prt->geom.length >= 3145728 / dev->sector_size) egeom << (prt->geom.start - egeom.at(0) < 1048576 ? egeom.at(0) : prt->geom.start) << prt->geom.end + (prt->geom.end == egeom.at(1) ? 1 : 0);
+                                        if(prt->geom.length >= 3145728 / dev->sector_size) egeom << (prt->geom.start - egeom.at(0) < 1048576 / dev->sector_size ? egeom.at(0) : prt->geom.start) << prt->geom.end + (prt->geom.end == egeom.at(1) ? 1 : 0);
                                         break;
                                     default:
                                         egeom.replace(3, prt->geom.end + (prt->geom.end == egeom.at(1) ? 1 : 0));
@@ -1209,9 +1211,9 @@ void sb::run()
     }
     case Readlvprttns:
     {
-        QSL dlst(QDir("/dev/disk/by-id").entryList(QDir::Files)), devs;
+        QSL devs;
 
-        for(cQStr &item : dlst)
+        for(cQStr &item : QDir("/dev/disk/by-id").entryList(QDir::Files))
             if(item.startsWith("usb-") && islink("/dev/disk/by-id/" % item))
             {
                 QStr path(rlink("/dev/disk/by-id/" % item, 10));
@@ -1288,7 +1290,7 @@ void sb::run()
 
             if(ThrdLng[0] > 0 && ThrdLng[1] > 0)
             {
-                PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), ThrdLng[0] / dev->sector_size, (ThrdLng[0] + ThrdLng[1]) / dev->sector_size));
+                PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ullong(dev->length - 1048576 / dev->sector_size) >= (ThrdLng[0] + ThrdLng[1]) / dev->sector_size ? pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size, dev->sector_size) : (ThrdLng[0] + ThrdLng[1]) / dev->sector_size));
                 if(ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
                 ped_disk_commit_to_os(dsk);
             }
@@ -1296,8 +1298,7 @@ void sb::run()
                 while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
                     if(prt->type == PED_PARTITION_FREESPACE && prt->geom.length >= 1048576 / dev->sector_size)
                     {
-                        ullong ends(prt->next && prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : pealign(prt->geom.end, dev->sector_size));
-                        PedPartition *crtprt(ped_partition_new(dsk, PED_PARTITION_NORMAL, ped_file_system_type_get("ext2"), ThrdLng[0] == 0 ? psalign(prt->geom.start, dev->sector_size) : psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ThrdLng[1] == 0 ? ends : pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size, dev->sector_size)));
+                        PedPartition *crtprt(ped_partition_new(dsk, PED_PARTITION_NORMAL, ped_file_system_type_get("ext2"), ThrdLng[0] == 0 ? psalign(prt->geom.start, dev->sector_size) : psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ThrdLng[1] == 0 ? prt->next && prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : pealign(prt->geom.end, dev->sector_size) : pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size, dev->sector_size)));
                         if(ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
                         ped_disk_commit_to_os(dsk);
                         break;
@@ -1343,7 +1344,7 @@ void sb::run()
 
 bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 {
-    QStr sysitms[12], homeitms[5], rootitms;
+    QStr sysitms[12], rootitms;
 
     if((isdir("/bin") && ! rodir(sysitms[0], "/bin")) ||
         (isdir("/boot") && ! rodir(sysitms[1], "/boot")) ||
@@ -1359,66 +1360,61 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         (isdir("/var") && ! rodir(sysitms[11], "/var")) ||
         (isdir("/root") && ! rodir(rootitms, "/root", true))) return false;
 
-    QSL usrs;
+    QSL homeitms, usrs;
     uint anum(0);
-    QFile file("/etc/passwd");
-    if(! file.open(QIODevice::ReadOnly)) return false;
 
-    while(! file.atEnd())
     {
-        QStr usr(file.readLine().trimmed());
+        QFile file("/etc/passwd");
+        if(! file.open(QIODevice::ReadOnly)) return false;
 
-        if(usr.contains(":/home/"))
+        while(! file.atEnd())
         {
-            usr = left(usr, instr(usr, ":") -1);
+            QStr usr(file.readLine().trimmed());
 
-            if(isdir("/home/" % usr))
+            if(usr.contains(":/home/"))
             {
-                usrs.append(usr);
+                usr = left(usr, instr(usr, ":") -1);
 
-                if(usrs.count() > 5)
+                if(isdir("/home/" % usr))
                 {
-                    QStr tmpitms;
-                    if(! rodir(tmpitms, "/home/" % usr, true)) return false;
-                    anum += tmpitms.count('\n');
+                    usrs.append(usr);
+                    homeitms.append(nullptr);
+                    if(! rodir(homeitms.last(), "/home/" % usr, true)) return false;
                 }
-                else if(! rodir(homeitms[usrs.count() - 1], "/home/" % usr, true))
-                    return false;
             }
         }
     }
 
-    file.close();
-    for(uchar a(0) ; a < 5 ; ++a) anum += homeitms[a].count('\n');
+    for(uchar a(0) ; a < homeitms.count() ; ++a) anum += homeitms.at(a).count('\n');
     anum += rootitms.count('\n');
     for(uchar a(0) ; a < 12 ; ++a) anum += sysitms[a].count('\n');
     Progress = 0;
     QStr trgt(sdir % '/' % pname);
     if(! QDir().mkdir(trgt)) return false;
     QSL elist({".sbuserdata", ".cache/gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"});
-    file.setFileName("/etc/systemback.excludes");
-    if(! file.open(QIODevice::ReadOnly)) return false;
 
-    while(! file.atEnd())
     {
-        QStr cline(file.readLine().trimmed());
-        if(cline.startsWith('.')) elist.append(cline);
-        if(ThrdKill) return false;
+        QFile file("/etc/systemback.excludes");
+        if(! file.open(QIODevice::ReadOnly)) return false;
+
+        while(! file.atEnd())
+        {
+            QStr cline(file.readLine().trimmed());
+            if(cline.startsWith('.')) elist.append(cline);
+            if(ThrdKill) return false;
+        }
     }
 
-    file.close();
     QStr *cditms;
     uint cnum(0);
     uchar cperc;
-    QSL rplst, dlst(QDir(sdir).entryList(QDir::Dirs | QDir::NoDotAndDotDot));
+    QSL rplst;
 
-    for(cQStr &item : dlst)
+    for(cQStr &item : QDir(sdir).entryList(QDir::Dirs | QDir::NoDotAndDotDot))
     {
         if(like(item, {"_S01_*", "_S02_*", "_S03_*", "_S04_*", "_S05_*", "_S06_*", "_S07_*", "_S08_*", "_S09_*", "_S10_*", "_H01_*", "_H02_*", "_H03_*", "_H04_*", "_H05_*"})) rplst.append(item);
         if(ThrdKill) return false;
     }
-
-    dlst.clear();
 
     if(isdir("/home"))
     {
@@ -1427,16 +1423,8 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         for(uchar a(0) ; a < usrs.count() ; ++a)
         {
             cQStr &usr(usrs.at(a));
-            QStr tmpitms;
             if(! QDir().mkdir(trgt % "/home/" % usr)) return false;
-
-            if(a < 5)
-                cditms = &homeitms[a];
-            else if(rodir(tmpitms, "/home/" % usr, true))
-                cditms = &tmpitms;
-            else
-                return false;
-
+            cditms = &homeitms[a];
             QTS in(cditms, QIODevice::ReadOnly);
 
             while(! in.atEnd())
@@ -1581,24 +1569,20 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         }
     }
 
-    dlst = QDir("/").entryList(QDir::Files);
-
-    for(cQStr &item : dlst)
+    for(cQStr &item : QDir("/").entryList(QDir::Files))
     {
         if(like(item, {"_initrd.img*", "_vmlinuz*"}) && islink('/' % item) && ! cplink('/' % item, trgt % '/' % item)) return false;
         if(ThrdKill) return false;
     }
 
-    dlst = {"/cdrom", "/dev", "/mnt", "/proc", "/run", "/sys", "/tmp"};
-
-    for(cQStr &cdir : dlst)
+    for(cQStr &cdir : {"/cdrom", "/dev", "/mnt", "/proc", "/run", "/sys", "/tmp"})
     {
         if(isdir(cdir) && ! cpdir(cdir, trgt % cdir)) return false;
         if(ThrdKill) return false;
     }
 
     elist = {"/etc/mtab", "/var/.sblvtmp", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/lib/ureadahead/", "/var/log/", "/var/run/", "/var/tmp/"};
-    dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
+    QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
     for(uchar a(0) ; a < dlst.count() ; ++a)
     {
@@ -1680,7 +1664,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         if(isfile("/etc/fstab"))
         {
             dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-            file.setFileName("/etc/fstab");
+            QFile file("/etc/fstab");
             if(! file.open(QIODevice::ReadOnly)) return false;
 
             for(uchar a(0) ; a < dlst.count() ; ++a)
@@ -1694,9 +1678,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
                     if(! cline.startsWith("#") && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
                     {
-                        QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
-
-                        for(QStr cdname : cdlst)
+                        for(QStr cdname : QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'))
                             if(! cdname.isEmpty())
                             {
                                 fdir.append('/' % cdname.replace("\\040", " "));
@@ -1781,8 +1763,8 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
 bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab)
 {
-    QSL usrs;
-    QStr sysitms[12], homeitms[5], rootitms;
+    QSL homeitms, usrs;
+    QStr sysitms[12], rootitms;
     uint anum(0);
 
     if(mthd != 2)
@@ -1792,23 +1774,12 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
             if(isdir(srcdir % "/root") && ! rodir(rootitms, srcdir % "/root", true)) return false;
 
             if(isdir(srcdir % "/home"))
-            {
-                QSL dlst(QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoDotAndDotDot));
-
-                for(cQStr &usr : dlst)
+                for(cQStr &usr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoDotAndDotDot))
                 {
                     usrs.append(usr);
-
-                    if(usrs.count() > 5)
-                    {
-                        QStr tmpitms;
-                        if(! rodir(tmpitms, srcdir % "/home/" % usr, true)) return false;
-                        anum += tmpitms.count('\n');
-                    }
-                    else if(! rodir(homeitms[usrs.count() - 1], srcdir % "/home/" % usr, true))
-                        return false;
+                    homeitms.append(nullptr);
+                    if(! rodir(homeitms.last(), srcdir % "/home/" % usr, true)) return false;
                 }
-            }
         }
         else if(usr == "root")
         {
@@ -1817,10 +1788,11 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         else if(isdir(srcdir % "/home/" % usr))
         {
             usrs.append(usr);
-            if(! rodir(homeitms[0], srcdir % "/home/" % usr, true)) return false;
+            homeitms.append(nullptr);
+            if(! rodir(homeitms.last(), srcdir % "/home/" % usr, true)) return false;
         }
 
-        for(uchar a(0) ; a < 5 ; ++a) anum += homeitms[a].count('\n');
+        for(uchar a(0) ; a < homeitms.count() ; ++a) anum += homeitms.at(a).count('\n');
         anum += rootitms.count('\n');
     }
 
@@ -1845,25 +1817,20 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
         for(uchar a(0) ; a < 12 ; ++a) anum += sysitms[a].count('\n');
         Progress = 0;
-        QSL dlst(QDir(trgt.isEmpty() ? "/" : trgt).entryList(QDir::Files));
 
-        for(cQStr &item : dlst)
+        for(cQStr &item : QDir(trgt.isEmpty() ? "/" : trgt).entryList(QDir::Files))
         {
             if(like(item, {"_initrd.img*", "_vmlinuz*"}) && ! islink(trgt % '/' % item) && ! exist(srcdir % '/' % item) && ! lcomp(srcdir % '/' % item, trgt % '/' % item)) QFile::remove(trgt % '/' % item);
             if(ThrdKill) return false;
         }
 
-        dlst = QDir(srcdir).entryList(QDir::Files);
-
-        for(cQStr &item : dlst)
+        for(cQStr &item : QDir(srcdir).entryList(QDir::Files))
         {
             if(like(item, {"_initrd.img*", "_vmlinuz*"}) && ! exist(trgt % '/' % item)) cplink(srcdir % '/' % item, trgt % '/' % item);
             if(ThrdKill) return false;
         }
 
-        dlst = {"/cdrom", "/dev", "/home", "/mnt", "/root", "/proc", "/run", "/sys", "/tmp"};
-
-        for(cQStr &cdir : dlst)
+        for(cQStr &cdir : {"/cdrom", "/dev", "/home", "/mnt", "/root", "/proc", "/run", "/sys", "/tmp"})
         {
             if(isdir(srcdir % cdir))
             {
@@ -1885,7 +1852,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         if(trgt.isEmpty()) elist = {"/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/run/", "/var/tmp/"};
         if(trgt.isEmpty() || (isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsustart") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append({"/etc/systemback*", "/etc/xdg/autostart/sbschedule*", "systemback*", "/usr/lib/systemback/", "/usr/share/systemback/", "/var/lib/dpkg/info/systemback*"});
         if(sfstab) elist.append("/etc/fstab");
-        dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
+        QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
         for(uchar a(0) ; a < dlst.count() ; ++a)
         {
@@ -2002,15 +1969,11 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         if(isdir(srcdir % "/media"))
         {
             if(isdir(trgt % "/media"))
-            {
-                dlst = QDir(trgt % "/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-                for(cQStr &item : dlst)
+                for(cQStr &item : QDir(trgt % "/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot))
                 {
                     if(! exist(srcdir % "/media/" % item) && ! mcheck(trgt % "/media/" % item % '/')) recrmdir(trgt % "/media/" % item);
                     if(ThrdKill) return false;
                 }
-            }
             else
             {
                 if(exist(trgt % "/media")) QFile::remove(trgt % "/media");
@@ -2083,17 +2046,19 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
     if(mthd != 2)
     {
         QSL elist({".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"});
-        QFile file(srcdir % "/etc/systemback.excludes");
-        if(! file.open(QIODevice::ReadOnly)) return false;
 
-        while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
-            if(cline.startsWith('.')) elist.append(cline);
-            if(ThrdKill) return false;
+            QFile file(srcdir % "/etc/systemback.excludes");
+            if(! file.open(QIODevice::ReadOnly)) return false;
+
+            while(! file.atEnd())
+            {
+                QStr cline(file.readLine().trimmed());
+                if(cline.startsWith('.')) elist.append(cline);
+                if(ThrdKill) return false;
+            }
         }
 
-        file.close();
         bool skppd;
 
         if(! ilike(mthd, {4, 6}) || usr == "root")
@@ -2257,16 +2222,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                 }
             }
 
-            QStr tmpitms;
-
-            if(a < 5)
-                cditms = &homeitms[a];
-            else
-            {
-                if(! rodir(tmpitms, srcdir % "/home/" % usr, true)) return false;
-                cditms = &tmpitms;
-            }
-
+            cditms = &homeitms[a];
             QTS in(cditms, QIODevice::ReadOnly);
 
             while(! in.atEnd())
@@ -2376,8 +2332,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
 bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 {
-    QSL usrs;
-    QStr sysitms[12], homeitms[5], rootitms;
+    QStr sysitms[12], rootitms;
 
     if((isdir(srcdir % "/bin") && ! rodir(sysitms[0], srcdir % "/bin")) ||
         (isdir(srcdir % "/boot") && ! rodir(sysitms[1], srcdir % "/boot")) ||
@@ -2393,6 +2348,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         (isdir(srcdir % "/var") && ! rodir(sysitms[11], srcdir % "/var")) ||
         (isdir(srcdir % "/root") && ! (mthd == 5 ? rodir(rootitms, srcdir % "/etc/skel") : rodir(rootitms, srcdir % "/root", true)))) return false;
 
+    QSL homeitms, usrs;
     uint anum(0);
     for(uchar a(0) ; a < 12 ; ++a) anum += sysitms[a].count('\n');
     anum += rootitms.count('\n');
@@ -2420,38 +2376,27 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     }
                 }
                 else
-                {
-                    QSL dlst(QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoDotAndDotDot));
-                    for(cQStr &usr : dlst) usrs.append(usr);
-                }
+                    for(cQStr &usr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) usrs.append(usr);
             }
 
             if(ThrdKill) return false;
 
             if(mthd < 3)
-            {
                 for(uchar a(0) ; a < usrs.count() ; ++a)
                 {
                     cQStr &usr(usrs.at(a));
-
-                    if(a > 4)
-                    {
-                        QStr tmpitms;
-                        if(! rodir(tmpitms, srcdir % "/home/" % usr, mthd == 2)) return false;
-                        anum += tmpitms.count('\n');
-                    }
-                    else if(! rodir(homeitms[a], srcdir % "/home/" % usr, mthd == 2))
-                        return false;
+                    homeitms.append(nullptr);
+                    if(! rodir(homeitms.last(), srcdir % "/home/" % usr, mthd == 2)) return false;
                 }
-            }
             else if(isdir(srcdir % "/home/" % usr))
             {
                 usrs.append(usr);
-                if(mthd < 5 && ! rodir(homeitms[0], srcdir % "/home/" % usr, mthd == 3)) return false;
+                homeitms.append(nullptr);
+                if(mthd < 5 && ! rodir(homeitms.last(), srcdir % "/home/" % usr, mthd == 3)) return false;
             }
         }
 
-        for(uchar a(0) ; a < 5 ; ++a) anum += homeitms[a].count('\n');
+        for(uchar a(0) ; a < homeitms.count() ; ++a) anum += homeitms.at(a).count('\n');
     }
 
     Progress = 0;
@@ -2459,17 +2404,18 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     uint cnum(0);
     uchar cperc;
     QSL elist({".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"});
-    QFile file(srcdir % "/etc/systemback.excludes");
-    if(! file.open(QIODevice::ReadOnly)) return false;
 
-    while(! file.atEnd())
     {
-        QStr cline(file.readLine().trimmed());
-        if(cline.startsWith('.')) elist.append(cline);
-        if(ThrdKill) return false;
-    }
+        QFile file(srcdir % "/etc/systemback.excludes");
+        if(! file.open(QIODevice::ReadOnly)) return false;
 
-    file.close();
+        while(! file.atEnd())
+        {
+            QStr cline(file.readLine().trimmed());
+            if(cline.startsWith('.')) elist.append(cline);
+            if(ThrdKill) return false;
+        }
+    }
 
     if(mthd > 2)
     {
@@ -2477,12 +2423,11 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
         if(! mid.isEmpty())
         {
-            file.setFileName(srcdir % mid);
+            QFile file(srcdir % mid);
             if(! file.open(QIODevice::ReadOnly)) return false;
             QStr line(file.readLine().trimmed());
             if(line.length() == 32) macid = line;
-            file.close();
-        }
+         }
     }
 
     bool skppd;
@@ -2496,7 +2441,6 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         }
 
         if(mthd > 0)
-        {
             for(uchar a(0) ; a < usrs.count() ; ++a)
             {
                 cQStr &usr(usrs.at(a));
@@ -2512,16 +2456,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     }
                 }
 
-                QStr tmpitms;
-
-                if(a < 5)
-                    cditms = mthd == 5 ? &rootitms : &homeitms[a];
-                else
-                {
-                    if(! rodir(tmpitms, srcdir % "/home/" % usr, mthd == 2)) return false;
-                    cditms = &tmpitms;
-                }
-
+                cditms = mthd == 5 ? &rootitms : &homeitms[a];
                 QTS in(cditms, QIODevice::ReadOnly);
 
                 while(! in.atEnd())
@@ -2650,7 +2585,6 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     return false;
                 }
             }
-        }
 
         if(! cpertime(srcdir % "/home", "/.sbsystemcopy/home"))
         {
@@ -2774,25 +2708,19 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
     }
 
-    QSL dlst(QDir("/.sbsystemcopy").entryList(QDir::Files));
-
-    for(cQStr &item : dlst)
+    for(cQStr &item : QDir("/.sbsystemcopy").entryList(QDir::Files))
     {
         if(like(item, {"_initrd.img*", "_vmlinuz*"}) && ! islink("/.sbsystemcopy/" % item) && ! islink(srcdir % '/' % item) && ! lcomp(srcdir % '/' % item, "/.sbsystemcopy/" % item) && ! QFile::remove("/.sbsystemcopy/" % item)) return false;
         if(ThrdKill) return false;
     }
 
-    dlst = QDir(srcdir.isEmpty() ? "/" : srcdir).entryList(QDir::Files);
-
-    for(cQStr &item : dlst)
+    for(cQStr &item : QDir(srcdir.isEmpty() ? "/" : srcdir).entryList(QDir::Files))
     {
         if(like(item, {"_initrd.img*", "_vmlinuz*"}) && islink(srcdir % '/' % item) && ! exist("/.sbsystemcopy/" % item) && ! cplink(srcdir % '/' % item, "/.sbsystemcopy/" % item)) return false;
         if(ThrdKill) return false;
     }
 
-    dlst = {"/cdrom", "/dev", "/home", "/mnt", "/root", "/proc", "/run", "/sys", "/tmp"};
-
-    for(cQStr &cdir : dlst)
+    for(cQStr &cdir : {"/cdrom", "/dev", "/home", "/mnt", "/root", "/proc", "/run", "/sys", "/tmp"})
     {
         if(isdir(srcdir % cdir))
         {
@@ -2821,7 +2749,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     elist = {"/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/log", "/var/run/", "/var/tmp/"};
     if(mthd > 2) elist.append({"/etc/machine-id", "/etc/systemback.conf", "/etc/systemback.excludes", "/var/lib/dbus/machine-id"});
     if(srcdir == "/.systembacklivepoint" && fload("/proc/cmdline").contains("noxconf")) elist.append("/etc/X11/xorg.conf");
-    dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
+    QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
     for(uchar a(0) ; a < dlst.count() ; ++a)
     {
@@ -2950,15 +2878,11 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     if(isdir(srcdir % "/media"))
     {
         if(isdir("/.sbsystemcopy/media"))
-        {
-            dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-            for(cQStr &item : dlst)
+            for(cQStr &item : QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot))
             {
                 if(! exist(srcdir % "/media/" % item) && ! mcheck("/.sbsystemcopy/media/" % item % '/')) recrmdir("/.sbsystemcopy/media/" % item);
                 if(ThrdKill) return false;
             }
-        }
         else
         {
             if(exist("/.sbsystemcopy/media")) QFile::remove("/.sbsystemcopy/media");
@@ -2970,7 +2894,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             if(isfile("/etc/fstab"))
             {
                 dlst = QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-                file.setFileName("/etc/fstab");
+                QFile file("/etc/fstab");
                 if(! file.open(QIODevice::ReadOnly)) return false;
 
                 for(uchar a(0) ; a < dlst.count() ; ++a)
@@ -2983,16 +2907,12 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                         QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
                         if(! cline.startsWith("#") && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
-                        {
-                            QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
-
-                            for(QStr cdname : cdlst)
+                            for(QStr cdname : QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'))
                                 if(! cdname.isEmpty())
                                 {
                                     fdir.append('/' % cdname.replace("\\040", " "));
                                     if(! isdir("/.sbsystemcopy/media" % fdir) && ! cpdir("/media" % fdir, "/.sbsystemcopy/media" % fdir)) goto err_8;
                                 }
-                        }
 
                         if(ThrdKill) return false;
                         continue;
@@ -3148,9 +3068,8 @@ bool sb::thrdlvprpr(bool iudata)
 {
     if(ThrdLng[0] > 0) ThrdLng[0] = 0;
     QStr sitms;
-    QSL dlst({"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"});
 
-    for(cQStr &item : dlst)
+    for(cQStr &item : {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"})
         if(isdir(item))
         {
             if(! rodir(sitms, item)) return false;
@@ -3184,9 +3103,8 @@ bool sb::thrdlvprpr(bool iudata)
     if((isfile("/etc/fstab") && ! cpfile("/etc/fstab", sdir[2] % "/.sblivesystemcreate/.systemback/etc/fstab")) || ! cpertime("/etc", sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
     if(exist("/.sblvtmp")) stype("/.sblvtmp") == Isdir ? recrmdir("/.sblvtmp") : QFile::remove("/.sblvtmp");
     if(! QDir().mkdir("/.sblvtmp")) return false;
-    dlst = {"/cdrom", "/dev", "/mnt", "/proc", "/run", "/srv", "/sys", "/tmp"};
 
-    for(cQStr &cdir : dlst)
+    for(cQStr &cdir : {"/cdrom", "/dev", "/mnt", "/proc", "/run", "/srv", "/sys", "/tmp"})
         if(isdir(cdir))
         {
             if(! cpdir(cdir, "/.sblvtmp" % cdir))
@@ -3227,10 +3145,7 @@ bool sb::thrdlvprpr(bool iudata)
                 QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
                 if(! cline.startsWith("#") && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
-                {
-                    QSL cdlst(QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'));
-
-                    for(QStr cdname : cdlst)
+                    for(QStr cdname : QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'))
                         if(! cdname.isEmpty())
                         {
                             fdir.append('/' % cdname.replace("\\040", " "));
@@ -3241,7 +3156,6 @@ bool sb::thrdlvprpr(bool iudata)
                                 ++ThrdLng[0];
                             }
                         }
-                }
 
                 if(ThrdKill) return false;
                 continue;
@@ -3331,26 +3245,27 @@ bool sb::thrdlvprpr(bool iudata)
     }
 
     QSL usrs;
-    QFile file("/etc/passwd");
-    if(! file.open(QIODevice::ReadOnly)) return false;
 
-    while(! file.atEnd())
     {
-        QStr usr(file.readLine().trimmed());
+        QFile file("/etc/passwd");
+        if(! file.open(QIODevice::ReadOnly)) return false;
 
-        if(usr.contains(":/home/"))
+        while(! file.atEnd())
         {
-            usr = left(usr, instr(usr, ":") -1);
-            if(isdir("/home/" % usr)) usrs.append(usr);
+            QStr usr(file.readLine().trimmed());
+
+            if(usr.contains(":/home/"))
+            {
+                usr = left(usr, instr(usr, ":") -1);
+                if(isdir("/home/" % usr)) usrs.append(usr);
+            }
         }
     }
 
     if(ThrdKill) return false;
-    file.close();
     bool uhl(true);
 
     if(dfree("/home") > 104857600 && dfree("/root") > 104857600)
-    {
         for(cQStr &usr : usrs)
         {
             if(! issmfs("/home", "/home/" % usr))
@@ -3361,7 +3276,6 @@ bool sb::thrdlvprpr(bool iudata)
 
             if(ThrdKill) return false;
         }
-    }
     else
         uhl = false;
 
@@ -3376,17 +3290,18 @@ bool sb::thrdlvprpr(bool iudata)
     ++ThrdLng[0];
     if(ThrdKill) return false;
     elist = {".sbuserdata", ".cache/gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
-    file.setFileName("/etc/systemback.excludes");
-    if(! file.open(QIODevice::ReadOnly)) return false;
 
-    while(! file.atEnd())
     {
-        QStr cline(file.readLine().trimmed());
-        elist.append(cline);
-        if(ThrdKill) return false;
-    }
+        QFile file("/etc/systemback.excludes");
+        if(! file.open(QIODevice::ReadOnly)) return false;
 
-    file.close();
+        while(! file.atEnd())
+        {
+            QStr cline(file.readLine().trimmed());
+            elist.append(cline);
+            if(ThrdKill) return false;
+        }
+    }
 
     if(isdir("/root"))
     {
@@ -3526,7 +3441,7 @@ bool sb::thrdlvprpr(bool iudata)
 
         if(! iudata && isfile("/home/" % udir % "/.config/user-dirs.dirs"))
         {
-            file.setFileName("/home/" % udir % "/.config/user-dirs.dirs");
+            QFile file("/home/" % udir % "/.config/user-dirs.dirs");
             if(! file.open(QIODevice::ReadOnly)) return false;
 
             while(! file.atEnd())

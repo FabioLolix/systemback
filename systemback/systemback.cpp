@@ -2638,6 +2638,7 @@ start:;
             QFile file("/.sbsystemcopy/etc/hostname");
             if(! file.open(QIODevice::ReadOnly)) goto error;
             QStr ohname(file.readLine().trimmed());
+            file.close();
 
             if(ohname != ui->hostname->text())
             {
@@ -7179,7 +7180,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 {
                     if(! mntd) mntd = true;
 
-                    if(sb::sdir[0].startsWith(ui->partitionsettings->item(a, 3)->text()) || sb::like(ui->partitionsettings->item(a, 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                    if(((ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) && sb::sdir[0].startsWith(ui->partitionsettings->item(a, 3)->text())) || sb::like(ui->partitionsettings->item(a, 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
                         mntcheck = true;
                     else if(sb::isfile("/etc/fstab"))
                     {
@@ -8698,7 +8699,7 @@ start:;
     }
     else if(sb::isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
     {
-        if(QFile::setPermissions("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
+        if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
     }
     else
     {
@@ -8718,11 +8719,13 @@ start:;
     uchar rv(sb::exec("update-initramfs -tck" % ckernel));
 
     if(lvtype == "casper")
+    {
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
             if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
+    }
     else if(sb::isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
     {
-        if(QFile::setPermissions("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
+        if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
     }
     else if(! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab"))
         goto error;

@@ -104,7 +104,7 @@ QStr sb::fload(cQStr &path)
     return file.readAll();
 }
 
-inline ullong sb::dfree(cQStr &path)
+ullong sb::dfree(cQStr &path)
 {
     struct statvfs dstat;
     return statvfs(path.toStdString().c_str(), &dstat) == -1 ? 0 : dstat.f_bavail * dstat.f_bsize;
@@ -803,12 +803,15 @@ inline QStr sb::rlink(cQStr &path, ushort blen)
 
 inline ullong sb::psalign(ullong start, ushort ssize)
 {
-    return start > 1048576 / ssize ? ldouble(start) / (1048576 / ssize) == trunc(start / (1048576 / ssize)) ? start : start + 1048576 / ssize - start % (1048576 / ssize) : 1048576 / ssize;
+    if(start <= 1048576 / ssize) return 1048576 / ssize;
+    ushort rem(start % (1048576 / ssize));
+    return rem > 0 ? start + 1048576 / ssize - rem : start;
 }
 
 inline ullong sb::pealign(ullong end, ushort ssize)
 {
-    return ldouble(end) / (1048576 / ssize) == trunc(end / (1048576 / ssize)) ? end - 1 : ldouble(end + 1) / (1048576 / ssize) == trunc((end + 1) / (1048576 / ssize)) ? end : end - end % (1048576 / ssize) - 1;
+    ushort rem(end % (1048576 / ssize));
+    return rem > 0 ? rem < (1048576 / ssize) - 1 ? end - rem - 1 : end : end - 1;
 }
 
 inline ullong sb::devsize(cQStr &dev)
@@ -860,7 +863,7 @@ inline bool sb::cpertime(cQStr &sourcepath, cQStr &destpath)
 inline bool sb::cplink(cQStr &srclink, cQStr &newlink)
 {
     struct stat sistat;
-    if(lstat(srclink.toStdString().c_str(), &sistat) == -1 || ! QFile::link(rlink(srclink, sistat.st_size), newlink)) return false;
+    if(lstat(srclink.toStdString().c_str(), &sistat) == -1 || ! S_ISLNK(sistat.st_mode) || ! QFile::link(rlink(srclink, sistat.st_size), newlink)) return false;
     struct timeval sitimes[2];
     sitimes[0].tv_sec = sistat.st_atim.tv_sec;
     sitimes[1].tv_sec = sistat.st_mtim.tv_sec;
@@ -872,8 +875,6 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
 {
     struct stat fstat;
     if(stat(srcfile.toStdString().c_str(), &fstat) == -1) return false;
-    { QStr tdir(left(newfile, rinstr(newfile, "/") - 1));
-        if(dfree(tdir.isEmpty() ? "/" : tdir) < ullong(fstat.st_size + 10240)) return false; }
     int src, dst;
     if((src = open(srcfile.toStdString().c_str(), O_RDONLY | O_NOATIME)) == -1) return false;
     bool err;
@@ -886,7 +887,7 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
 
             do {
                 llong csize(size);
-                if((size += sendfile(dst, src, nullptr, fstat.st_size - size)) == csize) err = true;
+                if((size += sendfile(dst, src, nullptr, fstat.st_size - size)) <= csize) err = true;
             } while(! err && size < fstat.st_size);
         }
 
@@ -904,7 +905,7 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
 inline bool sb::cpdir(cQStr &srcdir, cQStr &newdir)
 {
     struct stat dstat;
-    if(stat(srcdir.toStdString().c_str(), &dstat) == -1 || mkdir(newdir.toStdString().c_str(), dstat.st_mode) == -1 || (dstat.st_uid + dstat.st_gid > 0 && (chown(newdir.toStdString().c_str(), dstat.st_uid, dstat.st_gid) == -1 || (dstat.st_mode != (dstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newdir.toStdString().c_str(), dstat.st_mode) == -1)))) return false;
+    if(stat(srcdir.toStdString().c_str(), &dstat) == -1 || ! S_ISDIR(dstat.st_mode) || mkdir(newdir.toStdString().c_str(), dstat.st_mode) == -1 || (dstat.st_uid + dstat.st_gid > 0 && (chown(newdir.toStdString().c_str(), dstat.st_uid, dstat.st_gid) == -1 || (dstat.st_mode != (dstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(newdir.toStdString().c_str(), dstat.st_mode) == -1)))) return false;
     struct utimbuf sdtimes;
     sdtimes.actime = dstat.st_atim.tv_sec;
     sdtimes.modtime = dstat.st_mtim.tv_sec;
@@ -937,9 +938,9 @@ inline bool sb::issmfs(cQStr &item1, cQStr &item2)
 inline bool sb::lcomp(cQStr &link1, cQStr &link2)
 {
     struct stat istat[2];
-    if(ilike(-1, QSIL() << lstat(link1.toStdString().c_str(), &istat[0]) << lstat(link2.toStdString().c_str(), &istat[1])) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
+    if(ilike(-1, QSIL() << lstat(link1.toStdString().c_str(), &istat[0]) << lstat(link2.toStdString().c_str(), &istat[1])) || ! S_ISLNK(istat[0].st_mode) || ! S_ISLNK(istat[1].st_mode) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
     QStr lnk(rlink(link1, istat[0].st_size));
-    return lnk.isEmpty() || lnk != rlink(link2, istat[1].st_size);
+    return ! lnk.isEmpty() && lnk == rlink(link2, istat[1].st_size);
 }
 
 inline bool sb::isnum(cQStr &txt)
@@ -1150,7 +1151,8 @@ void sb::run()
                                     {
                                         if(egeom.count() > 2)
                                         {
-                                            devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - psalign(egeom.at(2), dev->sector_size)) * dev->sector_size - (prt->type == PED_PARTITION_LOGICAL ? 2097152 : 1048576 - dev->sector_size)) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(psalign(egeom.at(2), dev->sector_size) * dev->sector_size + 1048576));
+                                            ullong start(psalign(egeom.at(2), dev->sector_size));
+                                            devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - (prt->type == PED_PARTITION_LOGICAL ? 2097152 : 1048576 - dev->sector_size)) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
                                             egeom.removeAt(3);
                                             egeom.removeAt(2);
                                         }
@@ -1174,11 +1176,13 @@ void sb::run()
                             {
                                 if(egeom.count() > 2)
                                 {
-                                    devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - psalign(egeom.at(2), dev->sector_size) + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(psalign(egeom.at(2), dev->sector_size) * dev->sector_size + 1048576));
+                                    ullong start(psalign(egeom.at(2), dev->sector_size));
+                                    devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
                                     egeom.clear();
                                 }
 
-                                devs.append(path % "?\n" % QStr::number(((prt->next && prt->next->type == PED_PARTITION_METADATA ? type == "msdos" ? prt->next->geom.end : prt->next->geom.end - (34816 / dev->sector_size * 10 + 5) / 10 : pealign(prt->geom.end, dev->sector_size)) - (prt->geom.start * dev->sector_size < 1048576 ? 1048576 / dev->sector_size : psalign(prt->geom.start, dev->sector_size))) * dev->sector_size) % '\n' % QStr::number(Freespace) % '\n' % QStr::number(prt->geom.start * dev->sector_size < 1048576 ? 1048576 : psalign(prt->geom.start, dev->sector_size) * dev->sector_size));
+                                llong fgeom[2]{llong(prt->geom.start < 1048576 / dev->sector_size ? 1048576 / dev->sector_size : psalign(prt->geom.start, dev->sector_size)), llong(prt->next && prt->next->type == PED_PARTITION_METADATA ? type == "msdos" ? prt->next->geom.end : prt->next->geom.end - (34816 / dev->sector_size * 10 + 5) / 10 : pealign(prt->geom.end, dev->sector_size))};
+                                if(fgeom[1] - fgeom[0] > 1048576 / dev->sector_size - 2) devs.append(path % "?\n" % QStr::number((fgeom[1] - fgeom[0] + 1) * dev->sector_size) % '\n' % QStr::number(Freespace) % '\n' % QStr::number(fgeom[0] * dev->sector_size));
                             }
                             else if(! egeom.isEmpty())
                             {
@@ -1197,7 +1201,11 @@ void sb::run()
                             }
                         }
 
-                    if(egeom.count() > 2) devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - psalign(egeom.at(2), dev->sector_size) + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(psalign(egeom.at(2), dev->sector_size) * dev->sector_size + 1048576));
+                    if(egeom.count() > 2)
+                    {
+                        ullong start(psalign(egeom.at(2), dev->sector_size));
+                        devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
+                    }
                 }
 
             next:
@@ -1290,7 +1298,7 @@ void sb::run()
 
             if(ThrdLng[0] > 0 && ThrdLng[1] > 0)
             {
-                PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ullong(dev->length - 1048576 / dev->sector_size) >= (ThrdLng[0] + ThrdLng[1]) / dev->sector_size ? pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size, dev->sector_size) : (ThrdLng[0] + ThrdLng[1]) / dev->sector_size));
+                PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ullong(dev->length - 1048576 / dev->sector_size) >= (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1 ? pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size) : (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1));
                 if(ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
                 ped_disk_commit_to_os(dsk);
             }
@@ -1298,7 +1306,7 @@ void sb::run()
                 while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
                     if(prt->type == PED_PARTITION_FREESPACE && prt->geom.length >= 1048576 / dev->sector_size)
                     {
-                        PedPartition *crtprt(ped_partition_new(dsk, PED_PARTITION_NORMAL, ped_file_system_type_get("ext2"), ThrdLng[0] == 0 ? psalign(prt->geom.start, dev->sector_size) : psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ThrdLng[1] == 0 ? prt->next && prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : pealign(prt->geom.end, dev->sector_size) : pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size, dev->sector_size)));
+                        PedPartition *crtprt(ped_partition_new(dsk, PED_PARTITION_NORMAL, ped_file_system_type_get("ext2"), ThrdLng[0] == 0 ? psalign(prt->geom.start, dev->sector_size) : psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ThrdLng[1] == 0 ? prt->next && prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : pealign(prt->geom.end, dev->sector_size) : pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size)));
                         if(ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
                         ped_disk_commit_to_os(dsk);
                         break;
@@ -1438,6 +1446,17 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                 {
                     switch(line.left(1).toShort()) {
                     case Islink:
+                        for(cQStr &cpname : rplst)
+                        {
+                            if(stype(sdir % '/' % cpname % "/home/" % usr % '/' % item) == Islink && lcomp("/home/" % usr % '/' % item, sdir % '/' % cpname % "/home/" % usr % '/' % item))
+                            {
+                                if(link(QStr(sdir % '/' % cpname % "/home/" % usr % '/' % item).toStdString().c_str(), QStr(trgt % "/home/" % usr % '/' % item).toStdString().c_str()) == -1) goto err_1;
+                                goto nitem_1;
+                            }
+
+                            if(ThrdKill) return false;
+                        }
+
                         if(! cplink("/home/" % usr % '/' % item, trgt % "/home/" % usr % '/' % item)) goto err_1;
                         break;
                     case Isdir:
@@ -1515,6 +1534,17 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
             {
                 switch(line.left(1).toShort()) {
                 case Islink:
+                    for(cQStr &cpname : rplst)
+                    {
+                        if(stype(sdir % '/' % cpname % "/root/" % item) == Islink && lcomp("/root/" % item, sdir % '/' % cpname % "/root/" % item))
+                        {
+                            if(link(QStr(sdir % '/' % cpname % "/root/" % item).toStdString().c_str(), QStr(trgt % "/root/" % item).toStdString().c_str()) == -1) goto err_3;
+                            goto nitem_2;
+                        }
+
+                        if(ThrdKill) return false;
+                    }
+
                     if(! cplink("/root/" % item, trgt % "/root/" % item)) goto err_3;
                     break;
                 case Isdir:
@@ -1571,8 +1601,28 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
     for(cQStr &item : QDir("/").entryList(QDir::Files))
     {
-        if(like(item, {"_initrd.img*", "_vmlinuz*"}) && islink('/' % item) && ! cplink('/' % item, trgt % '/' % item)) return false;
+        if(like(item, {"_initrd.img*", "_vmlinuz*"}) && islink('/' % item))
+        {
+            for(cQStr &cpname : rplst)
+            {
+                if(stype(sdir % '/' % cpname % '/' % item) == Islink && lcomp('/' % item, sdir % '/' % cpname % '/' % item))
+                {
+                    if(link(QStr(sdir % '/' % cpname % '/' % item).toStdString().c_str(), QStr(trgt % '/' % item).toStdString().c_str()) == -1) goto err_5;
+                    goto nitem_3;
+                }
+
+                if(ThrdKill) return false;
+            }
+
+            if(! cplink('/' % item, trgt % '/' % item)) return false;
+        }
+
+    nitem_3:;
         if(ThrdKill) return false;
+        continue;
+    err_5:;
+        ThrdDbg = "@/" % item;
+        return false;
     }
 
     for(cQStr &cdir : {"/cdrom", "/dev", "/mnt", "/proc", "/run", "/sys", "/tmp"})
@@ -1605,7 +1655,18 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                 {
                     switch(line.left(1).toShort()) {
                     case Islink:
-                        if(! cplink(cdir % '/' % item, trgt % cdir % '/' % item)) goto err_5;
+                        for(cQStr &cpname : rplst)
+                        {
+                            if(stype(sdir % '/' % cpname % cdir % '/' % item) == Islink && lcomp(cdir % '/' % item, sdir % '/' % cpname % cdir % '/' % item))
+                            {
+                                if(link(QStr(sdir % '/' % cpname % cdir % '/' % item).toStdString().c_str(), QStr(trgt % cdir % '/' % item).toStdString().c_str()) == -1) goto err_6;
+                                goto nitem_4;
+                            }
+
+                            if(ThrdKill) return false;
+                        }
+
+                        if(! cplink(cdir % '/' % item, trgt % cdir % '/' % item)) goto err_6;
                         break;
                     case Isdir:
                         if(! QDir().mkdir(trgt % cdir % '/' % item)) return false;
@@ -1615,21 +1676,21 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                         {
                             if(stype(sdir % '/' % cpname % cdir % '/' % item) == Isfile && fcomp(cdir % '/' % item, sdir % '/' % cpname % cdir % '/' % item) == 2)
                             {
-                                if(link(QStr(sdir % '/' % cpname % cdir % '/' % item).toStdString().c_str(), QStr(trgt % cdir % '/' % item).toStdString().c_str()) == -1) goto err_5;
-                                goto nitem_3;
+                                if(link(QStr(sdir % '/' % cpname % cdir % '/' % item).toStdString().c_str(), QStr(trgt % cdir % '/' % item).toStdString().c_str()) == -1) goto err_6;
+                                goto nitem_4;
                             }
 
                             if(ThrdKill) return false;
                         }
 
-                        if(! cpfile(cdir % '/' % item, trgt % cdir % '/' % item)) goto err_5;
+                        if(! cpfile(cdir % '/' % item, trgt % cdir % '/' % item)) goto err_6;
                     }
                 }
 
-            nitem_3:;
+            nitem_4:;
                 if(ThrdKill) return false;
                 continue;
-            err_5:;
+            err_6:;
                 ThrdDbg = '@' % cdir % '/' % item;
                 return false;
             }
@@ -1639,10 +1700,10 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
             while(! in.atEnd())
             {
                 QStr line(in.readLine()), item(right(line, -1));
-                if(line.left(1).toShort() == Isdir && exist(trgt % cdir % '/' % item) && ! cpertime(cdir % '/' % item, trgt % cdir % '/' % item)) goto err_6;
+                if(line.left(1).toShort() == Isdir && exist(trgt % cdir % '/' % item) && ! cpertime(cdir % '/' % item, trgt % cdir % '/' % item)) goto err_7;
                 if(ThrdKill) return false;
                 continue;
-            err_6:;
+            err_7:;
                 ThrdDbg = '@' % cdir % '/' % item;
                 return false;
             }
@@ -1682,13 +1743,13 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                             if(! cdname.isEmpty())
                             {
                                 fdir.append('/' % cdname.replace("\\040", " "));
-                                if(! isdir(trgt % "/media" % fdir) && ! cpdir("/media" % fdir, trgt % "/media" % fdir)) goto err_7;
+                                if(! isdir(trgt % "/media" % fdir) && ! cpdir("/media" % fdir, trgt % "/media" % fdir)) goto err_8;
                             }
                     }
 
                     if(ThrdKill) return false;
                     continue;
-                err_7:;
+                err_8:;
                     ThrdDbg = "@/media" % fdir;
                     return false;
                 }
@@ -1716,19 +1777,19 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
             switch(line.left(1).toShort()) {
             case Isdir:
-                if(! cpdir("/var/log/" % item, trgt % "/var/log/" % item)) goto err_8;
+                if(! cpdir("/var/log/" % item, trgt % "/var/log/" % item)) goto err_9;
                 break;
             case Isfile:
                 if(! like(item, {"*.gz_", "*.old_"}) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                 {
                     crtfile(trgt % "/var/log/" % item);
-                    if(! cpertime("/var/log/" % item, trgt % "/var/log/" % item)) goto err_8;
+                    if(! cpertime("/var/log/" % item, trgt % "/var/log/" % item)) goto err_9;
                 }
             }
 
             if(ThrdKill) return false;
             continue;
-        err_8:;
+        err_9:;
             ThrdDbg = "@/var/log/" % item;
             return false;
         }
@@ -1738,10 +1799,10 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         while(! in.atEnd())
         {
             QStr line(in.readLine()), item(right(line, -1));
-            if(line.left(1).toShort() == Isdir && exist(trgt % "/var/log/" % item) && ! cpertime("/var/log/" % item, trgt % "/var/log/" % item)) goto err_9;
+            if(line.left(1).toShort() == Isdir && exist(trgt % "/var/log/" % item) && ! cpertime("/var/log/" % item, trgt % "/var/log/" % item)) goto err_10;
             if(ThrdKill) return false;
             continue;
-        err_9:;
+        err_10:;
             ThrdDbg = "@/var/log/" % item;
             return false;
         }
@@ -3331,7 +3392,13 @@ bool sb::thrdlvprpr(bool iudata)
             {
                 switch(line.left(1).toShort()) {
                 case Islink:
-                    if(! cplink("/root/" % item, usdir % "/root/" % item)) goto err_4;
+                    if(uhl)
+                    {
+                        if(link(QStr("/root/" % item).toStdString().c_str(), QStr(usdir % "/root/" % item).toStdString().c_str()) == -1) goto err_4;
+                    }
+                    else if(! cplink("/root/" % item, usdir % "/root/" % item))
+                        goto err_4;
+
                     ++ThrdLng[0];
                     break;
                 case Isdir:
@@ -3397,7 +3464,13 @@ bool sb::thrdlvprpr(bool iudata)
             {
                 switch(line.left(1).toShort()) {
                 case Islink:
-                    if(! cplink("/home/" % udir % '/' % item, usdir % '/' % udir % '/' % item)) goto err_6;
+                    if(uhl)
+                    {
+                        if(link(QStr("/home/" % udir % '/' % item).toStdString().c_str(), QStr(usdir % '/' % udir % '/' % item).toStdString().c_str()) == -1) goto err_6;
+                    }
+                    else if(! cplink("/home/" % udir % '/' % item, usdir % '/' % udir % '/' % item))
+                        goto err_6;
+
                     ++ThrdLng[0];
                     break;
                 case Isdir:

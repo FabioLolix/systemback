@@ -34,7 +34,6 @@ typedef QString QStr;
 typedef const QChar cQChar;
 typedef const QRect cQRect;
 typedef const QPoint cQPoint;
-typedef long double ldouble;
 typedef unsigned long long ullong;
 typedef long long llong;
 typedef const unsigned char cuchar;

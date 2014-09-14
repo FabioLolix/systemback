@@ -4,7 +4,7 @@ Source: https://sourceforge.net/projects/systemback/files
 
 Files: *
 Copyright: 2010-2014 Krisztián Kende <nemh@freemail.hu>
-License: GPLv3
+License: GPL-3+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 3 of the License, or
@@ -25,5 +25,5 @@ License: GPLv3
 
 Files: debian/*
 Copyright: 2010-2014 Krisztián Kende <nemh@freemail.hu>
-License: GPLv3
+License: GPL-3+
  [LICENSE TEXT]

@@ -5476,11 +5476,10 @@ void systemback::on_umountdelete_clicked()
         {
             ui->umountdelete->setText(tr("! Delete !"));
             ui->umountdelete->setStyleSheet("QPushButton:enabled {color: red}");
+            ui->umountdelete->setDisabled(true);
             if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
             ui->filesystem->setEnabled(true);
             ui->format->setEnabled(true);
-            QCursor::setPos(QCursor::pos().x(), QCursor::pos().y() + (QCursor::pos().y() > y() + ss(72) ? ss(20) : - ss(20)));
-            if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->umountdelete->pos(), ui->umountdelete->geometry())) ui->umountdelete->setDisabled(true);
         }
 
         ui->copycover->hide();

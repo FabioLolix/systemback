@@ -5476,7 +5476,7 @@ void systemback::on_umountdelete_clicked()
         {
             ui->umountdelete->setText(tr("! Delete !"));
             ui->umountdelete->setStyleSheet("QPushButton:enabled {color: red}");
-            ui->umountdelete->setDisabled(true);
+            if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->umountdelete->pos(), ui->umountdelete->geometry())) ui->umountdelete->setDisabled(true);
             if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
             ui->filesystem->setEnabled(true);
             ui->format->setEnabled(true);

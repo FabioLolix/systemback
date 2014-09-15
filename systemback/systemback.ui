@@ -5492,7 +5492,7 @@
         </size>
        </property>
       </widget>
-      <widget class="QPushButton" name="umountdelete">
+      <widget class="bttnevent" name="umountdelete">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -6761,6 +6761,11 @@
    <class>tblwdgtevent</class>
    <extends>QTableWidget</extends>
    <header location="global">tblwdgtevent.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>bttnevent</class>
+   <extends>QPushButton</extends>
+   <header location="global">bttnevent.hpp</header>
   </customwidget>
  </customwidgets>
  <tabstops>

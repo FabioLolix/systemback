@@ -17,37 +17,28 @@
 
 ********************************************************************/
 
-#ifndef TBLWDGTEVENT_HPP
-#define TBLWDGTEVENT_HPP
+#ifndef BTTNEVENT_HPP
+#define BTTNEVENT_HPP
 
-#include <QTableWidget>
+#include <QPushButton>
 
-class tblwdgtevent : public QTableWidget
+class bttnevent : public QPushButton
 {
     Q_OBJECT
 
 public:
-    explicit tblwdgtevent(QWidget *parent = nullptr) : QTableWidget(parent) {}
+    explicit bttnevent(QWidget *parent = nullptr) : QPushButton(parent) {}
 
 protected:
-    void focusInEvent(QFocusEvent *ev);
-    void focusOutEvent(QFocusEvent *ev);
+    void leaveEvent(QEvent *);
 
 signals:
-    void Focus_In();
-    void Focus_Out();
+    void Mouse_Leave();
 };
 
-inline void tblwdgtevent::focusInEvent(QFocusEvent *ev)
+inline void bttnevent::leaveEvent(QEvent *)
 {
-    QTableWidget::focusInEvent(ev);
-    emit Focus_In();
+    emit Mouse_Leave();
 }
 
-inline void tblwdgtevent::focusOutEvent(QFocusEvent *ev)
-{
-    QTableWidget::focusOutEvent(ev);
-    emit Focus_Out();
-}
-
-#endif // TBLWDGTEVENT_HPP
+#endif // BTTNEVENT_HPP

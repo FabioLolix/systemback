@@ -56,8 +56,7 @@ private:
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash, grub;
     short wgeom[6], sfctr;
-    char busycnt;
-    uchar dialog, wround, ppipe;
+    uchar busycnt, dialog, ppipe;
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
@@ -113,6 +112,7 @@ private slots:
     void hmpg2move();
     void emailmove();
     void interrupt();
+    void umntleave();
     void unitimer();
     void wpressed();
     void wdblclck();

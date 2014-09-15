@@ -10,6 +10,7 @@ SOURCES += main.cpp \
     systemback.cpp
 
 HEADERS += systemback.hpp \
+    bttnevent.hpp \
     chckbxevent.hpp \
     lblevent.hpp \
     lndtevent.hpp \

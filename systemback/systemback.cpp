@@ -270,6 +270,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         connect(ui->partitionsettings, SIGNAL(Focus_Out()), this, SLOT(foutpsttngs()));
         connect(ui->usersettingscopy, SIGNAL(Mouse_Enter()), this, SLOT(center()));
         connect(ui->usersettingscopy, SIGNAL(Mouse_Leave()), this, SLOT(cleave()));
+        connect(ui->umountdelete, SIGNAL(Mouse_Leave()), this, SLOT(umntleave()));
 
         if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization")
         {
@@ -1324,7 +1325,7 @@ void systemback::hmpg1released()
 
 void systemback::hmpg1move()
 {
-    if(minside(ui->homepage1->pos() + ui->aboutpanel->pos(), ui->homepage1->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->homepage1->pos(), ui->homepage1->geometry()))
     {
         if(ui->homepage1->foregroundRole() == QPalette::Text) ui->homepage1->setForegroundRole(QPalette::Highlight);
     }
@@ -1348,7 +1349,7 @@ void systemback::hmpg2released()
 
 void systemback::hmpg2move()
 {
-    if(minside(ui->homepage2->pos() + ui->aboutpanel->pos(), ui->homepage2->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->homepage2->pos(), ui->homepage2->geometry()))
     {
         if(ui->homepage2->foregroundRole() == QPalette::Text) ui->homepage2->setForegroundRole(QPalette::Highlight);
     }
@@ -1372,7 +1373,7 @@ void systemback::emailreleased()
 
 void systemback::emailmove()
 {
-    if(minside(ui->email->pos() + ui->aboutpanel->pos(), ui->email->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->email->pos(), ui->email->geometry()))
     {
         if(ui->email->foregroundRole() == QPalette::Text) ui->email->setForegroundRole(QPalette::Highlight);
     }
@@ -1396,7 +1397,7 @@ void systemback::dntreleased()
 
 void systemback::dntmove()
 {
-    if(minside(ui->donate->pos() + ui->aboutpanel->pos(), ui->donate->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->donate->pos(), ui->donate->geometry()))
     {
         if(ui->donate->foregroundRole() == QPalette::Text) ui->donate->setForegroundRole(QPalette::Highlight);
     }
@@ -1507,6 +1508,11 @@ void systemback::center()
 void systemback::cleave()
 {
     if(ui->usersettingscopy->checkState() == Qt::PartiallyChecked && ui->usersettingscopy->text() == tr("Transfer user configuration and data files")) ui->usersettingscopy->setText(tr("Transfer user configuration files"));
+}
+
+void systemback::umntleave()
+{
+    if(! ui->umountdelete->isEnabled() && ui->umountdelete->text() == tr("! Delete !")) ui->umountdelete->setEnabled(true);
 }
 
 void systemback::on_usersettingscopy_stateChanged(int arg1)
@@ -5462,26 +5468,21 @@ void systemback::on_umountdelete_clicked()
             }
 
             sb::fssync();
-
-            if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().isEmpty())
-            {
-                ui->umountdelete->setText(tr("! Delete !"));
-                ui->umountdelete->setStyleSheet("color: red");
-                ui->mountpoint->setEnabled(true);
-                ui->filesystem->setEnabled(true);
-                ui->format->setEnabled(true);
-            }
         }
         else if(! QStr('\n' % sb::fload("/proc/swaps")).contains('\n' % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text() % ' ') || swapoff(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text().toStdString().c_str()) == 0)
-        {
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->setText(nullptr);
+
+        if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().isEmpty())
+        {
             ui->umountdelete->setText(tr("! Delete !"));
-            ui->umountdelete->setStyleSheet("color: red");
+            ui->umountdelete->setStyleSheet("QPushButton:enabled {color: red}");
+            if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
             ui->filesystem->setEnabled(true);
             ui->format->setEnabled(true);
+            QCursor::setPos(QCursor::pos().x(), QCursor::pos().y() + (QCursor::pos().y() > y() + ss(72) ? ss(20) : - ss(20)));
+            if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->umountdelete->pos(), ui->umountdelete->geometry())) ui->umountdelete->setDisabled(true);
         }
 
-        QCursor::setPos(QCursor::pos().x(), QCursor::pos().y() + (QCursor::pos().y() > y() + ss(72) ? ss(20) : - ss(20)));
         ui->copycover->hide();
     }
     else
@@ -7267,7 +7268,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 if(ui->umountdelete->text() == tr("Umount"))
                 {
                     ui->umountdelete->setText(tr("! Delete !"));
-                    ui->umountdelete->setStyleSheet("color: red");
+                    ui->umountdelete->setStyleSheet("QPushButton:enabled {color: red}");
                 }
 
                 if(! ui->umountdelete->isEnabled()) ui->umountdelete->setEnabled(true);

@@ -2982,7 +2982,7 @@ start:;
     }
 
     prun = tr("Emptying cache");
-    if(sb::exec("syslinux -if " % ldev % '1') > 0) goto error;
+    if(sb::exec("syslinux -ifd syslinux " % ldev % '1') > 0) goto error;
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
     sb::umount("/.sblivesystemwrite/sblive");
@@ -8093,8 +8093,8 @@ void systemback::on_rootpassword2_textChanged()
 
 void systemback::on_schedulerstate_clicked()
 {
-    switch(ui->schedulerstate->isChecked()) {
-    case true:
+    if(ui->schedulerstate->isChecked())
+    {
         if(sb::schdle[0] != "on")
         {
             sb::schdle[0] = "on";
@@ -8118,8 +8118,9 @@ void systemback::on_schedulerstate_clicked()
             ui->windowposition->setEnabled(true);
         }
 
-        break;
-    case false:
+    }
+    else
+    {
         sb::schdle[0] = "off";
         if(! cfgupdt) cfgupdt = true;
         ui->schedulerstate->setText(tr("Disabled"));
@@ -8743,7 +8744,7 @@ start:;
     {
         if(! sb::copy("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) goto error;
     }
-    else if(! sb::copy("/usr/lib/ISOLINUX/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/modules/bios/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32"))
+    else if(! sb::copy("/usr/lib/ISOLINUX/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/modules/bios/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/libcom32.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libcom32.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/libutil.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libutil.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/ldlinux.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/ldlinux.c32"))
             goto error;
 
     if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png") || ! sb::lvprpr(ui->userdatainclude->isChecked())) goto error;

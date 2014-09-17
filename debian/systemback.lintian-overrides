@@ -1,0 +1,2 @@
+systemback: hardening-no-relro
+systemback: desktop-command-not-in-package

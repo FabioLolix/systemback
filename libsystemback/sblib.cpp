@@ -2629,7 +2629,16 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                         if(! cline.startsWith('#') && cline.contains("$HOME"))
                         {
                             dir = left(right(cline, - instr(cline, "/")), -1);
-                            if(dir.length() > 0 && isdir(srcdir % "/home/" % usr % '/' % dir) && ! isdir("/.sbsystemcopy/home/" % usr % '/' % dir) && ! cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir)) goto err_3;
+
+                            if(dir.length() > 0 && ! isdir("/.sbsystemcopy/home/" % usr % '/' % dir))
+                            {
+                                if(isdir(srcdir % "/home/" % usr % '/' % dir))
+                                {
+                                    if(! cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir)) goto err_3;
+                                }
+                                else if(srcdir.startsWith(sdir[1]) && (! QDir().mkdir("/.sbsystemcopy/home/" % usr % '/' % dir) || ! cpertime("/.sbsystemcopy/home/" % usr, "/.sbsystemcopy/home/" % usr % '/' % dir)))
+                                    goto err_3;
+                            }
                         }
 
                         if(ThrdKill) return false;

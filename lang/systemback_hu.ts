@@ -115,7 +115,7 @@
         <location filename="../systemback/systemback.ui" line="4487"/>
         <location filename="../systemback/systemback.ui" line="5019"/>
         <location filename="../systemback/systemback.ui" line="5253"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="307"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="305"/>
         <source>Back</source>
         <translation>Vissza</translation>
     </message>
@@ -176,7 +176,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="902"/>
         <location filename="../systemback/systemback.ui" line="3796"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="307"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="305"/>
         <source>Delete</source>
         <translation>Törlés</translation>
     </message>
@@ -193,7 +193,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="968"/>
         <location filename="../systemback/systemback.ui" line="3730"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="220"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="218"/>
         <source>Create new</source>
         <translation>Új készítése</translation>
     </message>
@@ -386,7 +386,7 @@
         <location filename="../systemback/systemback.ui" line="3014"/>
         <location filename="../systemback/systemback.ui" line="6432"/>
         <location filename="../systemback/systemback.ui" line="6695"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="443"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="441"/>
         <source>Cancel</source>
         <translation>Mégsem</translation>
     </message>
@@ -628,7 +628,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="4201"/>
         <location filename="../systemback/systemback.cpp" line="4927"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="307"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="305"/>
         <source>System restore</source>
         <translation>Rendszer-visszaállítás</translation>
     </message>
@@ -696,21 +696,21 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4792"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="439"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="481"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="523"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="553"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="585"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="437"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="479"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="521"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="551"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="583"/>
         <source>Full restore</source>
         <translation>Teljes visszaállítás</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4814"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="439"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="484"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="523"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="553"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="585"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="437"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="482"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="521"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="551"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="583"/>
         <source>System files restore</source>
         <translation>Rendszerfájlok visszaállítása</translation>
     </message>
@@ -721,7 +721,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4855"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="443"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="441"/>
         <source>Keep newly installed configuration files</source>
         <translation>Újonnan telepített alkalmazások beállításfájljainak megtartása</translation>
     </message>
@@ -1002,24 +1002,24 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="640"/>
         <location filename="../systemback/systemback.cpp" line="8459"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="395"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="698"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="393"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
         <source>Creating restore point</source>
         <translation>Új visszaállítási pont készítése</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="640"/>
         <location filename="../systemback/systemback.cpp" line="1886"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="612"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="698"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="610"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
         <source>Restoring the full system</source>
         <translation>A rendszer teljes visszaállítása</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="640"/>
         <location filename="../systemback/systemback.cpp" line="1891"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="616"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="698"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="614"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
         <source>Restoring the system files</source>
         <translation>A rendszerfájlok visszaállítása</translation>
     </message>
@@ -1073,7 +1073,7 @@
         <location filename="../systemback/systemback.cpp" line="683"/>
         <location filename="../systemback/systemback.cpp" line="8541"/>
         <location filename="../systemback/systemback.cpp" line="8566"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="418"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="416"/>
         <source>Deleting restore point</source>
         <translation>Visszaállítási pont törlése</translation>
     </message>
@@ -1087,7 +1087,7 @@
         <location filename="../systemback/systemback.cpp" line="683"/>
         <location filename="../systemback/systemback.cpp" line="6242"/>
         <location filename="../systemback/systemback.cpp" line="8437"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="384"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="382"/>
         <source>Deleting incomplete restore point</source>
         <translation>Befejezetlen visszaállítási pont törlése</translation>
     </message>
@@ -1121,8 +1121,8 @@
         <location filename="../systemback/systemback.cpp" line="8572"/>
         <location filename="../systemback/systemback.cpp" line="8816"/>
         <location filename="../systemback/systemback.cpp" line="8869"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="404"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="422"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="402"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="420"/>
         <source>Emptying cache</source>
         <translation>Gyorsítótár ürítése</translation>
     </message>
@@ -1257,7 +1257,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3117"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="668"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="666"/>
         <source>System files restoration are completed.</source>
         <translation>A rendszerfájlok visszaállítása kész.</translation>
     </message>
@@ -1269,7 +1269,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3125"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="665"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="663"/>
         <source>Full system restoration is completed.</source>
         <translation>A rendszer teljes visszaállítása kész.</translation>
     </message>
@@ -1669,146 +1669,146 @@
         <translation>Ez a terminál túl kicsi!</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="141"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="145"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>A rendszer frissítése közben hibák léptek fel!</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="142"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="146"/>
         <source>Restart upgrade ...</source>
         <translation>Frissítés újrakezdése ...</translation>
     </message>
     <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="189"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="299"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="429"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="468"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="513"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="543"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="575"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="658"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="723"/>
+        <source>basic restore UI</source>
+        <translation>alap visszaállítási felület</translation>
+    </message>
+    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="191"/>
+        <source>Available restore point(s):</source>
+        <translation>Elérhető visszaállítási pont(ok):</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="218"/>
+        <source>Quit</source>
+        <translation>Kilépés</translation>
+    </message>
+    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="301"/>
+        <source>Selected restore point:</source>
+        <translation>Választott visszaállítási pont:</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="363"/>
+        <source>The specified storage directory path is set.</source>
+        <translation>A megadott tárolási könyvtár beállítva.</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="389"/>
+        <source>Deleting old restore point(s)</source>
+        <translation>Elöregedett visszaállítási pont(ok) törlése</translation>
+    </message>
+    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="431"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="470"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="515"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="545"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="577"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="660"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="725"/>
-        <source>basic restore UI</source>
-        <translation>alap visszaállítási felület</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="193"/>
-        <source>Available restore point(s):</source>
-        <translation>Elérhető visszaállítási pont(ok):</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="220"/>
-        <source>Quit</source>
-        <translation>Kilépés</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="303"/>
-        <source>Selected restore point:</source>
-        <translation>Választott visszaállítási pont:</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="365"/>
-        <source>The specified storage directory path is set.</source>
-        <translation>A megadott tárolási könyvtár beállítva.</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="391"/>
-        <source>Deleting old restore point(s)</source>
-        <translation>Elöregedett visszaállítási pont(ok) törlése</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="433"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="472"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="517"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="547"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="579"/>
         <source>Restore with the following restore point:</source>
         <translation>Visszaállítás a következő visszaállítási ponttal:</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="437"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="476"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="521"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="551"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="583"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="435"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="474"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="519"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="549"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="581"/>
         <source>Restore with the following restore method:</source>
         <translation>Visszaállítás a következő visszaállítási móddal:</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="441"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="439"/>
         <source>Users configuration files restore</source>
         <translation>Felhasználók beállításfájljainak visszaállítása</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="443"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="487"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="441"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="485"/>
         <source>Complete configuration files restore</source>
         <translation>Beállításfájlok teljes visszaállítása</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="490"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="488"/>
         <source>Configuration files restore</source>
         <translation>Beállításfájlok visszaállítása</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="500"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="524"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="554"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="522"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="552"/>
         <source>You want to keep the current fstab file?</source>
         <translation>A jelenleg használt fstab fájlt megkívánod tartani?</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="35"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="36"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="500"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="524"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="530"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="522"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="528"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="552"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="554"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="556"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="562"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="586"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="592"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="560"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="584"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="590"/>
         <source>(Y/N)</source>
         <translation>(I/N)</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="530"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="556"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="562"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="586"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="528"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="554"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="560"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="584"/>
         <source>Reinstall the GRUB 2 bootloader?</source>
         <translation>A GRUB 2 rendszerbetöltőt újratelepítsem?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="592"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="590"/>
         <source>Start the restore?</source>
         <translation>Indulhat a visszaállítás?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="620"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="624"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="698"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="618"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="622"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
         <source>Restoring users configuration files</source>
         <translation>A felhasználók beállításfájljainak visszaállítása</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="671"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="669"/>
         <source>Users configuration files full restoration are completed.</source>
         <translation>A felhasználók beállításfájljainak teljes visszaállítása kész.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="674"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="672"/>
         <source>Users configuration files restoration are completed.</source>
         <translation>A felhasználók beállításfájljainak visszaállítása kész.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="678"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="676"/>
         <source>Press &apos;ENTER&apos; key to reboot computer, or &apos;Q&apos; to quit.</source>
         <translation>A számítógép újraindításához nyomd meg az &apos;Enter&apos; billentyűt,
  vagy kilépéshez a &apos;Q&apos;-t.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="678"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="676"/>
         <source>Press &apos;ENTER&apos; key to quit.</source>
         <translation>A kilépéshez nyomd meg az &apos;ENTER&apos; billentyűt.</translation>
     </message>

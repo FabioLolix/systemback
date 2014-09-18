@@ -91,6 +91,12 @@ error:
 start:
     if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
         sb::print(help);
+    else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
+    {
+        QFile file(":version");
+        file.open(QIODevice::ReadOnly);
+        sb::print("\n " % file.readLine().trimmed() % "_Qt5_" % sb::getarch() % "\n\n");
+    }
     else if(getuid() + getgid() > 0)
     {
         rv = 2;
@@ -114,8 +120,7 @@ start:
 
         if(qApp->arguments().count() == 1)
         {
-            rv = uinit();
-            if(rv > 0) goto error;
+            if((rv = uinit()) > 0) goto error;
             rv = clistart();
             endwin();
         }
@@ -127,8 +132,7 @@ start:
                 goto error;
             }
 
-            rv = uinit();
-            if(rv > 0) goto error;
+            if((rv = uinit()) > 0) goto error;
             sb::pupgrade();
             if(! newrestorepoint()) rv = sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
             endwin();
@@ -141,12 +145,6 @@ start:
             sb::trn[0] = tr("An error occurred while upgrading the system!");
             sb::trn[1] = tr("Restart upgrade ...");
             sb::supgrade();
-        }
-        else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
-        {
-            QFile file(":version");
-            file.open(QIODevice::ReadOnly);
-            sb::print("\n " % file.readLine().trimmed() % "_Qt5_" % sb::getarch() % "\n\n");
         }
         else
         {

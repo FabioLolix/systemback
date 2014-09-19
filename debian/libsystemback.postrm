@@ -1,6 +1,6 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
-if [[ $1 = purge && -e /etc/systemback.conf && -e /etc/systemback.excludes ]]
-then rm /etc/systemback.{conf,excludes}
+if [ "$1" = purge -a -e /etc/systemback.conf -a -e /etc/systemback.excludes ]
+then rm /etc/systemback.conf /etc/systemback.excludes
 fi
 #DEBHELPER#

@@ -18,7 +18,7 @@ build-arch-stamp: configure-stamp
 	touch build-arch-stamp
 
 build-indep-stamp:
-	lrelease systemback.pro
+	lrelease -qt=5 systemback.pro
 	touch build-indep-stamp
 
 clean:

@@ -5,7 +5,7 @@ then dir=/run
 else dir=/var/run
 fi
 
-if [ "$1" = remove -a -e $dir/sbscheduler.lock -a -s $dir/sbscheduler.pid ]
+if [ "$1" = remove ] && [ -e $dir/sbscheduler.lock ] && [ -s $dir/sbscheduler.pid ]
 then
   echo "Stopping Systemback scheduler daemon ..."
 

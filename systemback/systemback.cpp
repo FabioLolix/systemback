@@ -2667,7 +2667,7 @@ start:;
             }
         }
 
-        if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/sh\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " -o $rmuser = root ] || userdel $rmuser\ndone\n") || ! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
+        if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/sh\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " ] || [ $rmuser = root ] || userdel $rmuser\ndone\n") || ! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
         if(intrrpt) goto exit;
         if(sb::exec("chroot /.sbsystemcopy /deluser") > 0) goto error;
         QFile::remove("/.sbsystemcopy/deluser");
@@ -8704,7 +8704,7 @@ start:;
     }
     else
     {
-        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", "#!/bin/sh\nif [ \"$BOOT\" = live -a ! -e /root/etc/fstab ]\nthen touch /root/etc/fstab\nfi\n");
+        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", "#!/bin/sh\nif [ \"$BOOT\" = live ] && [ ! -e /root/etc/fstab ]\nthen touch /root/etc/fstab\nfi\n");
         if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
     }
 
@@ -8712,7 +8712,7 @@ start:;
 
     if(sb::isfile("/etc/X11/xorg.conf"))
     {
-        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", "#!/bin/sh\nif [ \"$(grep noxconf /proc/cmdline)\" -a -s /root/etc/X11/xorg.conf ]\nthen rm -rf /root/etc/X11/xorg.conf\nfi\n");
+        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", "#!/bin/sh\nif [ -s /root/etc/X11/xorg.conf ] && grep noxconf /proc/cmdline >/dev/null 2>&1\nthen rm /root/etc/X11/xorg.conf\nfi\n");
         if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
         xmntry = true;
     }

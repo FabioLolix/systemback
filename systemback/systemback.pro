@@ -19,7 +19,7 @@ HEADERS += systemback.hpp \
 
 FORMS += systemback.ui
 
-RESOURCES += resedit.qrc
+RESOURCES += pictures.qrc
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 

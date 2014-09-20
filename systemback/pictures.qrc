@@ -22,6 +22,5 @@
         <file>pictures/rightarrow.png</file>
         <file>pictures/systemback.png</file>
         <file>pictures/up.png</file>
-        <file>version</file>
     </qresource>
 </RCC>

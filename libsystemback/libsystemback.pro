@@ -14,6 +14,8 @@ HEADERS += sblib.hpp \
     sblib_global.hpp \
     sbtypedef.hpp
 
+RESOURCES += version.qrc
+
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 
 LIBS += -lmount \

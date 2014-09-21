@@ -798,18 +798,13 @@ void systemback::unitimer()
                 ui->pnumber9->setEnabled(true);
                 ui->pnumber10->setEnabled(true);
 
-                if (ui->installpanel->isVisible())
-                    ui->fullname->setFocus();
-                else {
+                if (!ui->installpanel->isVisible()) {
                     ui->copymenu->setEnabled(true);
                     ui->installmenu->setEnabled(true);
                     ui->systemupgrade->setEnabled(true);
                     ui->excludemenu->setEnabled(true);
                     ui->schedulemenu->setEnabled(true);
                     pname = tr("Currently running system");
-                    ui->functionmenunext->isEnabled()
-                        ? ui->functionmenunext->setFocus()
-                        : ui->functionmenuback->setFocus();
                 }
             }
 
@@ -6005,7 +6000,7 @@ void systemback::on_partitionrefresh_clicked()
 
     ui->partitionsettings->resizeColumnToContents(5);
     ui->partitionsettings->resizeColumnToContents(6);
-    if (!ui->copyback->hasFocus())
+    if (ui->copypanel->isVisible() && !ui->copyback->hasFocus())
         ui->copyback->setFocus();
     ui->copycover->hide();
     busy(false);
@@ -6638,7 +6633,7 @@ void systemback::on_livedevicesrefresh_clicked()
                                         - ui->livedevices->columnWidth(3));
     if (ui->livewritestart->isEnabled())
         ui->livewritestart->setDisabled(true);
-    if (!ui->livecreateback->hasFocus())
+    if (ui->livecreatepanel->isVisible() && !ui->livecreateback->hasFocus())
         ui->livecreateback->setFocus();
     ui->livecreatecover->hide();
     busy(false);
@@ -6856,7 +6851,7 @@ void systemback::on_pointexclude_clicked()
         }
 
     ui->itemslist->sortItems(0, Qt::AscendingOrder);
-    if (!ui->excludeback->hasFocus())
+    if (ui->excludepanel->isVisible() && !ui->excludeback->hasFocus())
         ui->excludeback->setFocus();
     busy(false);
 }
@@ -8308,7 +8303,7 @@ void systemback::on_repairpartitionrefresh_clicked()
     on_partitionrefresh_clicked();
     on_repairmountpoint_currentTextChanged("/mnt");
     ui->repaircover->hide();
-    if (!ui->repairback->hasFocus())
+    if (ui->repairpanel->isVisible() && !ui->repairback->hasFocus())
         ui->repairback->setFocus();
     busy(false);
 }

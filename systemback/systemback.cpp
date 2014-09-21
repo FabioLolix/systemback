@@ -4537,6 +4537,8 @@ void systemback::on_passwordinputok_clicked()
     QTimer::singleShot(0, this, SLOT(unitimer()));
     ui->passwordpanel->hide();
     ui->mainpanel->show();
+    ui->sbpanel->isVisibleTo(ui->mainpanel) ? ui->functionmenunext->setFocus()
+                                            : ui->fullname->setFocus();
     windowmove(ss(698), ss(465));
     setwontop(false);
 }

@@ -14,7 +14,7 @@
    <string notr="true">Systemback</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resedit.qrc">
+   <iconset resource="pictures.qrc">
     <normaloff>:/pictures/systemback.png</normaloff>:/pictures/systemback.png</iconset>
   </property>
   <property name="autoFillBackground">
@@ -221,7 +221,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -250,7 +250,7 @@
        <string>Next</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
       </property>
       <property name="iconSize">
@@ -283,7 +283,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/ok.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -302,7 +302,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/ok.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -321,7 +321,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/ok.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -340,7 +340,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/ok.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -359,7 +359,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -378,7 +378,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -397,7 +397,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -416,7 +416,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -531,7 +531,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -550,7 +550,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/ok.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -762,7 +762,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/ok.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -781,7 +781,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -825,7 +825,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -870,7 +870,7 @@
        <string>Redetect devices</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/refresh.png</normaloff>:/pictures/refresh.png</iconset>
       </property>
       <property name="iconSize">
@@ -1278,7 +1278,7 @@
        <string>Reset mounts</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/refresh.png</normaloff>:/pictures/refresh.png</iconset>
       </property>
       <property name="iconSize">
@@ -1452,7 +1452,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -1525,7 +1525,7 @@
        <string>Next</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
       </property>
       <property name="iconSize">
@@ -1711,7 +1711,7 @@
        <string>Remove item from exclusion list</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/leftarrow.png</normaloff>:/pictures/leftarrow.png</iconset>
       </property>
       <property name="iconSize">
@@ -1743,7 +1743,7 @@
        <string>Add item to exclusion list</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/rightarrow.png</normaloff>:/pictures/rightarrow.png</iconset>
       </property>
       <property name="iconSize">
@@ -1785,7 +1785,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -1860,7 +1860,7 @@
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/resize.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/resize.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -2072,7 +2072,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -2138,7 +2138,7 @@
         <string>More</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/up.png</normaloff>:/pictures/up.png</iconset>
        </property>
        <property name="iconSize">
@@ -2179,7 +2179,7 @@
         <string>More</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/up.png</normaloff>:/pictures/up.png</iconset>
        </property>
        <property name="iconSize">
@@ -2220,7 +2220,7 @@
         <string>More</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/up.png</normaloff>:/pictures/up.png</iconset>
        </property>
        <property name="iconSize">
@@ -2261,7 +2261,7 @@
         <string>Less</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/down.png</normaloff>:/pictures/down.png</iconset>
        </property>
        <property name="iconSize">
@@ -2302,7 +2302,7 @@
         <string>Less</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/down.png</normaloff>:/pictures/down.png</iconset>
        </property>
        <property name="iconSize">
@@ -2343,7 +2343,7 @@
         <string>Less</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/down.png</normaloff>:/pictures/down.png</iconset>
        </property>
        <property name="iconSize">
@@ -2483,7 +2483,7 @@
         <string>More</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/up.png</normaloff>:/pictures/up.png</iconset>
        </property>
        <property name="iconSize">
@@ -2524,7 +2524,7 @@
         <string>Less</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/down.png</normaloff>:/pictures/down.png</iconset>
        </property>
        <property name="iconSize">
@@ -2745,7 +2745,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/logo.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/logo.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -2767,7 +2767,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -2796,7 +2796,7 @@
        <string>License</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
       </property>
       <property name="iconSize">
@@ -2892,7 +2892,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -2944,7 +2944,7 @@
        <string>Re-read directories</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/refresh.png</normaloff>:/pictures/refresh.png</iconset>
       </property>
       <property name="iconSize">
@@ -3033,7 +3033,7 @@
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/resize.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/resize.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -4201,7 +4201,7 @@
         <string>System restore</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4233,7 +4233,7 @@
         <string>System copy</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4265,7 +4265,7 @@
         <string>System install</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4297,7 +4297,7 @@
         <string>Live system create</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4329,7 +4329,7 @@
         <string>System repair</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4383,7 +4383,7 @@
         <string>Exclude</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4425,7 +4425,7 @@
         <string>Schedule</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4457,7 +4457,7 @@
         <string>About</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
        </property>
        <property name="iconSize">
@@ -4487,7 +4487,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/menuback.png</normaloff>:/pictures/menuback.png</iconset>
       </property>
       <property name="iconSize">
@@ -4516,7 +4516,7 @@
        <string>Next</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/menunext.png</normaloff>:/pictures/menunext.png</iconset>
       </property>
       <property name="iconSize">
@@ -5019,7 +5019,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -5048,7 +5048,7 @@
        <string>Next</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
       </property>
       <property name="iconSize">
@@ -5253,7 +5253,7 @@
        <string>Back</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
       </property>
       <property name="iconSize">
@@ -5285,7 +5285,7 @@
        <string>Next</string>
       </property>
       <property name="icon">
-       <iconset resource="resedit.qrc">
+       <iconset resource="pictures.qrc">
         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
       </property>
       <property name="iconSize">
@@ -5410,7 +5410,7 @@
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/resize.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/resize.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -5482,7 +5482,7 @@
         <string>Reset partitions settings</string>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/refresh.png</normaloff>:/pictures/refresh.png</iconset>
        </property>
        <property name="iconSize">
@@ -5564,7 +5564,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/leftgreenarrow.png</normaloff>:/pictures/leftgreenarrow.png</iconset>
        </property>
        <property name="iconSize">
@@ -5666,7 +5666,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/refresh.png</normaloff>:/pictures/refresh.png</iconset>
        </property>
        <property name="iconSize">
@@ -5764,7 +5764,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/leftgreenarrow.png</normaloff>:/pictures/leftgreenarrow.png</iconset>
        </property>
        <property name="iconSize">
@@ -5796,7 +5796,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="resedit.qrc">
+        <iconset resource="pictures.qrc">
          <normaloff>:/pictures/refresh.png</normaloff>:/pictures/refresh.png</iconset>
        </property>
        <property name="iconSize">
@@ -6150,7 +6150,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/dialoginfo.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/dialoginfo.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -6350,7 +6350,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/dialoginfo.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/dialoginfo.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -6369,7 +6369,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/dialogquestion.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/dialogquestion.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -6388,7 +6388,7 @@
        </rect>
       </property>
       <property name="pixmap">
-       <pixmap resource="resedit.qrc">:/pictures/dialogerror.png</pixmap>
+       <pixmap resource="pictures.qrc">:/pictures/dialogerror.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -6517,7 +6517,7 @@
       </rect>
      </property>
      <property name="pixmap">
-      <pixmap resource="resedit.qrc">:/pictures/passwordlogo.png</pixmap>
+      <pixmap resource="pictures.qrc">:/pictures/passwordlogo.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -6626,7 +6626,7 @@
       </rect>
      </property>
      <property name="pixmap">
-      <pixmap resource="resedit.qrc">:/pictures/ok.png</pixmap>
+      <pixmap resource="pictures.qrc">:/pictures/ok.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -6645,7 +6645,7 @@
       </rect>
      </property>
      <property name="pixmap">
-      <pixmap resource="resedit.qrc">:/pictures/error.png</pixmap>
+      <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -6797,7 +6797,7 @@
   <tabstop>startcancel</tabstop>
  </tabstops>
  <resources>
-  <include location="resedit.qrc"/>
+  <include location="pictures.qrc"/>
  </resources>
  <connections/>
 </ui>

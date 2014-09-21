@@ -25,3 +25,6 @@ TRANSLATIONS = lang/systemback_hu.ts \
     lang/systemback_ro.ts \
     lang/systemback_tr.ts \
     lang/systemback_zh_CN.ts
+
+RESOURCES += \
+    systemback/resedit.qrc

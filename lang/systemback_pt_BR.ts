@@ -4,12 +4,12 @@
 <context>
     <name>QTranslator</name>
     <message>
-        <location filename="../sbsysupgrade/sbsysupgrade.cpp" line="31"/>
+        <location filename="../sbsysupgrade/sbsysupgrade.cpp" line="34"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>Ocorreu um erro durante a atualização do sistema!</translation>
     </message>
     <message>
-        <location filename="../sbsysupgrade/sbsysupgrade.cpp" line="32"/>
+        <location filename="../sbsysupgrade/sbsysupgrade.cpp" line="35"/>
         <source>Restart upgrade ...</source>
         <translation>Reinicie a atualização ...</translation>
     </message>
@@ -17,29 +17,29 @@
 <context>
     <name>sbsustart</name>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="36"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="35"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="39"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="42"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="43"/>
         <source>Cannot start Systemback graphical user interface!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="39"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="40"/>
         <source>Unable to connect to X server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="42"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="45"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="44"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="48"/>
         <source>Unable to get root permissions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="45"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="47"/>
         <source>Cannot start Systemback scheduler daemon!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -57,22 +57,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="39"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="40"/>
         <source>Root privileges are required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="43"/>
         <source>This system is a Live.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="45"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
         <source>Already running.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="48"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="49"/>
         <source>Unable to demonize.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -115,7 +115,7 @@
         <location filename="../systemback/systemback.ui" line="4487"/>
         <location filename="../systemback/systemback.ui" line="5019"/>
         <location filename="../systemback/systemback.ui" line="5253"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="305"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="406"/>
         <source>Back</source>
         <translation>Voltar</translation>
     </message>
@@ -130,7 +130,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="615"/>
-        <location filename="../systemback/systemback.cpp" line="6552"/>
+        <location filename="../systemback/systemback.cpp" line="7199"/>
         <source>Working directory</source>
         <translation>Diretório de trabalho</translation>
     </message>
@@ -176,7 +176,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="902"/>
         <location filename="../systemback/systemback.ui" line="3796"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="305"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="405"/>
         <source>Delete</source>
         <translation>Excluir</translation>
     </message>
@@ -193,7 +193,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="968"/>
         <location filename="../systemback/systemback.ui" line="3730"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="218"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="296"/>
         <source>Create new</source>
         <translation>Criar nova</translation>
     </message>
@@ -204,7 +204,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1253"/>
-        <location filename="../systemback/systemback.cpp" line="7659"/>
+        <location filename="../systemback/systemback.cpp" line="8394"/>
         <source>Mount</source>
         <translation>Montar</translation>
     </message>
@@ -287,16 +287,16 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1914"/>
-        <location filename="../systemback/systemback.cpp" line="499"/>
-        <location filename="../systemback/systemback.cpp" line="501"/>
-        <location filename="../systemback/systemback.cpp" line="503"/>
-        <location filename="../systemback/systemback.cpp" line="1929"/>
-        <location filename="../systemback/systemback.cpp" line="2112"/>
-        <location filename="../systemback/systemback.cpp" line="2745"/>
-        <location filename="../systemback/systemback.cpp" line="5192"/>
-        <location filename="../systemback/systemback.cpp" line="5193"/>
-        <location filename="../systemback/systemback.cpp" line="5194"/>
-        <location filename="../systemback/systemback.cpp" line="8126"/>
+        <location filename="../systemback/systemback.cpp" line="586"/>
+        <location filename="../systemback/systemback.cpp" line="588"/>
+        <location filename="../systemback/systemback.cpp" line="590"/>
+        <location filename="../systemback/systemback.cpp" line="2184"/>
+        <location filename="../systemback/systemback.cpp" line="2382"/>
+        <location filename="../systemback/systemback.cpp" line="3171"/>
+        <location filename="../systemback/systemback.cpp" line="5761"/>
+        <location filename="../systemback/systemback.cpp" line="5762"/>
+        <location filename="../systemback/systemback.cpp" line="5763"/>
+        <location filename="../systemback/systemback.cpp" line="8873"/>
         <source>Disabled</source>
         <translation>Desabilitado</translation>
     </message>
@@ -368,7 +368,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2796"/>
-        <location filename="../systemback/systemback.cpp" line="5660"/>
+        <location filename="../systemback/systemback.cpp" line="6293"/>
         <source>License</source>
         <translation>Licença</translation>
     </message>
@@ -386,7 +386,7 @@
         <location filename="../systemback/systemback.ui" line="3014"/>
         <location filename="../systemback/systemback.ui" line="6432"/>
         <location filename="../systemback/systemback.ui" line="6695"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="441"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="592"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
@@ -413,84 +413,92 @@
         <location filename="../systemback/systemback.ui" line="3586"/>
         <location filename="../systemback/systemback.ui" line="3611"/>
         <location filename="../systemback/systemback.ui" line="3636"/>
-        <location filename="../systemback/systemback.cpp" line="1540"/>
-        <location filename="../systemback/systemback.cpp" line="1556"/>
-        <location filename="../systemback/systemback.cpp" line="1574"/>
-        <location filename="../systemback/systemback.cpp" line="1597"/>
-        <location filename="../systemback/systemback.cpp" line="1598"/>
-        <location filename="../systemback/systemback.cpp" line="1621"/>
-        <location filename="../systemback/systemback.cpp" line="1622"/>
-        <location filename="../systemback/systemback.cpp" line="1645"/>
-        <location filename="../systemback/systemback.cpp" line="1646"/>
-        <location filename="../systemback/systemback.cpp" line="1669"/>
-        <location filename="../systemback/systemback.cpp" line="1670"/>
-        <location filename="../systemback/systemback.cpp" line="1693"/>
-        <location filename="../systemback/systemback.cpp" line="1694"/>
-        <location filename="../systemback/systemback.cpp" line="1717"/>
-        <location filename="../systemback/systemback.cpp" line="1718"/>
-        <location filename="../systemback/systemback.cpp" line="1741"/>
-        <location filename="../systemback/systemback.cpp" line="1742"/>
-        <location filename="../systemback/systemback.cpp" line="1758"/>
-        <location filename="../systemback/systemback.cpp" line="1774"/>
-        <location filename="../systemback/systemback.cpp" line="1790"/>
-        <location filename="../systemback/systemback.cpp" line="1806"/>
-        <location filename="../systemback/systemback.cpp" line="1822"/>
-        <location filename="../systemback/systemback.cpp" line="3989"/>
-        <location filename="../systemback/systemback.cpp" line="3996"/>
-        <location filename="../systemback/systemback.cpp" line="4003"/>
-        <location filename="../systemback/systemback.cpp" line="4010"/>
-        <location filename="../systemback/systemback.cpp" line="4017"/>
-        <location filename="../systemback/systemback.cpp" line="4024"/>
-        <location filename="../systemback/systemback.cpp" line="4031"/>
-        <location filename="../systemback/systemback.cpp" line="4052"/>
-        <location filename="../systemback/systemback.cpp" line="4058"/>
-        <location filename="../systemback/systemback.cpp" line="4065"/>
-        <location filename="../systemback/systemback.cpp" line="4072"/>
-        <location filename="../systemback/systemback.cpp" line="4079"/>
-        <location filename="../systemback/systemback.cpp" line="4086"/>
-        <location filename="../systemback/systemback.cpp" line="4093"/>
-        <location filename="../systemback/systemback.cpp" line="4114"/>
-        <location filename="../systemback/systemback.cpp" line="4121"/>
-        <location filename="../systemback/systemback.cpp" line="4127"/>
-        <location filename="../systemback/systemback.cpp" line="4134"/>
-        <location filename="../systemback/systemback.cpp" line="4141"/>
-        <location filename="../systemback/systemback.cpp" line="4148"/>
-        <location filename="../systemback/systemback.cpp" line="4155"/>
-        <location filename="../systemback/systemback.cpp" line="4176"/>
-        <location filename="../systemback/systemback.cpp" line="4183"/>
-        <location filename="../systemback/systemback.cpp" line="4190"/>
-        <location filename="../systemback/systemback.cpp" line="4196"/>
-        <location filename="../systemback/systemback.cpp" line="4203"/>
-        <location filename="../systemback/systemback.cpp" line="4210"/>
-        <location filename="../systemback/systemback.cpp" line="4217"/>
-        <location filename="../systemback/systemback.cpp" line="4238"/>
-        <location filename="../systemback/systemback.cpp" line="4245"/>
-        <location filename="../systemback/systemback.cpp" line="4252"/>
-        <location filename="../systemback/systemback.cpp" line="4259"/>
-        <location filename="../systemback/systemback.cpp" line="4265"/>
-        <location filename="../systemback/systemback.cpp" line="4272"/>
-        <location filename="../systemback/systemback.cpp" line="4279"/>
-        <location filename="../systemback/systemback.cpp" line="4300"/>
-        <location filename="../systemback/systemback.cpp" line="4307"/>
-        <location filename="../systemback/systemback.cpp" line="4314"/>
-        <location filename="../systemback/systemback.cpp" line="4321"/>
-        <location filename="../systemback/systemback.cpp" line="4328"/>
-        <location filename="../systemback/systemback.cpp" line="4334"/>
-        <location filename="../systemback/systemback.cpp" line="4341"/>
-        <location filename="../systemback/systemback.cpp" line="4362"/>
-        <location filename="../systemback/systemback.cpp" line="4369"/>
-        <location filename="../systemback/systemback.cpp" line="4376"/>
-        <location filename="../systemback/systemback.cpp" line="4383"/>
-        <location filename="../systemback/systemback.cpp" line="4390"/>
-        <location filename="../systemback/systemback.cpp" line="4397"/>
-        <location filename="../systemback/systemback.cpp" line="4403"/>
-        <location filename="../systemback/systemback.cpp" line="4424"/>
-        <location filename="../systemback/systemback.cpp" line="4431"/>
-        <location filename="../systemback/systemback.cpp" line="4438"/>
-        <location filename="../systemback/systemback.cpp" line="4445"/>
-        <location filename="../systemback/systemback.cpp" line="4452"/>
-        <location filename="../systemback/systemback.cpp" line="4459"/>
-        <location filename="../systemback/systemback.cpp" line="4466"/>
+        <location filename="../systemback/systemback.cpp" line="1840"/>
+        <location filename="../systemback/systemback.cpp" line="1841"/>
+        <location filename="../systemback/systemback.cpp" line="1852"/>
+        <location filename="../systemback/systemback.cpp" line="1853"/>
+        <location filename="../systemback/systemback.cpp" line="1869"/>
+        <location filename="../systemback/systemback.cpp" line="1870"/>
+        <location filename="../systemback/systemback.cpp" line="1890"/>
+        <location filename="../systemback/systemback.cpp" line="1891"/>
+        <location filename="../systemback/systemback.cpp" line="1911"/>
+        <location filename="../systemback/systemback.cpp" line="1912"/>
+        <location filename="../systemback/systemback.cpp" line="1932"/>
+        <location filename="../systemback/systemback.cpp" line="1933"/>
+        <location filename="../systemback/systemback.cpp" line="1953"/>
+        <location filename="../systemback/systemback.cpp" line="1954"/>
+        <location filename="../systemback/systemback.cpp" line="1974"/>
+        <location filename="../systemback/systemback.cpp" line="1975"/>
+        <location filename="../systemback/systemback.cpp" line="1995"/>
+        <location filename="../systemback/systemback.cpp" line="1996"/>
+        <location filename="../systemback/systemback.cpp" line="2016"/>
+        <location filename="../systemback/systemback.cpp" line="2017"/>
+        <location filename="../systemback/systemback.cpp" line="2028"/>
+        <location filename="../systemback/systemback.cpp" line="2029"/>
+        <location filename="../systemback/systemback.cpp" line="2040"/>
+        <location filename="../systemback/systemback.cpp" line="2041"/>
+        <location filename="../systemback/systemback.cpp" line="2052"/>
+        <location filename="../systemback/systemback.cpp" line="2053"/>
+        <location filename="../systemback/systemback.cpp" line="2064"/>
+        <location filename="../systemback/systemback.cpp" line="2065"/>
+        <location filename="../systemback/systemback.cpp" line="2076"/>
+        <location filename="../systemback/systemback.cpp" line="2077"/>
+        <location filename="../systemback/systemback.cpp" line="4633"/>
+        <location filename="../systemback/systemback.cpp" line="4639"/>
+        <location filename="../systemback/systemback.cpp" line="4645"/>
+        <location filename="../systemback/systemback.cpp" line="4651"/>
+        <location filename="../systemback/systemback.cpp" line="4657"/>
+        <location filename="../systemback/systemback.cpp" line="4663"/>
+        <location filename="../systemback/systemback.cpp" line="4669"/>
+        <location filename="../systemback/systemback.cpp" line="4690"/>
+        <location filename="../systemback/systemback.cpp" line="4695"/>
+        <location filename="../systemback/systemback.cpp" line="4701"/>
+        <location filename="../systemback/systemback.cpp" line="4707"/>
+        <location filename="../systemback/systemback.cpp" line="4713"/>
+        <location filename="../systemback/systemback.cpp" line="4719"/>
+        <location filename="../systemback/systemback.cpp" line="4725"/>
+        <location filename="../systemback/systemback.cpp" line="4746"/>
+        <location filename="../systemback/systemback.cpp" line="4752"/>
+        <location filename="../systemback/systemback.cpp" line="4757"/>
+        <location filename="../systemback/systemback.cpp" line="4763"/>
+        <location filename="../systemback/systemback.cpp" line="4769"/>
+        <location filename="../systemback/systemback.cpp" line="4775"/>
+        <location filename="../systemback/systemback.cpp" line="4781"/>
+        <location filename="../systemback/systemback.cpp" line="4802"/>
+        <location filename="../systemback/systemback.cpp" line="4808"/>
+        <location filename="../systemback/systemback.cpp" line="4814"/>
+        <location filename="../systemback/systemback.cpp" line="4819"/>
+        <location filename="../systemback/systemback.cpp" line="4825"/>
+        <location filename="../systemback/systemback.cpp" line="4831"/>
+        <location filename="../systemback/systemback.cpp" line="4837"/>
+        <location filename="../systemback/systemback.cpp" line="4858"/>
+        <location filename="../systemback/systemback.cpp" line="4864"/>
+        <location filename="../systemback/systemback.cpp" line="4870"/>
+        <location filename="../systemback/systemback.cpp" line="4876"/>
+        <location filename="../systemback/systemback.cpp" line="4881"/>
+        <location filename="../systemback/systemback.cpp" line="4887"/>
+        <location filename="../systemback/systemback.cpp" line="4893"/>
+        <location filename="../systemback/systemback.cpp" line="4914"/>
+        <location filename="../systemback/systemback.cpp" line="4920"/>
+        <location filename="../systemback/systemback.cpp" line="4926"/>
+        <location filename="../systemback/systemback.cpp" line="4932"/>
+        <location filename="../systemback/systemback.cpp" line="4938"/>
+        <location filename="../systemback/systemback.cpp" line="4943"/>
+        <location filename="../systemback/systemback.cpp" line="4949"/>
+        <location filename="../systemback/systemback.cpp" line="4970"/>
+        <location filename="../systemback/systemback.cpp" line="4976"/>
+        <location filename="../systemback/systemback.cpp" line="4982"/>
+        <location filename="../systemback/systemback.cpp" line="4988"/>
+        <location filename="../systemback/systemback.cpp" line="4994"/>
+        <location filename="../systemback/systemback.cpp" line="5000"/>
+        <location filename="../systemback/systemback.cpp" line="5005"/>
+        <location filename="../systemback/systemback.cpp" line="5026"/>
+        <location filename="../systemback/systemback.cpp" line="5032"/>
+        <location filename="../systemback/systemback.cpp" line="5038"/>
+        <location filename="../systemback/systemback.cpp" line="5044"/>
+        <location filename="../systemback/systemback.cpp" line="5050"/>
+        <location filename="../systemback/systemback.cpp" line="5056"/>
+        <location filename="../systemback/systemback.cpp" line="5062"/>
         <source>empty</source>
         <translation>vazio</translation>
     </message>
@@ -500,69 +508,76 @@
         <location filename="../systemback/systemback.ui" line="3461"/>
         <location filename="../systemback/systemback.ui" line="3486"/>
         <location filename="../systemback/systemback.ui" line="3511"/>
-        <location filename="../systemback/systemback.cpp" line="1595"/>
-        <location filename="../systemback/systemback.cpp" line="1619"/>
-        <location filename="../systemback/systemback.cpp" line="1643"/>
-        <location filename="../systemback/systemback.cpp" line="1667"/>
-        <location filename="../systemback/systemback.cpp" line="1691"/>
-        <location filename="../systemback/systemback.cpp" line="1715"/>
-        <location filename="../systemback/systemback.cpp" line="1739"/>
-        <location filename="../systemback/systemback.cpp" line="3990"/>
-        <location filename="../systemback/systemback.cpp" line="3997"/>
-        <location filename="../systemback/systemback.cpp" line="4004"/>
-        <location filename="../systemback/systemback.cpp" line="4011"/>
-        <location filename="../systemback/systemback.cpp" line="4018"/>
-        <location filename="../systemback/systemback.cpp" line="4025"/>
-        <location filename="../systemback/systemback.cpp" line="4032"/>
-        <location filename="../systemback/systemback.cpp" line="4051"/>
-        <location filename="../systemback/systemback.cpp" line="4059"/>
-        <location filename="../systemback/systemback.cpp" line="4066"/>
-        <location filename="../systemback/systemback.cpp" line="4073"/>
-        <location filename="../systemback/systemback.cpp" line="4080"/>
-        <location filename="../systemback/systemback.cpp" line="4087"/>
-        <location filename="../systemback/systemback.cpp" line="4094"/>
-        <location filename="../systemback/systemback.cpp" line="4113"/>
-        <location filename="../systemback/systemback.cpp" line="4120"/>
-        <location filename="../systemback/systemback.cpp" line="4128"/>
-        <location filename="../systemback/systemback.cpp" line="4135"/>
-        <location filename="../systemback/systemback.cpp" line="4142"/>
-        <location filename="../systemback/systemback.cpp" line="4149"/>
-        <location filename="../systemback/systemback.cpp" line="4156"/>
-        <location filename="../systemback/systemback.cpp" line="4175"/>
-        <location filename="../systemback/systemback.cpp" line="4182"/>
-        <location filename="../systemback/systemback.cpp" line="4189"/>
-        <location filename="../systemback/systemback.cpp" line="4197"/>
-        <location filename="../systemback/systemback.cpp" line="4204"/>
-        <location filename="../systemback/systemback.cpp" line="4211"/>
-        <location filename="../systemback/systemback.cpp" line="4218"/>
-        <location filename="../systemback/systemback.cpp" line="4237"/>
-        <location filename="../systemback/systemback.cpp" line="4244"/>
-        <location filename="../systemback/systemback.cpp" line="4251"/>
-        <location filename="../systemback/systemback.cpp" line="4258"/>
-        <location filename="../systemback/systemback.cpp" line="4266"/>
-        <location filename="../systemback/systemback.cpp" line="4273"/>
-        <location filename="../systemback/systemback.cpp" line="4280"/>
-        <location filename="../systemback/systemback.cpp" line="4299"/>
-        <location filename="../systemback/systemback.cpp" line="4306"/>
-        <location filename="../systemback/systemback.cpp" line="4313"/>
-        <location filename="../systemback/systemback.cpp" line="4320"/>
-        <location filename="../systemback/systemback.cpp" line="4327"/>
-        <location filename="../systemback/systemback.cpp" line="4335"/>
-        <location filename="../systemback/systemback.cpp" line="4342"/>
-        <location filename="../systemback/systemback.cpp" line="4361"/>
-        <location filename="../systemback/systemback.cpp" line="4368"/>
-        <location filename="../systemback/systemback.cpp" line="4375"/>
-        <location filename="../systemback/systemback.cpp" line="4382"/>
-        <location filename="../systemback/systemback.cpp" line="4389"/>
-        <location filename="../systemback/systemback.cpp" line="4396"/>
-        <location filename="../systemback/systemback.cpp" line="4404"/>
-        <location filename="../systemback/systemback.cpp" line="4423"/>
-        <location filename="../systemback/systemback.cpp" line="4430"/>
-        <location filename="../systemback/systemback.cpp" line="4437"/>
-        <location filename="../systemback/systemback.cpp" line="4444"/>
-        <location filename="../systemback/systemback.cpp" line="4451"/>
-        <location filename="../systemback/systemback.cpp" line="4458"/>
-        <location filename="../systemback/systemback.cpp" line="4465"/>
+        <location filename="../systemback/systemback.cpp" line="1888"/>
+        <location filename="../systemback/systemback.cpp" line="1889"/>
+        <location filename="../systemback/systemback.cpp" line="1909"/>
+        <location filename="../systemback/systemback.cpp" line="1910"/>
+        <location filename="../systemback/systemback.cpp" line="1930"/>
+        <location filename="../systemback/systemback.cpp" line="1931"/>
+        <location filename="../systemback/systemback.cpp" line="1951"/>
+        <location filename="../systemback/systemback.cpp" line="1952"/>
+        <location filename="../systemback/systemback.cpp" line="1972"/>
+        <location filename="../systemback/systemback.cpp" line="1973"/>
+        <location filename="../systemback/systemback.cpp" line="1993"/>
+        <location filename="../systemback/systemback.cpp" line="1994"/>
+        <location filename="../systemback/systemback.cpp" line="2014"/>
+        <location filename="../systemback/systemback.cpp" line="2015"/>
+        <location filename="../systemback/systemback.cpp" line="4634"/>
+        <location filename="../systemback/systemback.cpp" line="4640"/>
+        <location filename="../systemback/systemback.cpp" line="4646"/>
+        <location filename="../systemback/systemback.cpp" line="4652"/>
+        <location filename="../systemback/systemback.cpp" line="4658"/>
+        <location filename="../systemback/systemback.cpp" line="4664"/>
+        <location filename="../systemback/systemback.cpp" line="4670"/>
+        <location filename="../systemback/systemback.cpp" line="4689"/>
+        <location filename="../systemback/systemback.cpp" line="4696"/>
+        <location filename="../systemback/systemback.cpp" line="4702"/>
+        <location filename="../systemback/systemback.cpp" line="4708"/>
+        <location filename="../systemback/systemback.cpp" line="4714"/>
+        <location filename="../systemback/systemback.cpp" line="4720"/>
+        <location filename="../systemback/systemback.cpp" line="4726"/>
+        <location filename="../systemback/systemback.cpp" line="4745"/>
+        <location filename="../systemback/systemback.cpp" line="4751"/>
+        <location filename="../systemback/systemback.cpp" line="4758"/>
+        <location filename="../systemback/systemback.cpp" line="4764"/>
+        <location filename="../systemback/systemback.cpp" line="4770"/>
+        <location filename="../systemback/systemback.cpp" line="4776"/>
+        <location filename="../systemback/systemback.cpp" line="4782"/>
+        <location filename="../systemback/systemback.cpp" line="4801"/>
+        <location filename="../systemback/systemback.cpp" line="4807"/>
+        <location filename="../systemback/systemback.cpp" line="4813"/>
+        <location filename="../systemback/systemback.cpp" line="4820"/>
+        <location filename="../systemback/systemback.cpp" line="4826"/>
+        <location filename="../systemback/systemback.cpp" line="4832"/>
+        <location filename="../systemback/systemback.cpp" line="4838"/>
+        <location filename="../systemback/systemback.cpp" line="4857"/>
+        <location filename="../systemback/systemback.cpp" line="4863"/>
+        <location filename="../systemback/systemback.cpp" line="4869"/>
+        <location filename="../systemback/systemback.cpp" line="4875"/>
+        <location filename="../systemback/systemback.cpp" line="4882"/>
+        <location filename="../systemback/systemback.cpp" line="4888"/>
+        <location filename="../systemback/systemback.cpp" line="4894"/>
+        <location filename="../systemback/systemback.cpp" line="4913"/>
+        <location filename="../systemback/systemback.cpp" line="4919"/>
+        <location filename="../systemback/systemback.cpp" line="4925"/>
+        <location filename="../systemback/systemback.cpp" line="4931"/>
+        <location filename="../systemback/systemback.cpp" line="4937"/>
+        <location filename="../systemback/systemback.cpp" line="4944"/>
+        <location filename="../systemback/systemback.cpp" line="4950"/>
+        <location filename="../systemback/systemback.cpp" line="4969"/>
+        <location filename="../systemback/systemback.cpp" line="4975"/>
+        <location filename="../systemback/systemback.cpp" line="4981"/>
+        <location filename="../systemback/systemback.cpp" line="4987"/>
+        <location filename="../systemback/systemback.cpp" line="4993"/>
+        <location filename="../systemback/systemback.cpp" line="4999"/>
+        <location filename="../systemback/systemback.cpp" line="5006"/>
+        <location filename="../systemback/systemback.cpp" line="5025"/>
+        <location filename="../systemback/systemback.cpp" line="5031"/>
+        <location filename="../systemback/systemback.cpp" line="5037"/>
+        <location filename="../systemback/systemback.cpp" line="5043"/>
+        <location filename="../systemback/systemback.cpp" line="5049"/>
+        <location filename="../systemback/systemback.cpp" line="5055"/>
+        <location filename="../systemback/systemback.cpp" line="5061"/>
         <source>not used</source>
         <translation>não utilizado</translation>
     </message>
@@ -612,11 +627,11 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4145"/>
-        <location filename="../systemback/systemback.cpp" line="6540"/>
-        <location filename="../systemback/systemback.cpp" line="6580"/>
-        <location filename="../systemback/systemback.cpp" line="6721"/>
-        <location filename="../systemback/systemback.cpp" line="6771"/>
-        <location filename="../systemback/systemback.cpp" line="6792"/>
+        <location filename="../systemback/systemback.cpp" line="7186"/>
+        <location filename="../systemback/systemback.cpp" line="7230"/>
+        <location filename="../systemback/systemback.cpp" line="7355"/>
+        <location filename="../systemback/systemback.cpp" line="7412"/>
+        <location filename="../systemback/systemback.cpp" line="7430"/>
         <source>Storage directory</source>
         <translation>Diretório de armazenamento</translation>
     </message>
@@ -627,36 +642,36 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4201"/>
-        <location filename="../systemback/systemback.cpp" line="4927"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="305"/>
+        <location filename="../systemback/systemback.cpp" line="5478"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="405"/>
         <source>System restore</source>
         <translation>Restauração do sistema</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4233"/>
-        <location filename="../systemback/systemback.cpp" line="4998"/>
-        <location filename="../systemback/systemback.cpp" line="5570"/>
-        <location filename="../systemback/systemback.cpp" line="7553"/>
+        <location filename="../systemback/systemback.cpp" line="5549"/>
+        <location filename="../systemback/systemback.cpp" line="6208"/>
+        <location filename="../systemback/systemback.cpp" line="8285"/>
         <source>System copy</source>
         <translation>Cópia do sistema</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4265"/>
-        <location filename="../systemback/systemback.cpp" line="5017"/>
+        <location filename="../systemback/systemback.cpp" line="5572"/>
         <source>System install</source>
         <translation>Instalação do sistema</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4297"/>
-        <location filename="../systemback/systemback.cpp" line="5033"/>
-        <location filename="../systemback/systemback.cpp" line="6780"/>
-        <location filename="../systemback/systemback.cpp" line="6827"/>
+        <location filename="../systemback/systemback.cpp" line="5591"/>
+        <location filename="../systemback/systemback.cpp" line="7419"/>
+        <location filename="../systemback/systemback.cpp" line="7466"/>
         <source>Live system create</source>
         <translation>Criar sistema Live</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4329"/>
-        <location filename="../systemback/systemback.cpp" line="5073"/>
+        <location filename="../systemback/systemback.cpp" line="5639"/>
         <source>System repair</source>
         <translation>Reparo do sistema</translation>
     </message>
@@ -667,20 +682,20 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4383"/>
-        <location filename="../systemback/systemback.cpp" line="5115"/>
+        <location filename="../systemback/systemback.cpp" line="5678"/>
         <source>Exclude</source>
         <translation>Ignorar</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4425"/>
-        <location filename="../systemback/systemback.cpp" line="5125"/>
+        <location filename="../systemback/systemback.cpp" line="5689"/>
         <source>Schedule</source>
         <translation>Agendamento</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4457"/>
-        <location filename="../systemback/systemback.cpp" line="5134"/>
-        <location filename="../systemback/systemback.cpp" line="5651"/>
+        <location filename="../systemback/systemback.cpp" line="5698"/>
+        <location filename="../systemback/systemback.cpp" line="6284"/>
         <source>About</source>
         <translation>Sobre</translation>
     </message>
@@ -696,21 +711,21 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4792"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="437"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="479"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="521"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="551"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="583"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="581"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="638"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="695"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="745"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="800"/>
         <source>Full restore</source>
         <translation>Restauração completa</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4814"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="437"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="482"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="521"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="551"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="583"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="582"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="642"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="746"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="801"/>
         <source>System files restore</source>
         <translation>Arquivos de restauração do sistema</translation>
     </message>
@@ -721,7 +736,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4855"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="441"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="591"/>
         <source>Keep newly installed configuration files</source>
         <translation>Manter os arquivos de configuração recém-instalados</translation>
     </message>
@@ -743,13 +758,13 @@
     <message>
         <location filename="../systemback/systemback.ui" line="5514"/>
         <location filename="../systemback/systemback.ui" line="5726"/>
-        <location filename="../systemback/systemback.cpp" line="3803"/>
-        <location filename="../systemback/systemback.cpp" line="5163"/>
-        <location filename="../systemback/systemback.cpp" line="5446"/>
-        <location filename="../systemback/systemback.cpp" line="7267"/>
-        <location filename="../systemback/systemback.cpp" line="7294"/>
-        <location filename="../systemback/systemback.cpp" line="7326"/>
-        <location filename="../systemback/systemback.cpp" line="7378"/>
+        <location filename="../systemback/systemback.cpp" line="4454"/>
+        <location filename="../systemback/systemback.cpp" line="5730"/>
+        <location filename="../systemback/systemback.cpp" line="6038"/>
+        <location filename="../systemback/systemback.cpp" line="7947"/>
+        <location filename="../systemback/systemback.cpp" line="7972"/>
+        <location filename="../systemback/systemback.cpp" line="8001"/>
+        <location filename="../systemback/systemback.cpp" line="8060"/>
         <source>Umount</source>
         <translation>Desmontar</translation>
     </message>
@@ -760,13 +775,13 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5698"/>
-        <location filename="../systemback/systemback.cpp" line="1515"/>
-        <location filename="../systemback/systemback.cpp" line="5161"/>
-        <location filename="../systemback/systemback.cpp" line="5477"/>
-        <location filename="../systemback/systemback.cpp" line="7269"/>
-        <location filename="../systemback/systemback.cpp" line="7292"/>
-        <location filename="../systemback/systemback.cpp" line="7324"/>
-        <location filename="../systemback/systemback.cpp" line="7376"/>
+        <location filename="../systemback/systemback.cpp" line="1817"/>
+        <location filename="../systemback/systemback.cpp" line="5729"/>
+        <location filename="../systemback/systemback.cpp" line="6090"/>
+        <location filename="../systemback/systemback.cpp" line="7948"/>
+        <location filename="../systemback/systemback.cpp" line="7971"/>
+        <location filename="../systemback/systemback.cpp" line="8000"/>
+        <location filename="../systemback/systemback.cpp" line="8059"/>
         <source>! Delete !</source>
         <translation type="unfinished"></translation>
     </message>
@@ -787,8 +802,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5460"/>
-        <location filename="../systemback/systemback.cpp" line="478"/>
-        <location filename="../systemback/systemback.cpp" line="490"/>
+        <location filename="../systemback/systemback.cpp" line="554"/>
+        <location filename="../systemback/systemback.cpp" line="574"/>
         <source>Format</source>
         <translation>Formatar</translation>
     </message>
@@ -806,8 +821,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5177"/>
-        <location filename="../systemback/systemback.cpp" line="1510"/>
-        <location filename="../systemback/systemback.cpp" line="1520"/>
+        <location filename="../systemback/systemback.cpp" line="1811"/>
+        <location filename="../systemback/systemback.cpp" line="1824"/>
         <source>Transfer user configuration files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -822,10 +837,10 @@
         <translation>Instalar o bootloader GRUB 2:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="559"/>
-        <location filename="../systemback/systemback.cpp" line="1505"/>
-        <location filename="../systemback/systemback.cpp" line="1510"/>
-        <location filename="../systemback/systemback.cpp" line="1520"/>
+        <location filename="../systemback/systemback.cpp" line="730"/>
+        <location filename="../systemback/systemback.cpp" line="1803"/>
+        <location filename="../systemback/systemback.cpp" line="1810"/>
+        <location filename="../systemback/systemback.cpp" line="1825"/>
         <source>Transfer user configuration and data files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -841,17 +856,27 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6200"/>
-        <location filename="../systemback/systemback.cpp" line="3029"/>
-        <location filename="../systemback/systemback.cpp" line="3035"/>
-        <location filename="../systemback/systemback.cpp" line="3041"/>
-        <location filename="../systemback/systemback.cpp" line="3047"/>
-        <location filename="../systemback/systemback.cpp" line="3053"/>
-        <location filename="../systemback/systemback.cpp" line="3090"/>
-        <location filename="../systemback/systemback.cpp" line="3096"/>
-        <location filename="../systemback/systemback.cpp" line="3112"/>
-        <location filename="../systemback/systemback.cpp" line="3179"/>
-        <location filename="../systemback/systemback.cpp" line="3235"/>
-        <location filename="../systemback/systemback.cpp" line="6324"/>
+        <location filename="../systemback/systemback.cpp" line="3495"/>
+        <location filename="../systemback/systemback.cpp" line="3496"/>
+        <location filename="../systemback/systemback.cpp" line="3504"/>
+        <location filename="../systemback/systemback.cpp" line="3505"/>
+        <location filename="../systemback/systemback.cpp" line="3513"/>
+        <location filename="../systemback/systemback.cpp" line="3514"/>
+        <location filename="../systemback/systemback.cpp" line="3522"/>
+        <location filename="../systemback/systemback.cpp" line="3523"/>
+        <location filename="../systemback/systemback.cpp" line="3531"/>
+        <location filename="../systemback/systemback.cpp" line="3532"/>
+        <location filename="../systemback/systemback.cpp" line="3585"/>
+        <location filename="../systemback/systemback.cpp" line="3586"/>
+        <location filename="../systemback/systemback.cpp" line="3594"/>
+        <location filename="../systemback/systemback.cpp" line="3595"/>
+        <location filename="../systemback/systemback.cpp" line="3618"/>
+        <location filename="../systemback/systemback.cpp" line="3619"/>
+        <location filename="../systemback/systemback.cpp" line="3729"/>
+        <location filename="../systemback/systemback.cpp" line="3730"/>
+        <location filename="../systemback/systemback.cpp" line="3821"/>
+        <location filename="../systemback/systemback.cpp" line="3822"/>
+        <location filename="../systemback/systemback.cpp" line="6962"/>
         <source>Start</source>
         <translation>Iniciar</translation>
     </message>
@@ -876,739 +901,745 @@
         <translation>Senha:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="478"/>
-        <location filename="../systemback/systemback.cpp" line="490"/>
+        <location filename="../systemback/systemback.cpp" line="552"/>
+        <location filename="../systemback/systemback.cpp" line="573"/>
         <source>Partition</source>
         <translation>Partição</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="478"/>
-        <location filename="../systemback/systemback.cpp" line="490"/>
+        <location filename="../systemback/systemback.cpp" line="552"/>
+        <location filename="../systemback/systemback.cpp" line="573"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="478"/>
+        <location filename="../systemback/systemback.cpp" line="553"/>
         <source>Current mount point</source>
         <translation>Ponto de montagem atual</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="478"/>
+        <location filename="../systemback/systemback.cpp" line="553"/>
         <source>New mount point</source>
         <translation>Novo ponto de montagem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="478"/>
+        <location filename="../systemback/systemback.cpp" line="554"/>
         <source>Filesystem</source>
         <translation>Sistema de arquivos</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="490"/>
+        <location filename="../systemback/systemback.cpp" line="573"/>
         <source>Device</source>
         <translation>Dispositivo</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="334"/>
-        <location filename="../systemback/systemback.cpp" line="3351"/>
-        <location filename="../systemback/systemback.cpp" line="3907"/>
+        <location filename="../systemback/systemback.cpp" line="412"/>
+        <location filename="../systemback/systemback.cpp" line="4002"/>
+        <location filename="../systemback/systemback.cpp" line="4553"/>
         <source>scheduler</source>
         <translation>programar</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="510"/>
-        <location filename="../systemback/systemback.cpp" line="8268"/>
+        <location filename="../systemback/systemback.cpp" line="599"/>
+        <location filename="../systemback/systemback.cpp" line="9053"/>
         <source>Top left</source>
         <translation>Superior esquerda</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="510"/>
-        <location filename="../systemback/systemback.cpp" line="513"/>
-        <location filename="../systemback/systemback.cpp" line="8273"/>
+        <location filename="../systemback/systemback.cpp" line="599"/>
+        <location filename="../systemback/systemback.cpp" line="605"/>
+        <location filename="../systemback/systemback.cpp" line="9057"/>
         <source>Top right</source>
         <translation>Superior direita</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="510"/>
-        <location filename="../systemback/systemback.cpp" line="515"/>
-        <location filename="../systemback/systemback.cpp" line="8278"/>
+        <location filename="../systemback/systemback.cpp" line="600"/>
+        <location filename="../systemback/systemback.cpp" line="608"/>
+        <location filename="../systemback/systemback.cpp" line="9061"/>
         <source>Center</source>
         <translation>Centro</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="510"/>
-        <location filename="../systemback/systemback.cpp" line="517"/>
-        <location filename="../systemback/systemback.cpp" line="8283"/>
+        <location filename="../systemback/systemback.cpp" line="600"/>
+        <location filename="../systemback/systemback.cpp" line="611"/>
+        <location filename="../systemback/systemback.cpp" line="9065"/>
         <source>Bottom left</source>
         <translation>Inferior esquerda</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="510"/>
-        <location filename="../systemback/systemback.cpp" line="519"/>
-        <location filename="../systemback/systemback.cpp" line="8288"/>
+        <location filename="../systemback/systemback.cpp" line="601"/>
+        <location filename="../systemback/systemback.cpp" line="614"/>
+        <location filename="../systemback/systemback.cpp" line="9069"/>
         <source>Bottom right</source>
         <translation>Inferior direita</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="521"/>
-        <location filename="../systemback/systemback.cpp" line="8164"/>
-        <location filename="../systemback/systemback.cpp" line="8174"/>
+        <location filename="../systemback/systemback.cpp" line="616"/>
+        <location filename="../systemback/systemback.cpp" line="8924"/>
+        <location filename="../systemback/systemback.cpp" line="8938"/>
         <source>day(s)</source>
         <translation>dia(s)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="522"/>
-        <location filename="../systemback/systemback.cpp" line="8198"/>
-        <location filename="../systemback/systemback.cpp" line="8208"/>
+        <location filename="../systemback/systemback.cpp" line="617"/>
+        <location filename="../systemback/systemback.cpp" line="8963"/>
+        <location filename="../systemback/systemback.cpp" line="8977"/>
         <source>hour(s)</source>
         <translation>hora(s)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="523"/>
-        <location filename="../systemback/systemback.cpp" line="8184"/>
-        <location filename="../systemback/systemback.cpp" line="8218"/>
-        <location filename="../systemback/systemback.cpp" line="8232"/>
-        <location filename="../systemback/systemback.cpp" line="8241"/>
+        <location filename="../systemback/systemback.cpp" line="619"/>
+        <location filename="../systemback/systemback.cpp" line="8947"/>
+        <location filename="../systemback/systemback.cpp" line="8986"/>
+        <location filename="../systemback/systemback.cpp" line="9003"/>
+        <location filename="../systemback/systemback.cpp" line="9016"/>
         <source>minute(s)</source>
         <translation>minuto(s)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="524"/>
-        <location filename="../systemback/systemback.cpp" line="8250"/>
-        <location filename="../systemback/systemback.cpp" line="8259"/>
+        <location filename="../systemback/systemback.cpp" line="621"/>
+        <location filename="../systemback/systemback.cpp" line="9030"/>
+        <location filename="../systemback/systemback.cpp" line="9043"/>
         <source>seconds</source>
         <translation>segundos</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="2085"/>
-        <location filename="../systemback/systemback.cpp" line="2361"/>
-        <location filename="../systemback/systemback.cpp" line="4985"/>
-        <location filename="../systemback/systemback.cpp" line="5172"/>
-        <location filename="../systemback/systemback.cpp" line="5898"/>
-        <location filename="../systemback/systemback.cpp" line="7017"/>
+        <location filename="../systemback/systemback.cpp" line="2342"/>
+        <location filename="../systemback/systemback.cpp" line="2675"/>
+        <location filename="../systemback/systemback.cpp" line="5529"/>
+        <location filename="../systemback/systemback.cpp" line="5740"/>
+        <location filename="../systemback/systemback.cpp" line="6518"/>
+        <location filename="../systemback/systemback.cpp" line="7662"/>
         <source>Live image</source>
         <translation>Imagem Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="611"/>
-        <location filename="../systemback/systemback.cpp" line="705"/>
-        <location filename="../systemback/systemback.cpp" line="2341"/>
-        <location filename="../systemback/systemback.cpp" line="4985"/>
-        <location filename="../systemback/systemback.cpp" line="5053"/>
-        <location filename="../systemback/systemback.cpp" line="5172"/>
-        <location filename="../systemback/systemback.cpp" line="5888"/>
+        <location filename="../systemback/systemback.cpp" line="809"/>
+        <location filename="../systemback/systemback.cpp" line="910"/>
+        <location filename="../systemback/systemback.cpp" line="2644"/>
+        <location filename="../systemback/systemback.cpp" line="5528"/>
+        <location filename="../systemback/systemback.cpp" line="5622"/>
+        <location filename="../systemback/systemback.cpp" line="5739"/>
+        <location filename="../systemback/systemback.cpp" line="6511"/>
         <source>Currently running system</source>
         <translation>Rodando atualmente o sistema</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="478"/>
+        <location filename="../systemback/systemback.cpp" line="552"/>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="8459"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="393"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
+        <location filename="../systemback/systemback.cpp" line="840"/>
+        <location filename="../systemback/systemback.cpp" line="9266"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="518"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="940"/>
         <source>Creating restore point</source>
         <translation>Criando ponto de restauração</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="1886"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="610"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
+        <location filename="../systemback/systemback.cpp" line="841"/>
+        <location filename="../systemback/systemback.cpp" line="2135"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="835"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="941"/>
         <source>Restoring the full system</source>
         <translation>Restaurando o sistema completo</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="1891"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="614"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
+        <location filename="../systemback/systemback.cpp" line="842"/>
+        <location filename="../systemback/systemback.cpp" line="2138"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="839"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="942"/>
         <source>Restoring the system files</source>
         <translation>Restaurando os arquivos de sistema</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="1904"/>
+        <location filename="../systemback/systemback.cpp" line="843"/>
+        <location filename="../systemback/systemback.cpp" line="2149"/>
         <source>Restoring user(s) configuration files</source>
         <translation>Restaurando os arquivos de configuração dos usuário(s)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="2013"/>
+        <location filename="../systemback/systemback.cpp" line="844"/>
+        <location filename="../systemback/systemback.cpp" line="2268"/>
         <source>Repairing the system files</source>
         <translation>Reparando os arquivos de sistema</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="2018"/>
+        <location filename="../systemback/systemback.cpp" line="845"/>
+        <location filename="../systemback/systemback.cpp" line="2271"/>
         <source>Repairing the full system</source>
         <translation>Reparando o sistema completo</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="2240"/>
+        <location filename="../systemback/systemback.cpp" line="846"/>
+        <location filename="../systemback/systemback.cpp" line="2527"/>
         <source>Copying the system</source>
         <translation>Copiando o sistema</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="2240"/>
+        <location filename="../systemback/systemback.cpp" line="847"/>
+        <location filename="../systemback/systemback.cpp" line="2528"/>
         <source>Installing the system</source>
         <translation>Instalando o sistema</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="662"/>
-        <location filename="../systemback/systemback.cpp" line="683"/>
-        <location filename="../systemback/systemback.cpp" line="8617"/>
-        <location filename="../systemback/systemback.cpp" line="8768"/>
-        <location filename="../systemback/systemback.cpp" line="8778"/>
+        <location filename="../systemback/systemback.cpp" line="848"/>
+        <location filename="../systemback/systemback.cpp" line="869"/>
+        <location filename="../systemback/systemback.cpp" line="892"/>
+        <location filename="../systemback/systemback.cpp" line="9473"/>
+        <location filename="../systemback/systemback.cpp" line="9736"/>
+        <location filename="../systemback/systemback.cpp" line="9753"/>
         <source>Creating Live system</source>
         <translation>Criando sistema Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="2858"/>
+        <location filename="../systemback/systemback.cpp" line="850"/>
+        <location filename="../systemback/systemback.cpp" line="3288"/>
         <source>Writing Live image to USB device</source>
         <translation>Gravando a imagem Live no USB</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="683"/>
-        <location filename="../systemback/systemback.cpp" line="8541"/>
-        <location filename="../systemback/systemback.cpp" line="8566"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="416"/>
+        <location filename="../systemback/systemback.cpp" line="889"/>
+        <location filename="../systemback/systemback.cpp" line="9365"/>
+        <location filename="../systemback/systemback.cpp" line="9401"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="551"/>
         <source>Deleting restore point</source>
         <translation>Excluindo ponto de restauração</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="683"/>
-        <location filename="../systemback/systemback.cpp" line="8453"/>
+        <location filename="../systemback/systemback.cpp" line="890"/>
+        <location filename="../systemback/systemback.cpp" line="9253"/>
         <source>Deleting old restore point</source>
         <translation>Excluindo ponto(s) de restauração antigo</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="683"/>
-        <location filename="../systemback/systemback.cpp" line="6242"/>
-        <location filename="../systemback/systemback.cpp" line="8437"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="382"/>
+        <location filename="../systemback/systemback.cpp" line="891"/>
+        <location filename="../systemback/systemback.cpp" line="6878"/>
+        <location filename="../systemback/systemback.cpp" line="9231"/>
+        <location filename="../systemback/systemback.cpp" line="9232"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="499"/>
         <source>Deleting incomplete restore point</source>
         <translation>Apagando o ponto de restauração imcompleto</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1037"/>
-        <location filename="../systemback/systemback.cpp" line="3118"/>
-        <location filename="../systemback/systemback.cpp" line="3126"/>
-        <location filename="../systemback/systemback.cpp" line="6346"/>
+        <location filename="../systemback/systemback.cpp" line="1272"/>
+        <location filename="../systemback/systemback.cpp" line="3627"/>
+        <location filename="../systemback/systemback.cpp" line="3628"/>
+        <location filename="../systemback/systemback.cpp" line="3638"/>
+        <location filename="../systemback/systemback.cpp" line="3639"/>
+        <location filename="../systemback/systemback.cpp" line="6982"/>
         <source>Reboot</source>
         <translation>Reiniciar</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1037"/>
-        <location filename="../systemback/systemback.cpp" line="3059"/>
-        <location filename="../systemback/systemback.cpp" line="3067"/>
-        <location filename="../systemback/systemback.cpp" line="6351"/>
+        <location filename="../systemback/systemback.cpp" line="1272"/>
+        <location filename="../systemback/systemback.cpp" line="3541"/>
+        <location filename="../systemback/systemback.cpp" line="3542"/>
+        <location filename="../systemback/systemback.cpp" line="3552"/>
+        <location filename="../systemback/systemback.cpp" line="3553"/>
+        <location filename="../systemback/systemback.cpp" line="6986"/>
         <source>X restart</source>
         <translation>Reiniciar o X</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="2023"/>
+        <location filename="../systemback/systemback.cpp" line="2274"/>
         <source>Repairing the GRUB 2</source>
         <translation>Reparando o GRUB 2</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="2159"/>
-        <location filename="../systemback/systemback.cpp" line="2798"/>
-        <location filename="../systemback/systemback.cpp" line="2984"/>
-        <location filename="../systemback/systemback.cpp" line="6246"/>
-        <location filename="../systemback/systemback.cpp" line="8469"/>
-        <location filename="../systemback/systemback.cpp" line="8572"/>
-        <location filename="../systemback/systemback.cpp" line="8816"/>
-        <location filename="../systemback/systemback.cpp" line="8869"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="402"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="420"/>
+        <location filename="../systemback/systemback.cpp" line="2436"/>
+        <location filename="../systemback/systemback.cpp" line="3228"/>
+        <location filename="../systemback/systemback.cpp" line="3436"/>
+        <location filename="../systemback/systemback.cpp" line="6881"/>
+        <location filename="../systemback/systemback.cpp" line="9287"/>
+        <location filename="../systemback/systemback.cpp" line="9413"/>
+        <location filename="../systemback/systemback.cpp" line="9893"/>
+        <location filename="../systemback/systemback.cpp" line="10000"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="537"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="558"/>
         <source>Emptying cache</source>
         <translation>Limpando o cache</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3013"/>
+        <location filename="../systemback/systemback.cpp" line="3470"/>
         <source>Another systemback process is currently running, please wait until it finishes.</source>
         <translation>Outro processo Systemback está sendo executado, por favor aguarde até que ele termine.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3023"/>
+        <location filename="../systemback/systemback.cpp" line="3486"/>
         <source>Please enter a new name.</source>
         <translation>Por favor, entre com um novo nome.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3023"/>
+        <location filename="../systemback/systemback.cpp" line="3485"/>
         <source>The specified name contain(s) unsupported character(s)!</source>
         <translation>O nome especificado contém caractere(s) não suportáveis!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3028"/>
+        <location filename="../systemback/systemback.cpp" line="3493"/>
         <source>Restore the system files to the following restore point:</source>
         <translation>Restaurar os arquivos de sistema para o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3034"/>
+        <location filename="../systemback/systemback.cpp" line="3502"/>
         <source>Repair the system files with the following restore point:</source>
         <translation>Reparar os arquivos de sistema com o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3040"/>
+        <location filename="../systemback/systemback.cpp" line="3511"/>
         <source>Repair the complete system with the following restore point:</source>
         <translation>O reparo completo do sistema foi realizado com o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3046"/>
+        <location filename="../systemback/systemback.cpp" line="3519"/>
         <source>Restore the complete user(s) configuration files to the following restore point:</source>
         <translation>Restaurar todos arquivos de configuração dos usuário(s) para o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3052"/>
+        <location filename="../systemback/systemback.cpp" line="3529"/>
         <source>Restore the user(s) configuration files to the following restore point:</source>
         <translation>Restaurar os arquivos de configuração dos usuário(s) para o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3058"/>
+        <location filename="../systemback/systemback.cpp" line="3538"/>
         <source>User(s) configuration files full restoration are completed.</source>
         <translation>A restauração completa dos arquivos de configuração dos usuário(s) está concluída.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3058"/>
-        <location filename="../systemback/systemback.cpp" line="3066"/>
+        <location filename="../systemback/systemback.cpp" line="3540"/>
+        <location filename="../systemback/systemback.cpp" line="3551"/>
         <source>The X server will restart automatically within 30 seconds.</source>
         <translation>O servidor X irá reiniciar automaticamente em 30 segundos.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3066"/>
+        <location filename="../systemback/systemback.cpp" line="3550"/>
         <source>User(s) configuration files restoration are completed.</source>
         <translation>A restauração dos arquivos de configuração dos usuário(s) foi completada.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3074"/>
+        <location filename="../systemback/systemback.cpp" line="3561"/>
         <source>System files repair are completed, but an error occurred while reinstalling GRUB!</source>
         <translation>O reparo do arquivos de sistema está concluído, mas ocorreu um erro durante a reinstalação do GRUB!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3074"/>
-        <location filename="../systemback/systemback.cpp" line="3148"/>
-        <location filename="../systemback/systemback.cpp" line="3214"/>
+        <location filename="../systemback/systemback.cpp" line="3563"/>
+        <location filename="../systemback/systemback.cpp" line="3675"/>
+        <location filename="../systemback/systemback.cpp" line="3785"/>
         <source>System may not bootable! (In general, the different architecture is causing the problem.)</source>
         <translation>O sistema pode não iniciar! (Em geral, a causa do problema está na arquitetura diferente.)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3079"/>
+        <location filename="../systemback/systemback.cpp" line="3570"/>
         <source>Full system repair is completed.</source>
         <translation>O reparo completo do sistema está concluído.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3084"/>
+        <location filename="../systemback/systemback.cpp" line="3576"/>
         <source>System repair is completed.</source>
         <translation>O reparo do sistema está concluído.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3089"/>
+        <location filename="../systemback/systemback.cpp" line="3583"/>
         <source>Copy the system, using the following restore point:</source>
         <translation>Copie o sistema, usando o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3095"/>
+        <location filename="../systemback/systemback.cpp" line="3592"/>
         <source>Install the system, using the following restore point:</source>
         <translation>Instalar o sistema, utilizando o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3101"/>
-        <location filename="../systemback/systemback.cpp" line="3219"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="71"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="74"/>
+        <location filename="../systemback/systemback.cpp" line="3601"/>
+        <location filename="../systemback/systemback.cpp" line="3794"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="91"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="97"/>
         <source>Restore point creation is aborted!</source>
         <translation>A restauração do ponto de criação foi cancelada!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3101"/>
-        <location filename="../systemback/systemback.cpp" line="3173"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="71"/>
+        <location filename="../systemback/systemback.cpp" line="3602"/>
+        <location filename="../systemback/systemback.cpp" line="3714"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="92"/>
         <source>Not enough free disk space to complete the process.</source>
         <translation>Não existe espaço livre em disco para completar o procedimento.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3106"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="53"/>
+        <location filename="../systemback/systemback.cpp" line="3609"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="67"/>
         <source>Root privileges are required for running Systemback!</source>
         <translation>Privilégios de root são necessários para a execução do Systemback!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3111"/>
+        <location filename="../systemback/systemback.cpp" line="3616"/>
         <source>Restore complete system to the following restore point:</source>
         <translation>Restauração completa do sistema para o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3117"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="666"/>
+        <location filename="../systemback/systemback.cpp" line="3625"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="892"/>
         <source>System files restoration are completed.</source>
         <translation>Restauração dos arquivos de sistema foi concluída.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3117"/>
-        <location filename="../systemback/systemback.cpp" line="3125"/>
+        <location filename="../systemback/systemback.cpp" line="3626"/>
+        <location filename="../systemback/systemback.cpp" line="3637"/>
         <source>The computer will restart automatically within 30 seconds.</source>
         <translation>O computador irá reiniciar automaticamente em 30 segundos.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3125"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="663"/>
+        <location filename="../systemback/systemback.cpp" line="3636"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="887"/>
         <source>Full system restoration is completed.</source>
         <translation>Restauração completa do sistema concluída.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3133"/>
-        <location filename="../systemback/systemback.cpp" line="3184"/>
-        <location filename="../systemback/systemback.cpp" line="3209"/>
-        <location filename="../systemback/systemback.cpp" line="3295"/>
+        <location filename="../systemback/systemback.cpp" line="3647"/>
+        <location filename="../systemback/systemback.cpp" line="3736"/>
+        <location filename="../systemback/systemback.cpp" line="3775"/>
+        <location filename="../systemback/systemback.cpp" line="3917"/>
         <source>System copy is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3178"/>
+        <location filename="../systemback/systemback.cpp" line="3721"/>
         <source>Format the &lt;dev&gt;, and write the following Live system image:</source>
         <translation>Formate o &lt;dev&gt;, e grave a imagem do sistema Live existente:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3330"/>
-        <location filename="../systemback/systemback.cpp" line="3335"/>
+        <location filename="../systemback/systemback.cpp" line="3975"/>
+        <location filename="../systemback/systemback.cpp" line="3982"/>
         <source>There isn&apos;t enough free space.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8330"/>
+        <location filename="../systemback/systemback.cpp" line="9108"/>
         <source>Interrupting the current process</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8882"/>
+        <location filename="../systemback/systemback.cpp" line="10017"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3133"/>
+        <location filename="../systemback/systemback.cpp" line="3648"/>
         <source>The specified partition(s) doesn&apos;t have enough free space to copy the system. The copied system will not function properly.</source>
         <translation>A partição espeficada não tem espaço livre suficiente para a cópia do sistema. O sistema copiado não irá funcionar perfeitamente.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3138"/>
+        <location filename="../systemback/systemback.cpp" line="3656"/>
         <source>System copy is completed, but an error occurred while installing GRUB!</source>
         <translation>A cópia do sistema foi concluída, mas ocorreu um erro durante a instalação do GRUB!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3138"/>
-        <location filename="../systemback/systemback.cpp" line="3199"/>
+        <location filename="../systemback/systemback.cpp" line="3658"/>
+        <location filename="../systemback/systemback.cpp" line="3758"/>
         <source>Need to manually install a bootloader.</source>
         <translation>Necessária instalação manual de um bootloader.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3143"/>
-        <location filename="../systemback/systemback.cpp" line="3330"/>
+        <location filename="../systemback/systemback.cpp" line="3665"/>
+        <location filename="../systemback/systemback.cpp" line="3974"/>
         <source>System restoration is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3143"/>
+        <location filename="../systemback/systemback.cpp" line="3666"/>
         <source>An error occurred while reinstalling GRUB.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3158"/>
+        <location filename="../systemback/systemback.cpp" line="3690"/>
         <source>An error occurred while creating file system image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3163"/>
+        <location filename="../systemback/systemback.cpp" line="3698"/>
         <source>An error occurred while creating container file.</source>
         <translation>Ocorreu um erro ao criar o arquivo do conteúdo.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3204"/>
+        <location filename="../systemback/systemback.cpp" line="3766"/>
         <source>The specified partition(s) doesn&apos;t have enough free space to install the system. The installed system will not function properly.</source>
         <translation>A partição especificada não tem espaço livre suficiente para instalação do sistema. O sistema instalado não irá funcionar corretamente.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3209"/>
-        <location filename="../systemback/systemback.cpp" line="3290"/>
-        <location filename="../systemback/systemback.cpp" line="3325"/>
+        <location filename="../systemback/systemback.cpp" line="3776"/>
+        <location filename="../systemback/systemback.cpp" line="3910"/>
+        <location filename="../systemback/systemback.cpp" line="3967"/>
         <source>The specified partition couldn&apos;t be formatted (in use or unavailable).</source>
         <translation>A partição especificada não pode ser formatada (em uso ou indisponível).</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3214"/>
+        <location filename="../systemback/systemback.cpp" line="3783"/>
         <source>An error occurred while reinstalling GRUB!</source>
         <translation>Ocorreu um erro ao reinstalar o GRUB!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3148"/>
+        <location filename="../systemback/systemback.cpp" line="3673"/>
         <source>Full system repair is completed, but an error occurred while reinstalling GRUB!</source>
         <translation>O reparo completo do sistema foi concluído, mas ocorreu um erro durante a reinstalação do GRUB!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3153"/>
+        <location filename="../systemback/systemback.cpp" line="3682"/>
         <source>System copy is completed.</source>
         <translation>A cópia do sistema está concluída.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3158"/>
-        <location filename="../systemback/systemback.cpp" line="3163"/>
-        <location filename="../systemback/systemback.cpp" line="3173"/>
-        <location filename="../systemback/systemback.cpp" line="3270"/>
-        <location filename="../systemback/systemback.cpp" line="3275"/>
+        <location filename="../systemback/systemback.cpp" line="3689"/>
+        <location filename="../systemback/systemback.cpp" line="3697"/>
+        <location filename="../systemback/systemback.cpp" line="3713"/>
+        <location filename="../systemback/systemback.cpp" line="3875"/>
+        <location filename="../systemback/systemback.cpp" line="3883"/>
         <source>Live system creation is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3184"/>
-        <location filename="../systemback/systemback.cpp" line="3285"/>
-        <location filename="../systemback/systemback.cpp" line="3320"/>
+        <location filename="../systemback/systemback.cpp" line="3737"/>
+        <location filename="../systemback/systemback.cpp" line="3901"/>
+        <location filename="../systemback/systemback.cpp" line="3958"/>
         <source>The specified partition couldn&apos;t be mounted.</source>
         <translation>A partição especificada não pode ser montada.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3240"/>
+        <location filename="../systemback/systemback.cpp" line="3829"/>
         <source>The selected partition doesn&apos;t have enough space to write the Live system.</source>
         <translation>Não existe espaço para gravar este sistema Live nesta partição.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3245"/>
+        <location filename="../systemback/systemback.cpp" line="3838"/>
         <source>An error occurred while unpacking Live system files.</source>
         <translation>Ocorreu um erro ao descompactar os arquivos desse sistema Live.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3255"/>
+        <location filename="../systemback/systemback.cpp" line="3852"/>
         <source>An error occurred while renaming essential Live files.</source>
         <translation>Um erro ocorreu ao renomear os arquivos essenciais do Live.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3260"/>
+        <location filename="../systemback/systemback.cpp" line="3860"/>
         <source>An error occurred while creating .iso image.</source>
         <translation>Um erro ocorreu ao criar a imagem .iso.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3265"/>
+        <location filename="../systemback/systemback.cpp" line="3868"/>
         <source>An error occurred while reading .sblive image.</source>
         <translation>Um erro ocorreu ao ler a imagem .sblive.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3270"/>
+        <location filename="../systemback/systemback.cpp" line="3876"/>
         <source>An error occurred while creating new initramfs image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3295"/>
-        <location filename="../systemback/systemback.cpp" line="3300"/>
-        <location filename="../systemback/systemback.cpp" line="3305"/>
+        <location filename="../systemback/systemback.cpp" line="3918"/>
+        <location filename="../systemback/systemback.cpp" line="3925"/>
+        <location filename="../systemback/systemback.cpp" line="3932"/>
         <source>The Live image couldn&apos;t be mounted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3189"/>
+        <location filename="../systemback/systemback.cpp" line="3744"/>
         <source>GRUB 2 repair is completed.</source>
         <translation>O reparo do GRUB 2 está finalizado.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3168"/>
+        <location filename="../systemback/systemback.cpp" line="3705"/>
         <source>Live system creation is completed.</source>
         <translation>Criação do sistema Live está concluída.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3168"/>
+        <location filename="../systemback/systemback.cpp" line="3706"/>
         <source>The created .sblive file can be written to pendrive.</source>
         <translation>O arquivo criado em .sbLive, pode ser gravado no pendrive.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3194"/>
+        <location filename="../systemback/systemback.cpp" line="3750"/>
         <source>System install is completed.</source>
         <translation>A instalação do sistema está completa.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3199"/>
+        <location filename="../systemback/systemback.cpp" line="3756"/>
         <source>System install is completed, but an error occurred while installing GRUB!</source>
         <translation>A instalação do sistema está completa, mas ocorreu um erro durante a instalação do GRUB!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3204"/>
-        <location filename="../systemback/systemback.cpp" line="3229"/>
-        <location filename="../systemback/systemback.cpp" line="3285"/>
-        <location filename="../systemback/systemback.cpp" line="3290"/>
-        <location filename="../systemback/systemback.cpp" line="3300"/>
+        <location filename="../systemback/systemback.cpp" line="3765"/>
+        <location filename="../systemback/systemback.cpp" line="3812"/>
+        <location filename="../systemback/systemback.cpp" line="3900"/>
+        <location filename="../systemback/systemback.cpp" line="3909"/>
+        <location filename="../systemback/systemback.cpp" line="3924"/>
         <source>System installation is aborted!</source>
         <translation>Instalação do sistema abortada!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3219"/>
-        <location filename="../systemback/systemback.cpp" line="3224"/>
-        <location filename="../systemback/systemback.cpp" line="3229"/>
-        <location filename="../systemback/systemback.cpp" line="3275"/>
-        <location filename="../systemback/systemback.cpp" line="3310"/>
-        <location filename="../systemback/systemback.cpp" line="3315"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="74"/>
+        <location filename="../systemback/systemback.cpp" line="3795"/>
+        <location filename="../systemback/systemback.cpp" line="3804"/>
+        <location filename="../systemback/systemback.cpp" line="3813"/>
+        <location filename="../systemback/systemback.cpp" line="3884"/>
+        <location filename="../systemback/systemback.cpp" line="3940"/>
+        <location filename="../systemback/systemback.cpp" line="3949"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="98"/>
         <source>There has been critical changes in the file system during this operation.</source>
         <translation>Houve mudanças críticas no sistema de arquivos durante esta operação.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3224"/>
+        <location filename="../systemback/systemback.cpp" line="3803"/>
         <source>System copying is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3234"/>
+        <location filename="../systemback/systemback.cpp" line="3820"/>
         <source>Repair the GRUB 2 bootloader.</source>
         <translation>Recuperar o inicializador do GRUB2.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3240"/>
-        <location filename="../systemback/systemback.cpp" line="3245"/>
-        <location filename="../systemback/systemback.cpp" line="3315"/>
-        <location filename="../systemback/systemback.cpp" line="3320"/>
-        <location filename="../systemback/systemback.cpp" line="3325"/>
+        <location filename="../systemback/systemback.cpp" line="3828"/>
+        <location filename="../systemback/systemback.cpp" line="3837"/>
+        <location filename="../systemback/systemback.cpp" line="3948"/>
+        <location filename="../systemback/systemback.cpp" line="3957"/>
+        <location filename="../systemback/systemback.cpp" line="3966"/>
         <source>Live write is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3250"/>
+        <location filename="../systemback/systemback.cpp" line="3844"/>
         <source>Live system image write is completed.</source>
         <translation>A imagem do sistema Live foi gravada.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3255"/>
-        <location filename="../systemback/systemback.cpp" line="3260"/>
-        <location filename="../systemback/systemback.cpp" line="3265"/>
-        <location filename="../systemback/systemback.cpp" line="3310"/>
+        <location filename="../systemback/systemback.cpp" line="3851"/>
+        <location filename="../systemback/systemback.cpp" line="3859"/>
+        <location filename="../systemback/systemback.cpp" line="3867"/>
+        <location filename="../systemback/systemback.cpp" line="3939"/>
         <source>Live conversion is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3280"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="86"/>
+        <location filename="../systemback/systemback.cpp" line="3892"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="114"/>
         <source>Restore point deletion is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3280"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="86"/>
+        <location filename="../systemback/systemback.cpp" line="3893"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="115"/>
         <source>An error occurred while during the process.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3305"/>
-        <location filename="../systemback/systemback.cpp" line="3335"/>
+        <location filename="../systemback/systemback.cpp" line="3931"/>
+        <location filename="../systemback/systemback.cpp" line="3981"/>
         <source>System repair is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="4923"/>
+        <location filename="../systemback/systemback.cpp" line="5473"/>
         <source>Everyone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="402"/>
-        <location filename="../systemback/systemback.cpp" line="5081"/>
+        <location filename="../systemback/systemback.cpp" line="474"/>
+        <location filename="../systemback/systemback.cpp" line="5647"/>
         <source>Upgrading the system</source>
         <translation>Atualizando o sistema</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="5328"/>
-        <location filename="../systemback/systemback.cpp" line="5339"/>
-        <location filename="../systemback/systemback.cpp" line="7183"/>
-        <location filename="../systemback/systemback.cpp" line="7357"/>
+        <location filename="../systemback/systemback.cpp" line="5908"/>
+        <location filename="../systemback/systemback.cpp" line="5922"/>
+        <location filename="../systemback/systemback.cpp" line="7850"/>
+        <location filename="../systemback/systemback.cpp" line="8034"/>
         <source>Multiple mount points</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8105"/>
+        <location filename="../systemback/systemback.cpp" line="8844"/>
         <source>Enabled</source>
         <translation>Habilitado</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8339"/>
+        <location filename="../systemback/systemback.cpp" line="9119"/>
         <source>Systemback worker thread is interrupted by the user.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="662"/>
-        <location filename="../systemback/systemback.cpp" line="8617"/>
-        <location filename="../systemback/systemback.cpp" line="8768"/>
-        <location filename="../systemback/systemback.cpp" line="8778"/>
-        <location filename="../systemback/systemback.cpp" line="8841"/>
-        <location filename="../systemback/systemback.cpp" line="8854"/>
+        <location filename="../systemback/systemback.cpp" line="848"/>
+        <location filename="../systemback/systemback.cpp" line="869"/>
+        <location filename="../systemback/systemback.cpp" line="9473"/>
+        <location filename="../systemback/systemback.cpp" line="9736"/>
+        <location filename="../systemback/systemback.cpp" line="9753"/>
+        <location filename="../systemback/systemback.cpp" line="9929"/>
+        <location filename="../systemback/systemback.cpp" line="9960"/>
         <source>process</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8790"/>
-        <location filename="../systemback/systemback.cpp" line="8791"/>
+        <location filename="../systemback/systemback.cpp" line="9769"/>
+        <location filename="../systemback/systemback.cpp" line="9775"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Iniciar Live sem arquivo xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8795"/>
-        <location filename="../systemback/systemback.cpp" line="8797"/>
-        <location filename="../systemback/systemback.cpp" line="8799"/>
+        <location filename="../systemback/systemback.cpp" line="9795"/>
+        <location filename="../systemback/systemback.cpp" line="9832"/>
+        <location filename="../systemback/systemback.cpp" line="9854"/>
         <source>Boot Live system</source>
         <translation>Iniciar sistema Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8795"/>
-        <location filename="../systemback/systemback.cpp" line="8797"/>
-        <location filename="../systemback/systemback.cpp" line="8799"/>
+        <location filename="../systemback/systemback.cpp" line="9800"/>
+        <location filename="../systemback/systemback.cpp" line="9837"/>
+        <location filename="../systemback/systemback.cpp" line="9857"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Iniciar Live em modo gráfico seguro</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8795"/>
-        <location filename="../systemback/systemback.cpp" line="8797"/>
-        <location filename="../systemback/systemback.cpp" line="8799"/>
+        <location filename="../systemback/systemback.cpp" line="9805"/>
+        <location filename="../systemback/systemback.cpp" line="9842"/>
+        <location filename="../systemback/systemback.cpp" line="9861"/>
         <source>Boot Live in debug mode</source>
         <translation>Iniciar Live no modo de depuração</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8796"/>
+        <location filename="../systemback/systemback.cpp" line="9826"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Pressione a tecla &apos;E&apos; para editar</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="8799"/>
+        <location filename="../systemback/systemback.cpp" line="9852"/>
         <source>Press TAB key to edit</source>
         <translation>Pressione a tecla TAB para editar</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="640"/>
-        <location filename="../systemback/systemback.cpp" line="8841"/>
-        <location filename="../systemback/systemback.cpp" line="8854"/>
+        <location filename="../systemback/systemback.cpp" line="851"/>
+        <location filename="../systemback/systemback.cpp" line="9929"/>
+        <location filename="../systemback/systemback.cpp" line="9960"/>
         <source>Converting Live system image</source>
         <translation>Convertendo a imagem do sistema Live</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="56"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="71"/>
         <source>Another Systemback process is currently running, please wait until it
  finishes.</source>
         <translation>Outro processo Systemback está sendo executado, por favor aguarde até que
  ele termine.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3018"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="59"/>
+        <location filename="../systemback/systemback.cpp" line="3477"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="75"/>
         <source>Unable to get exclusive lock!</source>
         <translation>Não foi possível obter a trava exclusiva!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3018"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="59"/>
+        <location filename="../systemback/systemback.cpp" line="3478"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="76"/>
         <source>First, close all package manager.</source>
         <translation>Primeiro, feche todo o gerenciador de pacotes.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="44"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="50"/>
         <source>Usage: systemback-cli [option]
 
  Options:
@@ -1640,175 +1671,185 @@
   -h, --help               Mostra esta ajuda</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="62"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="80"/>
         <source>The specified storage directory path hasn&apos;t been set!</source>
         <translation>O caminho do diretório de armazenamento especificado não está definido!</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="65"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="84"/>
         <source>Restoration is aborted!</source>
         <translation>Restauração abortada!</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="68"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="87"/>
         <source>Restoration is completed, but an error occurred while reinstalling GRUB!</source>
         <translation>A restauração está concluída, mas ocorreu um erro ao reinstalar GRUB!</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="77"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="103"/>
         <source>Restore points storage directory isn&apos;t available or not writable!</source>
         <translation>O diretório de armazenamento que contém os pontos de recuperação, não está disponível ou não pode ser escrito!</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="80"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="107"/>
         <source>This stupid terminal doesn&apos;t support color!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="83"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="111"/>
         <source>This terminal is too small!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="145"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="169"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>Ocorreu um erro durante a atualização do sistema!</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="146"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="170"/>
         <source>Restart upgrade ...</source>
         <translation>Reinicie a atualização ...</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="189"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="299"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="429"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="468"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="513"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="543"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="575"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="658"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="723"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="211"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="212"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="398"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="399"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="568"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="569"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="622"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="623"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="678"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="679"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="727"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="728"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="783"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="784"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="881"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="882"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="968"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="969"/>
         <source>basic restore UI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="191"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="214"/>
         <source>Available restore point(s):</source>
         <translation>Ponto de recuperação disponível:</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="218"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="296"/>
         <source>Quit</source>
         <translation>Sair</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="301"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="401"/>
         <source>Selected restore point:</source>
         <translation>Selecionar ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="363"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="478"/>
         <source>The specified storage directory path is set.</source>
         <translation>O caminho do diretório de armazenamento especificado está definido.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="389"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="508"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="509"/>
         <source>Deleting old restore point(s)</source>
         <translation>Apagando pontos de restauração antigos</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="431"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="470"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="515"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="545"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="577"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="571"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="625"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="684"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="733"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="789"/>
         <source>Restore with the following restore point:</source>
         <translation>Restaure com o seguinte ponto de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="435"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="474"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="519"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="549"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="581"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="577"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="631"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="691"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="740"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="796"/>
         <source>Restore with the following restore method:</source>
         <translation>Restaure com o seguinte método de restauração:</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="439"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="586"/>
         <source>Users configuration files restore</source>
         <translation>Restaurar os arquivos de configuração dos usuários</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="441"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="485"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="590"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="645"/>
         <source>Complete configuration files restore</source>
         <translation>Restauração completa dos arquivos de configuração</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="488"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="650"/>
         <source>Configuration files restore</source>
         <translation>Restaura arquivos de configuração</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="522"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="552"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="660"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="699"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="750"/>
         <source>You want to keep the current fstab file?</source>
         <translation>Você deseja manter o arquivo atual do fstab?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="35"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="36"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="522"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="528"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="552"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="554"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="560"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="584"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="590"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="39"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="40"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="661"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="700"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="709"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="751"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="757"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="766"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="805"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="813"/>
         <source>(Y/N)</source>
         <translation>(S/N)</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="528"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="554"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="560"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="584"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="708"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="756"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="765"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="804"/>
         <source>Reinstall the GRUB 2 bootloader?</source>
         <translation>Reinstalar o gerenciador de inicialização GRUB2?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="590"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="813"/>
         <source>Start the restore?</source>
         <translation>Iniciar a restauração?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="618"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="622"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="696"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="843"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="847"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="943"/>
         <source>Restoring users configuration files</source>
         <translation>Restaurando os arquivos de configuração dos usuários</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="669"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="897"/>
         <source>Users configuration files full restoration are completed.</source>
         <translation>A restauração completa dos arquivos de configuração dos usuário está concluída.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="672"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="905"/>
         <source>Users configuration files restoration are completed.</source>
         <translation>A restauração dos arquivos de configuração dos usuários foi completada.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="676"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="915"/>
         <source>Press &apos;ENTER&apos; key to reboot computer, or &apos;Q&apos; to quit.</source>
         <translation>Pressione a tecla &apos;ENTER&apos; para reiniciar o computador, ou &apos;Q&apos; para sair.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="676"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="916"/>
         <source>Press &apos;ENTER&apos; key to quit.</source>
         <translation type="unfinished"></translation>
     </message>

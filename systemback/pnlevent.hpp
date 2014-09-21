@@ -36,9 +36,6 @@ signals:
     void Mouse_Leave();
 };
 
-inline void pnlevent::leaveEvent(QEvent *)
-{
-    emit Mouse_Leave();
-}
+inline void pnlevent::leaveEvent(QEvent *) { emit Mouse_Leave(); }
 
 #endif // PNLEVENT_HPP

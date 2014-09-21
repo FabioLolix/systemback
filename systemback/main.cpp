@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(version);
     QApplication a(argc, argv);
     QTranslator trnsltr;
-    if(trnsltr.load("/usr/share/systemback/lang/systemback_" % QLocale::system().name())) a.installTranslator(&trnsltr);
+    if (trnsltr.load("/usr/share/systemback/lang/systemback_"
+                     % QLocale::system().name()))
+        a.installTranslator(&trnsltr);
     systemback w;
     w.show();
     return a.exec();

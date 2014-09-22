@@ -2,7 +2,8 @@ QT -= gui
 
 TARGET = systemback
 
-CONFIG += c++11
+CONFIG += c++11 \
+    exceptions_off
 
 TEMPLATE = lib
 
@@ -15,6 +16,10 @@ HEADERS += sblib.hpp \
     sbtypedef.hpp
 
 RESOURCES += version.qrc
+
+QMAKE_CXXFLAGS += -fno-rtti \
+    -fno-unwind-tables \
+    -fno-asynchronous-unwind-tables
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 

@@ -2,7 +2,8 @@ QT += core gui widgets
 
 TARGET = systemback
 
-CONFIG += c++11
+CONFIG += c++11 \
+    exceptions_off
 
 TEMPLATE = app
 
@@ -20,6 +21,10 @@ HEADERS += systemback.hpp \
 FORMS += systemback.ui
 
 RESOURCES += pictures.qrc
+
+QMAKE_CXXFLAGS += -fno-rtti \
+    -fno-unwind-tables \
+    -fno-asynchronous-unwind-tables
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 

@@ -4,7 +4,8 @@ QT -= gui
 TARGET = sbscheduler
 
 CONFIG += console \
-    c++11
+    c++11 \
+    exceptions_off
 
 CONFIG -= app_bundle
 
@@ -14,6 +15,10 @@ SOURCES += main.cpp \
     sbscheduler.cpp
 
 HEADERS += sbscheduler.hpp
+
+QMAKE_CXXFLAGS += -fno-rtti \
+    -fno-unwind-tables \
+    -fno-asynchronous-unwind-tables
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 

@@ -4,7 +4,8 @@ QT -= gui
 TARGET = systemback-cli
 
 CONFIG += console \
-    c++11
+    c++11 \
+    exceptions_off
 
 CONFIG -= app_bundle
 
@@ -14,6 +15,10 @@ SOURCES += main.cpp \
     systemback-cli.cpp
 
 HEADERS += systemback-cli.hpp
+
+QMAKE_CXXFLAGS += -fno-rtti \
+    -fno-unwind-tables \
+    -fno-asynchronous-unwind-tables
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 

@@ -36,6 +36,9 @@ signals:
     void Mouse_Leave();
 };
 
-inline void bttnevent::leaveEvent(QEvent *) { emit Mouse_Leave(); }
+inline void bttnevent::leaveEvent(QEvent *)
+{
+    emit Mouse_Leave();
+}
 
 #endif // BTTNEVENT_HPP

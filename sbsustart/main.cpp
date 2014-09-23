@@ -27,32 +27,25 @@
 
 int main(int argc, char *argv[])
 {
-    if (getuid() > 0 && QStr(qVersion()).replace(".", nullptr).toShort() >= 530
-        && setuid(0) == -1) {
+    if(getuid() > 0 && QStr(qVersion()).replace(".", nullptr).toShort() >= 530 && setuid(0) == -1)
+    {
         QStr arg1(argv[1]);
 
-        if (arg1.isEmpty()
-            || !sb::like(arg1, { "_systemback_", "_scheduler_" })) {
+        if(arg1.isEmpty() || ! sb::like(arg1, {"_systemback_", "_scheduler_"}))
+        {
             sb::error("\n Missing, wrong or too much argument(s).\n\n");
             return 2;
         }
 
-        QStr emsg((arg1 == "systemback")
-                      ? "Cannot start Systemback graphical user interface!"
-                      : "Cannot start Systemback scheduler daemon!");
+        QStr emsg((arg1 == "systemback") ? "Cannot start Systemback graphical user interface!" : "Cannot start Systemback scheduler daemon!");
         emsg.append("\n\nUnable to get root permissions.");
-        sb::exec((sb::execsrch("zenity")
-                      ? "zenity --title=Systemback --error --text=\""
-                      : "kdialog --title=Systemback --error=\"") % emsg % "\"",
-                 nullptr, false, true);
+        sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % "\"", nullptr, false, true);
         return 1;
     }
 
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;
-    if (trnsltr.load("/usr/share/systemback/lang/systemback_"
-                     % QLocale::system().name()))
-        a.installTranslator(&trnsltr);
+    if(trnsltr.load("/usr/share/systemback/lang/systemback_" % QLocale::system().name())) a.installTranslator(&trnsltr);
     sbsustart s;
     QTimer::singleShot(0, &s, SLOT(main()));
     return a.exec();

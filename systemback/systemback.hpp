@@ -32,7 +32,7 @@
 
 namespace Ui
 {
-class systemback;
+    class systemback;
 }
 
 class systemback : public QMainWindow
@@ -52,14 +52,12 @@ protected:
 private:
     Ui::systemback *ui;
 
-    static cuchar Strgdr{ 0 }, Lvwrkdr{ 1 }, Dpath{ 2 }, Rpnts{ 3 },
-        Normal{ 100 }, High{ 147 }, Max{ 200 };
+    static cuchar Strgdr{0}, Lvwrkdr{1}, Dpath{2}, Rpnts{3}, Normal{100}, High{147}, Max{200};
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash, grub;
     short wgeom[6], sfctr;
     uchar busycnt, dialog, ppipe;
-    bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart,
-        cfgupdt, intrrpt;
+    bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
     ushort ss(ushort size);
@@ -147,8 +145,7 @@ private slots:
     void cleave();
     void wmove();
 
-    void on_partitionsettings_currentItemChanged(QTblWI *current,
-                                                 QTblWI *previous);
+    void on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI *previous);
     void on_livedevices_currentItemChanged(QTblWI *current, QTblWI *previous);
     void on_repairmountpoint_currentTextChanged(const QStr &arg1);
     void on_windowposition_currentIndexChanged(const QStr &arg1);

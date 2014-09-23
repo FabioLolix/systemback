@@ -38,8 +38,14 @@ signals:
     void Mouse_Leave();
 };
 
-inline void chckbxevent::enterEvent(QEvent *) { emit Mouse_Enter(); }
+inline void chckbxevent::enterEvent(QEvent *)
+{
+    emit Mouse_Enter();
+}
 
-inline void chckbxevent::leaveEvent(QEvent *) { emit Mouse_Leave(); }
+inline void chckbxevent::leaveEvent(QEvent *)
+{
+    emit Mouse_Leave();
+}
 
 #endif // CHCKBXEVENT_HPP

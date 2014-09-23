@@ -53,7 +53,8 @@ signals:
 
 inline void lblevent::mousePressEvent(QMouseEvent *ev)
 {
-    if (ev->button() == Qt::LeftButton) {
+    if(ev->button() == Qt::LeftButton)
+    {
         MouseX = ev->x();
         MouseY = ev->y();
         MousePressed = true;
@@ -63,13 +64,13 @@ inline void lblevent::mousePressEvent(QMouseEvent *ev)
 
 inline void lblevent::mouseMoveEvent(QMouseEvent *)
 {
-    if (MousePressed)
-        emit Mouse_Move();
+    if(MousePressed) emit Mouse_Move();
 }
 
 inline void lblevent::mouseReleaseEvent(QMouseEvent *ev)
 {
-    if (ev->button() == Qt::LeftButton) {
+    if(ev->button() == Qt::LeftButton)
+    {
         MousePressed = false;
         emit Mouse_Released();
     }
@@ -77,12 +78,17 @@ inline void lblevent::mouseReleaseEvent(QMouseEvent *ev)
 
 inline void lblevent::mouseDoubleClickEvent(QMouseEvent *ev)
 {
-    if (ev->button() == Qt::LeftButton)
-        emit Mouse_DblClick();
+    if(ev->button() == Qt::LeftButton) emit Mouse_DblClick();
 }
 
-inline void lblevent::enterEvent(QEvent *) { emit Mouse_Enter(); }
+inline void lblevent::enterEvent(QEvent *)
+{
+    emit Mouse_Enter();
+}
 
-inline void lblevent::leaveEvent(QEvent *) { emit Mouse_Leave(); }
+inline void lblevent::leaveEvent(QEvent *)
+{
+    emit Mouse_Leave();
+}
 
 #endif // LBLEVENT_HPP

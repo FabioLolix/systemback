@@ -28,7 +28,5 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;
     if(trnsltr.load("/usr/share/systemback/lang/systemback_" % QLocale::system().name())) a.installTranslator(&trnsltr);
-    sb::trn[0] = QTranslator::tr("An error occurred while upgrading the system!");
-    sb::trn[1] = QTranslator::tr("Restart upgrade ...");
-    sb::supgrade();
+    sb::supgrade({QTranslator::tr("An error occurred while upgrading the system!"), QTranslator::tr("Restart upgrade ...")});
 }

@@ -1489,7 +1489,7 @@
        <rect>
         <x>8</x>
         <y>294</y>
-        <width>175</width>
+        <width>183</width>
         <height>20</height>
        </rect>
       </property>
@@ -1500,7 +1500,7 @@
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>Don't repair fstab file</string>
+       <string>Do not repair fstab file</string>
       </property>
      </widget>
      <widget class="QPushButton" name="repairnext">
@@ -4948,7 +4948,7 @@
        <rect>
         <x>8</x>
         <y>262</y>
-        <width>184</width>
+        <width>193</width>
         <height>20</height>
        </rect>
       </property>
@@ -4959,7 +4959,7 @@
        <enum>Qt::NoFocus</enum>
       </property>
       <property name="text">
-       <string>Don't restore fstab file</string>
+       <string>Do not restore fstab file</string>
       </property>
      </widget>
      <widget class="QLabel" name="grubreinstallrestoretext">

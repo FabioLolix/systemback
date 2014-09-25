@@ -3127,7 +3127,7 @@ void systemback::dialogopen()
         break;
     case 21:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) doesn't have enough free space to copy the system. The copied system will not function properly."));
+        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 22:
@@ -3178,7 +3178,7 @@ void systemback::dialogopen()
         break;
     case 31:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition couldn't be mounted.") % "<p><b>" % dialogdev);
+        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 32:
@@ -3198,12 +3198,12 @@ void systemback::dialogopen()
         break;
     case 35:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) doesn't have enough free space to install the system. The installed system will not function properly."));
+        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 36:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
+        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 37:
@@ -3234,7 +3234,7 @@ void systemback::dialogopen()
         break;
     case 42:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected partition doesn't have enough space to write the Live system."));
+        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected partition does not have enough space to write the Live system."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 43:
@@ -3279,27 +3279,27 @@ void systemback::dialogopen()
         break;
     case 51:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition couldn't be mounted.") % "<p><b>" % dialogdev);
+        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 52:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
+        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 53:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The Live image couldn't be mounted."));
+        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The Live image could not be mounted."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 54:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The Live image couldn't be mounted."));
+        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The Live image could not be mounted."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 55:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("The Live image couldn't be mounted."));
+        ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("The Live image could not be mounted."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 56:
@@ -3314,22 +3314,22 @@ void systemback::dialogopen()
         break;
     case 58:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition couldn't be mounted.") % "<p><b>" % dialogdev);
+        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 59:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition couldn't be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
+        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 60:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("There isn't enough free space."));
+        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("There is not enough free space."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 61:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("There isn't enough free space."));
+        ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("There is not enough free space."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
     }
 

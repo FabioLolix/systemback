@@ -1,21 +1,20 @@
-QT += core
 QT -= gui
+QT += core
 
 TARGET = sbsysupgrade
 
-CONFIG += console \
-    c++11 \
-    exceptions_off
-
 CONFIG -= app_bundle
+CONFIG += console \
+          c++11 \
+          exceptions_off
 
 TEMPLATE = app
 
 SOURCES += sbsysupgrade.cpp
 
 QMAKE_CXXFLAGS += -fno-rtti \
-    -fno-unwind-tables \
-    -fno-asynchronous-unwind-tables
+                  -fno-unwind-tables \
+                  -fno-asynchronous-unwind-tables
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 

@@ -33,7 +33,7 @@ public:
     explicit sb(QThread *parent = nullptr);
 
     static sb SBThrd;
-    static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], trn[2];
+    static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15];
     static ullong ThrdLng[2];
     static cuchar Remove{0}, Copy{1}, Sync{2}, Mount{3}, Umount{4}, Readprttns{5}, Readlvprttns{6}, Ruuid{7}, Setpflag{8}, Mkptable{9}, Mkpart{10}, Delpart{11}, Crtrpoint{12}, Srestore{13}, Scopy{14}, Lvprpr{15},
                   MSDOS{0}, GPT{1}, Clear{2}, Primary{3}, Extended{4}, Logical{5}, Freespace{6}, Emptyspace{7},
@@ -88,12 +88,12 @@ public:
     static void readlvprttns(QSL &strlst);
     static void readprttns(QSL &strlst);
     static void delpart(cQStr &part);
+    static void supgrade(cQSL &estr);
     static void unlock(cuchar type);
     static void delay(ushort msec);
     static void print(cQStr &txt);
     static void error(cQStr &txt);
     static void pupgrade();
-    static void supgrade();
     static void cfgwrite();
     static void thrdelay();
     static void xrestart();

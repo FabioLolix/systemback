@@ -41,7 +41,7 @@
 
 sb sb::SBThrd;
 QSL *sb::ThrdSlst;
-QStr sb::ThrdStr[3], sb::ThrdDbg, sb::sdir[3], sb::schdle[7], sb::pnames[15], sb::trn[2];
+QStr sb::ThrdStr[3], sb::ThrdDbg, sb::sdir[3], sb::schdle[7], sb::pnames[15];
 ullong sb::ThrdLng[2]{0, 0};
 int sb::sblock[3];
 uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0);
@@ -451,7 +451,7 @@ void sb::pupgrade()
     } while(rerun);
 }
 
-void sb::supgrade()
+void sb::supgrade(cQSL &estr)
 {
     exec("apt-get update");
 
@@ -531,8 +531,8 @@ void sb::supgrade()
 
         for(uchar a(3) ; a > 0 ; --a)
         {
-            error("\n " % trn[0] % '\n');
-            print("\n " % trn[1] % ' ' % QStr::number(a));
+            error("\n " % estr.at(0) % '\n');
+            print("\n " % estr.at(1) % ' ' % QStr::number(a));
             sleep(1);
             exec("tput cup 0 0");
         }

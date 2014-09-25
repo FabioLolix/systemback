@@ -45,7 +45,14 @@ systemback::systemback(QObject *parent) : QObject(parent)
 
 void systemback::main()
 {
-    QStr help("\n " % tr("Usage: systemback-cli [option]\n\n Options:\n\n  -n, --newbackup          create a new restore point\n\n  -s, --storagedir <path>  get or set restore points storage directory path\n\n  -u, --upgrade            upgrade current system\n                           remove unnecessary files and packages\n\n  -v, --version            output Systemback version number\n\n  -h, --help               show this help") % "\n\n");
+    QStr help("\n " % tr("Usage: systemback-cli [option]\n\n"
+                         " Options:\n\n"
+                         "  -n, --newbackup          create a new restore point\n\n"
+                         "  -s, --storagedir <path>  get or set restore points storage directory path\n\n"
+                         "  -u, --upgrade            upgrade current system\n"
+                         "                           remove unnecessary files and packages\n\n"
+                         "  -v, --version            output Systemback version number\n\n"
+                         "  -h, --help               show this help") % "\n\n");
     uchar rv(0);
     goto start;
 error:
@@ -63,7 +70,7 @@ error:
         sb::error("\n " % tr("Unable to get exclusive lock!") % "\n\n " % tr("First, close all package manager.") % "\n\n");
         break;
     case 5:
-        sb::error("\n " % tr("The specified storage directory path hasn't been set!") % "\n\n");
+        sb::error("\n " % tr("The specified storage directory path has not been set!") % "\n\n");
         break;
     case 6:
         sb::error("\n " % tr("Restoration is aborted!") % "\n\n");
@@ -78,10 +85,10 @@ error:
         sb::error("\n " % tr("Restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation.") % "\n\n");
         break;
     case 10:
-        sb::error("\n " % tr("Restore points storage directory isn't available or not writable!") % "\n\n");
+        sb::error("\n " % tr("Restore points storage directory is not available or not writable!") % "\n\n");
         break;
     case 11:
-        sb::error("\n " % tr("This stupid terminal doesn't support color!") % "\n\n");
+        sb::error("\n " % tr("This stupid terminal does not support color!") % "\n\n");
         break;
     case 12:
         sb::error("\n " % tr("This terminal is too small!") % " (< 80x24)\n\n");
@@ -146,9 +153,7 @@ start:
         else if(sb::like(qApp->arguments().value(1), {"_-u_", "_--upgrade_"}))
         {
             sb::unlock(sb::Dpkglock);
-            sb::trn[0] = tr("An error occurred while upgrading the system!");
-            sb::trn[1] = tr("Restart upgrade ...");
-            sb::supgrade();
+            sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
         }
         else
         {

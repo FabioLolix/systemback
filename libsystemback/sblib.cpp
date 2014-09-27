@@ -583,6 +583,8 @@ void sb::cfgread()
         if(! isdir("/home/Systemback")) QDir().mkdir("/home/Systemback");
         if(! isfile("/home/Systemback/.sbschedule")) crtfile("/home/Systemback/.sbschedule");
     }
+    else if(! isdir(sdir[0] % "/Systemback") && isdir(sdir[0]) && QDir().mkdir(sdir[0] % "/Systemback"))
+        crtfile(sdir[0] % "/Systemback/.sbschedule");
 
     if(sdir[2].isEmpty())
     {
@@ -1232,37 +1234,42 @@ void sb::run()
 
                     if(path.length() == 8 && like(path, {"_/dev/sd*", "_/dev/hd*"}))
                     {
+                        ullong size(devsize(path));
+
+                        if(size > 536870911)
                         {
-                            QSL fchk('_' % path % '*');
-
+                            if(! fstab.isEmpty())
                             {
-                                PedDevice *dev(ped_device_get(path.toStdString().c_str()));
-                                PedDisk *dsk(ped_disk_new(dev));
-                                PedPartition *prt(nullptr);
+                                QSL fchk('_' % path % '*');
 
-                                while((prt = ped_disk_next_partition(dsk, prt)))
-                                    if(prt->num > 0)
-                                    {
-                                        blkid_probe pr(blkid_new_probe_from_filename(QStr(path % QStr::number(prt->num)).toStdString().c_str()));
-                                        blkid_do_probe(pr);
-                                        cchar *uuid("");
-                                        blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
-                                        blkid_free_probe(pr);
-                                        if(! QStr(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
-                                    }
+                                {
+                                    PedDevice *dev(ped_device_get(path.toStdString().c_str()));
+                                    PedDisk *dsk(ped_disk_new(dev));
+                                    PedPartition *prt(nullptr);
 
-                                ped_disk_destroy(dsk);
-                                ped_device_destroy(dev);
+                                    while((prt = ped_disk_next_partition(dsk, prt)))
+                                        if(prt->num > 0)
+                                        {
+                                            blkid_probe pr(blkid_new_probe_from_filename(QStr(path % QStr::number(prt->num)).toStdString().c_str()));
+                                            blkid_do_probe(pr);
+                                            cchar *uuid("");
+                                            blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+                                            blkid_free_probe(pr);
+                                            if(! QStr(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
+                                        }
+
+                                    ped_disk_destroy(dsk);
+                                    ped_device_destroy(dev);
+                                }
+
+                                QTS in(&fstab, QIODevice::ReadOnly);
+
+                                while(! in.atEnd())
+                                    if(like(in.readLine().trimmed(), fchk)) goto next_2;
                             }
 
-                            QTS in(&fstab, QIODevice::ReadOnly);
-
-                            while(! in.atEnd())
-                                if(like(in.readLine().trimmed(), fchk)) goto next_2;
+                            ThrdSlst->append(path % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
                         }
-
-                        ullong size(devsize(path));
-                        if(size > 536870911) ThrdSlst->append(path % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
                     }
                 }
             }

@@ -7,6 +7,12 @@ SUBDIRS += libsystemback \
            systemback \
            systemback-cli
 
+sbscheduler.depends = libsystemback
+sbsysupgrade.depends = libsystemback
+sbsustart.depends = libsystemback
+systemback.depends = libsystemback
+systemback-cli.depends = libsystemback
+
 TRANSLATIONS = lang/systemback_hu.ts \
                lang/systemback_ar_EG.ts \
                lang/systemback_bg.ts \
@@ -19,9 +25,3 @@ TRANSLATIONS = lang/systemback_hu.ts \
                lang/systemback_ro.ts \
                lang/systemback_tr.ts \
                lang/systemback_zh_CN.ts
-
-sbscheduler.depends = libsystemback
-sbsysupgrade.depends = libsystemback
-sbsustart.depends = libsystemback
-systemback.depends = libsystemback
-systemback-cli.depends = libsystemback

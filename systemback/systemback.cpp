@@ -2022,12 +2022,6 @@ start:
 
     if(mthd == 0)
     {
-        sb::mount("/dev", "/mnt/dev");
-        sb::mount("/dev/pts", "/mnt/dev/pts");
-        sb::mount("/proc", "/mnt/proc");
-        sb::mount("/sys", "/mnt/sys");
-        if(intrrpt) goto exit;
-
         if(ui->grubreinstallrepair->currentText() == "Auto")
         {
             QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
@@ -2053,6 +2047,10 @@ start:
 
         QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
         if(intrrpt) goto exit;
+        sb::mount("/dev", "/mnt/dev");
+        sb::mount("/dev/pts", "/mnt/dev/pts");
+        sb::mount("/proc", "/mnt/proc");
+        sb::mount("/sys", "/mnt/sys");
         dialog = sb::exec("chroot /mnt /grubinst") == 0 ? 32 : 37;
         QFile::remove("/mnt/grubinst");
         sb::umount("/mnt/dev");
@@ -2108,12 +2106,6 @@ start:
         {
             if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel) && (! ui->grubreinstallrepair->isEnabled() || ui->grubreinstallrepair->currentText() != tr("Disabled")))
             {
-                sb::mount("/dev", "/mnt/dev");
-                sb::mount("/dev/pts", "/mnt/dev/pts");
-                sb::mount("/proc", "/mnt/proc");
-                sb::mount("/sys", "/mnt/sys");
-                if(intrrpt) goto exit;
-
                 if(ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")
                 {
                     if(fcmp)
@@ -2144,6 +2136,10 @@ start:
 
                 QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
                 if(intrrpt) goto exit;
+                sb::mount("/dev", "/mnt/dev");
+                sb::mount("/dev/pts", "/mnt/dev/pts");
+                sb::mount("/proc", "/mnt/proc");
+                sb::mount("/sys", "/mnt/sys");
                 if(sb::exec("chroot /mnt /grubinst") > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
                 QFile::remove("/mnt/grubinst");
                 sb::umount("/mnt/dev");
@@ -2177,14 +2173,7 @@ void systemback::systemcopy()
 error:
     if(intrrpt) goto exit;
 
-    if(sb::ilike(dialog, {22, 34}))
-    {
-        sb::umount("/.sbsystemcopy/dev");
-        sb::umount("/.sbsystemcopy/dev/pts");
-        sb::umount("/.sbsystemcopy/proc");
-        sb::umount("/.sbsystemcopy/sys");
-    }
-    else if(! sb::ilike(dialog, {31, 36, 51, 52, 53, 54}))
+    if(! sb::ilike(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800))
         {
@@ -2205,7 +2194,7 @@ error:
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
         }
     }
 
@@ -2224,7 +2213,7 @@ exit:
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
         }
     }
 
@@ -2243,7 +2232,6 @@ start:
 
     msort.sort();
     if(! sb::isdir("/.sbsystemcopy") && ! QDir().mkdir("/.sbsystemcopy")) goto error;
-    ushort rv;
 
     for(cQStr &vals : msort)
     {
@@ -2257,6 +2245,7 @@ start:
         if(fstype != "-")
         {
             QStr lbl("SB@" % (mpoint.startsWith('/') ? sb::right(mpoint, -1) : mpoint));
+            ushort rv;
 
             if(fstype == "swap")
                 rv = sb::exec("mkswap -L " % lbl % ' ' % part);
@@ -2745,11 +2734,6 @@ start:
     if(ui->grubinstallcopy->isVisibleTo(ui->copypanel) && ui->grubinstallcopy->currentText() != tr("Disabled"))
     {
         if(intrrpt) goto exit;
-        sb::mount("/dev", "/.sbsystemcopy/dev");
-        sb::mount("/dev/pts", "/.sbsystemcopy/dev/pts");
-        sb::mount("/proc", "/.sbsystemcopy/proc");
-        sb::mount("/sys", "/.sbsystemcopy/sys");
-        if(intrrpt) goto exit;
 
         if(ui->grubinstallcopy->currentText() == "Auto")
         {
@@ -2780,18 +2764,18 @@ start:
 
         if(! QFile::setPermissions("/.sbsystemcopy/grubinst", QFile::ExeOwner)) goto error;
         if(intrrpt) goto exit;
+        sb::mount("/dev", "/.sbsystemcopy/dev");
+        sb::mount("/dev/pts", "/.sbsystemcopy/dev/pts");
+        sb::mount("/proc", "/.sbsystemcopy/proc");
+        sb::mount("/sys", "/.sbsystemcopy/sys");
+        ushort rv(sb::exec("chroot /.sbsystemcopy /grubinst"));
+        QFile::remove("/.sbsystemcopy/grubinst");
 
-        if(sb::exec("chroot /.sbsystemcopy /grubinst") > 0)
+        if(rv > 0)
         {
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 22 : 34;
             goto error;
         }
-
-        QFile::remove("/.sbsystemcopy/grubinst");
-        sb::umount("/.sbsystemcopy/dev");
-        sb::umount("/.sbsystemcopy/dev/pts");
-        sb::umount("/.sbsystemcopy/proc");
-        sb::umount("/.sbsystemcopy/sys");
     }
 
     if(intrrpt) goto exit;
@@ -2806,7 +2790,7 @@ start:
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(cline.contains(" /.sbsystemcopy")) sb::umount(sb::left(cline, sb::instr(cline, " ") -1));
+            if(cline.contains(" /.sbsystemcopy")) sb::umount(cline.split(' ').at(1));
         }
     }
 
@@ -3836,7 +3820,7 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
             {
                 QStr cline(file.readLine().trimmed());
 
-                if(cline.startsWith(arg1 % ":"))
+                if(cline.startsWith(arg1 % ':'))
                 {
                     hash = sb::mid(cline, arg1.length() + 2, sb::instr(cline, ":", arg1.length() + 2) - arg1.length() - 2);
                     break;
@@ -5457,7 +5441,7 @@ void systemback::on_umountdelete_clicked()
             while(! in.atEnd())
             {
                 QStr cline(in.readLine());
-                if(sb::like(cline, {"* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+                if(sb::like(cline, {"* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(cline.split(' ').at(1));
             }
 
             mnts[0] = sb::fload("/proc/self/mounts");
@@ -5518,7 +5502,7 @@ void systemback::on_umount_clicked()
                     while(! in.atEnd())
                     {
                         QStr cline(in.readLine());
-                        if(sb::like(cline, {"* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(sb::left(cline, sb::instr(cline, " ") - 1));
+                        if(sb::like(cline, {"* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(cline.split(' ').at(1));
                     }
                 }
             }
@@ -8650,14 +8634,7 @@ start:
             if(cline.startsWith(guname() % ':'))
             {
                 QSL uslst(cline.split(':'));
-
-                for(uchar a(0) ; a < uslst.count() ; ++a)
-                    if(a == 4)
-                    {
-                        fname = sb::left(uslst.at(a), sb::instr(uslst.at(a), ",") - 1);
-                        break;
-                    }
-
+                if(uslst.count() > 4) fname = sb::left(uslst.at(4), sb::instr(uslst.at(4), ",") - 1);
                 break;
             }
         }

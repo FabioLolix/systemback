@@ -343,7 +343,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                     wgeom[0] = qApp->desktop()->width() / 2 - ss(201);
                     wgeom[1] = qApp->desktop()->height() / 2 - ss(80);
                 }
-                 else if(qApp->arguments().value(2) == "bottomleft")
+                else if(qApp->arguments().value(2) == "bottomleft")
                 {
                     wgeom[0] = ss(30);
                     wgeom[1] = qApp->desktop()->height() - ss(191);
@@ -2727,10 +2727,13 @@ start:
         {
             QStr cline(file.readLine().trimmed());
 
-            if(sb::like(cline, {"*/dev/cdrom*", "*/dev/sr*"}))
-                fstabtxt.append("# cdrom\n" % cline % '\n');
-            else if(cline.contains("/dev/fd"))
-                fstabtxt.append("# floppy\n" % cline % '\n');
+            if(! cline.startsWith('#'))
+            {
+                if(sb::like(cline, {"*/dev/cdrom*", "*/dev/sr*"}))
+                    fstabtxt.append("# cdrom\n" % cline % '\n');
+                else if(cline.contains("/dev/fd"))
+                    fstabtxt.append("# floppy\n" % cline % '\n');
+            }
 
             if(intrrpt) goto exit;
         }
@@ -6018,7 +6021,7 @@ void systemback::on_livedevicesrefresh_clicked()
     ui->livecreatecover->show();
     if(ui->livedevices->rowCount() > 0) ui->livedevices->clearContents();
     QSL dlst;
-    sb::readlvprttns(dlst);
+    sb::readlvdevs(dlst);
     schar sn(-1);
 
     for(cQStr &cdts : dlst)
@@ -7189,7 +7192,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                             {
                                 QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                                if(sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(a, 3)->text() % " *", "* " % ui->partitionsettings->item(a, 3)->text() % "/ *"}))
+                                if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(a, 3)->text() % " *", "* " % ui->partitionsettings->item(a, 3)->text() % "/ *"}))
                                 {
                                     mntcheck = true;
                                     break;
@@ -7363,7 +7366,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                         {
                             QStr cline(file.readLine().trimmed().replace('\t', ' '));
 
-                            if(sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(current->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"}))
+                            if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(current->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"}))
                             {
                                 mntcheck = true;
                                 break;

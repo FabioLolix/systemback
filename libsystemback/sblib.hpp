@@ -35,7 +35,7 @@ public:
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15];
     static ullong ThrdLng[2];
-    static cuchar Remove{0}, Copy{1}, Sync{2}, Mount{3}, Umount{4}, Readprttns{5}, Readlvprttns{6}, Ruuid{7}, Setpflag{8}, Mkptable{9}, Mkpart{10}, Delpart{11}, Crtrpoint{12}, Srestore{13}, Scopy{14}, Lvprpr{15},
+    static cuchar Remove{0}, Copy{1}, Sync{2}, Mount{3}, Umount{4}, Readprttns{5}, Readlvdevs{6}, Ruuid{7}, Setpflag{8}, Mkptable{9}, Mkpart{10}, Delpart{11}, Crtrpoint{12}, Srestore{13}, Scopy{14}, Lvprpr{15},
                   MSDOS{0}, GPT{1}, Clear{2}, Primary{3}, Extended{4}, Logical{5}, Freespace{6}, Emptyspace{7},
                   Notexist{0}, Isfile{1}, Isdir{2}, Islink{3}, Isblock{4}, Unknow{5},
                   Read{0}, Write{1}, Exec{2}, Sblock{0}, Dpkglock{1}, Schdlrlock{2},
@@ -85,8 +85,8 @@ public:
     static bool lock(cuchar type);
     static bool ickernel();
     static bool efiprob();
-    static void readlvprttns(QSL &strlst);
     static void readprttns(QSL &strlst);
+    static void readlvdevs(QSL &strlst);
     static void delpart(cQStr &part);
     static void supgrade(cQSL &estr);
     static void unlock(cuchar type);
@@ -119,7 +119,7 @@ private:
     static bool cpertime(cQStr &srcitem, cQStr &newitem);
     static bool cplink(cQStr &srclink, cQStr &newlink);
     static bool cpfile(cQStr &srcfile, cQStr &newfile);
-    static bool cpdir(cQStr &srcddir, cQStr &newdir);
+    static bool cpdir(cQStr &srcdir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);
     static bool issmfs(cQStr &item1,cQStr &item2);
     static bool lcomp(cQStr &link1, cQStr &link2);

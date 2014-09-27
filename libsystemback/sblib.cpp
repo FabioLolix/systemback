@@ -391,6 +391,7 @@ bool sb::mcheck(cQStr &item)
     cQStr &itm(item.contains(' ') ? QStr(item).replace(" ", "\\040") : item);
 
     if(itm.startsWith("/dev/"))
+    {
         if(itm.length() > 8)
         {
             if(QStr('\n' % mnts).contains('\n' % itm % ' '))
@@ -407,6 +408,7 @@ bool sb::mcheck(cQStr &item)
         }
         else
             return QStr('\n' % mnts).contains('\n' % itm);
+    }
     else if(itm.endsWith('/') && itm.length() > 1)
         return mnts.contains(' ' % left(itm, -1));
     else
@@ -763,9 +765,9 @@ bool sb::umount(cQStr &dev)
     return ThrdRslt;
 }
 
-void sb::readlvprttns(QSL &strlst)
+void sb::readlvdevs(QSL &strlst)
 {
-    ThrdType = Readlvprttns;
+    ThrdType = Readlvdevs;
     ThrdSlst = &strlst;
     SBThrd.start();
     thrdelay();
@@ -1107,8 +1109,6 @@ void sb::run()
     }
     case Readprttns:
     {
-        QSL devs;
-
         for(cQStr &spath : QDir("/dev").entryList(QDir::System))
         {
             QStr path("/dev/" % spath);
@@ -1120,13 +1120,13 @@ void sb::run()
                 QStr type(dsk->type->name), dtxt(path % '\n' % QStr::number(dev->length * dev->sector_size) % '\n');
 
                 if(type == "msdos")
-                    devs.append(dtxt % QStr::number(MSDOS));
+                    ThrdSlst->append(dtxt % QStr::number(MSDOS));
                 else if(type == "gpt")
-                    devs.append(dtxt % QStr::number(GPT));
+                    ThrdSlst->append(dtxt % QStr::number(GPT));
                 else
                 {
-                    devs.append(dtxt % QStr::number(Clear));
-                    goto next;
+                    ThrdSlst->append(dtxt % QStr::number(Clear));
+                    goto next_1;
                 }
 
                 {
@@ -1144,7 +1144,7 @@ void sb::run()
                                 {
                                     if(prt->type == PED_PARTITION_EXTENDED)
                                     {
-                                        devs.append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(Extended) % '\n' % QStr::number(prt->geom.start * dev->sector_size));
+                                        ThrdSlst->append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(Extended) % '\n' % QStr::number(prt->geom.start * dev->sector_size));
                                         egeom << prt->geom.start << prt->geom.end;
                                     }
                                     else
@@ -1152,7 +1152,7 @@ void sb::run()
                                         if(egeom.count() > 2)
                                         {
                                             ullong start(psalign(egeom.at(2), dev->sector_size));
-                                            devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - (prt->type == PED_PARTITION_LOGICAL ? 2097152 : 1048576 - dev->sector_size)) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
+                                            ThrdSlst->append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - (prt->type == PED_PARTITION_LOGICAL ? 2097152 : 1048576 - dev->sector_size)) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
                                             egeom.removeAt(3);
                                             egeom.removeAt(2);
                                         }
@@ -1168,7 +1168,7 @@ void sb::run()
                                         }
 
                                         blkid_free_probe(pr);
-                                        devs.append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(prt->type == PED_PARTITION_LOGICAL ? Logical : Primary) % '\n' % QStr::number(prt->geom.start * dev->sector_size) % '\n' % fstype % '\n' % label % '\n' % uuid);
+                                        ThrdSlst->append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(prt->type == PED_PARTITION_LOGICAL ? Logical : Primary) % '\n' % QStr::number(prt->geom.start * dev->sector_size) % '\n' % fstype % '\n' % label % '\n' % uuid);
                                     }
                                 }
                             }
@@ -1177,12 +1177,12 @@ void sb::run()
                                 if(egeom.count() > 2)
                                 {
                                     ullong start(psalign(egeom.at(2), dev->sector_size));
-                                    devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
+                                    ThrdSlst->append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
                                     egeom.clear();
                                 }
 
                                 llong fgeom[2]{llong(prt->geom.start < 1048576 / dev->sector_size ? 1048576 / dev->sector_size : psalign(prt->geom.start, dev->sector_size)), llong(prt->next && prt->next->type == PED_PARTITION_METADATA ? type == "msdos" ? prt->next->geom.end : prt->next->geom.end - (34816 / dev->sector_size * 10 + 5) / 10 : pealign(prt->geom.end, dev->sector_size))};
-                                if(fgeom[1] - fgeom[0] > 1048576 / dev->sector_size - 2) devs.append(path % "?\n" % QStr::number((fgeom[1] - fgeom[0] + 1) * dev->sector_size) % '\n' % QStr::number(Freespace) % '\n' % QStr::number(fgeom[0] * dev->sector_size));
+                                if(fgeom[1] - fgeom[0] > 1048576 / dev->sector_size - 2) ThrdSlst->append(path % "?\n" % QStr::number((fgeom[1] - fgeom[0] + 1) * dev->sector_size) % '\n' % QStr::number(Freespace) % '\n' % QStr::number(fgeom[0] * dev->sector_size));
                             }
                             else if(! egeom.isEmpty())
                             {
@@ -1204,42 +1204,73 @@ void sb::run()
                     if(egeom.count() > 2)
                     {
                         ullong start(psalign(egeom.at(2), dev->sector_size));
-                        devs.append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
+                        ThrdSlst->append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
                     }
                 }
 
-            next:
+            next_1:
                 ped_disk_destroy(dsk);
                 ped_device_destroy(dev);
             }
         }
 
-        *ThrdSlst = devs;
         break;
     }
-    case Readlvprttns:
+    case Readlvdevs:
     {
-        QSL devs;
+        QStr fstab(fload("/etc/fstab"));
 
         for(cQStr &item : QDir("/dev/disk/by-id").entryList(QDir::Files))
+        {
             if(item.startsWith("usb-") && islink("/dev/disk/by-id/" % item))
             {
                 QStr path(rlink("/dev/disk/by-id/" % item, 10));
 
                 if(! path.isEmpty())
                 {
-                    QStr dname(right(path, -6));
+                    path = "/dev/" % right(path, -6);
 
-                    if(dname.length() == 3 && like(dname, {"_sd*", "_hd*"}))
+                    if(path.length() == 8 && like(path, {"_/dev/sd*", "_/dev/hd*"}))
                     {
-                        ullong size(devsize("/dev/" % dname));
-                        if(size > 536870911) devs.append("/dev/" % dname % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
+                        {
+                            QSL fchk('_' % path % '*');
+
+                            {
+                                PedDevice *dev(ped_device_get(path.toStdString().c_str()));
+                                PedDisk *dsk(ped_disk_new(dev));
+                                PedPartition *prt(nullptr);
+
+                                while((prt = ped_disk_next_partition(dsk, prt)))
+                                    if(prt->num > 0)
+                                    {
+                                        blkid_probe pr(blkid_new_probe_from_filename(QStr(path % QStr::number(prt->num)).toStdString().c_str()));
+                                        blkid_do_probe(pr);
+                                        cchar *uuid("");
+                                        blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+                                        blkid_free_probe(pr);
+                                        if(! QStr(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
+                                    }
+
+                                ped_disk_destroy(dsk);
+                                ped_device_destroy(dev);
+                            }
+
+                            QTS in(&fstab, QIODevice::ReadOnly);
+
+                            while(! in.atEnd())
+                                if(like(in.readLine().trimmed(), fchk)) goto next_2;
+                        }
+
+                        ullong size(devsize(path));
+                        if(size > 536870911) ThrdSlst->append(path % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
                     }
                 }
             }
 
-        devs.sort();
-        *ThrdSlst = devs;
+        next_2:;
+        }
+
+        ThrdSlst->sort();
         break;
     }
     case Ruuid:
@@ -1737,7 +1768,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                 {
                     QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
-                    if(! cline.startsWith("#") && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
+                    if(! cline.startsWith('#') && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
                     {
                         for(QStr cdname : QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'))
                             if(! cdname.isEmpty())
@@ -2976,7 +3007,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     {
                         QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
-                        if(! cline.startsWith("#") && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
+                        if(! cline.startsWith('#') && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
                             for(QStr cdname : QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'))
                                 if(! cdname.isEmpty())
                                 {
@@ -3214,7 +3245,7 @@ bool sb::thrdlvprpr(bool iudata)
             {
                 QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
-                if(! cline.startsWith("#") && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
+                if(! cline.startsWith('#') && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
                     for(QStr cdname : QStr(mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7)).split('/'))
                         if(! cdname.isEmpty())
                         {

@@ -30,9 +30,8 @@
 #include <QMainWindow>
 #include <QTimer>
 
-namespace Ui
-{
-    class systemback;
+namespace Ui {
+class systemback;
 }
 
 class systemback : public QMainWindow

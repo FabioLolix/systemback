@@ -473,8 +473,8 @@ void systemback::unitimer()
                 ui->schedulersecond->setBackgroundRole(QPalette::Base);
                 ui->partitiondelete->setStyleSheet("QPushButton:enabled {color: red}");
                 { QPalette pal(ui->license->palette());
-                    pal.setBrush(QPalette::Base, pal.background());
-                    ui->license->setPalette(pal); }
+                pal.setBrush(QPalette::Base, pal.background());
+                ui->license->setPalette(pal); }
                 ui->partitionsettings->setHorizontalHeaderLabels({tr("Partition"), tr("Size"), tr("Label"), tr("Current mount point"), tr("New mount point"), tr("Filesystem"), tr("Format")});
                 ui->partitionsettings->setColumnHidden(7, true);
                 ui->partitionsettings->setColumnHidden(8, true);
@@ -842,7 +842,6 @@ inline ushort systemback::ss(ushort size)
     case Max:
         return size * 2;
     case High:
-    {
         switch(size) {
         case 0:
             return 0;
@@ -862,7 +861,6 @@ inline ushort systemback::ss(ushort size)
                 return ssize;
             }
         }
-    }
     default:
         return size;
     }
@@ -881,6 +879,7 @@ void systemback::fontcheck(uchar wdgt)
             font.setBold(true);
             ui->storagedirbutton->setFont(font);
         }
+
         break;
     case Lvwrkdr:
         if(ui->liveworkdir->font().pixelSize() != ss(15))
@@ -892,6 +891,7 @@ void systemback::fontcheck(uchar wdgt)
             font.setBold(true);
             ui->liveworkdirbutton->setFont(font);
         }
+
         break;
     case Dpath:
         if(ui->dirpath->font().pixelSize() != ss(15)) ui->dirpath->setFont(font());
@@ -2327,7 +2327,6 @@ start:
     if(pname == tr("Currently running system"))
     {
         if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
-        {
             switch(ui->usersettingscopy->checkState()) {
             case Qt::Unchecked:
                 if(! sb::scopy(5, guname(), nullptr)) goto error;
@@ -2338,7 +2337,6 @@ start:
             case Qt::Checked:
                 if(! sb::scopy(4, guname(), nullptr)) goto error;
             }
-        }
         else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr))
             goto error;
 
@@ -2364,7 +2362,6 @@ start:
         if(intrrpt) goto exit;
 
         if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
-        {
             switch(ui->usersettingscopy->checkState()) {
             case Qt::Unchecked:
                 if(! sb::scopy(5, guname(), "/.systembacklivepoint")) goto error;
@@ -2375,7 +2372,6 @@ start:
             case Qt::Checked:
                 if(! sb::scopy(4, guname(), "/.systembacklivepoint")) goto error;
             }
-        }
         else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint"))
             goto error;
 
@@ -2408,7 +2404,6 @@ start:
     else
     {
         if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
-        {
             switch(ui->usersettingscopy->checkState()) {
             case Qt::Unchecked:
                 if(! sb::scopy(5, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
@@ -2419,7 +2414,6 @@ start:
             case Qt::Checked:
                 if(! sb::scopy(4, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
             }
-        }
         else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname))
             goto error;
 
@@ -3560,251 +3554,245 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 
 void systemback::keyPressEvent(QKeyEvent *ev)
 {
-    switch(ev->key()) {
-    case Qt::Key_Escape:
-        if(ui->passwordpanel->isVisible()) close();
-        break;
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-    {
-        QKeyEvent press(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
-        qApp->sendEvent(qApp->focusObject(), &press);
+    if(! qApp->overrideCursor())
+        switch(ev->key()) {
+        case Qt::Key_Escape:
+            if(ui->passwordpanel->isVisible()) close();
+            break;
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+        {
+            QKeyEvent press(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+            qApp->sendEvent(qApp->focusObject(), &press);
 
-        if(ui->sbpanel->isVisible())
-        {
-            if(ui->point1->hasFocus())
+            if(ui->sbpanel->isVisible())
             {
-                if(ui->pointpipe1->isChecked()) on_pointrename_clicked();
+                if(ui->point1->hasFocus())
+                {
+                    if(ui->pointpipe1->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point2->hasFocus())
+                {
+                    if(ui->pointpipe2->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point3->hasFocus())
+                {
+                    if(ui->pointpipe3->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point4->hasFocus())
+                {
+                    if(ui->pointpipe4->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point5->hasFocus())
+                {
+                    if(ui->pointpipe5->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point6->hasFocus())
+                {
+                    if(ui->pointpipe6->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point7->hasFocus())
+                {
+                    if(ui->pointpipe7->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point8->hasFocus())
+                {
+                    if(ui->pointpipe8->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point9->hasFocus())
+                {
+                    if(ui->pointpipe9->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point10->hasFocus())
+                {
+                    if(ui->pointpipe10->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point11->hasFocus())
+                {
+                    if(ui->pointpipe11->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point12->hasFocus())
+                {
+                    if(ui->pointpipe12->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point13->hasFocus())
+                {
+                    if(ui->pointpipe13->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point14->hasFocus())
+                {
+                    if(ui->pointpipe14->isChecked()) on_pointrename_clicked();
+                }
+                else if(ui->point15->hasFocus() && ui->pointpipe15->isChecked())
+                    on_pointrename_clicked();
             }
-            else if(ui->point2->hasFocus())
+            else if(ui->dirchoose->hasFocus())
+                ui->dirchoose->currentItem()->setExpanded(! ui->dirchoose->currentItem()->isExpanded());
+            else if(ui->repairmountpoint->hasFocus())
             {
-                if(ui->pointpipe2->isChecked()) on_pointrename_clicked();
+                if(ui->repairmount->isEnabled())
+                {
+                    on_repairmount_clicked();
+                    if(! ui->repairmountpoint->hasFocus()) ui->repairmountpoint->setFocus();
+                }
             }
-            else if(ui->point3->hasFocus())
+            else if(ui->itemslist->hasFocus())
             {
-                if(ui->pointpipe3->isChecked()) on_pointrename_clicked();
+                if(ui->itemslist->currentItem()->isSelected())
+                {
+                    if(ui->itemslist->currentItem()->childCount() == 0)
+                        on_additem_clicked();
+                    else if(ui->itemslist->currentItem()->isExpanded())
+                        ui->itemslist->currentItem()->setExpanded(false);
+                    else
+                        ui->itemslist->currentItem()->setExpanded(true);
+                }
             }
-            else if(ui->point4->hasFocus())
+            else if(ui->excludedlist->hasFocus())
+                on_removeitem_clicked();
+            else if(ui->copypanel->isVisible())
             {
-                if(ui->pointpipe4->isChecked()) on_pointrename_clicked();
+                if(ui->mountpoint->hasFocus())
+                {
+                    if(ui->changepartition->isEnabled()) on_changepartition_clicked();
+                }
+                else if(ui->partitionsize->hasFocus() && ui->newpartition->isEnabled())
+                    on_newpartition_clicked();
             }
-            else if(ui->point5->hasFocus())
+            else if(ui->installpanel->isVisible())
             {
-                if(ui->pointpipe5->isChecked()) on_pointrename_clicked();
+                if(ui->fullname->hasFocus())
+                {
+                    if(ui->fullnamepipe->isVisible()) ui->username->setFocus();
+                }
+                else if(ui->username->hasFocus())
+                {
+                    if(ui->usernamepipe->isVisible()) ui->password1->setFocus();
+                }
+                else if(ui->password1->hasFocus())
+                {
+                    if(ui->password2->isEnabled()) ui->password2->setFocus();
+                }
+                else if(ui->password2->hasFocus())
+                {
+                    if(ui->passwordpipe->isVisible()) ui->rootpassword1->setFocus();
+                }
+                else if(ui->rootpassword1->hasFocus())
+                    ui->rootpassword2->isEnabled() ? ui->rootpassword2->setFocus() : ui->hostname->setFocus();
+                else if(ui->rootpassword2->hasFocus())
+                {
+                    if(ui->rootpasswordpipe->isVisible()) ui->hostname->setFocus();
+                }
+                else if(ui->hostname->hasFocus() && ui->installnext->isEnabled())
+                    ui->installnext->setFocus();
             }
-            else if(ui->point6->hasFocus())
-            {
-                if(ui->pointpipe6->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point7->hasFocus())
-            {
-                if(ui->pointpipe7->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point8->hasFocus())
-            {
-                if(ui->pointpipe8->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point9->hasFocus())
-            {
-                if(ui->pointpipe9->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point10->hasFocus())
-            {
-                if(ui->pointpipe10->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point11->hasFocus())
-            {
-                if(ui->pointpipe11->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point12->hasFocus())
-            {
-                if(ui->pointpipe12->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point13->hasFocus())
-            {
-                if(ui->pointpipe13->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point14->hasFocus())
-            {
-                if(ui->pointpipe14->isChecked()) on_pointrename_clicked();
-            }
-            else if(ui->point15->hasFocus() && ui->pointpipe15->isChecked())
-                on_pointrename_clicked();
-        }
-        else if(ui->dirchoose->hasFocus())
-            ui->dirchoose->currentItem()->setExpanded(! ui->dirchoose->currentItem()->isExpanded());
-        else if(ui->repairmountpoint->hasFocus())
-        {
-            if(ui->repairmount->isEnabled())
-            {
-                on_repairmount_clicked();
-                if(! ui->repairmountpoint->hasFocus()) ui->repairmountpoint->setFocus();
-            }
-        }
-        else if(ui->itemslist->hasFocus())
-        {
-            if(ui->itemslist->currentItem()->isSelected())
-            {
-                if(ui->itemslist->currentItem()->childCount() == 0)
-                    on_additem_clicked();
-                else if(ui->itemslist->currentItem()->isExpanded())
-                    ui->itemslist->currentItem()->setExpanded(false);
-                else
-                    ui->itemslist->currentItem()->setExpanded(true);
-            }
-        }
-        else if(ui->excludedlist->hasFocus())
-            on_removeitem_clicked();
-        else if(ui->copypanel->isVisible())
-        {
-            if(ui->mountpoint->hasFocus())
-            {
-                if(ui->changepartition->isEnabled()) on_changepartition_clicked();
-            }
-            else if(ui->partitionsize->hasFocus())
-            {
-                if(ui->newpartition->isEnabled()) on_newpartition_clicked();
-            }
-        }
-        else if(ui->installpanel->isVisible())
-        {
-            if(ui->fullname->hasFocus())
-            {
-                if(ui->fullnamepipe->isVisible()) ui->username->setFocus();
-            }
-            else if(ui->username->hasFocus())
-            {
-                if(ui->usernamepipe->isVisible()) ui->password1->setFocus();
-            }
-            else if(ui->password1->hasFocus())
-            {
-                if(ui->password2->isEnabled()) ui->password2->setFocus();
-            }
-            else if(ui->password2->hasFocus())
-            {
-                if(ui->passwordpipe->isVisible()) ui->rootpassword1->setFocus();
-            }
-            else if(ui->rootpassword1->hasFocus())
-                ui->rootpassword2->isEnabled() ? ui->rootpassword2->setFocus() : ui->hostname->setFocus();
-            else if(ui->rootpassword2->hasFocus())
-            {
-                if(ui->rootpasswordpipe->isVisible()) ui->hostname->setFocus();
-            }
-            else if(ui->hostname->hasFocus() && ui->installnext->isEnabled())
-                ui->installnext->setFocus();
-        }
 
-        break;
-    }
-    case Qt::Key_F5:
-        if(ui->sbpanel->isVisible())
-        {
-            if(ui->point1->hasFocus())
-            {
-                if(ui->point1->text() != sb::pnames[0]) ui->point1->setText(sb::pnames[0]);
-            }
-            else if(ui->point2->hasFocus())
-            {
-                if(ui->point2->text() != sb::pnames[1]) ui->point2->setText(sb::pnames[1]);
-            }
-            else if(ui->point3->hasFocus())
-            {
-                if(ui->point3->text() != sb::pnames[2]) ui->point3->setText(sb::pnames[2]);
-            }
-            else if(ui->point4->hasFocus())
-            {
-                if(ui->point4->text() != sb::pnames[3]) ui->point4->setText(sb::pnames[3]);
-            }
-            else if(ui->point5->hasFocus())
-            {
-                if(ui->point5->text() != sb::pnames[4]) ui->point5->setText(sb::pnames[4]);
-            }
-            else if(ui->point6->hasFocus())
-            {
-                if(ui->point6->text() != sb::pnames[5]) ui->point6->setText(sb::pnames[5]);
-            }
-            else if(ui->point7->hasFocus())
-            {
-                if(ui->point7->text() != sb::pnames[6]) ui->point7->setText(sb::pnames[6]);
-            }
-            else if(ui->point8->hasFocus())
-            {
-                if(ui->point8->text() != sb::pnames[7]) ui->point8->setText(sb::pnames[7]);
-            }
-            else if(ui->point9->hasFocus())
-            {
-                if(ui->point9->text() != sb::pnames[8]) ui->point9->setText(sb::pnames[8]);
-            }
-            else if(ui->point10->hasFocus())
-            {
-                if(ui->point10->text() != sb::pnames[9]) ui->point10->setText(sb::pnames[9]);
-            }
-            else if(ui->point11->hasFocus())
-            {
-                if(ui->point11->text() != sb::pnames[10]) ui->point11->setText(sb::pnames[10]);
-            }
-            else if(ui->point12->hasFocus())
-            {
-                if(ui->point12->text() != sb::pnames[11]) ui->point12->setText(sb::pnames[11]);
-            }
-            else if(ui->point13->hasFocus())
-            {
-                if(ui->point13->text() != sb::pnames[12]) ui->point13->setText(sb::pnames[12]);
-            }
-            else if(ui->point14->hasFocus())
-            {
-                if(ui->point14->text() != sb::pnames[13]) ui->point14->setText(sb::pnames[13]);
-            }
-            else if(ui->point15->hasFocus() && ui->point15->text() != sb::pnames[14])
-                ui->point15->setText(sb::pnames[14]);
+            break;
         }
-        else if(ui->partitionsettings->hasFocus() || ui->mountpoint->hasFocus() || ui->partitionsize->hasFocus())
-        {
-            if(! ui->copycover->isVisible()) on_partitionrefresh2_clicked();
-        }
-        else if(ui->livedevices->hasFocus())
-        {
-            if(! ui->livecreatecover->isVisible()) on_livedevicesrefresh_clicked();
-        }
-        else if(ui->livelist->hasFocus())
-        {
-            on_livecreatemenu_clicked();
-            ui->livecreateback->setFocus();
-        }
-        else if(ui->dirchoose->hasFocus())
-            on_dirrefresh_clicked();
-        else if(ui->repairmountpoint->hasFocus())
-        {
-            if(! ui->repaircover->isVisible()) on_repairpartitionrefresh_clicked();
-        }
-        else if(ui->itemslist->hasFocus())
-            on_pointexclude_clicked();
+        case Qt::Key_F5:
+            if(ui->sbpanel->isVisible())
+            {
+                if(ui->point1->hasFocus())
+                {
+                    if(ui->point1->text() != sb::pnames[0]) ui->point1->setText(sb::pnames[0]);
+                }
+                else if(ui->point2->hasFocus())
+                {
+                    if(ui->point2->text() != sb::pnames[1]) ui->point2->setText(sb::pnames[1]);
+                }
+                else if(ui->point3->hasFocus())
+                {
+                    if(ui->point3->text() != sb::pnames[2]) ui->point3->setText(sb::pnames[2]);
+                }
+                else if(ui->point4->hasFocus())
+                {
+                    if(ui->point4->text() != sb::pnames[3]) ui->point4->setText(sb::pnames[3]);
+                }
+                else if(ui->point5->hasFocus())
+                {
+                    if(ui->point5->text() != sb::pnames[4]) ui->point5->setText(sb::pnames[4]);
+                }
+                else if(ui->point6->hasFocus())
+                {
+                    if(ui->point6->text() != sb::pnames[5]) ui->point6->setText(sb::pnames[5]);
+                }
+                else if(ui->point7->hasFocus())
+                {
+                    if(ui->point7->text() != sb::pnames[6]) ui->point7->setText(sb::pnames[6]);
+                }
+                else if(ui->point8->hasFocus())
+                {
+                    if(ui->point8->text() != sb::pnames[7]) ui->point8->setText(sb::pnames[7]);
+                }
+                else if(ui->point9->hasFocus())
+                {
+                    if(ui->point9->text() != sb::pnames[8]) ui->point9->setText(sb::pnames[8]);
+                }
+                else if(ui->point10->hasFocus())
+                {
+                    if(ui->point10->text() != sb::pnames[9]) ui->point10->setText(sb::pnames[9]);
+                }
+                else if(ui->point11->hasFocus())
+                {
+                    if(ui->point11->text() != sb::pnames[10]) ui->point11->setText(sb::pnames[10]);
+                }
+                else if(ui->point12->hasFocus())
+                {
+                    if(ui->point12->text() != sb::pnames[11]) ui->point12->setText(sb::pnames[11]);
+                }
+                else if(ui->point13->hasFocus())
+                {
+                    if(ui->point13->text() != sb::pnames[12]) ui->point13->setText(sb::pnames[12]);
+                }
+                else if(ui->point14->hasFocus())
+                {
+                    if(ui->point14->text() != sb::pnames[13]) ui->point14->setText(sb::pnames[13]);
+                }
+                else if(ui->point15->hasFocus() && ui->point15->text() != sb::pnames[14])
+                    ui->point15->setText(sb::pnames[14]);
+            }
+            else if(ui->partitionsettings->hasFocus() || ui->mountpoint->hasFocus() || ui->partitionsize->hasFocus())
+                on_partitionrefresh2_clicked();
+            else if(ui->livedevices->hasFocus())
+                on_livedevicesrefresh_clicked();
+            else if(ui->livelist->hasFocus())
+            {
+                on_livecreatemenu_clicked();
+                ui->livecreateback->setFocus();
+            }
+            else if(ui->dirchoose->hasFocus())
+                on_dirrefresh_clicked();
+            else if(ui->repairmountpoint->hasFocus())
+                on_repairpartitionrefresh_clicked();
+            else if(ui->itemslist->hasFocus())
+                on_pointexclude_clicked();
 
-        break;
-    case Qt::Key_Delete:
-        if(ui->partitionsettings->hasFocus())
-        {
-            if(ui->umountdelete->isEnabled() && ! ui->copycover->isVisible() && ui->umountdelete->text() == tr("Umount")) on_umountdelete_clicked();
+            break;
+        case Qt::Key_Delete:
+            if(ui->partitionsettings->hasFocus())
+            {
+                if(ui->umountdelete->isEnabled() && ui->umountdelete->text() == tr("Umount")) on_umountdelete_clicked();
+            }
+            else if(ui->livelist->hasFocus())
+            {
+                if(ui->livedelete->isEnabled()) on_livedelete_clicked();
+            }
+            else if(ui->itemslist->hasFocus())
+                on_additem_clicked();
+            else if(ui->excludedlist->hasFocus())
+                on_removeitem_clicked();
         }
-        else if(ui->livelist->hasFocus())
-        {
-            if(ui->livedelete->isEnabled()) on_livedelete_clicked();
-        }
-        else if(ui->itemslist->hasFocus())
-            on_additem_clicked();
-        else if(ui->excludedlist->hasFocus())
-            on_removeitem_clicked();
-    }
 }
 
 void systemback::keyReleaseEvent(QKeyEvent *ev)
 {
-    switch(ev->key()) {
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        QKeyEvent release(QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier);
-        qApp->sendEvent(qApp->focusObject(), &release);
-    }
+    if(! qApp->overrideCursor())
+        switch(ev->key()) {
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+            QKeyEvent release(QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier);
+            qApp->sendEvent(qApp->focusObject(), &release);
+        }
 }
 
 void systemback::on_admins_currentIndexChanged(const QStr &arg1)
@@ -6683,7 +6671,6 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
         }
 
         if(sb::isdir(path))
-        {
             for(ushort a(0) ; a < item->childCount() ; ++a)
             {
                 QTrWI *ctwi(item->child(a));
@@ -6727,7 +6714,6 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                         delete ctwi;
                 }
             }
-        }
         else
         {
             delete item;
@@ -7722,7 +7708,6 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
                         usr = sb::left(usr, sb::instr(usr, ":") -1);
 
                         if(sb::stype("/home/" % usr % path) == sb::Isdir)
-                        {
                             for(ushort a(0) ; a < item->childCount() ; ++a)
                             {
                                 QTrWI *ctwi(item->child(a));
@@ -7756,14 +7741,12 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
 
                                 ctwi->sortChildren(0, Qt::AscendingOrder);
                             }
-                        }
                     }
                 }
             }
         }
 
         if(sb::stype("/root" % path) == sb::Isdir)
-        {
             for(ushort a(0) ; a < item->childCount() ; ++a)
             {
                 QTrWI *ctwi(item->child(a));
@@ -7797,7 +7780,6 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
 
                 ctwi->sortChildren(0, Qt::AscendingOrder);
             }
-        }
 
         busy(false);
     }

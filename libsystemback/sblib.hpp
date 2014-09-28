@@ -56,19 +56,19 @@ public:
     static ullong fsize(cQStr &path);
     static ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
     static ushort rinstr(cQStr &txt, cQStr &stxt);
-    static uchar exec(cQStr &cmd, cQStr &envv = NULL, bool silent = false, bool bckgrnd = false);
+    static uchar exec(cQStr &cmd, cQStr &envv = nullptr, bool silent = false, bool bckgrnd = false);
     static uchar stype(cQStr &path);
     static uchar exec(cQSL &cmds);
     static bool srestore(cuchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);
     static bool mkpart(cQStr &dev, ullong start = 0, ullong len = 0, uchar type = Primary);
-    static bool mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = NULL);
+    static bool mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = nullptr);
     static bool like(cQStr &txt, cQSL &lst, cuchar mode = Norm);
+    static bool execsrch(cQStr &fname, cQStr &ppath = nullptr);
     static bool scopy(cuchar mthd, cQStr &usr, cQStr &srcdir);
-    static bool execsrch(cQStr &fname, cQStr &ppath = NULL);
     static bool pisrng(cQStr &pname, ushort *pid = nullptr);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
+    static bool crtfile(cQStr &path, cQStr &txt = nullptr);
     static bool access(cQStr &path, cuchar mode = Read);
-    static bool crtfile(cQStr &path, cQStr &txt = NULL);
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
@@ -134,17 +134,17 @@ private:
 
 inline QStr sb::left(cQStr &txt, short len)
 {
-    return txt.length() > qAbs(len) ? txt.left(len > 0 ? len : txt.length() + len) : len > 0 ? txt : NULL;
+    return txt.length() > qAbs(len) ? txt.left(len > 0 ? len : txt.length() + len) : len > 0 ? txt : nullptr;
 }
 
 inline QStr sb::right(cQStr &txt, short len)
 {
-    return txt.length() > qAbs(len) ? txt.right(len > 0 ? len : txt.length() + len) : len > 0 ? txt : NULL;
+    return txt.length() > qAbs(len) ? txt.right(len > 0 ? len : txt.length() + len) : len > 0 ? txt : nullptr;
 }
 
 inline QStr sb::mid(cQStr &txt, ushort start, ushort len)
 {
-    return txt.length() >= start ? txt.length() - start + 1 > len ? txt.mid(start - 1, len) : txt.right(txt.length() - start + 1) : NULL;
+    return txt.length() >= start ? txt.length() - start + 1 > len ? txt.mid(start - 1, len) : txt.right(txt.length() - start + 1) : nullptr;
 }
 
 inline ushort sb::instr(cQStr &txt, cQStr &stxt, ushort start)

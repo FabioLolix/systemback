@@ -1273,8 +1273,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3156"/>
-        <source>Format the &lt;dev&gt;, and write the following Live system image:</source>
-        <translation>Formatar &lt;dev&gt;, e gravar a seguinte imaxe do sistema «en vivo»:</translation>
+        <source>Format the %1, and write the following Live system image:</source>
+        <translation>Formatar %1, e gravar a seguinte imaxe do sistema «en vivo»:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3308"/>

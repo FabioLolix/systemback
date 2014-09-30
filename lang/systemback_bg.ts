@@ -1375,7 +1375,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3156"/>
-        <source>Format the &lt;dev&gt;, and write the following Live system image:</source>
+        <source>Format the %1, and write the following Live system image:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

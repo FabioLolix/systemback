@@ -1283,8 +1283,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3156"/>
-        <source>Format the &lt;dev&gt;, and write the following Live system image:</source>
-        <translation>A &lt;dev&gt; formázása, és a következő Live rendszerkép kiírása:</translation>
+        <source>Format the %1, and write the following Live system image:</source>
+        <translation>A %1 formázása, és a következő Live rendszerkép kiírása:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3308"/>

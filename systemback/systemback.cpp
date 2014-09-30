@@ -176,7 +176,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     }
     else
     {
-        grub = "pc";
+        grub = "pc-bin";
         ppipe = busycnt = 0;
         irfsc = false;
         ui->dialogpanel->hide();
@@ -577,7 +577,7 @@ void systemback::unitimer()
 
                 if(sb::efiprob())
                 {
-                    grub = "efi-amd64";
+                    grub = "efi-amd64-bin";
                     ui->repairmountpoint->addItem("/mnt/boot/efi");
                 }
 
@@ -3153,7 +3153,7 @@ void systemback::dialogopen()
         break;
     case 30:
         ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Format the <dev>, and write the following Live system image:").replace("<dev>", " <b>" % ui->livedevices->item(ui->livedevices->currentRow(), 0)->text() % "</b>") % "<p><b>" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % "</b>");
+        ui->dialogtext->setText(tr("Format the %1, and write the following Live system image:").arg(" <b>" % ui->livedevices->item(ui->livedevices->currentRow(), 0)->text() % "</b>") % "<p><b>" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % "</b>");
         if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
         ui->dialogcancel->show();
         break;
@@ -5116,7 +5116,7 @@ void systemback::on_partitionrefresh_clicked()
     if(ui->copynext->isEnabled()) ui->copynext->setDisabled(true);
     if(ui->mountpoint->count() > 0) ui->mountpoint->clear();
     ui->mountpoint->addItems({nullptr, "/", "/home", "/boot"});
-    if(grub == "efi-amd64") ui->mountpoint->addItem("/boot/efi");
+    if(grub.startsWith("efi")) ui->mountpoint->addItem("/boot/efi");
     ui->mountpoint->addItems({"/tmp", "/usr", "/var", "/srv", "/opt", "/usr/local", "SWAP"});
 
     if(ui->mountpoint->isEnabled())
@@ -7536,7 +7536,7 @@ void systemback::on_repairpartitionrefresh_clicked()
     sb::fssync();
     ui->repairmountpoint->clear();
     ui->repairmountpoint->addItems({nullptr, "/mnt", "/mnt/home", "/mnt/boot"});
-    if(grub == "efi-amd64") ui->repairmountpoint->addItem("/mnt/boot/efi");
+    if(grub.startsWith("efi")) ui->repairmountpoint->addItem("/mnt/boot/efi");
     ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
     ui->repairmountpoint->setCurrentIndex(1);
     on_systemrepair_clicked();
@@ -8852,7 +8852,7 @@ void systemback::on_partitiondelete_clicked()
         sb::delpart(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text());
         break;
     default:
-        sb::mkptable(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), grub == "efi-amd64" ? "gpt" : "msdos");
+        sb::mkptable(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), grub.startsWith("efi") ? "gpt" : "msdos");
     }
 
     on_partitionrefresh2_clicked();

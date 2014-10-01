@@ -479,6 +479,7 @@ void systemback::unitimer()
                 ui->partitionsettings->setColumnHidden(7, true);
                 ui->partitionsettings->setColumnHidden(8, true);
                 ui->partitionsettings->setColumnHidden(9, true);
+                ui->partitionsettings->setColumnHidden(10, true);
                 { QFont font;
                 font.setPixelSize(ss(14));
                 ui->partitionsettings->horizontalHeader()->setFont(font);
@@ -497,7 +498,6 @@ void systemback::unitimer()
                 ui->partitionsettingspanel3->hide();
                 ui->grubreinstallrestoredisable->hide();
                 ui->grubreinstallrestoredisable->addItem(tr("Disabled"));
-                ui->grubinstallcopydisable->hide();
                 ui->grubinstallcopydisable->addItem(tr("Disabled"));
                 ui->grubreinstallrepairdisable->hide();
                 ui->grubreinstallrepairdisable->addItem(tr("Disabled"));
@@ -578,8 +578,14 @@ void systemback::unitimer()
                 if(sb::efiprob())
                 {
                     grub = "efi-amd64-bin";
+                    ui->grubinstallcopy->hide();
                     ui->repairmountpoint->addItem("/mnt/boot/efi");
+                    ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
+                    ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
+                    ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
                 }
+                else
+                    ui->grubinstallcopydisable->hide();
 
                 ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
                 ui->repairmountpoint->setCurrentIndex(1);
@@ -1025,12 +1031,12 @@ void systemback::schedulertimer()
     else if(ui->schedulernumber->text() == "1s")
         on_schedulerstart_clicked();
     else
-        ui->schedulernumber->setText(QStr::number(sb::left(ui->schedulernumber->text(), - 1).toShort() - 1) % 's');
+        ui->schedulernumber->setText(QStr::number(sb::left(ui->schedulernumber->text(), - 1).toUShort() - 1) % 's');
 }
 
 void systemback::dialogtimer()
 {
-    ui->dialognumber->setText(QStr::number(sb::left(ui->dialognumber->text(), -1).toShort() - 1) % "s");
+    ui->dialognumber->setText(QStr::number(sb::left(ui->dialognumber->text(), -1).toUShort() - 1) % "s");
     if(ui->dialognumber->text() == "0s" && sb::like(ui->dialogok->text(), {'_' % tr("Reboot") % '_', '_' % tr("X restart") % '_'})) on_dialogok_clicked();
 }
 
@@ -1935,35 +1941,41 @@ start:
                     {
                         sb::exec("update-grub");
                         if(intrrpt) goto exit;
-                        QStr mntdev;
 
+                        if(grub.startsWith("pc"))
                         {
-                            QStr mnts(sb::fload("/proc/self/mounts"));
-                            QTS in(&mnts, QIODevice::ReadOnly);
+                            QStr mntdev;
 
-                            while(! in.atEnd())
                             {
-                                QStr cline(in.readLine());
+                                QStr mnts(sb::fload("/proc/self/mounts"));
+                                QTS in(&mnts, QIODevice::ReadOnly);
 
-                                if(cline.contains(" /boot "))
+                                while(! in.atEnd())
                                 {
-                                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                                    break;
-                                }
-                                else if(cline.contains(" / "))
-                                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                            }
-                        }
+                                    QStr cline(in.readLine());
 
-                        if(intrrpt) goto exit;
-                        rv = sb::exec("grub-install --force " % sb::left(mntdev, 8));
+                                    if(cline.contains(" /boot "))
+                                    {
+                                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                                        break;
+                                    }
+                                    else if(cline.contains(" / "))
+                                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                                }
+                            }
+
+                            if(intrrpt) goto exit;
+                            rv = sb::exec("grub-install --force " % sb::left(mntdev, 8));
+                        }
+                        else
+                            rv = sb::exec("grub-install --force");
                     }
                 }
                 else
                 {
                     sb::exec("update-grub");
                     if(intrrpt) goto exit;
-                    rv = sb::exec("grub-install --force " % ui->grubreinstallrestore->currentText());
+                    rv = sb::exec("grub-install --force " % (ui->grubreinstallrestore->currentText() == "EFI" ? nullptr : ui->grubreinstallrestore->currentText()));
                 }
 
                 if(intrrpt) goto exit;
@@ -2043,7 +2055,7 @@ start:
             sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
         }
         else
-            sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
+            sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (ui->grubreinstallrepair->currentText() == "EFI" ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
 
         QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
         if(intrrpt) goto exit;
@@ -2110,7 +2122,7 @@ start:
                 {
                     if(fcmp)
                         sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\n");
-                    else
+                    else if(grub.startsWith("pc"))
                     {
                         QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
                         QTS in(&mnts, QIODevice::ReadOnly);
@@ -2130,9 +2142,11 @@ start:
 
                         sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
                     }
+                    else
+                        sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force\n");
                 }
                 else
-                    sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % ui->grubreinstallrepair->currentText() % '\n');
+                    sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (ui->grubreinstallrepair->currentText() == "EFI" ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
 
                 QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
                 if(intrrpt) goto exit;
@@ -2753,7 +2767,7 @@ start:
 
             if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
         }
-        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % ui->grubinstallcopy->currentText() % '\n'))
+        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (ui->grubinstallcopy->currentText() == "EFI" ? nullptr : ui->grubinstallcopy->currentText()) % '\n'))
             goto error;
 
         if(! QFile::setPermissions("/.sbsystemcopy/grubinst", QFile::ExeOwner)) goto error;
@@ -4919,9 +4933,25 @@ void systemback::on_restoremenu_clicked()
 
 void systemback::on_copymenu_clicked()
 {
-    if(ppipe == 1)
+    if(grub.startsWith("pc"))
     {
-        if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+        if(ppipe == 1)
+        {
+            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+            {
+                if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
+                {
+                    ui->grubinstallcopydisable->hide();
+                    ui->grubinstallcopy->show();
+                }
+            }
+            else if(ui->grubinstallcopy->isVisibleTo(ui->copypanel))
+            {
+                ui->grubinstallcopy->hide();
+                ui->grubinstallcopydisable->show();
+            }
+        }
+        else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
         {
             if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
             {
@@ -4934,19 +4964,6 @@ void systemback::on_copymenu_clicked()
             ui->grubinstallcopy->hide();
             ui->grubinstallcopydisable->show();
         }
-    }
-    else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
-    {
-        if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
-        {
-            ui->grubinstallcopydisable->hide();
-            ui->grubinstallcopy->show();
-        }
-    }
-    else if(ui->grubinstallcopy->isVisibleTo(ui->copypanel))
-    {
-        ui->grubinstallcopy->hide();
-        ui->grubinstallcopydisable->show();
     }
 
     if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
@@ -5116,7 +5133,18 @@ void systemback::on_partitionrefresh_clicked()
     if(ui->copynext->isEnabled()) ui->copynext->setDisabled(true);
     if(ui->mountpoint->count() > 0) ui->mountpoint->clear();
     ui->mountpoint->addItems({nullptr, "/", "/home", "/boot"});
-    if(grub.startsWith("efi")) ui->mountpoint->addItem("/boot/efi");
+
+    if(grub.startsWith("efi"))
+    {
+        ui->mountpoint->addItem("/boot/efi");
+
+        if(ui->grubinstallcopy->isVisible())
+        {
+            ui->grubinstallcopy->hide();
+            ui->grubinstallcopydisable->show();
+        }
+    }
+
     ui->mountpoint->addItems({"/tmp", "/usr", "/var", "/srv", "/opt", "/usr/local", "SWAP"});
 
     if(ui->mountpoint->isEnabled())
@@ -5155,29 +5183,32 @@ void systemback::on_partitionrefresh_clicked()
         ui->partitionsettings->resizeColumnToContents(4);
     }
 
-    if(ui->grubinstallcopy->count() > 0)
+    if(grub.startsWith("pc") && ui->grubinstallcopy->count() > 0)
     {
         ui->grubinstallcopy->clear();
         ui->grubreinstallrestore->clear();
         ui->grubreinstallrepair->clear();
     }
 
-    ui->grubinstallcopy->addItems({"Auto", tr("Disabled")});
-    ui->grubreinstallrestore->addItems({"Auto", tr("Disabled")});
-    ui->grubreinstallrepair->addItems({"Auto", tr("Disabled")});
-
     QSL plst;
     sb::readprttns(plst);
 
-    for(cQStr &dts : plst)
+    if(grub.startsWith("pc"))
     {
-        QStr path(dts.split('\n').at(0));
+        ui->grubinstallcopy->addItems({"Auto", tr("Disabled")});
+        ui->grubreinstallrestore->addItems({"Auto", tr("Disabled")});
+        ui->grubreinstallrepair->addItems({"Auto", tr("Disabled")});
 
-        if(path.length() == 8)
+        for(cQStr &dts : plst)
         {
-            ui->grubinstallcopy->addItem(path);
-            ui->grubreinstallrestore->addItem(path);
-            ui->grubreinstallrepair->addItem(path);
+            QStr path(dts.split('\n').at(0));
+
+            if(path.length() == 8)
+            {
+                ui->grubinstallcopy->addItem(path);
+                ui->grubreinstallrestore->addItem(path);
+                ui->grubreinstallrepair->addItem(path);
+            }
         }
     }
 
@@ -5220,13 +5251,13 @@ void systemback::on_partitionrefresh_clicked()
             ui->partitionsettings->setItem(sn, 5, empty->clone());
             ui->partitionsettings->setItem(sn, 6, empty->clone());
             QTblWI *tp(new QTblWI(type));
-            ui->partitionsettings->setItem(sn, 7, tp);
+            ui->partitionsettings->setItem(sn, 8, tp);
             QTblWI *lngth(new QTblWI(QStr::number(bsize)));
-            ui->partitionsettings->setItem(sn, 9, lngth);
+            ui->partitionsettings->setItem(sn, 10, lngth);
         }
         else
         {
-            switch(type.toShort()) {
+            switch(type.toUShort()) {
             case sb::Extended:
             {
                 QFont font;
@@ -5261,9 +5292,14 @@ void systemback::on_partitionrefresh_clicked()
             case sb::Logical:
             {
                 cQStr &uuid(dts.at(6));
-                ui->grubinstallcopy->addItem(path);
-                ui->grubreinstallrestore->addItem(path);
-                ui->grubreinstallrepair->addItem(path);
+
+                if(grub.startsWith("pc"))
+                {
+                    ui->grubinstallcopy->addItem(path);
+                    ui->grubreinstallrestore->addItem(path);
+                    ui->grubreinstallrepair->addItem(path);
+                }
+
                 ++sn;
                 ui->partitionsettings->setRowCount(sn + 1);
                 QTblWI *dev(new QTblWI(path));
@@ -5333,6 +5369,7 @@ void systemback::on_partitionrefresh_clicked()
                 QTblWI *frmt(new QTblWI("-"));
                 frmt->setTextAlignment(Qt::AlignCenter);
                 ui->partitionsettings->setItem(sn, 6, frmt);
+                ui->partitionsettings->setItem(sn, 7, fs->clone());
                 break;
             }
             case sb::Freespace:
@@ -5366,11 +5403,11 @@ void systemback::on_partitionrefresh_clicked()
             }
 
             QTblWI *tp(new QTblWI(type));
-            ui->partitionsettings->setItem(sn, 7, tp);
+            ui->partitionsettings->setItem(sn, 8, tp);
             QTblWI *start(new QTblWI(dts.at(3)));
-            ui->partitionsettings->setItem(sn, 8, start);
+            ui->partitionsettings->setItem(sn, 9, start);
             QTblWI *lngth(new QTblWI(QStr::number(bsize)));
-            ui->partitionsettings->setItem(sn, 9, lngth);
+            ui->partitionsettings->setItem(sn, 10, lngth);
         }
     }
 
@@ -7122,7 +7159,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 ui->partitionsettings->item(a, 0)->setForeground(QBrush());
             }
 
-        uchar type(ui->partitionsettings->item(current->row(), 7)->text().toShort()), pcount(0);
+        uchar type(ui->partitionsettings->item(current->row(), 8)->text().toUShort()), pcount(0);
 
         switch(type) {
         case sb::MSDOS:
@@ -7142,7 +7179,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             bool mntd(false), mntcheck(false);
 
-            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::ilike(ui->partitionsettings->item(a, 7)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
+            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::ilike(ui->partitionsettings->item(a, 8)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
@@ -7192,7 +7229,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
             for(ushort a(0) ; a < ui->partitionsettings->rowCount() && pcount < 4 ; ++a)
                 if(ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), 8)))
                 {
-                    switch(ui->partitionsettings->item(a, 7)->text().toUShort()) {
+                    switch(ui->partitionsettings->item(a, 8)->text().toUShort()) {
                     case sb::GPT:
                         pcount = 5;
                     case sb::Primary:
@@ -7211,7 +7248,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 ui->partitionsettingspanel3->setVisible(true);
             }
 
-            ui->partitionsize->setMaximum((ui->partitionsettings->item(current->row(), 9)->text().toULongLong() * 10 / 1048576 + 5) / 10);
+            ui->partitionsize->setMaximum((ui->partitionsettings->item(current->row(), 10)->text().toULongLong() * 10 / 1048576 + 5) / 10);
             ui->partitionsize->setValue(ui->partitionsize->maximum());
             break;
         default:
@@ -7381,7 +7418,17 @@ void systemback::on_changepartition_clicked()
             ui->copynext->setDisabled(true);
             ui->mountpoint->addItem("/");
         }
-        else if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text(), {"_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_"}))
+        else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() == "/boot/efi")
+        {
+            if(ui->grubinstallcopy->isVisible())
+            {
+                ui->grubinstallcopy->hide();
+                ui->grubinstallcopydisable->show();
+            }
+
+            ui->mountpoint->addItem("/boot/efi");
+        }
+        else if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text(), {"_/home_", "_/boot_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_"}))
             ui->mountpoint->addItem(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
     }
 
@@ -7392,6 +7439,39 @@ void systemback::on_changepartition_clicked()
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText("/boot/efi");
             if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "vfat") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->setText("vfat");
             if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "-") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("x");
+
+            if(grub.startsWith("efi"))
+            {
+                if(ppipe == 1)
+                {
+                    if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+                    {
+                        if(ui->grubinstallcopydisable->isVisible())
+                        {
+                            ui->grubinstallcopydisable->hide();
+                            ui->grubinstallcopy->show();
+                        }
+                    }
+                    else if(ui->grubinstallcopy->isVisible())
+                    {
+                        ui->grubinstallcopy->hide();
+                        ui->grubinstallcopydisable->show();
+                    }
+                }
+                else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
+                {
+                    if(ui->grubinstallcopydisable->isVisible())
+                    {
+                        ui->grubinstallcopydisable->hide();
+                        ui->grubinstallcopy->show();
+                    }
+                }
+                else if(ui->grubinstallcopy->isVisible())
+                {
+                    ui->grubinstallcopy->hide();
+                    ui->grubinstallcopydisable->show();
+                }
+            }
         }
         else if(ui->mountpoint->currentText() == "SWAP")
         {
@@ -7446,12 +7526,12 @@ void systemback::on_changepartition_clicked()
 
 void systemback::on_filesystem_currentIndexChanged(const QStr &arg1)
 {
-    if(! ui->format->isChecked() && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != arg1) ui->format->setChecked(true);
+    if(! ui->format->isChecked() && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != arg1) ui->format->setChecked(true);
 }
 
 void systemback::on_format_clicked(bool checked)
 {
-    if(! checked && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != ui->filesystem->currentText()) ui->format->setChecked(true);
+    if(! checked && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != ui->filesystem->currentText()) ui->format->setChecked(true);
 }
 
 void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
@@ -7470,7 +7550,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
         ui->format->setEnabled(true);
     }
 
-    if(arg1.isEmpty() || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong() < 268435456))
+    if(arg1.isEmpty() || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456))
     {
         if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
     }
@@ -8847,7 +8927,7 @@ void systemback::on_partitiondelete_clicked()
     busy();
     ui->copycover->show();
 
-    switch(ui->partitionsettings->item(ui->partitionsettings->currentItem()->row(), 7)->text().toShort()) {
+    switch(ui->partitionsettings->item(ui->partitionsettings->currentItem()->row(), 8)->text().toUShort()) {
     case sb::Extended:
         sb::delpart(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text());
         break;
@@ -8864,10 +8944,10 @@ void systemback::on_newpartition_clicked()
     busy();
     ui->copycover->show();
     QStr dev(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), 8));
-    ullong start(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 8)->text().toULongLong());
+    ullong start(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong());
     uchar type;
 
-    switch(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text().toUShort()) {
+    switch(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 8)->text().toUShort()) {
     case sb::Freespace:
     {
         uchar pcount(0), fcount(0);
@@ -8875,7 +8955,7 @@ void systemback::on_newpartition_clicked()
         for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             if(ui->partitionsettings->item(a, 0)->text().startsWith(dev))
             {
-                switch(ui->partitionsettings->item(a, 7)->text().toUShort()) {
+                switch(ui->partitionsettings->item(a, 8)->text().toUShort()) {
                 case sb::GPT:
                     type = sb::Primary;
                     goto exec;
@@ -8892,7 +8972,7 @@ void systemback::on_newpartition_clicked()
 
         if(pcount > 2 && (fcount > 1 || ui->partitionsize->value() < ui->partitionsize->maximum()))
         {
-            if(! sb::mkpart(dev, start, ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong(), sb::Extended)) goto end;
+            if(! sb::mkpart(dev, start, ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong(), sb::Extended)) goto end;
             type = sb::Logical;
             start += 1048576;
         }
@@ -8906,7 +8986,7 @@ void systemback::on_newpartition_clicked()
     }
 
 exec:
-    sb::mkpart(dev, start, ui->partitionsize->value() == ui->partitionsize->maximum() ? ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong() : ullong(ui->partitionsize->value()) * 1048576, type);
+    sb::mkpart(dev, start, ui->partitionsize->value() == ui->partitionsize->maximum() ? ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() : ullong(ui->partitionsize->value()) * 1048576, type);
 end:
     on_partitionrefresh2_clicked();
     busy(false);

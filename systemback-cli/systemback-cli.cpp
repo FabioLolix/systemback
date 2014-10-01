@@ -704,7 +704,7 @@ void systemback::progress()
     {
         if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring users configuration files") % '_'}))
         {
-            schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toShort()), cperc(sb::Progress);
+            schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toUShort()), cperc(sb::Progress);
 
             if(cperc == -1)
             {

@@ -107,7 +107,7 @@ start:
 
         if(sb::schdle[0] == "on")
         {
-            if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1].toShort() * 1440 + sb::schdle[2].toShort() * 60 + sb::schdle[3].toShort()) goto next;
+            if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1].toUShort() * 1440 + sb::schdle[2].toUShort() * 60 + sb::schdle[3].toUShort()) goto next;
             if(! sb::lock(sb::Sblock)) goto next;
 
             if(! sb::lock(sb::Dpkglock))

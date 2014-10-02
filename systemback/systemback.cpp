@@ -176,7 +176,6 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     }
     else
     {
-        grub = "pc-bin";
         ppipe = busycnt = 0;
         irfsc = false;
         ui->dialogpanel->hide();
@@ -577,15 +576,20 @@ void systemback::unitimer()
 
                 if(sb::efiprob())
                 {
-                    grub = "efi-amd64-bin";
-                    ui->grubinstallcopy->hide();
+                    grub.name = "efi-amd64-bin";
+                    grub.IsEFI = true;
                     ui->repairmountpoint->addItem("/mnt/boot/efi");
+                    ui->grubinstallcopy->hide();
                     ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
                     ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
                     ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
                 }
                 else
+                {
+                    grub.name = "pc-bin";
+                    grub.IsEFI = false;
                     ui->grubinstallcopydisable->hide();
+                }
 
                 ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
                 ui->repairmountpoint->setCurrentIndex(1);
@@ -793,7 +797,7 @@ void systemback::unitimer()
                 {
                     if(ui->grubrepair->isChecked())
                     {
-                        if(sb::execsrch("update-grub2") && sb::isfile("/mnt/var/lib/dpkg/info/grub-" % grub % ".list"))
+                        if(sb::execsrch("update-grub2", "/mnt") && sb::isfile("/mnt/var/lib/dpkg/info/grub-" % grub.name % ".list"))
                         {
                             if(ui->grubreinstallrepairdisable->isVisible())
                             {
@@ -1942,7 +1946,9 @@ start:
                         sb::exec("update-grub");
                         if(intrrpt) goto exit;
 
-                        if(grub.startsWith("pc"))
+                        if(grub.IsEFI)
+                            rv = sb::exec("grub-install --force");
+                        else
                         {
                             QStr mntdev;
 
@@ -1967,15 +1973,13 @@ start:
                             if(intrrpt) goto exit;
                             rv = sb::exec("grub-install --force " % sb::left(mntdev, 8));
                         }
-                        else
-                            rv = sb::exec("grub-install --force");
                     }
                 }
                 else
                 {
                     sb::exec("update-grub");
                     if(intrrpt) goto exit;
-                    rv = sb::exec("grub-install --force " % (ui->grubreinstallrestore->currentText() == "EFI" ? nullptr : ui->grubreinstallrestore->currentText()));
+                    rv = sb::exec("grub-install --force " % (grub.IsEFI ? nullptr : ui->grubreinstallrestore->currentText()));
                 }
 
                 if(intrrpt) goto exit;
@@ -2055,7 +2059,7 @@ start:
             sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
         }
         else
-            sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (ui->grubreinstallrepair->currentText() == "EFI" ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
+            sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (grub.IsEFI ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
 
         QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
         if(intrrpt) goto exit;
@@ -2122,7 +2126,9 @@ start:
                 {
                     if(fcmp)
                         sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\n");
-                    else if(grub.startsWith("pc"))
+                    else if(grub.IsEFI)
+                        sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force\n");
+                    else
                     {
                         QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
                         QTS in(&mnts, QIODevice::ReadOnly);
@@ -2142,11 +2148,9 @@ start:
 
                         sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
                     }
-                    else
-                        sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force\n");
                 }
                 else
-                    sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (ui->grubreinstallrepair->currentText() == "EFI" ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
+                    sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (grub.IsEFI ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
 
                 QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
                 if(intrrpt) goto exit;
@@ -2767,7 +2771,7 @@ start:
 
             if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
         }
-        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (ui->grubinstallcopy->currentText() == "EFI" ? nullptr : ui->grubinstallcopy->currentText()) % '\n'))
+        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (grub.IsEFI ? nullptr : ui->grubinstallcopy->currentText()) % '\n'))
             goto error;
 
         if(! QFile::setPermissions("/.sbsystemcopy/grubinst", QFile::ExeOwner)) goto error;
@@ -3132,7 +3136,7 @@ void systemback::dialogopen()
         break;
     case 23:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB."));
+        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling grub."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 24:
@@ -4892,7 +4896,7 @@ void systemback::on_point15_textChanged(const QStr &arg1)
 
 void systemback::on_restoremenu_clicked()
 {
-    if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+    if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
     {
         if(ui->grubreinstallrestoredisable->isVisibleTo(ui->restorepanel))
         {
@@ -4933,11 +4937,11 @@ void systemback::on_restoremenu_clicked()
 
 void systemback::on_copymenu_clicked()
 {
-    if(grub.startsWith("pc"))
+    if(! grub.IsEFI)
     {
         if(ppipe == 1)
         {
-            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
             {
                 if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
                 {
@@ -4951,7 +4955,7 @@ void systemback::on_copymenu_clicked()
                 ui->grubinstallcopydisable->show();
             }
         }
-        else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
+        else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
         {
             if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
             {
@@ -5134,7 +5138,7 @@ void systemback::on_partitionrefresh_clicked()
     if(ui->mountpoint->count() > 0) ui->mountpoint->clear();
     ui->mountpoint->addItems({nullptr, "/", "/home", "/boot"});
 
-    if(grub.startsWith("efi"))
+    if(grub.IsEFI)
     {
         ui->mountpoint->addItem("/boot/efi");
 
@@ -5183,18 +5187,18 @@ void systemback::on_partitionrefresh_clicked()
         ui->partitionsettings->resizeColumnToContents(4);
     }
 
-    if(grub.startsWith("pc") && ui->grubinstallcopy->count() > 0)
-    {
-        ui->grubinstallcopy->clear();
-        ui->grubreinstallrestore->clear();
-        ui->grubreinstallrepair->clear();
-    }
-
     QSL plst;
     sb::readprttns(plst);
 
-    if(grub.startsWith("pc"))
+    if(! grub.IsEFI)
     {
+        if(ui->grubinstallcopy->count() > 0)
+        {
+            ui->grubinstallcopy->clear();
+            ui->grubreinstallrestore->clear();
+            ui->grubreinstallrepair->clear();
+        }
+
         ui->grubinstallcopy->addItems({"Auto", tr("Disabled")});
         ui->grubreinstallrestore->addItems({"Auto", tr("Disabled")});
         ui->grubreinstallrepair->addItems({"Auto", tr("Disabled")});
@@ -5293,7 +5297,7 @@ void systemback::on_partitionrefresh_clicked()
             {
                 cQStr &uuid(dts.at(6));
 
-                if(grub.startsWith("pc"))
+                if(! grub.IsEFI)
                 {
                     ui->grubinstallcopy->addItem(path);
                     ui->grubreinstallrestore->addItem(path);
@@ -6996,7 +7000,6 @@ void systemback::on_systemrepair_clicked()
             ui->grubreinstallrepair->setEnabled(true);
             ui->grubreinstallrepairdisable->setEnabled(true);
         }
-
     }
     else
     {
@@ -7008,7 +7011,7 @@ void systemback::on_systemrepair_clicked()
 
         if(ppipe == 1)
         {
-            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
             {
                 if(! ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
                 {
@@ -7024,7 +7027,7 @@ void systemback::on_systemrepair_clicked()
         }
         else if(pname == tr("Live image"))
         {
-            if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
+            if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
             {
                 if(ui->grubreinstallrepairdisable->isVisibleTo(ui->repairpanel))
                 {
@@ -7038,6 +7041,8 @@ void systemback::on_systemrepair_clicked()
                 ui->grubreinstallrepairdisable->show();
             }
         }
+
+        if(ui->grubreinstallrepair->findText(tr("Disabled")) == -1) ui->grubreinstallrepair->addItem(tr("Disabled"));
     }
 }
 
@@ -7049,6 +7054,7 @@ void systemback::on_fullrepair_clicked()
 void systemback::on_grubrepair_clicked()
 {
     on_systemrepair_clicked();
+    ui->grubreinstallrepair->removeItem(ui->grubreinstallrepair->findText(tr("Disabled")));
 }
 
 void systemback::on_repairnext_clicked()
@@ -7077,7 +7083,7 @@ void systemback::on_installnext_clicked()
 {
     if(ppipe == 1)
     {
-        if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+        if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
         {
             if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
             {
@@ -7091,7 +7097,7 @@ void systemback::on_installnext_clicked()
             ui->grubinstallcopydisable->show();
         }
     }
-    else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
+    else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
     {
         if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
         {
@@ -7440,11 +7446,11 @@ void systemback::on_changepartition_clicked()
             if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "vfat") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->setText("vfat");
             if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "-") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("x");
 
-            if(grub.startsWith("efi"))
+            if(grub.IsEFI)
             {
                 if(ppipe == 1)
                 {
-                    if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub % ".list"))
+                    if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
                     {
                         if(ui->grubinstallcopydisable->isVisible())
                         {
@@ -7458,7 +7464,7 @@ void systemback::on_changepartition_clicked()
                         ui->grubinstallcopydisable->show();
                     }
                 }
-                else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub % ".list"))
+                else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
                 {
                     if(ui->grubinstallcopydisable->isVisible())
                     {
@@ -7616,7 +7622,7 @@ void systemback::on_repairpartitionrefresh_clicked()
     sb::fssync();
     ui->repairmountpoint->clear();
     ui->repairmountpoint->addItems({nullptr, "/mnt", "/mnt/home", "/mnt/boot"});
-    if(grub.startsWith("efi")) ui->repairmountpoint->addItem("/mnt/boot/efi");
+    if(grub.IsEFI) ui->repairmountpoint->addItem("/mnt/boot/efi");
     ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
     ui->repairmountpoint->setCurrentIndex(1);
     on_systemrepair_clicked();
@@ -7698,7 +7704,7 @@ void systemback::on_repairmount_clicked()
             ui->repairmount->setIcon(QIcon(":pictures/error.png"));
         }
 
-        if(ui->grubrepair->isChecked()) on_grubrepair_clicked();
+        if(ui->grubrepair->isChecked()) on_systemrepair_clicked();
         ui->repaircover->hide();
         busy(false);
 
@@ -8932,7 +8938,7 @@ void systemback::on_partitiondelete_clicked()
         sb::delpart(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text());
         break;
     default:
-        sb::mkptable(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), grub.startsWith("efi") ? "gpt" : "msdos");
+        sb::mkptable(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), grub.IsEFI ? "gpt" : "msdos");
     }
 
     on_partitionrefresh2_clicked();

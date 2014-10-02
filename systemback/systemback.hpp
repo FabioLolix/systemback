@@ -51,9 +51,16 @@ protected:
 private:
     Ui::systemback *ui;
 
+    struct GRUB
+    {
+        QStr name;
+        bool IsEFI;
+    };
+
     static cuchar Strgdr{0}, Lvwrkdr{1}, Dpath{2}, Rpnts{3}, Normal{100}, High{147}, Max{200};
+    GRUB grub;
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
-    QStr cpoint, points, pname, prun, dialogdev, hash, grub;
+    QStr cpoint, points, pname, prun, dialogdev, hash;
     short wgeom[6], sfctr;
     uchar busycnt, dialog, ppipe;
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;

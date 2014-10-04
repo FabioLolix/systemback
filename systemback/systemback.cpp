@@ -177,6 +177,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     else
     {
         ppipe = busycnt = 0;
+        cpos = -1;
         irfsc = false;
         ui->dialogpanel->hide();
         ui->statuspanel->move(0, 0);
@@ -184,7 +185,6 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         ui->storagedir->resize(ss(236), ss(28));
         ui->installpanel->move(ui->sbpanel->pos());
         ui->fullnamepipe->hide();
-        ui->fullnameerror->hide();
         ui->usernamepipe->hide();
         ui->usernameerror->hide();
         ui->passwordpipe->hide();
@@ -530,6 +530,8 @@ void systemback::unitimer()
                 ui->grubinstalltext->resize(fontMetrics().width(ui->grubinstalltext->text()) + ss(7), ui->grubinstalltext->height());
                 ui->grubinstallcopy->move(ui->grubinstalltext->x() + ui->grubinstalltext->width(), ui->grubinstallcopy->y());
                 ui->grubinstallcopydisable->move(ui->grubinstallcopy->x(), ui->grubinstallcopy->y());
+                ui->efiwarning->move(ui->grubinstallcopy->x() + ui->grubinstallcopy->width() + ss(5), ui->grubinstallcopy->y() - ss(4));
+                ui->efiwarning->resize(ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
                 ui->grubreinstallrepairtext->resize(fontMetrics().width(ui->grubreinstallrepairtext->text()) + ss(7), ui->grubreinstallrepairtext->height());
                 ui->grubreinstallrepair->move(ui->grubreinstallrepairtext->x() + ui->grubreinstallrepairtext->width(), ui->grubreinstallrepair->y());
                 ui->grubreinstallrepairdisable->move(ui->grubreinstallrepair->x(), ui->grubreinstallrepair->y());
@@ -543,7 +545,7 @@ void systemback::unitimer()
                 ui->homepage2->resize(fontMetrics().width(ui->homepage2->text()) + ss(7), ui->homepage2->height());
                 ui->email->resize(fontMetrics().width(ui->email->text()) + ss(7), ui->email->height());
                 ui->donate->resize(fontMetrics().width(ui->donate->text()) + ss(7), ui->donate->height());
-                ui->warning->resize(ui->warning->fontMetrics().width(ui->warning->text()) + ss(7), ui->warning->height());
+                ui->filesystemwarning->resize(ui->filesystemwarning->fontMetrics().width(ui->filesystemwarning->text()) + ss(7), ui->filesystemwarning->height());
                 ui->format->resize(fontMetrics().width(ui->format->text()) + ss(28), ui->format->height());
                 ui->format->move((ui->partitionsettingspanel1->width() - ui->format->width()) / 2, ui->format->y());
                 ui->fullrestore->resize(fontMetrics().width(ui->fullrestore->text()) + ss(28), ui->fullrestore->height());
@@ -580,6 +582,7 @@ void systemback::unitimer()
                     grub.IsEFI = true;
                     ui->repairmountpoint->addItem("/mnt/boot/efi");
                     ui->grubinstallcopy->hide();
+                    ui->efiwarning->setForegroundRole(QPalette::Highlight);
                     ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
                     ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
                     ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
@@ -589,6 +592,7 @@ void systemback::unitimer()
                     grub.name = "pc-bin";
                     grub.IsEFI = false;
                     ui->grubinstallcopydisable->hide();
+                    ui->efiwarning->hide();
                 }
 
                 ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
@@ -793,7 +797,7 @@ void systemback::unitimer()
             }
             else if(ui->repairpanel->isVisible())
             {
-                if(sb::mcheck("/mnt"))
+                if(! sb::issmfs("/", "/mnt"))
                 {
                     if(ui->grubrepair->isChecked())
                     {
@@ -3136,7 +3140,7 @@ void systemback::dialogopen()
         break;
     case 23:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling grub."));
+        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB!"));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 24:
@@ -3505,7 +3509,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->dirchoose->resize(ui->choosepanel->width(), ui->choosepanel->height() - ss(80));
             ui->dirchooseok->move(ui->choosepanel->width() - ss(120), ui->choosepanel->height() - ss(40));
             ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - ss(40));
-            ui->warning->move(ui->warning->x(), ui->choosepanel->height() - ss(41));
+            ui->filesystemwarning->move(ui->filesystemwarning->x(), ui->choosepanel->height() - ss(41));
             ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
 
             if(size() == qApp->desktop()->availableGeometry().size())
@@ -3526,6 +3530,8 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->usersettingscopy->move(ui->usersettingscopy->x(), ui->userdatafilescopy->y());
             ui->grubinstalltext->move(ui->grubinstalltext->x(), ui->copypanel->height() - ss(96));
             ui->grubinstallcopy->move(ui->grubinstallcopy->x(), ui->grubinstalltext->y());
+            ui->grubinstallcopydisable->move(ui->grubinstallcopydisable->x(), ui->grubinstalltext->y());
+            ui->efiwarning->setGeometry(ui->efiwarning->x(), ui->grubinstalltext->y() - ss(4), ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
             ui->copyback->move(ui->copyback->x(), ui->copypanel->height() - ss(48));
             ui->copynext->move(ui->copypanel->width() - ss(152), ui->copyback->y());
             ui->copyresize->move(ui->copypanel->width() - ui->copyresize->width(), ui->copypanel->height() - ui->copyresize->height());
@@ -4468,6 +4474,12 @@ void systemback::on_point1_textChanged(const QStr &arg1)
             if(ui->pointpipe1->isChecked()) ui->pointpipe1->click();
             ui->pointpipe1->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point1->cursorPosition() - 1);
+            ui->point1->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point1->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[0])
@@ -4496,6 +4508,12 @@ void systemback::on_point2_textChanged(const QStr &arg1)
         {
             if(ui->pointpipe2->isChecked()) ui->pointpipe2->click();
             ui->pointpipe2->setDisabled(true);
+        }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point2->cursorPosition() - 1);
+            ui->point2->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point2->setCursorPosition(cpos);
         }
         else
         {
@@ -4526,6 +4544,12 @@ void systemback::on_point3_textChanged(const QStr &arg1)
             if(ui->pointpipe3->isChecked()) ui->pointpipe3->click();
             ui->pointpipe3->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point3->cursorPosition() - 1);
+            ui->point3->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point3->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[2])
@@ -4554,6 +4578,12 @@ void systemback::on_point4_textChanged(const QStr &arg1)
         {
             if(ui->pointpipe4->isChecked()) ui->pointpipe4->click();
             ui->pointpipe4->setDisabled(true);
+        }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point4->cursorPosition() - 1);
+            ui->point4->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point4->setCursorPosition(cpos);
         }
         else
         {
@@ -4584,6 +4614,12 @@ void systemback::on_point5_textChanged(const QStr &arg1)
             if(ui->pointpipe5->isChecked()) ui->pointpipe5->click();
             ui->pointpipe5->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point5->cursorPosition() - 1);
+            ui->point5->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point5->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[4])
@@ -4612,6 +4648,12 @@ void systemback::on_point6_textChanged(const QStr &arg1)
         {
             if(ui->pointpipe6->isChecked()) ui->pointpipe6->click();
             ui->pointpipe6->setDisabled(true);
+        }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point6->cursorPosition() - 1);
+            ui->point6->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point6->setCursorPosition(cpos);
         }
         else
         {
@@ -4642,6 +4684,12 @@ void systemback::on_point7_textChanged(const QStr &arg1)
             if(ui->pointpipe7->isChecked()) ui->pointpipe7->click();
             ui->pointpipe7->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point7->cursorPosition() - 1);
+            ui->point7->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point7->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[6])
@@ -4670,6 +4718,12 @@ void systemback::on_point8_textChanged(const QStr &arg1)
         {
             if(ui->pointpipe8->isChecked()) ui->pointpipe8->click();
             ui->pointpipe8->setDisabled(true);
+        }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point8->cursorPosition() - 1);
+            ui->point8->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point8->setCursorPosition(cpos);
         }
         else
         {
@@ -4700,6 +4754,12 @@ void systemback::on_point9_textChanged(const QStr &arg1)
             if(ui->pointpipe9->isChecked()) ui->pointpipe9->click();
             ui->pointpipe9->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point9->cursorPosition() - 1);
+            ui->point9->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point9->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[8])
@@ -4728,6 +4788,12 @@ void systemback::on_point10_textChanged(const QStr &arg1)
         {
             if(ui->pointpipe10->isChecked()) ui->pointpipe10->click();
             ui->pointpipe10->setDisabled(true);
+        }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point10->cursorPosition() - 1);
+            ui->point10->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point10->setCursorPosition(cpos);
         }
         else
         {
@@ -4758,6 +4824,12 @@ void systemback::on_point11_textChanged(const QStr &arg1)
             if(ui->pointpipe11->isChecked()) ui->pointpipe11->click();
             ui->pointpipe11->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point11->cursorPosition() - 1);
+            ui->point11->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point11->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[10])
@@ -4786,6 +4858,12 @@ void systemback::on_point12_textChanged(const QStr &arg1)
         {
             if(ui->pointpipe12->isChecked()) ui->pointpipe12->click();
             ui->pointpipe12->setDisabled(true);
+        }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point12->cursorPosition() - 1);
+            ui->point12->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point12->setCursorPosition(cpos);
         }
         else
         {
@@ -4816,6 +4894,12 @@ void systemback::on_point13_textChanged(const QStr &arg1)
             if(ui->pointpipe13->isChecked()) ui->pointpipe13->click();
             ui->pointpipe13->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point13->cursorPosition() - 1);
+            ui->point13->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point13->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[12])
@@ -4845,6 +4929,12 @@ void systemback::on_point14_textChanged(const QStr &arg1)
             if(ui->pointpipe14->isChecked()) ui->pointpipe14->click();
             ui->pointpipe14->setDisabled(true);
         }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point14->cursorPosition() - 1);
+            ui->point14->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point14->setCursorPosition(cpos);
+        }
         else
         {
             if(arg1 != sb::pnames[13])
@@ -4873,6 +4963,12 @@ void systemback::on_point15_textChanged(const QStr &arg1)
         {
             if(ui->pointpipe15->isChecked()) ui->pointpipe15->click();
             ui->pointpipe15->setDisabled(true);
+        }
+        else if(sb::like(arg1, {"* *", "*/*"}))
+        {
+            uchar cpos(ui->point15->cursorPosition() - 1);
+            ui->point15->setText(QStr(arg1).replace(cpos, 1, nullptr));
+            ui->point15->setCursorPosition(cpos);
         }
         else
         {
@@ -5141,6 +5237,7 @@ void systemback::on_partitionrefresh_clicked()
     if(grub.IsEFI)
     {
         ui->mountpoint->addItem("/boot/efi");
+        if(! ui->efiwarning->isVisible()) ui->efiwarning->show();
 
         if(ui->grubinstallcopy->isVisible())
         {
@@ -6384,7 +6481,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe1->isChecked() && ui->point1->text() != sb::pnames[0])
     {
-        if(! ui->point1->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/S01_" % ui->point1->text()))
+        if(QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/S01_" % ui->point1->text()))
             ui->pointpipe1->click();
         else
             dialog = 3;
@@ -6392,7 +6489,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe2->isChecked() && ui->point2->text() != sb::pnames[1])
     {
-        if(! ui->point2->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/S02_" % ui->point2->text()))
+        if(QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/S02_" % ui->point2->text()))
             ui->pointpipe2->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6400,7 +6497,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe3->isChecked() && ui->point3->text() != sb::pnames[2])
     {
-        if(! ui->point3->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/S03_" % ui->point3->text()))
+        if(QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/S03_" % ui->point3->text()))
             ui->pointpipe3->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6408,7 +6505,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe4->isChecked() && ui->point4->text() != sb::pnames[3])
     {
-        if(! ui->point4->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/S04_" % ui->point4->text()))
+        if(QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/S04_" % ui->point4->text()))
             ui->pointpipe4->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6416,7 +6513,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe5->isChecked() && ui->point5->text() != sb::pnames[4])
     {
-        if(! ui->point5->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/S05_" % ui->point5->text()))
+        if(QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/S05_" % ui->point5->text()))
             ui->pointpipe5->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6424,7 +6521,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe6->isChecked() && ui->point6->text() != sb::pnames[5])
     {
-        if(! ui->point6->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/S06_" % ui->point6->text()))
+        if(QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/S06_" % ui->point6->text()))
             ui->pointpipe6->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6432,7 +6529,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe7->isChecked() && ui->point7->text() != sb::pnames[6])
     {
-        if(! ui->point7->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/S07_" % ui->point7->text()))
+        if(QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/S07_" % ui->point7->text()))
             ui->pointpipe7->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6440,7 +6537,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe8->isChecked() && ui->point8->text() != sb::pnames[7])
     {
-        if(! ui->point8->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S08_" % ui->point8->text()))
+        if(QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S08_" % ui->point8->text()))
             ui->pointpipe8->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6448,7 +6545,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe9->isChecked() && ui->point9->text() != sb::pnames[8])
     {
-        if(! ui->point9->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S09_" % ui->point9->text()))
+        if(QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S09_" % ui->point9->text()))
             ui->pointpipe9->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6456,7 +6553,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe10->isChecked() && ui->point10->text() != sb::pnames[9])
     {
-        if(! ui->point10->text().contains(' ') && QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/S10_" % ui->point10->text()))
+        if(QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/S10_" % ui->point10->text()))
             ui->pointpipe10->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6464,7 +6561,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe11->isChecked() && ui->point11->text() != sb::pnames[10])
     {
-        if(! ui->point11->text().contains(' ') && QFile::rename(sb::sdir[1] % "/H01_" % sb::pnames[10], sb::sdir[1] % "/H01_" % ui->point11->text()))
+        if(QFile::rename(sb::sdir[1] % "/H01_" % sb::pnames[10], sb::sdir[1] % "/H01_" % ui->point11->text()))
             ui->pointpipe11->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6472,7 +6569,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe12->isChecked() && ui->point12->text() != sb::pnames[11])
     {
-        if(! ui->point12->text().contains(' ') && QFile::rename(sb::sdir[1] % "/H02_" % sb::pnames[11], sb::sdir[1] % "/H02_" % ui->point12->text()))
+        if(QFile::rename(sb::sdir[1] % "/H02_" % sb::pnames[11], sb::sdir[1] % "/H02_" % ui->point12->text()))
             ui->pointpipe12->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6480,7 +6577,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe13->isChecked() && ui->point13->text() != sb::pnames[12])
     {
-        if(! ui->point13->text().contains(' ') && QFile::rename(sb::sdir[1] % "/H03_" % sb::pnames[12], sb::sdir[1] % "/H03_" % ui->point13->text()))
+        if(QFile::rename(sb::sdir[1] % "/H03_" % sb::pnames[12], sb::sdir[1] % "/H03_" % ui->point13->text()))
             ui->pointpipe13->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6488,7 +6585,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe14->isChecked() && ui->point14->text() != sb::pnames[13])
     {
-        if(! ui->point14->text().contains(' ') && QFile::rename(sb::sdir[1] % "/H04_" % sb::pnames[13], sb::sdir[1] % "/H04_" % ui->point14->text()))
+        if(QFile::rename(sb::sdir[1] % "/H04_" % sb::pnames[13], sb::sdir[1] % "/H04_" % ui->point14->text()))
             ui->pointpipe14->click();
         else if(dialog != 3)
             dialog = 3;
@@ -6496,7 +6593,7 @@ void systemback::on_pointrename_clicked()
 
     if(ui->pointpipe15->isChecked() && ui->point15->text() != sb::pnames[14])
     {
-        if(! ui->point15->text().contains(' ') && QFile::rename(sb::sdir[1] % "/H05_" % sb::pnames[14], sb::sdir[1] % "/H05_" % ui->point15->text()))
+        if(QFile::rename(sb::sdir[1] % "/H05_" % sb::pnames[14], sb::sdir[1] % "/H05_" % ui->point15->text()))
             ui->pointpipe15->click();
         else if(dialog != 3)
             dialog = 3;
@@ -7081,9 +7178,25 @@ void systemback::on_skipfstabrepair_clicked(bool checked)
 
 void systemback::on_installnext_clicked()
 {
-    if(ppipe == 1)
+    if(! grub.IsEFI)
     {
-        if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+        if(ppipe == 1)
+        {
+            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+            {
+                if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
+                {
+                    ui->grubinstallcopydisable->hide();
+                    ui->grubinstallcopy->show();
+                }
+            }
+            else if(ui->grubinstallcopy->isVisibleTo(ui->copypanel))
+            {
+                ui->grubinstallcopy->hide();
+                ui->grubinstallcopydisable->show();
+            }
+        }
+        else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
         {
             if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
             {
@@ -7096,19 +7209,6 @@ void systemback::on_installnext_clicked()
             ui->grubinstallcopy->hide();
             ui->grubinstallcopydisable->show();
         }
-    }
-    else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
-    {
-        if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
-        {
-            ui->grubinstallcopydisable->hide();
-            ui->grubinstallcopy->show();
-        }
-    }
-    else if(ui->grubinstallcopy->isVisibleTo(ui->copypanel))
-    {
-        ui->grubinstallcopy->hide();
-        ui->grubinstallcopydisable->show();
     }
 
     if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
@@ -7424,7 +7524,7 @@ void systemback::on_changepartition_clicked()
             ui->copynext->setDisabled(true);
             ui->mountpoint->addItem("/");
         }
-        else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() == "/boot/efi")
+        else if(grub.IsEFI && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() == "/boot/efi")
         {
             if(ui->grubinstallcopy->isVisible())
             {
@@ -7433,6 +7533,7 @@ void systemback::on_changepartition_clicked()
             }
 
             ui->mountpoint->addItem("/boot/efi");
+            ui->efiwarning->show();
         }
         else if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text(), {"_/home_", "_/boot_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_"}))
             ui->mountpoint->addItem(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
@@ -7477,6 +7578,8 @@ void systemback::on_changepartition_clicked()
                     ui->grubinstallcopy->hide();
                     ui->grubinstallcopydisable->show();
                 }
+
+                ui->efiwarning->hide();
             }
         }
         else if(ui->mountpoint->currentText() == "SWAP")
@@ -7542,52 +7645,53 @@ void systemback::on_format_clicked(bool checked)
 
 void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
 {
-    if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}) || sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/home_", "_SWAP_"}))
-    {
-        if(ui->filesystem->isEnabled())
-        {
-            ui->filesystem->setDisabled(true);
-            ui->format->setDisabled(true);
-        }
-    }
-    else if(! ui->filesystem->isEnabled())
-    {
-        ui->filesystem->setEnabled(true);
-        ui->format->setEnabled(true);
-    }
-
-    if(arg1.isEmpty() || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456))
-    {
-        if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-    }
+    if(! arg1.isEmpty() && (! arg1.startsWith('/') || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
+        ui->mountpoint->setCurrentText(sb::left(arg1, -1));
     else
     {
-        bool check(false);
+        if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}) || sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/home_", "_SWAP_"}))
+        {
+            if(ui->filesystem->isEnabled())
+            {
+                ui->filesystem->setDisabled(true);
+                ui->format->setDisabled(true);
+            }
+        }
+        else if(! ui->filesystem->isEnabled())
+        {
+            ui->filesystem->setEnabled(true);
+            ui->format->setEnabled(true);
+        }
 
-        if((ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
-            check = true;
-        else if(arg1 != "SWAP")
-            for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-                if(ui->partitionsettings->item(a, 4)->text() == arg1)
-                {
-                    check = true;
-                    break;
-                }
-
-        if(check)
+        if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456))
         {
             if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
-        {
-            if(! ui->changepartition->isEnabled()) ui->changepartition->setEnabled(true);
         }
         else
         {
-            if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+            bool check(false);
 
-            if(arg1.startsWith('/') && ! sb::like(arg1, {"* *", "*'*", "*\"*", "*//*", "*/_"}))
+            if((ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
+                check = true;
+            else if(arg1 != "SWAP")
+                for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+                    if(ui->partitionsettings->item(a, 4)->text() == arg1)
+                    {
+                        check = true;
+                        break;
+                    }
+
+            if(check)
             {
+                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+            }
+            else if(sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
+            {
+                if(! ui->changepartition->isEnabled()) ui->changepartition->setEnabled(true);
+            }
+            else
+            {
+                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
                 sb::delay(300);
 
                 if(arg1 == ui->mountpoint->currentText())
@@ -7635,7 +7739,9 @@ void systemback::on_repairpartitionrefresh_clicked()
 
 void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
 {
-    if(ui->repairpartition->count() == 0 || ! arg1.startsWith("/mnt") || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*", "*/_"}) || (arg1 != "/mnt" && ! sb::mcheck("/mnt")) || sb::mcheck(arg1 % '/'))
+    if(! arg1.isEmpty() && (! sb::like(arg1, {"_/_", "_/m_", "_/mn_", "_/mnt_", "_/mnt/*"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
+        ui->repairmountpoint->setCurrentText(sb::left(arg1, -1));
+    else if(! arg1.startsWith("/mnt") || arg1.endsWith('/') || (arg1.length() > 5 && sb::issmfs("/", "/mnt")) || sb::mcheck(arg1 % '/'))
     {
         if(ui->repairmount->isEnabled()) ui->repairmount->setDisabled(true);
     }
@@ -7722,44 +7828,58 @@ void systemback::on_repairmount_clicked()
 
 void systemback::on_livename_textChanged(const QStr &arg1)
 {
-    if(ui->livenamepipe->isVisible()) ui->livenamepipe->hide();
-    if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
-
-    if(arg1 == "auto")
+    if(cpos > -1)
     {
-        QFont font;
-        font.setItalic(true);
-        ui->livename->setFont(font);
-        if(ui->livenameerror->isVisible()) ui->livenameerror->hide();
+        ui->livename->setCursorPosition(cpos);
+        cpos = -1;
+    }
+
+    if(sb::like(arg1, {"* *", "*'*", "*\"*"}) || arg1.toLower().endsWith(".iso"))
+    {
+        cpos = ui->livename->cursorPosition() - 1;
+        ui->livename->setText(QStr(arg1).replace(cpos, 1, nullptr));
     }
     else
     {
-        if(ui->livename->fontInfo().italic())
+        if(ui->livenamepipe->isVisible()) ui->livenamepipe->hide();
+        if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
+
+        if(arg1 == "auto")
         {
             QFont font;
+            font.setItalic(true);
             ui->livename->setFont(font);
-        }
-
-        if(arg1.isEmpty() || arg1.size() > 32 || sb::like(arg1, {"* *", "*'*", "*\"*", "*_.iso", "*.Iso_", "*.ISo_", "*.IsO_", "*.ISO_", "*.iSo_", "*.iSO_", "*.isO_"}))
-        {
-            if(! ui->livenameerror->isVisible()) ui->livenameerror->show();
+            if(ui->livenameerror->isVisible()) ui->livenameerror->hide();
         }
         else
         {
-            sb::delay(300);
-
-            if(arg1 == ui->livename->text())
+            if(ui->livename->fontInfo().italic())
             {
-                QStr lname("/tmp/" % arg1 % '_' % sb::rndstr());
+                QFont font;
+                ui->livename->setFont(font);
+            }
 
-                if(QDir().mkdir(lname))
+            if(arg1.isEmpty() || arg1.length() > 32)
+            {
+                if(! ui->livenameerror->isVisible()) ui->livenameerror->show();
+            }
+            else
+            {
+                sb::delay(300);
+
+                if(arg1 == ui->livename->text())
                 {
-                    sb::remove(lname);
-                    if(ui->livenameerror->isVisible()) ui->livenameerror->hide();
-                    ui->livenamepipe->show();
+                    QStr lname("/tmp/" % arg1 % '_' % sb::rndstr());
+
+                    if(QDir().mkdir(lname))
+                    {
+                        sb::remove(lname);
+                        if(ui->livenameerror->isVisible()) ui->livenameerror->hide();
+                        ui->livenamepipe->show();
+                    }
+                    else if(! ui->livenameerror->isVisible())
+                        ui->livenameerror->show();
                 }
-                else if(! ui->livenameerror->isVisible())
-                    ui->livenameerror->show();
             }
         }
     }
@@ -7957,36 +8077,64 @@ void systemback::on_removeitem_clicked()
 
 void systemback::on_fullname_textChanged(const QStr &arg1)
 {
+    if(cpos > -1)
+    {
+        ui->fullname->setCursorPosition(cpos);
+        cpos = -1;
+    }
+
     if(arg1.isEmpty())
     {
-        if(ui->fullnamepipe->isVisible())
-            ui->fullnamepipe->hide();
-        else if(ui->fullnameerror->isVisible())
-            ui->fullnameerror->hide();
-
+        if(ui->fullnamepipe->isVisible()) ui->fullnamepipe->hide();
         if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
     }
-    else if(sb::like(arg1, {"_ *", "* _", "*  *", "_-*", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
+    else if(sb::like(arg1, {"_ *", "*  *", "_-*", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
     {
-        if(! ui->fullnameerror->isVisible())
-        {
-            if(ui->fullnamepipe->isVisible()) ui->fullnamepipe->hide();
-            ui->fullnameerror->show();
-        }
+        cpos = ui->fullname->cursorPosition() - 1;
+        ui->fullname->setText(QStr(arg1).replace(cpos, 1, nullptr));
+    }
+    else if(arg1.at(0).isLower())
+    {
+        cpos = ui->fullname->cursorPosition();
+        ui->fullname->setText(arg1.at(0).toUpper() % sb::right(arg1, -1));
+    }
+    else
+    {
+        for(cQStr &word : arg1.split(' '))
+            if(word.at(0).isLower())
+            {
+                cpos = ui->fullname->cursorPosition();
+                ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
+                return;
+            }
 
-        if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+        if(! ui->fullnamepipe->isVisible()) ui->fullnamepipe->show();
     }
-    else if(! ui->fullnamepipe->isVisible())
-    {
-        if(ui->fullnameerror->isVisible()) ui->fullnameerror->hide();
-        ui->fullnamepipe->show();
-    }
+}
+
+void systemback::on_fullname_editingFinished()
+{
+    if(ui->fullname->text().endsWith(' ')) ui->fullname->setText(ui->fullname->text().trimmed());
 }
 
 void systemback::on_username_textChanged(const QStr &arg1)
 {
-    if(arg1 != arg1.toLower())
+    if(cpos > -1)
+    {
+        ui->username->setCursorPosition(cpos);
+        cpos = -1;
+    }
+
+    if(sb::like(arg1, {"_-*", "* *", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
+    {
+        cpos = ui->username->cursorPosition() - 1;
+        ui->username->setText(QStr(arg1).replace(cpos, 1, nullptr));
+    }
+    else if(arg1 != arg1.toLower())
+    {
+        cpos = ui->username->cursorPosition();
         ui->username->setText(arg1.toLower());
+    }
     else
     {
         if(ui->usernamepipe->isVisible()) ui->usernamepipe->hide();
@@ -7995,10 +8143,6 @@ void systemback::on_username_textChanged(const QStr &arg1)
         if(arg1.isEmpty())
         {
             if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
-        }
-        else if(sb::like(arg1, {"_-*", "* *", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
-        {
-            if(! ui->usernameerror->isVisible()) ui->usernameerror->show();
         }
         else
         {
@@ -8018,10 +8162,13 @@ void systemback::on_username_textChanged(const QStr &arg1)
                         ui->usernamepipe->show();
                     }
                 }
-                else if(rval == 9 && arg1 == ui->username->text())
+                else if(rval == 9)
                 {
-                    if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
-                    ui->usernamepipe->show();
+                    if(arg1 == ui->username->text())
+                    {
+                        if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
+                        ui->usernamepipe->show();
+                    }
                 }
                 else if(arg1 == ui->username->text() && ! ui->usernameerror->isVisible())
                     ui->usernameerror->show();
@@ -8032,16 +8179,27 @@ void systemback::on_username_textChanged(const QStr &arg1)
 
 void systemback::on_hostname_textChanged(const QStr &arg1)
 {
-    if(ui->hostnamepipe->isVisible()) ui->hostnamepipe->hide();
-    if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
-
-    if(arg1.isEmpty())
+    if(cpos > -1)
     {
-        if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
+        ui->hostname->setCursorPosition(cpos);
+        cpos = -1;
+    }
+
+    if(arg1.contains(' '))
+    {
+        cpos = ui->hostname->cursorPosition() - 1;
+        ui->hostname->setText(QStr(arg1).replace(cpos, 1, nullptr));
     }
     else
     {
-        if(! arg1.contains(' '))
+        if(ui->hostnamepipe->isVisible()) ui->hostnamepipe->hide();
+        if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+
+        if(arg1.isEmpty())
+        {
+            if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
+        }
+        else
         {
             sb::delay(300);
 
@@ -8071,8 +8229,6 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
                     ui->hostnameerror->show();
             }
         }
-        else if(! ui->hostnameerror->isVisible())
-            ui->hostnameerror->show();
     }
 }
 
@@ -8813,7 +8969,7 @@ start:
     if(intrrpt) goto exit;
     prun = tr("Creating Live system") % '\n' % tr("process") % " 2/3";
 
-    if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs -info -b 1M -no-duplicates -no-recovery -always-use-fragments -e /etc/fstab -e /etc/mtab -e /etc/udev/rules.d/70-persistent-cd.rules -e /etc/udev/rules.d/70-persistent-net.rules") > 0)
+    if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs -info -b 1M -no-duplicates -no-recovery -always-use-fragments -e /boot/efi/EFI -e /etc/fstab -e /etc/mtab -e /etc/udev/rules.d/70-persistent-cd.rules -e /etc/udev/rules.d/70-persistent-net.rules") > 0)
     {
         dialog = 26;
         goto error;

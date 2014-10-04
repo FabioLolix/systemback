@@ -72,6 +72,7 @@ public:
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
+    static bool issmfs(cQStr &item1,cQStr &item2);
     static bool ilike(short num, cQSIL &lst);
     static bool islnxfs(cQStr &path);
     static bool islink(cQStr &path);
@@ -121,7 +122,6 @@ private:
     static bool cpfile(cQStr &srcfile, cQStr &newfile);
     static bool cpdir(cQStr &srcdir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);
-    static bool issmfs(cQStr &item1,cQStr &item2);
     static bool lcomp(cQStr &link1, cQStr &link2);
     static bool isnum(cQStr &txt);
     bool thrdsrestore(cuchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab);

@@ -92,7 +92,7 @@ QStr sb::rndstr(uchar vlen)
     do {
         chr = chrs.mid(qrand() % clen, 1);
         if(! val.endsWith(chr)) val.append(chr);
-    } while(val.length() < vlen);
+    } while(val.count() < vlen);
 
     return val;
 }
@@ -2854,7 +2854,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         if(ThrdKill) return false;
     }
 
-    elist = {"/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/log", "/var/run/", "/var/tmp/"};
+    elist = {"/boot/efi/EFI", "/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/log", "/var/run/", "/var/tmp/"};
     if(mthd > 2) elist.append({"/etc/machine-id", "/etc/systemback.conf", "/etc/systemback.excludes", "/var/lib/dbus/machine-id"});
     if(srcdir == "/.systembacklivepoint" && fload("/proc/cmdline").contains("noxconf")) elist.append("/etc/X11/xorg.conf");
     QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};

@@ -269,6 +269,9 @@
         <height>32</height>
        </rect>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="maxLength">
        <number>80</number>
       </property>
@@ -434,6 +437,9 @@
         <height>32</height>
        </rect>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="maxLength">
        <number>32</number>
       </property>
@@ -447,6 +453,9 @@
         <height>32</height>
        </rect>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="maxLength">
        <number>64</number>
       </property>
@@ -459,6 +468,9 @@
         <width>304</width>
         <height>32</height>
        </rect>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="maxLength">
        <number>35</number>
@@ -479,6 +491,9 @@
         <height>32</height>
        </rect>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="maxLength">
        <number>35</number>
       </property>
@@ -494,6 +509,9 @@
         <width>304</width>
         <height>32</height>
        </rect>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="maxLength">
        <number>35</number>
@@ -514,30 +532,14 @@
         <height>32</height>
        </rect>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="maxLength">
        <number>35</number>
       </property>
       <property name="echoMode">
        <enum>QLineEdit::Password</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="fullnameerror">
-      <property name="geometry">
-       <rect>
-        <x>647</x>
-        <y>35</y>
-        <width>26</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="pixmap">
-       <pixmap resource="pictures.qrc">:/pictures/error.png</pixmap>
-      </property>
-      <property name="scaledContents">
-       <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="fullnamepipe">
@@ -581,7 +583,6 @@
      <zorder>rootpassword1</zorder>
      <zorder>rootpassword2</zorder>
      <zorder>fullname</zorder>
-     <zorder>fullnameerror</zorder>
      <zorder>fullnamepipe</zorder>
     </widget>
     <widget class="QWidget" name="livecreatepanel" native="true">
@@ -744,6 +745,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string notr="true">auto</string>
@@ -1000,6 +1004,9 @@
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
        </property>
        <property name="frame">
         <bool>false</bool>
@@ -2957,7 +2964,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="warning">
+     <widget class="QLabel" name="filesystemwarning">
       <property name="geometry">
        <rect>
         <x>18</x>
@@ -3282,6 +3289,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>empty</string>
       </property>
@@ -3306,6 +3316,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>empty</string>
@@ -3332,6 +3345,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>empty</string>
       </property>
@@ -3356,6 +3372,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>empty</string>
@@ -3382,6 +3401,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>empty</string>
       </property>
@@ -3406,6 +3428,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>not used</string>
@@ -3432,6 +3457,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>not used</string>
       </property>
@@ -3456,6 +3484,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>not used</string>
@@ -3482,6 +3513,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>not used</string>
       </property>
@@ -3506,6 +3540,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>not used</string>
@@ -3532,6 +3569,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>empty</string>
       </property>
@@ -3556,6 +3596,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>empty</string>
@@ -3582,6 +3625,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>empty</string>
       </property>
@@ -3607,6 +3653,9 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>empty</string>
       </property>
@@ -3631,6 +3680,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
       </property>
       <property name="text">
        <string>empty</string>
@@ -4580,6 +4632,9 @@
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
        <property name="frame">
         <bool>false</bool>
        </property>
@@ -5511,6 +5566,9 @@
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
+       <property name="toolTip">
+        <string>Umount</string>
+       </property>
        <property name="text">
         <string>Umount</string>
        </property>
@@ -5852,6 +5910,23 @@
        </property>
       </widget>
      </widget>
+     <widget class="QLabel" name="efiwarning">
+      <property name="geometry">
+       <rect>
+        <x>313</x>
+        <y>340</y>
+        <width>375</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Need to set the mount point as '/boot/efi'!</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <zorder>efiwarning</zorder>
      <zorder>partitionsettingspanel3</zorder>
      <zorder>partitionsettingspanel2</zorder>
      <zorder>grubinstallcopydisable</zorder>
@@ -6609,6 +6684,9 @@
        <width>250</width>
        <height>32</height>
       </rect>
+     </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
      </property>
      <property name="maxLength">
       <number>35</number>

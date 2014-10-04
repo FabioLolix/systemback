@@ -61,8 +61,8 @@ private:
     GRUB grub;
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash;
-    short wgeom[6], sfctr;
-    uchar busycnt, dialog, ppipe;
+    short wgeom[6], cpos;
+    uchar busycnt, dialog, ppipe, sfctr;
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
@@ -205,8 +205,9 @@ private slots:
     void on_functionmenunext_clicked();
     void on_functionmenuback_clicked();
     void on_storagedirbutton_clicked();
-    void on_passwordinputok_clicked();
     void on_partitionrefresh_clicked();
+    void on_fullname_editingFinished();
+    void on_passwordinputok_clicked();
     void on_dirchoosecancel_clicked();
     void on_changepartition_clicked();
     void on_newrestorepoint_clicked();
@@ -293,8 +294,8 @@ private slots:
     void on_additem_clicked();
     void on_daydown_clicked();
     void on_hourup_clicked();
-    void on_dayup_clicked();
     void on_umount_clicked();
+    void on_dayup_clicked();
 };
 
 #endif // SYSTEMBACK_HPP

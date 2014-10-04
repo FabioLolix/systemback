@@ -54,7 +54,7 @@ private:
     struct GRUB
     {
         QStr name;
-        bool IsEFI;
+        bool isEFI;
     };
 
     static cuchar Strgdr{0}, Lvwrkdr{1}, Dpath{2}, Rpnts{3}, Normal{100}, High{147}, Max{200};

@@ -3140,7 +3140,7 @@ void systemback::dialogopen()
         break;
     case 23:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB!"));
+        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 24:

@@ -1341,6 +1341,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="3143"/>
+        <source>An error occurred while reinstalling GRUB.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="3148"/>
         <source>Full system repair is completed, but an error occurred while reinstalling GRUB!</source>
         <translation type="unfinished"></translation>
@@ -1428,7 +1433,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3143"/>
         <location filename="../systemback/systemback.cpp" line="3214"/>
         <source>An error occurred while reinstalling GRUB!</source>
         <translation type="unfinished"></translation>

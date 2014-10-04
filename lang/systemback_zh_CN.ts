@@ -1283,6 +1283,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="3143"/>
+        <source>An error occurred while reinstalling GRUB.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="3178"/>
         <source>Format the %1, and write the following Live system image:</source>
         <translation type="unfinished"></translation>
@@ -1348,7 +1353,6 @@
         <translation>指定的分区无法格式化（因正在使用或不可用）。</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3143"/>
         <location filename="../systemback/systemback.cpp" line="3214"/>
         <source>An error occurred while reinstalling GRUB!</source>
         <translation>重装GRUB的过程当中出现错误！</translation>

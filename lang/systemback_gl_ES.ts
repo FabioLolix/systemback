@@ -1283,6 +1283,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="3143"/>
+        <source>An error occurred while reinstalling GRUB.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="3178"/>
         <source>Format the %1, and write the following Live system image:</source>
         <translation>Formatar %1, e gravar a seguinte imaxe do sistema «en vivo»:</translation>
@@ -1348,7 +1353,6 @@
         <translation>Non foi posíbel formatar a partición especificada (ou está a ser usada ou non está dispoñíbel).</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3143"/>
         <location filename="../systemback/systemback.cpp" line="3214"/>
         <source>An error occurred while reinstalling GRUB!</source>
         <translation>Produciuse un erro ao reinstalar o GRUB!</translation>

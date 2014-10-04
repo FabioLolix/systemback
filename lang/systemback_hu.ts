@@ -1348,7 +1348,6 @@
         <translation>Az alábbi partíciót nem sikerűlt a megadott fájlrendszerre formázni (használatban van vagy nem elérhető).</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3143"/>
         <location filename="../systemback/systemback.cpp" line="3214"/>
         <source>An error occurred while reinstalling GRUB!</source>
         <translation>A GRUB újratelepítése közben hiba történt!</translation>
@@ -1432,8 +1431,9 @@
         <translation>A GRUB 2 javítása befejeződött.</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="3143"/>
         <source>An error occurred while reinstalling GRUB.</source>
-        <translation type="vanished">A GRUB újratelepítése közben hiba történt.</translation>
+        <translation>A GRUB újratelepítése közben hiba történt.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3194"/>

@@ -92,7 +92,7 @@ QStr sb::rndstr(uchar vlen)
     do {
         chr = chrs.mid(qrand() % clen, 1);
         if(! val.endsWith(chr)) val.append(chr);
-    } while(val.count() < vlen);
+    } while(val.length() < vlen);
 
     return val;
 }

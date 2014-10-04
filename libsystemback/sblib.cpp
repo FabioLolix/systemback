@@ -3284,7 +3284,7 @@ bool sb::thrdlvprpr(bool iudata)
     if(ThrdKill) return false;
     if(! QDir().mkdir("/var/.sblvtmp") || ! QDir().mkdir("/var/.sblvtmp/var")) return false;
     ++ThrdLng[0];
-    QSL elist({"cache/fontconfig/", "lib/dpkg/lock", "lib/udisks/mtab", "lib/ureadahead/", "log/", "run/", "tmp/"});
+    QSL elist({"lib/dpkg/lock", "lib/udisks/mtab", "lib/ureadahead/", "log/", "run/", "tmp/"});
 
     while(! in.atEnd())
     {

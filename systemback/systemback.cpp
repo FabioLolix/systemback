@@ -271,7 +271,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         connect(ui->usersettingscopy, SIGNAL(Mouse_Leave()), this, SLOT(cleave()));
         connect(ui->umountdelete, SIGNAL(Mouse_Leave()), this, SLOT(umntleave()));
 
-        if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization")
+        if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
         {
             ui->mainpanel->hide();
             ui->schedulerpanel->hide();
@@ -7645,7 +7645,7 @@ void systemback::on_format_clicked(bool checked)
 
 void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
 {
-    if(! arg1.isEmpty() && (! arg1.startsWith('/') || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
+    if(! arg1.isEmpty() && (! sb::like(arg1, {"_/*", "_S_", "_SW_", "_SWA_", "_SWAP_"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
         ui->mountpoint->setCurrentText(sb::left(arg1, -1));
     else
     {

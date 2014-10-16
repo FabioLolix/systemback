@@ -1119,7 +1119,7 @@ void sb::run()
             {
                 PedDevice *dev(ped_device_get(path.toStdString().c_str()));
                 PedDisk *dsk(ped_disk_new(dev));
-                QStr type(dsk->type->name), dtxt(path % '\n' % QStr::number(dev->length * dev->sector_size) % '\n');
+                QStr type(dsk == nullptr ? nullptr : dsk->type->name), dtxt(path % '\n' % QStr::number(dev->length * dev->sector_size) % '\n');
 
                 if(type == "msdos")
                     ThrdSlst->append(dtxt % QStr::number(MSDOS));
@@ -1128,7 +1128,11 @@ void sb::run()
                 else
                 {
                     ThrdSlst->append(dtxt % QStr::number(Clear));
-                    goto next_1;
+
+                    if(type.isNull())
+                        goto next_2;
+                    else
+                        goto next_1;
                 }
 
                 {
@@ -1212,6 +1216,7 @@ void sb::run()
 
             next_1:
                 ped_disk_destroy(dsk);
+            next_2:
                 ped_device_destroy(dev);
             }
         }
@@ -1245,27 +1250,32 @@ void sb::run()
                                 {
                                     PedDevice *dev(ped_device_get(path.toStdString().c_str()));
                                     PedDisk *dsk(ped_disk_new(dev));
-                                    PedPartition *prt(nullptr);
 
-                                    while((prt = ped_disk_next_partition(dsk, prt)))
-                                        if(prt->num > 0)
-                                        {
-                                            blkid_probe pr(blkid_new_probe_from_filename(QStr(path % QStr::number(prt->num)).toStdString().c_str()));
-                                            blkid_do_probe(pr);
-                                            cchar *uuid("");
-                                            blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
-                                            blkid_free_probe(pr);
-                                            if(! QStr(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
-                                        }
+                                    if(dsk != nullptr)
+                                    {
+                                        PedPartition *prt(nullptr);
 
-                                    ped_disk_destroy(dsk);
+                                        while((prt = ped_disk_next_partition(dsk, prt)))
+                                            if(prt->num > 0)
+                                            {
+                                                blkid_probe pr(blkid_new_probe_from_filename(QStr(path % QStr::number(prt->num)).toStdString().c_str()));
+                                                blkid_do_probe(pr);
+                                                cchar *uuid("");
+                                                blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+                                                blkid_free_probe(pr);
+                                                if(! QStr(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
+                                            }
+
+                                        ped_disk_destroy(dsk);
+                                    }
+
                                     ped_device_destroy(dev);
                                 }
 
                                 QTS in(&fstab, QIODevice::ReadOnly);
 
                                 while(! in.atEnd())
-                                    if(like(in.readLine().trimmed(), fchk)) goto next_2;
+                                    if(like(in.readLine().trimmed(), fchk)) goto next_3;
                             }
 
                             ThrdSlst->append(path % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
@@ -1274,7 +1284,7 @@ void sb::run()
                 }
             }
 
-        next_2:;
+        next_3:;
         }
 
         ThrdSlst->sort();

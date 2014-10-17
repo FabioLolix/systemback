@@ -1258,12 +1258,17 @@ void sb::run()
                                         while((prt = ped_disk_next_partition(dsk, prt)))
                                             if(prt->num > 0)
                                             {
-                                                blkid_probe pr(blkid_new_probe_from_filename(QStr(path % QStr::number(prt->num)).toStdString().c_str()));
-                                                blkid_do_probe(pr);
-                                                cchar *uuid("");
-                                                blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
-                                                blkid_free_probe(pr);
-                                                if(! QStr(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
+                                                QStr ppath(path % QStr::number(prt->num));
+
+                                                if(stype(ppath) == Isblock)
+                                                {
+                                                    blkid_probe pr(blkid_new_probe_from_filename(ppath.toStdString().c_str()));
+                                                    blkid_do_probe(pr);
+                                                    cchar *uuid("");
+                                                    blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+                                                    blkid_free_probe(pr);
+                                                    if(! QStr(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
+                                                }
                                             }
 
                                         ped_disk_destroy(dsk);

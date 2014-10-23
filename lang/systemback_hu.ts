@@ -13,6 +13,16 @@
         <source>Restart upgrade ...</source>
         <translation>Frissítés újrakezdése ...</translation>
     </message>
+    <message>
+        <location filename="../systemback/main.cpp" line="35"/>
+        <source>Unsafe X Window authorization!</source>
+        <translation>Nem biztonságos X Window hitelesítés!</translation>
+    </message>
+    <message>
+        <location filename="../systemback/main.cpp" line="35"/>
+        <source>Please do not use &apos;sudo&apos; command.</source>
+        <translation>Kérlek, ne használd a &apos;sudo&apos; parancsot.</translation>
+    </message>
 </context>
 <context>
     <name>sbsustart</name>

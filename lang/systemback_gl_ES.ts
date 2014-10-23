@@ -13,6 +13,16 @@
         <source>Restart upgrade ...</source>
         <translation>Reiniciar a anovación ...</translation>
     </message>
+    <message>
+        <location filename="../systemback/main.cpp" line="35"/>
+        <source>Unsafe X Window authorization!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/main.cpp" line="35"/>
+        <source>Please do not use &apos;sudo&apos; command.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>sbsustart</name>

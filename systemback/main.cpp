@@ -21,6 +21,7 @@
 #include <QStringBuilder>
 #include <QApplication>
 #include <QTranslator>
+#include <unistd.h>
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +29,13 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QTranslator trnsltr;
     if(trnsltr.load("/usr/share/systemback/lang/systemback_" % QLocale::system().name())) a.installTranslator(&trnsltr);
+
+    if(qgetenv("XAUTHORITY").startsWith("/home/") && getuid() + getgid() == 0)
+    {
+        sb::error("\n " % QTranslator::tr("Unsafe X Window authorization!") % "\n\n " % QTranslator::tr("Please do not use 'sudo' command.") % "\n\n");
+        return 1;
+    }
+
     systemback w;
     w.show();
     return a.exec();

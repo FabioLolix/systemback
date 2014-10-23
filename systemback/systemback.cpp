@@ -269,7 +269,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         connect(ui->partitionsettings, SIGNAL(Focus_Out()), this, SLOT(foutpsttngs()));
         connect(ui->usersettingscopy, SIGNAL(Mouse_Enter()), this, SLOT(center()));
         connect(ui->usersettingscopy, SIGNAL(Mouse_Leave()), this, SLOT(cleave()));
-        connect(ui->umountdelete, SIGNAL(Mouse_Leave()), this, SLOT(umntleave()));
+        connect(ui->unmountdelete, SIGNAL(Mouse_Leave()), this, SLOT(umntleave()));
 
         if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
         {
@@ -1523,7 +1523,7 @@ void systemback::cleave()
 
 void systemback::umntleave()
 {
-    if(! ui->umountdelete->isEnabled() && ui->umountdelete->text() == tr("! Delete !")) ui->umountdelete->setEnabled(true);
+    if(! ui->unmountdelete->isEnabled() && ui->unmountdelete->text() == tr("! Delete !")) ui->unmountdelete->setEnabled(true);
 }
 
 void systemback::on_usersettingscopy_stateChanged(int arg1)
@@ -2874,6 +2874,7 @@ start:
             if(intrrpt) goto error;
         }
 
+        if(sb::mcheck(ldev)) sb::umount(ldev);
         sb::fssync();
         if(intrrpt) goto error;
     }
@@ -3795,7 +3796,7 @@ void systemback::keyPressEvent(QKeyEvent *ev)
         case Qt::Key_Delete:
             if(ui->partitionsettings->hasFocus())
             {
-                if(ui->umountdelete->isEnabled() && ui->umountdelete->text() == tr("Umount")) on_umountdelete_clicked();
+                if(ui->unmountdelete->isEnabled() && ui->unmountdelete->text() == tr("Unmount")) on_unmountdelete_clicked();
             }
             else if(ui->livelist->hasFocus())
             {
@@ -5260,13 +5261,13 @@ void systemback::on_partitionrefresh_clicked()
         ui->format->setDisabled(true);
      }
 
-    if(ui->umountdelete->text() == tr("! Delete !"))
+    if(ui->unmountdelete->text() == tr("! Delete !"))
     {
-        ui->umountdelete->setText(tr("Umount"));
-        ui->umountdelete->setStyleSheet(nullptr);
+        ui->unmountdelete->setText(tr("Unmount"));
+        ui->unmountdelete->setStyleSheet(nullptr);
     }
 
-    if(ui->umountdelete->isEnabled()) ui->umountdelete->setDisabled(true);
+    if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
 
     if(nohmcpy)
     {
@@ -5549,12 +5550,12 @@ void systemback::on_partitionrefresh3_clicked()
     on_partitionrefresh2_clicked();
 }
 
-void systemback::on_umountdelete_clicked()
+void systemback::on_unmountdelete_clicked()
 {
     busy();
     ui->copycover->show();
 
-    if(ui->umountdelete->text() == tr("Umount"))
+    if(ui->unmountdelete->text() == tr("Unmount"))
     {
         if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() != "SWAP")
         {
@@ -5585,9 +5586,9 @@ void systemback::on_umountdelete_clicked()
 
         if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().isEmpty())
         {
-            ui->umountdelete->setText(tr("! Delete !"));
-            ui->umountdelete->setStyleSheet("QPushButton:enabled {color: red}");
-            if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->umountdelete->pos(), ui->umountdelete->geometry())) ui->umountdelete->setDisabled(true);
+            ui->unmountdelete->setText(tr("! Delete !"));
+            ui->unmountdelete->setStyleSheet("QPushButton:enabled {color: red}");
+            if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->unmountdelete->pos(), ui->unmountdelete->geometry())) ui->unmountdelete->setDisabled(true);
             if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
             ui->filesystem->setEnabled(true);
             ui->format->setEnabled(true);
@@ -5604,7 +5605,7 @@ void systemback::on_umountdelete_clicked()
     busy(false);
 }
 
-void systemback::on_umount_clicked()
+void systemback::on_unmount_clicked()
 {
     busy();
     ui->copycover->show();
@@ -5654,7 +5655,7 @@ void systemback::on_umount_clicked()
 
     if(umntd)
     {
-        ui->umount->setDisabled(true);
+        ui->unmount->setDisabled(true);
         ui->partitiondelete->setEnabled(true);
     }
 
@@ -7324,10 +7325,10 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             if(mntd && ! mntcheck)
             {
-                if(! ui->umount->isEnabled()) ui->umount->setEnabled(true);
+                if(! ui->unmount->isEnabled()) ui->unmount->setEnabled(true);
             }
-            else if(ui->umount->isEnabled())
-                ui->umount->setDisabled(true);
+            else if(ui->unmount->isEnabled())
+                ui->unmount->setDisabled(true);
 
             break;
         }
@@ -7378,13 +7379,13 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     ui->format->setEnabled(true);
                 }
 
-                if(ui->umountdelete->text() == tr("Umount"))
+                if(ui->unmountdelete->text() == tr("Unmount"))
                 {
-                    ui->umountdelete->setText(tr("! Delete !"));
-                    ui->umountdelete->setStyleSheet("QPushButton:enabled {color: red}");
+                    ui->unmountdelete->setText(tr("! Delete !"));
+                    ui->unmountdelete->setStyleSheet("QPushButton:enabled {color: red}");
                 }
 
-                if(! ui->umountdelete->isEnabled()) ui->umountdelete->setEnabled(true);
+                if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
 
                 if(ui->mountpoint->currentIndex() == 0)
                 {
@@ -7403,13 +7404,13 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     ui->format->setDisabled(true);
                 }
 
-                if(ui->umountdelete->text() == tr("! Delete !"))
+                if(ui->unmountdelete->text() == tr("! Delete !"))
                 {
-                    ui->umountdelete->setText(tr("Umount"));
-                    ui->umountdelete->setStyleSheet(nullptr);
+                    ui->unmountdelete->setText(tr("Unmount"));
+                    ui->unmountdelete->setStyleSheet(nullptr);
                 }
 
-                if(! ui->umountdelete->isEnabled()) ui->umountdelete->setEnabled(true);
+                if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
 
                 if(ui->mountpoint->currentText() != "SWAP")
                 {
@@ -7435,13 +7436,13 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     ui->format->setDisabled(true);
                 }
 
-                if(ui->umountdelete->text() == tr("! Delete !"))
+                if(ui->unmountdelete->text() == tr("! Delete !"))
                 {
-                    ui->umountdelete->setText(tr("Umount"));
-                    ui->umountdelete->setStyleSheet(nullptr);
+                    ui->unmountdelete->setText(tr("Unmount"));
+                    ui->unmountdelete->setStyleSheet(nullptr);
                 }
 
-                if(ui->umountdelete->isEnabled()) ui->umountdelete->setDisabled(true);
+                if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
 
                 if(ui->mountpoint->currentText() != "/home")
                 {
@@ -7487,18 +7488,18 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                         }
                 }
 
-                if(ui->umountdelete->text() == tr("! Delete !"))
+                if(ui->unmountdelete->text() == tr("! Delete !"))
                 {
-                    ui->umountdelete->setText(tr("Umount"));
-                    ui->umountdelete->setStyleSheet(nullptr);
+                    ui->unmountdelete->setText(tr("Unmount"));
+                    ui->unmountdelete->setStyleSheet(nullptr);
                 }
 
                 if(mntcheck)
                 {
-                    if(ui->umountdelete->isEnabled()) ui->umountdelete->setDisabled(true);
+                    if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
                 }
-                else if(! ui->umountdelete->isEnabled())
-                    ui->umountdelete->setEnabled(true);
+                else if(! ui->unmountdelete->isEnabled())
+                    ui->unmountdelete->setEnabled(true);
             }
 
             if(! ui->format->isChecked()) ui->format->setChecked(true);

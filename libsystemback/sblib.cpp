@@ -392,22 +392,17 @@ bool sb::mcheck(cQStr &item)
 
     if(itm.startsWith("/dev/"))
     {
-        if(itm.length() > 8)
-        {
-            if(QStr('\n' % mnts).contains('\n' % itm % ' '))
-                return true;
-            else
-            {
-                blkid_probe pr(blkid_new_probe_from_filename(itm.toStdString().c_str()));
-                blkid_do_probe(pr);
-                cchar *uuid("");
-                blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
-                blkid_free_probe(pr);
-                return QStr(uuid).isEmpty() ? false : QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
-            }
-        }
+        if(QStr('\n' % mnts).contains('\n' % itm % (itm.length() > 8 ? " " : nullptr)))
+            return true;
         else
-            return QStr('\n' % mnts).contains('\n' % itm);
+        {
+            blkid_probe pr(blkid_new_probe_from_filename(itm.toStdString().c_str()));
+            blkid_do_probe(pr);
+            cchar *uuid("");
+            blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+            blkid_free_probe(pr);
+            return QStr(uuid).isEmpty() ? false : QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
+        }
     }
     else if(itm.endsWith('/') && itm.length() > 1)
         return mnts.contains(' ' % left(itm, -1));

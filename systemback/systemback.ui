@@ -5548,7 +5548,7 @@
         </size>
        </property>
       </widget>
-      <widget class="bttnevent" name="umountdelete">
+      <widget class="bttnevent" name="unmountdelete">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -5566,11 +5566,8 @@
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
-       <property name="toolTip">
-        <string>Umount</string>
-       </property>
        <property name="text">
-        <string>Umount</string>
+        <string>Unmount</string>
        </property>
        <property name="iconSize">
         <size>
@@ -5763,7 +5760,7 @@
         </size>
        </property>
       </widget>
-      <widget class="QPushButton" name="umount">
+      <widget class="QPushButton" name="unmount">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -5782,7 +5779,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>Umount</string>
+        <string>Unmount</string>
        </property>
        <property name="iconSize">
         <size>

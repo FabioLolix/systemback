@@ -796,8 +796,15 @@ void sb::delpart(cQStr &part)
 inline QStr sb::rlink(cQStr &path, ushort blen)
 {
     char rpath[blen];
-    rpath[readlink(path.toStdString().c_str(), rpath, blen)] = '\0';
-    return rpath;
+    ushort rlen(readlink(path.toStdString().c_str(), rpath, blen));
+
+    if(rlen > 0)
+    {
+        rpath[rlen] = '\0';
+        return rpath;
+    }
+
+    return nullptr;
 }
 
 inline ullong sb::psalign(ullong start, ushort ssize)
@@ -862,7 +869,9 @@ inline bool sb::cpertime(cQStr &sourcepath, cQStr &destpath)
 inline bool sb::cplink(cQStr &srclink, cQStr &newlink)
 {
     struct stat sistat;
-    if(lstat(srclink.toStdString().c_str(), &sistat) == -1 || ! S_ISLNK(sistat.st_mode) || ! QFile::link(rlink(srclink, sistat.st_size), newlink)) return false;
+    if(lstat(srclink.toStdString().c_str(), &sistat) == -1 || ! S_ISLNK(sistat.st_mode)) return false;
+    QStr path(rlink(srclink, sistat.st_size));
+    if(path.isEmpty() || ! QFile::link(path, newlink)) return false;
     struct timeval sitimes[2];
     sitimes[0].tv_sec = sistat.st_atim.tv_sec;
     sitimes[1].tv_sec = sistat.st_mtim.tv_sec;

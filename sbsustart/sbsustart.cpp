@@ -99,7 +99,7 @@ bool sbsustart::clrenv(cQStr &xpath, cQStr &usrhm)
     for(cQStr &cvar : QProcess::systemEnvironment())
     {
         QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
-        if(! sb::like(var, {"_DISPLAY*", "_PATH*", "_LANG*"}) && ! qunsetenv(var.toStdString().c_str())) return false;
+        if(! sb::like(var, {"_DISPLAY_", "_PATH_", "_LANG_"}) && ! qunsetenv(var.toStdString().c_str())) return false;
     }
 
     if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.isEmpty() ? "/root" : usrhm.toLocal8Bit()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || (! xpath.isEmpty() && ! qputenv("XAUTHORITY", xpath.toLocal8Bit()))) return false;

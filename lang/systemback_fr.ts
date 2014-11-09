@@ -11,17 +11,17 @@
     <message>
         <location filename="../sbsysupgrade/sbsysupgrade.cpp" line="31"/>
         <source>Restart upgrade ...</source>
-        <translation>Effectuer de nouveau la mise à jour du système...</translation>
+        <translation>Effectuer de nouveau la mise à jour du système ...</translation>
     </message>
     <message>
         <location filename="../systemback/main.cpp" line="35"/>
         <source>Unsafe X Window authorization!</source>
-        <translation type="unfinished"></translation>
+        <translation>Autorisation X Window dangereuse!</translation>
     </message>
     <message>
         <location filename="../systemback/main.cpp" line="35"/>
         <source>Please do not use &apos;sudo&apos; command.</source>
-        <translation type="unfinished"></translation>
+        <translation>Merci de ne pas utiliser la commande &apos;sudo&apos;.</translation>
     </message>
 </context>
 <context>
@@ -29,29 +29,29 @@
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="36"/>
         <source>Missing, wrong or too much argument(s).</source>
-        <translation type="unfinished"></translation>
+        <translation>Argument(s) manquant(s), incorrecte(s) ou trop nombreux.</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="39"/>
         <location filename="../sbsustart/sbsustart.cpp" line="42"/>
         <source>Cannot start Systemback graphical user interface!</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de lancer l&apos;interface graphique utilisateur de Systemback!</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="39"/>
         <source>Unable to connect to X server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de se connecter au serveur X.</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="42"/>
         <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Unable to get root permissions.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;obtenir les autorisations root.</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="45"/>
         <source>Cannot start Systemback scheduler daemon!</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de démarrer le démon de planification de Systemback!</translation>
     </message>
 </context>
 <context>
@@ -59,32 +59,32 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="32"/>
         <source>Cannot start Systemback scheduler daemon!</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de démarrer le démon de planification de Systemback!</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="36"/>
         <source>Missing, wrong or too much argument(s).</source>
-        <translation type="unfinished"></translation>
+        <translation>Argument(s) manquant(s), incorrecte(s) ou trop nombreux.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="39"/>
         <source>Root privileges are required.</source>
-        <translation type="unfinished"></translation>
+        <translation>Les droits root sont nécessaires.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
         <source>This system is a Live.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ceci est un système Live.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="45"/>
         <source>Already running.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déja en cours d&apos;exécution.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="48"/>
         <source>Unable to demonize.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de se transformer en démon.</translation>
     </message>
 </context>
 <context>
@@ -92,7 +92,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="153"/>
         <source>Full name of the new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom complet du nouvel utilisateur:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="166"/>
@@ -102,17 +102,17 @@
     <message>
         <location filename="../systemback/systemback.ui" line="179"/>
         <source>New user account password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Mot de passe du nouveau compte utilisateur:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="192"/>
         <source>New root password (optional, not recommended for Ubuntu):</source>
-        <translation type="unfinished"></translation>
+        <translation>Nouveau mot de passe root (optionnel, déconseillé pour Ubuntu):</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="205"/>
         <source>New hostname:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nouveau hostname:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="221"/>
@@ -136,23 +136,23 @@
         <location filename="../systemback/systemback.ui" line="5103"/>
         <location filename="../systemback/systemback.ui" line="5340"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Suivant</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="616"/>
         <location filename="../systemback/systemback.cpp" line="6664"/>
         <source>Working directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire de travail</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="638"/>
         <source>Created Live images</source>
-        <translation type="unfinished"></translation>
+        <translation>Images Live créées</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="660"/>
         <source>Name of Live system</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom du système Live</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="682"/>
@@ -161,7 +161,7 @@
         <location filename="../systemback/systemback.ui" line="4970"/>
         <location filename="../systemback/systemback.ui" line="5210"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="704"/>
@@ -176,12 +176,12 @@
     <message>
         <location filename="../systemback/systemback.ui" line="813"/>
         <source>Include user data files</source>
-        <translation type="unfinished"></translation>
+        <translation>Inclure les fichiers de données de l&apos;utilisateur</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="874"/>
         <source>Redetect devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Redétecter les appareils</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="906"/>
@@ -193,12 +193,12 @@
     <message>
         <location filename="../systemback/systemback.ui" line="928"/>
         <source>Write to USB</source>
-        <translation type="unfinished"></translation>
+        <translation>Écrire sur USB</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="950"/>
         <source>Convert to ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>Convertir en ISO</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="972"/>
@@ -210,90 +210,90 @@
     <message>
         <location filename="../systemback/systemback.ui" line="1197"/>
         <source>Mount the faulty system partition(s) to &apos;/mnt&apos; directory according to the original structure.&lt;br&gt;(&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, etc.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Monter les partitions système défectueuses dans le répertoire &apos;/mnt&apos; en fonction de la structure originale.&lt;br&gt;(&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, etc.)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1260"/>
         <location filename="../systemback/systemback.cpp" line="7823"/>
         <source>Mount</source>
-        <translation type="unfinished"></translation>
+        <translation>Monter</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1285"/>
         <source>Reset mounts</source>
-        <translation type="unfinished"></translation>
+        <translation>Réinitialiser les points de montage</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1314"/>
         <source>Repair type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type de réparation</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1386"/>
         <source>GRUB 2 repair</source>
-        <translation type="unfinished"></translation>
+        <translation>Réparation de Grub 2</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1405"/>
         <source>System files repair</source>
-        <translation type="unfinished"></translation>
+        <translation>Réparation du système de fichiers</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1421"/>
         <location filename="../systemback/systemback.ui" line="5030"/>
         <source>Reinstall GRUB 2 bootloader:</source>
-        <translation type="unfinished"></translation>
+        <translation>Réinstaller le chargeur de démarrage de Grub 2:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1440"/>
         <location filename="../systemback/systemback.ui" line="4992"/>
         <source>Auto detection</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto Détection</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1488"/>
         <source>Full repair</source>
-        <translation type="unfinished"></translation>
+        <translation>Réparation complète</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1510"/>
         <source>Do not repair fstab file</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne pas réparer le fichier fstab</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1630"/>
         <source>Exclude hidden user files and directories from restore points</source>
-        <translation type="unfinished"></translation>
+        <translation>Exclure les fichiers et répertoires cachés de l&apos;utilisateur des points de restauration</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1652"/>
         <source>Exclude user data files and directories from Live system</source>
-        <translation type="unfinished"></translation>
+        <translation>Exclure les fichiers et répertoires de données de l&apos;utilisateur du système Live</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1671"/>
         <source>Items</source>
-        <translation type="unfinished"></translation>
+        <translation>Éléments</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1693"/>
         <source>Excluded items</source>
-        <translation type="unfinished"></translation>
+        <translation>Éléments exclus</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1718"/>
         <source>Remove item from exclusion list</source>
-        <translation type="unfinished"></translation>
+        <translation>Enlever un élément de la liste d&apos;exclusion</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1750"/>
         <source>Add item to exclusion list</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter un élément à la liste d&apos;exclusion</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1902"/>
         <source>Scheduler state:</source>
-        <translation type="unfinished"></translation>
+        <translation>Etat du planificateur:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1921"/>
@@ -313,7 +313,7 @@
         <location filename="../systemback/systemback.cpp" line="7155"/>
         <location filename="../systemback/systemback.cpp" line="8336"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Désactivé</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1949"/>
@@ -364,38 +364,38 @@
     <message>
         <location filename="../systemback/systemback.ui" line="2606"/>
         <source>Project homepage:</source>
-        <translation type="unfinished"></translation>
+        <translation>Site web du projet:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2661"/>
         <source>Contact:</source>
-        <translation type="unfinished"></translation>
+        <translation>Contact:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2695"/>
         <source>Donate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Doner:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2732"/>
         <source>Systemback version:</source>
-        <translation type="unfinished"></translation>
+        <translation>Version de Systemback:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2803"/>
         <location filename="../systemback/systemback.cpp" line="5772"/>
         <source>License</source>
-        <translation type="unfinished"></translation>
+        <translation>Licence</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2951"/>
         <source>Re-read directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Re-parcourir les répertoires</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2983"/>
         <source>Writable Linux filesystem!</source>
-        <translation type="unfinished"></translation>
+        <translation>Système de fichier Linux accessible en écriture!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3021"/>
@@ -415,7 +415,7 @@
         <location filename="../systemback/systemback.ui" line="3252"/>
         <location filename="../systemback/systemback.ui" line="3274"/>
         <source>Maximum number of temporary restore points</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre maximum de points de restauration temporaire</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3296"/>
@@ -507,7 +507,7 @@
         <location filename="../systemback/systemback.cpp" line="4457"/>
         <location filename="../systemback/systemback.cpp" line="4464"/>
         <source>empty</source>
-        <translation type="unfinished"></translation>
+        <translation>vide</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3436"/>
@@ -579,12 +579,12 @@
         <location filename="../systemback/systemback.cpp" line="4456"/>
         <location filename="../systemback/systemback.cpp" line="4463"/>
         <source>not used</source>
-        <translation type="unfinished"></translation>
+        <translation>inutilisé</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3713"/>
         <source>Restore points</source>
-        <translation type="unfinished"></translation>
+        <translation>Points de restauration</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3735"/>
@@ -604,7 +604,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="3826"/>
         <source>Rename</source>
-        <translation type="unfinished"></translation>
+        <translation>Renommer</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3870"/>
@@ -623,7 +623,7 @@
         <location filename="../systemback/systemback.ui" line="4156"/>
         <location filename="../systemback/systemback.ui" line="4178"/>
         <source>Select restore point</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un point de restauration</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4197"/>
@@ -633,7 +633,7 @@
         <location filename="../systemback/systemback.cpp" line="6881"/>
         <location filename="../systemback/systemback.cpp" line="6902"/>
         <source>Storage directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire de stockage</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4219"/>
@@ -1020,11 +1020,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="477"/>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="651"/>
         <location filename="../systemback/systemback.cpp" line="8669"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="402"/>
@@ -1162,13 +1157,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3024"/>
-        <source>The specified name contain(s) unsupported character(s)!</source>
+        <location filename="../systemback/systemback.cpp" line="3169"/>
+        <source>Live system creation is completed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3169"/>
+        <source>The created .sblive file can be written to pendrive.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3029"/>
         <source>Restore the system files to the following restore point:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="477"/>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3024"/>
+        <source>The specified name contain(s) unsupported character(s)!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1292,13 +1302,99 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3144"/>
-        <source>An error occurred while reinstalling GRUB.</source>
+        <location filename="../systemback/systemback.cpp" line="3179"/>
+        <source>Format the %1, and write the following Live system image:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3179"/>
-        <source>Format the %1, and write the following Live system image:</source>
+        <location filename="../systemback/systemback.cpp" line="3331"/>
+        <location filename="../systemback/systemback.cpp" line="3336"/>
+        <source>There is not enough free space.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="8540"/>
+        <source>Interrupting the current process</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="9085"/>
+        <source>Systemback worker thread error because the following item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3134"/>
+        <source>The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3139"/>
+        <source>System copy is completed, but an error occurred while installing GRUB!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3139"/>
+        <location filename="../systemback/systemback.cpp" line="3200"/>
+        <source>Need to manually install a bootloader.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3144"/>
+        <location filename="../systemback/systemback.cpp" line="3331"/>
+        <source>System restoration is aborted!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3205"/>
+        <source>The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3210"/>
+        <location filename="../systemback/systemback.cpp" line="3291"/>
+        <location filename="../systemback/systemback.cpp" line="3326"/>
+        <source>The specified partition could not be formatted (in use or unavailable).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3215"/>
+        <source>An error occurred while reinstalling GRUB!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3149"/>
+        <source>Full system repair is completed, but an error occurred while reinstalling GRUB!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3154"/>
+        <source>System copy is completed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3159"/>
+        <location filename="../systemback/systemback.cpp" line="3164"/>
+        <location filename="../systemback/systemback.cpp" line="3174"/>
+        <location filename="../systemback/systemback.cpp" line="3271"/>
+        <location filename="../systemback/systemback.cpp" line="3276"/>
+        <source>Live system creation is aborted!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3159"/>
+        <source>An error occurred while creating file system image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3164"/>
+        <source>An error occurred while creating container file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3185"/>
+        <location filename="../systemback/systemback.cpp" line="3286"/>
+        <location filename="../systemback/systemback.cpp" line="3321"/>
+        <source>The specified partition could not be mounted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1332,109 +1428,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3331"/>
-        <location filename="../systemback/systemback.cpp" line="3336"/>
-        <source>There is not enough free space.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="8540"/>
-        <source>Interrupting the current process</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="9085"/>
-        <source>Systemback worker thread error because the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3139"/>
-        <source>System copy is completed, but an error occurred while installing GRUB!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3139"/>
-        <location filename="../systemback/systemback.cpp" line="3200"/>
-        <source>Need to manually install a bootloader.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3144"/>
-        <location filename="../systemback/systemback.cpp" line="3331"/>
-        <source>System restoration is aborted!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3159"/>
-        <source>An error occurred while creating file system image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3164"/>
-        <source>An error occurred while creating container file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3205"/>
-        <source>The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3210"/>
-        <location filename="../systemback/systemback.cpp" line="3291"/>
-        <location filename="../systemback/systemback.cpp" line="3326"/>
-        <source>The specified partition could not be formatted (in use or unavailable).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3215"/>
-        <source>An error occurred while reinstalling GRUB!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3149"/>
-        <source>Full system repair is completed, but an error occurred while reinstalling GRUB!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3134"/>
-        <source>The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3154"/>
-        <source>System copy is completed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3159"/>
-        <location filename="../systemback/systemback.cpp" line="3164"/>
-        <location filename="../systemback/systemback.cpp" line="3174"/>
-        <location filename="../systemback/systemback.cpp" line="3271"/>
-        <location filename="../systemback/systemback.cpp" line="3276"/>
-        <source>Live system creation is aborted!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3169"/>
-        <source>Live system creation is completed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3169"/>
-        <source>The created .sblive file can be written to pendrive.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3185"/>
-        <location filename="../systemback/systemback.cpp" line="3286"/>
-        <location filename="../systemback/systemback.cpp" line="3321"/>
-        <source>The specified partition could not be mounted.</source>
+        <location filename="../systemback/systemback.cpp" line="3296"/>
+        <location filename="../systemback/systemback.cpp" line="3301"/>
+        <location filename="../systemback/systemback.cpp" line="3306"/>
+        <source>The Live image could not be mounted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3190"/>
         <source>GRUB 2 repair is completed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3144"/>
+        <source>An error occurred while reinstalling GRUB.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1509,13 +1516,6 @@
         <location filename="../systemback/systemback.cpp" line="3281"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="97"/>
         <source>An error occurred while during the process.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3296"/>
-        <location filename="../systemback/systemback.cpp" line="3301"/>
-        <location filename="../systemback/systemback.cpp" line="3306"/>
-        <source>The Live image could not be mounted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1683,7 +1683,7 @@
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="156"/>
         <source>Restart upgrade ...</source>
-        <translation>Effectuer de nouveau la mise à jour du système...</translation>
+        <translation>Effectuer de nouveau la mise à jour du système ...</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="198"/>

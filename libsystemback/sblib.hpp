@@ -44,14 +44,21 @@ public:
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
+    struct GetArch
+    {
+        QStr name{"arch?"};
+        bool isAMD64{false};
+    };
+
+    static GetArch getarch();
     static QStr mid(cQStr &txt, ushort start, ushort len);
     static QStr right(cQStr &txt, short len);
     static QStr left(cQStr &txt, short len);
     static QStr rndstr(cuchar vlen = 10);
     static QStr ruuid(cQStr &part);
     static QStr fload(cQStr &path);
-    static QStr getarch();
     static QStr ckname();
+    static QStr appver();
     static ullong dfree(cQStr &path);
     static ullong fsize(cQStr &path);
     static ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);

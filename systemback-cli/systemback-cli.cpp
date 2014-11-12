@@ -103,11 +103,7 @@ start:
     if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
         sb::print(help);
     else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
-    {
-        QFile file(":version");
-        file.open(QIODevice::ReadOnly);
-        sb::print("\n " % file.readLine().trimmed() % "_Qt5_" % sb::getarch() % "\n\n");
-    }
+        sb::print("\n " % sb::appver() % "\n\n");
     else if(getuid() + getgid() > 0)
     {
         rv = 2;

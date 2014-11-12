@@ -64,16 +64,20 @@ void sb::error(cQStr &txt)
     QTS(stderr) << "\033[1;31m" % txt % "\033[0m";
 }
 
-QStr sb::getarch()
+sb::GetArch sb::getarch()
 {
+    sb::GetArch garch;
+
     switch(sizeof(char *)) {
     case 4:
-        return "i386";
+        garch.name = "i386";
+        break;
     case 8:
-        return "amd64";
-    default:
-        return "arch?";
+        garch.name = "amd64";
+        garch.isAMD64 = true;
     }
+
+    return garch;
 }
 
 QStr sb::ckname()
@@ -81,6 +85,28 @@ QStr sb::ckname()
     struct utsname snfo;
     uname(&snfo);
     return snfo.release;
+}
+
+QStr sb::appver()
+{
+    QFile file(":version");
+    file.open(QIODevice::ReadOnly);
+    QStr vstr(file.readLine().trimmed() % "_Qt" % (QStr(qVersion()) == QStr(QT_VERSION_STR) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_');
+
+#if defined(__clang__)
+    vstr.append("Clang" % QStr::number(__clang_major__) % '.' % QStr::number(__clang_minor__) % '.' % QStr::number(__clang_patchlevel__));
+#elif defined(__GNUG__) || defined(__GNUC__)
+#if defined(__GNUG__)
+    vstr.append("G++" % QStr::number(__GNUG__));
+#else
+    vstr.append("GCC" % QStr::number(__GNUC__));
+#endif
+    vstr.append('.' % QStr::number(__GNUC_MINOR__) % '.' % QStr::number(__GNUC_PATCHLEVEL__));
+#else
+    vstr.append("compiler?");
+#endif
+
+    return vstr % '_' % sb::getarch().name;
 }
 
 QStr sb::rndstr(uchar vlen)
@@ -191,7 +217,7 @@ bool sb::ickernel()
 
 bool sb::efiprob()
 {
-    if(getarch() == "amd64")
+    if(getarch().isAMD64)
     {
         if(isdir("/sys/firmware/efi")) return true;
         QStr ckernel(ckname());

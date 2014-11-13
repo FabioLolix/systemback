@@ -93,15 +93,10 @@ QStr sb::appver()
     file.open(QIODevice::ReadOnly);
     QStr vstr(file.readLine().trimmed() % "_Qt" % (QStr(qVersion()) == QStr(QT_VERSION_STR) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_');
 
-#if defined(__clang__)
+#ifdef __clang__
     vstr.append("Clang" % QStr::number(__clang_major__) % '.' % QStr::number(__clang_minor__) % '.' % QStr::number(__clang_patchlevel__));
-#elif defined(__GNUG__) || defined(__GNUC__)
-#if defined(__GNUG__)
-    vstr.append("G++" % QStr::number(__GNUG__));
-#else
-    vstr.append("GCC" % QStr::number(__GNUC__));
-#endif
-    vstr.append('.' % QStr::number(__GNUC_MINOR__) % '.' % QStr::number(__GNUC_PATCHLEVEL__));
+#elif defined(__GNUC__)
+    vstr.append("GCC" % QStr::number(__GNUC__) % '.' % QStr::number(__GNUC_MINOR__) % '.' % QStr::number(__GNUC_PATCHLEVEL__));
 #else
     vstr.append("compiler?");
 #endif

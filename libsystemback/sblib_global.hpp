@@ -22,7 +22,7 @@
 
 #include <QtCore/qglobal.h>
 
-#if defined(SYSTEMBACK_LIBRARY)
+#ifdef SYSTEMBACK_LIBRARY
 #  define SHARED_EXPORT_IMPORT Q_DECL_EXPORT
 #else
 #  define SHARED_EXPORT_IMPORT Q_DECL_IMPORT

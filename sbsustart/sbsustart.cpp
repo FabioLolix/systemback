@@ -62,13 +62,13 @@ start:
     {
         if(cmd.startsWith("systemback"))
         {
-            QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
-
             if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! qgetenv("PATH").startsWith("/usr/lib/systemback"))
             {
                 rv = 4;
                 goto error;
             }
+
+            QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
 
             if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (usrhm.isEmpty() || ! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
             {

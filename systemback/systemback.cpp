@@ -2195,7 +2195,7 @@ error:
 
     if(! sb::ilike(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
     {
-        if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800))
+        if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
         {
             if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 39 : 40;
@@ -5253,11 +5253,11 @@ void systemback::on_partitionrefresh_clicked()
         if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
     }
 
-    if(ui->filesystem->isEnabled())
+    if(ui->format->isEnabled())
     {
-        ui->filesystem->setDisabled(true);
         ui->format->setDisabled(true);
-     }
+        if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
+    }
 
     if(ui->unmountdelete->text() == tr("! Delete !"))
     {
@@ -7374,7 +7374,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 if(! ui->filesystem->isEnabled())
                 {
                     ui->filesystem->setEnabled(true);
-                    ui->format->setEnabled(true);
+                    if(! ui->format->isEnabled()) ui->format->setEnabled(true);
                 }
 
                 if(ui->unmountdelete->text() == tr("Unmount"))
@@ -7392,98 +7392,12 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 else
                     ui->mountpoint->setCurrentIndex(0);
             }
-            else if(ui->partitionsettings->item(current->row(), 3)->text() == "SWAP")
-            {
-                if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
-
-                if(ui->filesystem->isEnabled())
-                {
-                    ui->filesystem->setDisabled(true);
-                    ui->format->setDisabled(true);
-                }
-
-                if(ui->unmountdelete->text() == tr("! Delete !"))
-                {
-                    ui->unmountdelete->setText(tr("Unmount"));
-                    ui->unmountdelete->setStyleSheet(nullptr);
-                }
-
-                if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
-
-                if(ui->mountpoint->currentText() != "SWAP")
-                {
-                    if(ui->mountpoint->currentIndex() > 0)
-                        ui->mountpoint->setCurrentIndex(0);
-                    else if(! ui->mountpoint->currentText().isEmpty())
-                        ui->mountpoint->setCurrentText(nullptr);
-                }
-                else if(ui->partitionsettings->item(current->row(), 4)->text() == "SWAP")
-                {
-                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-                }
-                else if(! ui->changepartition->isEnabled())
-                    ui->changepartition->setEnabled(true);
-            }
-            else if(ui->partitionsettings->item(current->row(), 3)->text() == "/home" && ui->userdatafilescopy->isVisible())
-            {
-                if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
-
-                if(ui->filesystem->isEnabled())
-                {
-                    ui->filesystem->setDisabled(true);
-                    ui->format->setDisabled(true);
-                }
-
-                if(ui->unmountdelete->text() == tr("! Delete !"))
-                {
-                    ui->unmountdelete->setText(tr("Unmount"));
-                    ui->unmountdelete->setStyleSheet(nullptr);
-                }
-
-                if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
-
-                if(ui->mountpoint->currentText() != "/home")
-                {
-                    if(ui->mountpoint->currentIndex() > 0)
-                        ui->mountpoint->setCurrentIndex(0);
-                    else if(! ui->mountpoint->currentText().isEmpty())
-                        ui->mountpoint->setCurrentText(nullptr);
-                }
-            }
             else
             {
-                if(ui->mountpoint->isEnabled()) ui->mountpoint->setDisabled(true);
-
-                if(ui->filesystem->isEnabled())
+                if(ui->format->isEnabled())
                 {
-                    ui->filesystem->setDisabled(true);
                     ui->format->setDisabled(true);
-                }
-
-                if(ui->mountpoint->currentIndex() > 0)
-                    ui->mountpoint->setCurrentIndex(0);
-                else if(! ui->mountpoint->currentText().isEmpty())
-                    ui->mountpoint->setCurrentText(nullptr);
-
-                bool mntcheck(false);
-
-                if(sb::sdir[0].startsWith(ui->partitionsettings->item(current->row(), 3)->text()) || sb::like(ui->partitionsettings->item(current->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
-                    mntcheck = true;
-                else if(sb::isfile("/etc/fstab"))
-                {
-                    QFile file("/etc/fstab");
-
-                    if(file.open(QIODevice::ReadOnly))
-                        while(! file.atEnd())
-                        {
-                            QStr cline(file.readLine().trimmed().replace('\t', ' '));
-
-                            if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(current->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"}))
-                            {
-                                mntcheck = true;
-                                break;
-                            }
-                        }
+                    if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
                 }
 
                 if(ui->unmountdelete->text() == tr("! Delete !"))
@@ -7492,12 +7406,78 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     ui->unmountdelete->setStyleSheet(nullptr);
                 }
 
-                if(mntcheck)
+                if(ui->partitionsettings->item(current->row(), 3)->text() == "SWAP")
                 {
-                    if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
+                    if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
+                    if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
+
+                    if(ui->mountpoint->currentText() != "SWAP")
+                    {
+                        if(ui->mountpoint->currentIndex() > 0)
+                            ui->mountpoint->setCurrentIndex(0);
+                        else if(! ui->mountpoint->currentText().isEmpty())
+                            ui->mountpoint->setCurrentText(nullptr);
+                    }
+                    else if(ui->partitionsettings->item(current->row(), 4)->text() == "SWAP")
+                    {
+                        if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                    }
+                    else if(! ui->changepartition->isEnabled())
+                        ui->changepartition->setEnabled(true);
                 }
-                else if(! ui->unmountdelete->isEnabled())
-                    ui->unmountdelete->setEnabled(true);
+                else if(ui->partitionsettings->item(current->row(), 3)->text() == "/home" && ui->userdatafilescopy->isVisible())
+                {
+                    if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
+                    if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
+
+                    if(ui->mountpoint->currentText() != "/home")
+                    {
+                        if(ui->mountpoint->currentIndex() > 0)
+                            ui->mountpoint->setCurrentIndex(0);
+                        else if(! ui->mountpoint->currentText().isEmpty())
+                            ui->mountpoint->setCurrentText(nullptr);
+                    }
+                }
+                else
+                {
+                    if(ui->mountpoint->isEnabled()) ui->mountpoint->setDisabled(true);
+
+                    if(ui->mountpoint->currentIndex() > 0)
+                    {
+                        ui->mountpoint->setCurrentIndex(0);
+                        if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                    }
+                    else if(! ui->mountpoint->currentText().isEmpty())
+                        ui->mountpoint->setCurrentText(nullptr);
+
+                    bool mntcheck(false);
+
+                    if(sb::sdir[0].startsWith(ui->partitionsettings->item(current->row(), 3)->text()) || sb::like(ui->partitionsettings->item(current->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                        mntcheck = true;
+                    else if(sb::isfile("/etc/fstab"))
+                    {
+                        QFile file("/etc/fstab");
+
+                        if(file.open(QIODevice::ReadOnly))
+                            while(! file.atEnd())
+                            {
+                                QStr cline(file.readLine().trimmed().replace('\t', ' '));
+
+                                if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(current->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"}))
+                                {
+                                    mntcheck = true;
+                                    break;
+                                }
+                            }
+                    }
+
+                    if(mntcheck)
+                    {
+                        if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
+                    }
+                    else if(! ui->unmountdelete->isEnabled())
+                        ui->unmountdelete->setEnabled(true);
+                }
             }
 
             if(! ui->format->isChecked()) ui->format->setChecked(true);
@@ -7540,11 +7520,11 @@ void systemback::on_changepartition_clicked()
 
     if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().isEmpty())
     {
+        ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText(ui->mountpoint->currentText());
+
         if(ui->mountpoint->currentText() == "/boot/efi")
         {
-            ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText("/boot/efi");
             if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "vfat") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->setText("vfat");
-            if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "-") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("x");
 
             if(grub.isEFI)
             {
@@ -7583,35 +7563,20 @@ void systemback::on_changepartition_clicked()
         }
         else if(ui->mountpoint->currentText() == "SWAP")
         {
-            ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText("SWAP");
             if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "swap") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->setText("swap");
-
-            if(sb::isfile("/proc/swaps"))
-            {
-                if(QStr('\n' % sb::fload("/proc/swaps")).contains('\n' % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text() % ' '))
-                {
-                    if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "x") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("-");
-                }
-                else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "-")
-                    ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("x");
-            }
-            else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "-")
-                ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("x");
         }
         else
         {
-            ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText(ui->mountpoint->currentText());
-            ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->setText(ui->filesystem->currentText());
-
-            if(ui->format->isChecked())
-            {
-                if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "-") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("x");
-            }
-            else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "x")
-                ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("-");
-
+            if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != ui->filesystem->currentText()) ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->setText(ui->filesystem->currentText());
             if(ui->mountpoint->currentText() == "/") ui->copynext->setEnabled(true);
         }
+
+        if(ui->format->isChecked())
+        {
+            if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "-") ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("x");
+        }
+        else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "x")
+            ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("-");
     }
     else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home")
     {
@@ -7639,68 +7604,90 @@ void systemback::on_filesystem_currentIndexChanged(const QStr &arg1)
 
 void systemback::on_format_clicked(bool checked)
 {
-    if(! checked && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != ui->filesystem->currentText()) ui->format->setChecked(true);
+    if(! checked)
+    {
+        if(ui->mountpoint->currentText() == "/boot/efi")
+        {
+            if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != "vfat") ui->format->setChecked(true);
+        }
+        else if(ui->mountpoint->currentText() == "SWAP")
+        {
+            if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != "swap") ui->format->setChecked(true);
+        }
+        else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != ui->filesystem->currentText())
+            ui->format->setChecked(true);
+    }
 }
 
 void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
 {
-    if(! arg1.isEmpty() && (! sb::like(arg1, {"_/*", "_S_", "_SW_", "_SWA_", "_SWAP_"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
-        ui->mountpoint->setCurrentText(sb::left(arg1, -1));
-    else
+    if(ui->mountpoint->isEnabled())
     {
-        if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}) || sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/home_", "_SWAP_"}))
-        {
-            if(ui->filesystem->isEnabled())
-            {
-                ui->filesystem->setDisabled(true);
-                ui->format->setDisabled(true);
-            }
-        }
-        else if(! ui->filesystem->isEnabled())
-        {
-            ui->filesystem->setEnabled(true);
-            ui->format->setEnabled(true);
-        }
-
-        if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456))
-        {
-            if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-        }
+        if(! arg1.isEmpty() && (! sb::like(arg1, {"_/*", "_S_", "_SW_", "_SWA_", "_SWAP_"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
+            ui->mountpoint->setCurrentText(sb::left(arg1, -1));
         else
         {
-            bool check(false);
-
-            if((ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
-                check = true;
-            else if(arg1 != "SWAP")
-                for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-                    if(ui->partitionsettings->item(a, 4)->text() == arg1)
-                    {
-                        check = true;
-                        break;
-                    }
-
-            if(check)
+            if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/home_", "_SWAP_"}))
             {
-                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-            }
-            else if(sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
-            {
-                if(! ui->changepartition->isEnabled()) ui->changepartition->setEnabled(true);
+                if(ui->format->isEnabled())
+                {
+                    ui->format->setDisabled(true);
+                    if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
+                }
             }
             else
             {
-                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-                sb::delay(300);
-
-                if(arg1 == ui->mountpoint->currentText())
+                if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
                 {
-                    QStr mpname(QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
+                    if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
+                }
+                else if(! ui->filesystem->isEnabled())
+                    ui->filesystem->setEnabled(true);
 
-                    if(QDir().mkdir("/tmp/" % mpname))
+                if(! ui->format->isEnabled()) ui->format->setEnabled(true);
+                if(! ui->format->isChecked()) ui->format->setChecked(true);
+            }
+
+            if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456))
+            {
+                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+            }
+            else
+            {
+                bool check(false);
+
+                if((ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
+                    check = true;
+                else if(arg1 != "SWAP")
+                    for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+                        if(ui->partitionsettings->item(a, 4)->text() == arg1)
+                        {
+                            check = true;
+                            break;
+                        }
+
+                if(check)
+                {
+                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                }
+                else if(sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
+                {
+                    if(! ui->changepartition->isEnabled()) ui->changepartition->setEnabled(true);
+                }
+                else
+                {
+                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                    sb::delay(300);
+
+                    if(arg1 == ui->mountpoint->currentText())
                     {
-                        sb::remove("/tmp/" % mpname);
-                        ui->changepartition->setEnabled(true);
+                        QStr mpname(QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
+
+                        if(QDir().mkdir("/tmp/" % mpname))
+                        {
+                            sb::remove("/tmp/" % mpname);
+                            ui->changepartition->setEnabled(true);
+                        }
                     }
                 }
             }

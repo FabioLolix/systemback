@@ -18,6 +18,8 @@ QMAKE_CXXFLAGS += -fno-rtti \
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 
-QMAKE_LFLAGS += -Wl,--rpath=/usr/lib/systemback
+QMAKE_LFLAGS += -rpath /usr/lib/systemback
+
+QMAKE_LFLAGS_RELEASE += -s
 
 LIBS += -L../libsystemback -lsystemback

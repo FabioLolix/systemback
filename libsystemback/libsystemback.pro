@@ -23,6 +23,8 @@ QMAKE_CXXFLAGS += -fno-rtti \
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra
 
+QMAKE_LFLAGS_RELEASE += -s
+
 LIBS += -lmount \
         -lblkid \
         -lparted

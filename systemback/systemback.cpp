@@ -41,7 +41,6 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 {
     ui->setupUi(this);
     installEventFilter(this);
-    unity = sb::pisrng("unity-panel-service");
     uchkd = nrxth = nohmcpy = cfgupdt = utblock = intrrpt = false;
 
     if(! sb::like(font().family(), {"_Ubuntu_", "_FreeSans_"}) || fontInfo().pixelSize() != 15 || fontInfo().weight() != QFont::Normal || fontInfo().bold() || fontInfo().italic() || fontInfo().overline() || fontInfo().strikeOut() || fontInfo().underline())
@@ -380,7 +379,11 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         }
     }
 
-    if(unity) setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    if(sb::pisrng("unity-panel-service"))
+    {
+        unity = true;
+        setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    }
 }
 
 systemback::~systemback()
@@ -2283,7 +2286,7 @@ start:
                 if(rv > 0) rv = sb::exec("mkfs.btrfs -L " % lbl % ' ' % part);
             }
             else
-                 rv = sb::exec("mkfs." % fstype % " -L " % lbl % ' ' % part);
+                 rv = sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part);
 
             if(intrrpt) goto exit;
 
@@ -5081,11 +5084,11 @@ void systemback::on_copymenu_clicked()
         if(ui->userdatafilescopy->isChecked()) ui->userdatafilescopy->setChecked(false);
     }
 
-    short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
     ui->sbpanel->hide();
     ui->copypanel->show();
     ui->function1->setText(tr("System copy"));
     ui->copyback->setFocus();
+    short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
     if(nwidth > ss(698)) windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false);
     setMinimumSize(ss(698), ss(465));
     setMaximumSize(qApp->desktop()->availableGeometry().width() - ss(60), qApp->desktop()->availableGeometry().height() - ss(60));
@@ -5323,11 +5326,11 @@ void systemback::on_partitionrefresh_clicked()
 
         if(path.length() == 8)
         {
-            QFont font;
-            font.setWeight(QFont::DemiBold);
             ++sn;
             ui->partitionsettings->setRowCount(sn + 1);
             if(sn > 0) ui->partitionsettings->setRowHeight(sn, ss(25));
+            QFont font;
+            font.setWeight(QFont::DemiBold);
             QTblWI *dev(new QTblWI(path));
             dev->setTextAlignment(Qt::AlignBottom);
             dev->setFont(font);
@@ -5360,11 +5363,11 @@ void systemback::on_partitionrefresh_clicked()
             switch(type.toUShort()) {
             case sb::Extended:
             {
+                ++sn;
+                ui->partitionsettings->setRowCount(sn + 1);
                 QFont font;
                 font.setWeight(QFont::DemiBold);
                 font.setItalic(true);
-                ++sn;
-                ui->partitionsettings->setRowCount(sn + 1);
                 QTblWI *dev(new QTblWI(path));
                 dev->setFont(font);
                 ui->partitionsettings->setItem(sn, 0, dev);
@@ -5474,10 +5477,10 @@ void systemback::on_partitionrefresh_clicked()
             }
             case sb::Freespace:
             case sb::Emptyspace:
-                QFont font;
-                font.setItalic(true);
                 ++sn;
                 ui->partitionsettings->setRowCount(sn + 1);
+                QFont font;
+                font.setItalic(true);
                 QTblWI *dev(new QTblWI(path));
                 dev->setFont(font);
                 ui->partitionsettings->setItem(sn, 0, dev);
@@ -6135,13 +6138,13 @@ void systemback::on_livedevicesrefresh_clicked()
 
     for(cQStr &cdts : dlst)
     {
-        QSL dts(cdts.split('\n'));
-        ullong bsize(dts.at(2).toULongLong());
         ++sn;
         ui->livedevices->setRowCount(sn + 1);
+        QSL dts(cdts.split('\n'));
         QTblWI *dev(new QTblWI(dts.at(0)));
         ui->livedevices->setItem(sn, 0, dev);
         QTblWI *size(new QTblWI);
+        ullong bsize(dts.at(2).toULongLong());
 
         if(bsize < 1073741824)
             size->setText(QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB");
@@ -7216,10 +7219,10 @@ void systemback::on_installnext_clicked()
         ui->usersettingscopy->show();
     }
 
-    short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
     ui->installpanel->hide();
     ui->copypanel->show();
     ui->copyback->setFocus();
+    short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
     if(nwidth > ss(698)) windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false);
     setMinimumSize(ss(698), ss(465));
     setMaximumSize(qApp->desktop()->availableGeometry().width() - ss(60), qApp->desktop()->availableGeometry().height() - ss(60));
@@ -8038,11 +8041,12 @@ void systemback::on_additem_clicked()
 void systemback::on_removeitem_clicked()
 {
     busy();
-    QStr excdlst;
     QFile file("/etc/systemback.excludes");
 
     if(file.open(QIODevice::ReadOnly))
     {
+        QStr excdlst;
+
         while(! file.atEnd())
         {
             QStr cline(file.readLine().trimmed());

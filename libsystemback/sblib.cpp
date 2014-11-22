@@ -95,7 +95,7 @@ QStr sb::appver()
 
 #ifdef __clang__
     vstr.append("Clang" % QStr::number(__clang_major__) % '.' % QStr::number(__clang_minor__) % '.' % QStr::number(__clang_patchlevel__));
-#elif defned(__INTEL_COMPILER) || ! defined(__GNUC__)
+#elif defined(__INTEL_COMPILER) || ! defined(__GNUC__)
     vstr.append("compiler?");
 #elif defined(__GNUC__)
     vstr.append("GCC" % QStr::number(__GNUC__) % '.' % QStr::number(__GNUC_MINOR__) % '.' % QStr::number(__GNUC_PATCHLEVEL__));

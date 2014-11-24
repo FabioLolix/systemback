@@ -275,6 +275,9 @@
       <property name="maxLength">
        <number>80</number>
       </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QLabel" name="usernamepipe">
       <property name="geometry">
@@ -443,6 +446,9 @@
       <property name="maxLength">
        <number>32</number>
       </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QLineEdit" name="hostname">
       <property name="geometry">
@@ -458,6 +464,9 @@
       </property>
       <property name="maxLength">
        <number>64</number>
+      </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLineEdit" name="password1">
@@ -477,6 +486,9 @@
       </property>
       <property name="echoMode">
        <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLineEdit" name="password2">
@@ -500,6 +512,9 @@
       <property name="echoMode">
        <enum>QLineEdit::Password</enum>
       </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QLineEdit" name="rootpassword1">
       <property name="geometry">
@@ -518,6 +533,9 @@
       </property>
       <property name="echoMode">
        <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLineEdit" name="rootpassword2">
@@ -540,6 +558,9 @@
       </property>
       <property name="echoMode">
        <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="fullnamepipe">
@@ -749,11 +770,11 @@
       <property name="acceptDrops">
        <bool>false</bool>
       </property>
-      <property name="text">
-       <string notr="true">auto</string>
-      </property>
       <property name="maxLength">
        <number>32</number>
+      </property>
+      <property name="clearButtonEnabled">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="livenamepipe">

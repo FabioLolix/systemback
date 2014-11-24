@@ -63,7 +63,7 @@ start:
         goto error;
     }
 
-    if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/live/image/live/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
+    if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
     {
         rv = 3;
         goto error;

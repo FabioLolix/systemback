@@ -25,6 +25,7 @@ QMAKE_LFLAGS += -Wl,-rpath=/usr/lib/systemback
 
 QMAKE_LFLAGS_RELEASE += -s
 
-LIBS += -L../libsystemback -lsystemback
+LIBS += -L../libsystemback \
+        -lsystemback
 
 INCLUDEPATH = ../libsystemback

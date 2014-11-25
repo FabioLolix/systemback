@@ -66,9 +66,11 @@ private:
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
+    QStr ckname();
     ushort ss(ushort size);
     bool minside(cQPoint &pos, cQRect &geom);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
+    bool pisrng(cQStr &pname, ushort *pid = nullptr);
     void setwontop(bool state = true);
     void busy(bool state = true);
     void fontcheck(uchar wdgt);

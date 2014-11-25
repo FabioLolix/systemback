@@ -44,20 +44,12 @@ public:
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
-    struct GetArch
-    {
-        QStr name{"arch?"};
-        bool isAMD64{false};
-    };
-
-    static GetArch getarch();
     static QStr mid(cQStr &txt, ushort start, ushort len);
     static QStr right(cQStr &txt, short len);
     static QStr left(cQStr &txt, short len);
     static QStr rndstr(cuchar vlen = 10);
     static QStr ruuid(cQStr &part);
     static QStr fload(cQStr &path);
-    static QStr ckname();
     static QStr appver();
     static ullong dfree(cQStr &path);
     static ullong fsize(cQStr &path);
@@ -72,7 +64,6 @@ public:
     static bool like(cQStr &txt, cQSL &lst, cuchar mode = Norm);
     static bool execsrch(cQStr &fname, cQStr &ppath = nullptr);
     static bool scopy(cuchar mthd, cQStr &usr, cQStr &srcdir);
-    static bool pisrng(cQStr &pname, ushort *pid = nullptr);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool crtfile(cQStr &path, cQStr &txt = nullptr);
     static bool access(cQStr &path, cuchar mode = Read);
@@ -90,9 +81,8 @@ public:
     static bool umount(cQStr &dev);
     static bool exist(cQStr &path);
     static bool isdir(cQStr &path);
+    static bool isnum(cQStr &txt);
     static bool lock(cuchar type);
-    static bool ickernel();
-    static bool efiprob();
     static void readprttns(QSL &strlst);
     static void readlvdevs(QSL &strlst);
     static void delpart(cQStr &part);
@@ -104,7 +94,6 @@ public:
     static void pupgrade();
     static void cfgwrite();
     static void thrdelay();
-    static void xrestart();
     static void cfgread();
     static void fssync();
 
@@ -130,7 +119,6 @@ private:
     static bool cpdir(cQStr &srcdir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);
     static bool lcomp(cQStr &link1, cQStr &link2);
-    static bool isnum(cQStr &txt);
     bool thrdsrestore(cuchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab);
     bool thrdscopy(cuchar mthd, cQStr &usr, cQStr &srcdir);
     bool recrmdir(cQStr &path, bool slimit = false);
@@ -293,6 +281,14 @@ inline bool sb::access(cQStr &path, cuchar mode)
     default:
         return false;
     }
+}
+
+inline bool sb::isnum(cQStr &txt)
+{
+    for(uchar a(0) ; a < txt.length() ; ++a)
+        if(! txt.at(a).isDigit()) return false;
+
+    return ! txt.isEmpty();
 }
 
 #endif // SBLIB_HPP

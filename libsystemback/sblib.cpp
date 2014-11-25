@@ -29,13 +29,11 @@
 #include <sys/sendfile.h>
 #include <blkid/blkid.h>
 #include <sys/statvfs.h>
-#include <sys/utsname.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <linux/fs.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <signal.h>
 #include <utime.h>
 #include <fcntl.h>
 
@@ -64,35 +62,11 @@ void sb::error(cQStr &txt)
     QTS(stderr) << "\033[1;31m" % txt % "\033[0m";
 }
 
-sb::GetArch sb::getarch()
-{
-    sb::GetArch garch;
-
-    switch(sizeof(char *)) {
-    case 4:
-        garch.name = "i386";
-        break;
-    case 8:
-        garch.name = "amd64";
-        garch.isAMD64 = true;
-    }
-
-    return garch;
-}
-
-QStr sb::ckname()
-{
-    utsname snfo;
-    uname(&snfo);
-    return snfo.release;
-}
-
 QStr sb::appver()
 {
     QFile file(":version");
     file.open(QIODevice::ReadOnly);
     QStr vstr(file.readLine().trimmed() % "_Qt" % (QStr(qVersion()) == QStr(QT_VERSION_STR) ? QStr(qVersion()) : QStr(qVersion()) % '(' % QStr(QT_VERSION_STR) % ')') % '_');
-
 #ifdef __clang__
     vstr.append("Clang" % QStr::number(__clang_major__) % '.' % QStr::number(__clang_minor__) % '.' % QStr::number(__clang_patchlevel__));
 #elif defined(__INTEL_COMPILER) || ! defined(__GNUC__)
@@ -100,8 +74,14 @@ QStr sb::appver()
 #elif defined(__GNUC__)
     vstr.append("GCC" % QStr::number(__GNUC__) % '.' % QStr::number(__GNUC_MINOR__) % '.' % QStr::number(__GNUC_PATCHLEVEL__));
 #endif
-
-    return vstr % '_' % sb::getarch().name;
+    return vstr % '_' %
+#ifdef __amd64__
+            "amd64";
+#elif defined(__i386__)
+            "i386";
+#else
+            "arch?";
+#endif
 }
 
 QStr sb::rndstr(uchar vlen)
@@ -129,23 +109,6 @@ ullong sb::dfree(cQStr &path)
 {
     struct statvfs dstat;
     return statvfs(path.toStdString().c_str(), &dstat) == -1 ? 0 : dstat.f_bavail * dstat.f_bsize;
-}
-
-bool sb::pisrng(cQStr &pname, ushort *pid)
-{
-    DIR *dir(opendir("/proc"));
-    dirent *ent;
-
-    while((ent = readdir(dir)))
-        if(! like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && isnum(QStr(ent->d_name)) && islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
-        {
-            if(pid) *pid = QStr(ent->d_name).toUShort();
-            closedir(dir);
-            return true;
-        }
-
-    closedir(dir);
-    return false;
 }
 
 bool sb::crtfile(cQStr &path, cQStr &txt)
@@ -193,55 +156,6 @@ void sb::unlock(uchar type)
     if(type < 3) close(sblock[type]);
 }
 
-bool sb::ickernel()
-{
-    QStr ckernel(ckname()), fend[2]{"order", "builtin"};
-
-    for(uchar a(0) ; a < 2 ; ++a)
-        if(isfile("/lib/modules/" % ckernel % "/modules." % fend[a]))
-        {
-            QFile file("/lib/modules/" % ckernel % "/modules." % fend[a]);
-
-            if(file.open(QIODevice::ReadOnly))
-                while(! file.atEnd())
-                    if(like(file.readLine().trimmed(), {"*aufs.ko_", "*overlayfs.ko_", "*unionfs.ko_"})) return true;
-        }
-
-    return false;
-}
-
-bool sb::efiprob()
-{
-    if(getarch().isAMD64)
-    {
-        if(isdir("/sys/firmware/efi")) return true;
-        QStr ckernel(ckname());
-
-        if(isfile("/lib/modules/" % ckernel % "/modules.builtin"))
-        {
-            QFile file("/lib/modules/" % ckernel % "/modules.builtin");
-
-            if(file.open(QIODevice::ReadOnly))
-                while(! file.atEnd())
-                    if(file.readLine().trimmed().endsWith("efivars.ko")) return false;
-        }
-
-        if(isfile("/proc/modules") && ! fload("/proc/modules").contains("efivars ") && isfile("/lib/modules/" % ckernel % "/modules.order"))
-        {
-            QFile file("/lib/modules/" % ckernel % "/modules.order");
-
-            if(file.open(QIODevice::ReadOnly))
-                while(! file.atEnd())
-                {
-                    QStr cline(file.readLine().trimmed());
-                    if(cline.endsWith("efivars.ko") && isfile("/lib/modules/" % ckernel % '/' % cline) && exec("modprobe efivars", nullptr, true) == 0 && isdir("/sys/firmware/efi")) return true;
-                }
-        }
-    }
-
-    return false;
-}
-
 void sb::delay(ushort msec)
 {
     QTime time;
@@ -265,12 +179,6 @@ void sb::thrdelay()
 void sb::cfgwrite()
 {
     crtfile("/etc/systemback.conf", "storagedir=" % sdir[0] % "\nliveworkdir=" % sdir[2] % "\npointsnumber=" % QStr::number(pnumber) % "\ntimer=" % schdle[0] % "\nschedule=" % schdle[1] % ":" % schdle[2] % ":" % schdle[3] % ":" % schdle[4] % "\nsilentmode=" % schdle[5] % "\nwindowposition=" % schdle[6] % '\n');
-}
-
-void sb::xrestart()
-{
-    ushort pid;
-    if(pisrng("Xorg", &pid)) kill(pid, SIGTERM);
 }
 
 bool sb::execsrch(cQStr &fname, cQStr &ppath)
@@ -970,14 +878,6 @@ inline bool sb::lcomp(cQStr &link1, cQStr &link2)
     if(ilike(-1, QSIL() << lstat(link1.toStdString().c_str(), &istat[0]) << lstat(link2.toStdString().c_str(), &istat[1])) || ! S_ISLNK(istat[0].st_mode) || ! S_ISLNK(istat[1].st_mode) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
     QStr lnk(rlink(link1, istat[0].st_size));
     return ! lnk.isEmpty() && lnk == rlink(link2, istat[1].st_size);
-}
-
-inline bool sb::isnum(cQStr &txt)
-{
-    for(uchar a(0) ; a < txt.length() ; ++a)
-        if(! txt.at(a).isDigit()) return false;
-
-    return ! txt.isEmpty();
 }
 
 inline bool sb::rodir(QStr &str, cQStr &path, bool hidden, uchar oplen)

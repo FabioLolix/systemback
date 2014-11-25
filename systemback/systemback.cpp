@@ -25,8 +25,11 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QDir>
+#include <sys/utsname.h>
 #include <sys/swap.h>
 #include <X11/Xlib.h>
+#include <dirent.h>
+#include <signal.h>
 #include <unistd.h>
 
 #ifdef KeyRelease
@@ -389,7 +392,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         }
     }
 
-    if(sb::pisrng("unity-panel-service"))
+    if(pisrng("unity-panel-service"))
     {
         unity = true;
         setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
@@ -586,26 +589,52 @@ void systemback::unitimer()
                 if(sb::execsrch("mkfs.xfs")) ui->filesystem->addItem("xfs");
                 ui->systembackversion->setText(sb::appver());
                 ui->repairmountpoint->addItems({nullptr, "/mnt", "/mnt/home", "/mnt/boot"});
-
-                if(sb::efiprob())
+#ifdef __amd64__
+                if(! sb::isdir("/sys/firmware/efi"))
                 {
-                    grub.name = "efi-amd64-bin";
-                    grub.isEFI = true;
-                    ui->repairmountpoint->addItem("/mnt/boot/efi");
-                    ui->grubinstallcopy->hide();
-                    ui->efiwarning->setForegroundRole(QPalette::Highlight);
-                    ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
-                    ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
-                    ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
-                }
-                else
-                {
-                    grub.name = "pc-bin";
-                    grub.isEFI = false;
-                    ui->grubinstallcopydisable->hide();
-                    ui->efiwarning->hide();
+                    QStr ckernel(ckname());
+
+                    if(sb::isfile("/lib/modules/" % ckernel % "/modules.builtin"))
+                    {
+                        QFile file("/lib/modules/" % ckernel % "/modules.builtin");
+
+                        if(file.open(QIODevice::ReadOnly))
+                            while(! file.atEnd())
+                                if(file.readLine().trimmed().endsWith("efivars.ko")) goto noefi;
+                    }
+
+                    if(sb::isfile("/proc/modules") && ! sb::fload("/proc/modules").contains("efivars ") && sb::isfile("/lib/modules/" % ckernel % "/modules.order"))
+                    {
+                        QFile file("/lib/modules/" % ckernel % "/modules.order");
+
+                        if(file.open(QIODevice::ReadOnly))
+                            while(! file.atEnd())
+                            {
+                                QStr cline(file.readLine().trimmed());
+                                if(cline.endsWith("efivars.ko") && sb::isfile("/lib/modules/" % ckernel % '/' % cline) && sb::exec("modprobe efivars", nullptr, true) == 0 && sb::isdir("/sys/firmware/efi")) goto isefi;
+                            }
+                    }
                 }
 
+            isefi:
+                grub.name = "efi-amd64-bin";
+                grub.isEFI = true;
+                ui->repairmountpoint->addItem("/mnt/boot/efi");
+                ui->grubinstallcopy->hide();
+                ui->efiwarning->setForegroundRole(QPalette::Highlight);
+                ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
+                ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
+                ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
+                goto next_1;
+            noefi:
+#endif
+                grub.name = "pc-bin";
+                grub.isEFI = false;
+                ui->grubinstallcopydisable->hide();
+                ui->efiwarning->hide();
+#ifdef __amd64__
+            next_1:
+#endif
                 ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
                 ui->repairmountpoint->setCurrentIndex(1);
                 on_partitionrefresh_clicked();
@@ -637,7 +666,24 @@ void systemback::unitimer()
 
             pointupgrade();
             if(sstart) ui->schedulerstart->setEnabled(true);
-            ickernel = sb::ickernel() || sb::execsrch("unionfs-fuse");
+            QStr ckernel(ckname()), fend[2]{"order", "builtin"};
+
+            for(uchar a(0) ; a < 2 ; ++a)
+                if(sb::isfile("/lib/modules/" % ckernel % "/modules." % fend[a]))
+                {
+                    QFile file("/lib/modules/" % ckernel % "/modules." % fend[a]);
+
+                    if(file.open(QIODevice::ReadOnly))
+                        while(! file.atEnd())
+                            if(sb::like(file.readLine().trimmed(), {"*aufs.ko_", "*overlayfs.ko_", "*unionfs.ko_"}))
+                            {
+                                ickernel = true;
+                                goto next_2;
+                            }
+                }
+
+            ickernel = sb::execsrch("unionfs-fuse");
+        next_2:
             busy(false);
             utimer->start();
         }
@@ -987,6 +1033,30 @@ QStr systemback::guname()
     }
 
     return ui->admins->currentText();
+}
+
+QStr systemback::ckname()
+{
+    utsname snfo;
+    uname(&snfo);
+    return snfo.release;
+}
+
+bool systemback::pisrng(cQStr &pname, ushort *pid)
+{
+    DIR *dir(opendir("/proc"));
+    dirent *ent;
+
+    while((ent = readdir(dir)))
+        if(! sb::like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(QStr(ent->d_name)) && sb::islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
+        {
+            if(pid) *pid = QStr(ent->d_name).toUShort();
+            closedir(dir);
+            return true;
+        }
+
+    closedir(dir);
+    return false;
 }
 
 void systemback::buttonstimer()
@@ -6483,7 +6553,8 @@ void systemback::on_dialogok_clicked()
     }
     else if(ui->dialogok->text() == tr("X restart"))
     {
-        sb::xrestart();
+        ushort pid;
+        if(pisrng("Xorg", &pid)) kill(pid, SIGTERM);
         close();
     }
 }
@@ -8834,7 +8905,7 @@ exit:
 start:
     statustart();
     prun = tr("Creating Live system") % '\n' % tr("process") % " 1/3";
-    QStr ckernel(sb::ckname()), lvtype(sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live"), ifname;
+    QStr ckernel(ckname()), lvtype(sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live"), ifname;
 
     if(sb::exist(sb::sdir[2] % "/.sblivesystemcreate"))
     {
@@ -8853,7 +8924,7 @@ start:
     }
 
     if(intrrpt) goto exit;
-    if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::getarch().name % '\n') || ! sb::copy("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) goto error;
+    if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::right(ui->systembackversion->text(), - sb::rinstr(ui->systembackversion->text(), "_")) % '\n') || ! sb::copy("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) goto error;
     if(intrrpt) goto exit;
     QStr fname;
 
@@ -9002,12 +9073,12 @@ start:
         grxorg = "menuentry \"" % tr("Boot Live without xorg.conf file") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " noxconf quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n";
         srxorg = "label noxconf\n  menu label " % tr("Boot Live without xorg.conf file") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz noxconf quiet splash\n\n";
     }
-
-    if(sb::getarch().isAMD64 && sb::isfile("/usr/share/systemback/efi-amd64.bootfiles") && (sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0 || ! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png") ||
+#ifdef __amd64__
+    if(sb::isfile("/usr/share/systemback/efi-amd64.bootfiles") && (sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0 || ! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png") ||
         ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n") ||
         ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"left\"}\n}\n") ||
         ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/loopback.cfg", "menuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz" % rpart % "boot=" % lvtype % " quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % "\n  initrd /" % lvtype % "/initrd.gz\n}\n"))) goto error;
-
+#endif
     if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", "default vesamenu.c32\nprompt 0\ntimeout 100\n\nmenu title Systemback Live (" % ifname % ")\nmenu tabmsg " % tr("Press TAB key to edit") % "\nmenu background splash.png\n\nlabel live\n  menu label " % tr("Boot Live system") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz quiet splash\n\nlabel safe\n  menu label " % tr("Boot Live in safe graphics mode") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz xforcevesa nomodeset quiet splash\n\n" % srxorg % "label debug\n  menu label " % tr("Boot Live in debug mode") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz\n")) goto error;
     if(intrrpt) goto exit;
     if(! sb::remove(sb::sdir[2] % "/.sblivesystemcreate/.systemback")) goto error;

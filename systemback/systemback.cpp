@@ -462,7 +462,9 @@ void systemback::unitimer()
             if(! sstart)
             {
                 ui->storagedir->setText(sb::sdir[0]);
+                ui->storagedir->setCursorPosition(0);
                 ui->liveworkdir->setText(sb::sdir[2]);
+                ui->liveworkdir->setCursorPosition(0);
                 ui->restorepanel->move(ui->sbpanel->pos());
                 ui->copypanel->move(ui->sbpanel->pos());
                 ui->livecreatepanel->move(ui->sbpanel->pos());
@@ -4583,6 +4585,7 @@ void systemback::on_point1_textChanged(const QStr &arg1)
                 ui->pointpipe1->click();
 
             if(! ui->pointpipe1->isEnabled()) ui->pointpipe1->setEnabled(true);
+            if(! ui->point1->hasFocus()) ui->point1->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe1->isEnabled())
@@ -4618,6 +4621,7 @@ void systemback::on_point2_textChanged(const QStr &arg1)
                 ui->pointpipe2->click();
 
             if(! ui->pointpipe2->isEnabled()) ui->pointpipe2->setEnabled(true);
+            if(! ui->point2->hasFocus()) ui->point2->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe2->isEnabled())
@@ -4653,6 +4657,7 @@ void systemback::on_point3_textChanged(const QStr &arg1)
                 ui->pointpipe3->click();
 
             if(! ui->pointpipe3->isEnabled()) ui->pointpipe3->setEnabled(true);
+            if(! ui->point3->hasFocus()) ui->point3->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe3->isEnabled())
@@ -4688,6 +4693,7 @@ void systemback::on_point4_textChanged(const QStr &arg1)
                 ui->pointpipe4->click();
 
             if(! ui->pointpipe4->isEnabled()) ui->pointpipe4->setEnabled(true);
+            if(! ui->point4->hasFocus()) ui->point4->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe4->isEnabled())
@@ -4723,6 +4729,7 @@ void systemback::on_point5_textChanged(const QStr &arg1)
                 ui->pointpipe5->click();
 
             if(! ui->pointpipe5->isEnabled()) ui->pointpipe5->setEnabled(true);
+            if(! ui->point5->hasFocus()) ui->point5->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe5->isEnabled())
@@ -4758,6 +4765,7 @@ void systemback::on_point6_textChanged(const QStr &arg1)
                 ui->pointpipe6->click();
 
             if(! ui->pointpipe6->isEnabled()) ui->pointpipe6->setEnabled(true);
+            if(! ui->point6->hasFocus()) ui->point6->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe6->isEnabled())
@@ -4793,6 +4801,7 @@ void systemback::on_point7_textChanged(const QStr &arg1)
                 ui->pointpipe7->click();
 
             if(! ui->pointpipe7->isEnabled()) ui->pointpipe7->setEnabled(true);
+            if(! ui->point7->hasFocus()) ui->point7->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe7->isEnabled())
@@ -4828,6 +4837,7 @@ void systemback::on_point8_textChanged(const QStr &arg1)
                 ui->pointpipe8->click();
 
             if(! ui->pointpipe8->isEnabled()) ui->pointpipe8->setEnabled(true);
+            if(! ui->point8->hasFocus()) ui->point8->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe8->isEnabled())
@@ -4863,6 +4873,7 @@ void systemback::on_point9_textChanged(const QStr &arg1)
                 ui->pointpipe9->click();
 
             if(! ui->pointpipe9->isEnabled()) ui->pointpipe9->setEnabled(true);
+            if(! ui->point9->hasFocus()) ui->point9->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe9->isEnabled())
@@ -4898,6 +4909,7 @@ void systemback::on_point10_textChanged(const QStr &arg1)
                 ui->pointpipe10->click();
 
             if(! ui->pointpipe10->isEnabled()) ui->pointpipe10->setEnabled(true);
+            if(! ui->point10->hasFocus()) ui->point10->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe10->isEnabled())
@@ -4933,6 +4945,7 @@ void systemback::on_point11_textChanged(const QStr &arg1)
                 ui->pointpipe11->click();
 
             if(! ui->pointpipe11->isEnabled()) ui->pointpipe11->setEnabled(true);
+            if(! ui->point11->hasFocus()) ui->point11->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe11->isEnabled())
@@ -4968,6 +4981,7 @@ void systemback::on_point12_textChanged(const QStr &arg1)
                 ui->pointpipe12->click();
 
             if(! ui->pointpipe12->isEnabled()) ui->pointpipe12->setEnabled(true);
+            if(! ui->point12->hasFocus()) ui->point12->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe12->isEnabled())
@@ -5003,6 +5017,7 @@ void systemback::on_point13_textChanged(const QStr &arg1)
                 ui->pointpipe13->click();
 
             if(! ui->pointpipe13->isEnabled()) ui->pointpipe13->setEnabled(true);
+            if(! ui->point13->hasFocus()) ui->point13->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe13->isEnabled())
@@ -5038,6 +5053,7 @@ void systemback::on_point14_textChanged(const QStr &arg1)
                 ui->pointpipe14->click();
 
             if(! ui->pointpipe14->isEnabled()) ui->pointpipe14->setEnabled(true);
+            if(! ui->point14->hasFocus()) ui->point14->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe14->isEnabled())
@@ -5073,6 +5089,7 @@ void systemback::on_point15_textChanged(const QStr &arg1)
                 ui->pointpipe15->click();
 
             if(! ui->pointpipe15->isEnabled()) ui->pointpipe15->setEnabled(true);
+            if(! ui->point15->hasFocus()) ui->point15->setCursorPosition(0);
         }
     }
     else if(ui->pointpipe15->isEnabled())
@@ -7006,6 +7023,7 @@ void systemback::on_dirchooseok_clicked()
                 if(! cfgupdt) cfgupdt = true;
                 sb::sdir[1] = sb::sdir[0] % "/Systemback";
                 ui->storagedir->setText(sb::sdir[0]);
+                ui->storagedir->setCursorPosition(0);
                 pointupgrade();
             }
 
@@ -7035,6 +7053,7 @@ void systemback::on_dirchooseok_clicked()
                 sb::sdir[2] = ui->dirpath->text();
                 if(! cfgupdt) cfgupdt = true;
                 ui->liveworkdir->setText(sb::sdir[2]);
+                ui->liveworkdir->setCursorPosition(0);
                 on_livecreatemenu_clicked();
             }
         }

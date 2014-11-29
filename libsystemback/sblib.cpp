@@ -2797,9 +2797,15 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         if(ThrdKill) return false;
     }
 
-    elist = {"/boot/efi", "/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/log", "/var/run/", "/var/tmp/"};
+    elist = {"/boot/efi", "/etc/crypttab", "/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/log", "/var/run/", "/var/tmp/"};
     if(mthd > 2) elist.append({"/etc/machine-id", "/etc/systemback.conf", "/etc/systemback.excludes", "/var/lib/dbus/machine-id"});
     if(srcdir == "/.systembacklivepoint" && fload("/proc/cmdline").contains("noxconf")) elist.append("/etc/X11/xorg.conf");
+
+    for(cQStr &cdir : {"/etc/rc0.d", "/etc/rc1.d", "/etc/rc2.d", "/etc/rc3.d", "/etc/rc4.d", "/etc/rc5.d", "/etc/rc6.d", "/etc/rcS.d"})
+        if(sb::isdir(srcdir % cdir))
+            for(cQStr &item : QDir(srcdir % cdir).entryList(QDir::Files))
+                if(item.contains("cryptdisks")) elist.append(cdir % '/' % item);
+
     QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
     for(uchar a(0) ; a < dlst.count() ; ++a)
@@ -3118,17 +3124,20 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 bool sb::thrdlvprpr(bool iudata)
 {
     if(ThrdLng[0] > 0) ThrdLng[0] = 0;
-    QStr sitms;
 
-    for(cQStr &item : {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"})
-        if(isdir(item))
-        {
-            if(! rodir(sitms, item)) return false;
-            ++ThrdLng[0];
-        }
+    {
+        QStr sitms;
 
-    ThrdLng[0] += sitms.count('\n');
-    sitms.clear();
+        for(cQStr &item : {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"})
+            if(isdir(item))
+            {
+                if(! rodir(sitms, item)) return false;
+                ++ThrdLng[0];
+            }
+
+        ThrdLng[0] += sitms.count('\n');
+    }
+
     if(! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback") || ! QDir().mkdir(sdir[2] % "/.sblivesystemcreate/.systemback/etc")) return false;
 
     if(isdir("/etc/udev"))

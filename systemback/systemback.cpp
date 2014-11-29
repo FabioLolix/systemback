@@ -388,11 +388,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         }
     }
 
-    if(pisrng("unity-panel-service"))
-    {
-        unity = true;
-        setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
-    }
+    if((unity = pisrng("unity-panel-service"))) setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 }
 
 systemback::~systemback()

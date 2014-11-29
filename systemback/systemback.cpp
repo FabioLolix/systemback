@@ -306,13 +306,9 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                     {
                         QStr usrs(file.readLine().trimmed());
 
-                        if(sb::like(usrs, {"_sudo:*", "_admins:*"}))
-                        {
-                            usrs = sb::right(usrs, - sb::rinstr(usrs, ":"));
-
-                            for(cQStr &usr : usrs.split(','))
+                        if(usrs.startsWith("sudo:"))
+                            for(cQStr &usr : sb::right(usrs, - sb::rinstr(usrs, ":")).split(','))
                                 if(! usr.isEmpty() && ui->admins->findText(usr) == -1) ui->admins->addItem(usr);
-                        }
                     }
                 }
             }
@@ -2851,10 +2847,9 @@ start:
             {
                 if(file.readLine().contains("UUID="))
                 {
-                    if(! sb::crtfile("/.sbsystemcopy/uinitfs", "#!/bin/sh\nupdate-initramfs -tck all 2>/uinitfs\n") || ! QFile::setPermissions("/.sbsystemcopy/uinitfs", QFile::ExeOwner)) goto error;
+                    if(! sb::crtfile("/.sbsystemcopy/etc/mtab") || ! sb::crtfile("/.sbsystemcopy/uinitfs", "#!/bin/sh\nupdate-initramfs -tck all\n") || ! QFile::setPermissions("/.sbsystemcopy/uinitfs", QFile::ExeOwner)) goto error;
                     if(intrrpt) goto exit;
                     ushort rv(sb::exec("chroot /.sbsystemcopy /uinitfs"));
-                    if(! sb::ilike(rv, {0, 255})) QTS(stderr) << sb::fload("/.sbsystemcopy/uinitfs");
                     QFile::remove("/.sbsystemcopy/uinitfs");
                     if(rv > 0) goto error;
                     break;

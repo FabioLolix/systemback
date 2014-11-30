@@ -2841,7 +2841,9 @@ start:
 
             while(! file.atEnd())
             {
-                if(file.readLine().contains("UUID="))
+                QStr cline(file.readLine().trimmed());
+
+                if(! cline.startsWith('#') && cline.contains("UUID="))
                 {
                     if(! sb::crtfile("/.sbsystemcopy/etc/mtab") || ! sb::crtfile("/.sbsystemcopy/uinitfs", "#!/bin/sh\nupdate-initramfs -tck all\n") || ! QFile::setPermissions("/.sbsystemcopy/uinitfs", QFile::ExeOwner)) goto error;
                     if(intrrpt) goto exit;

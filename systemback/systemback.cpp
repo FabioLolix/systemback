@@ -1042,7 +1042,7 @@ bool systemback::pisrng(cQStr &pname, ushort *pid)
     dirent *ent;
 
     while((ent = readdir(dir)))
-        if(! sb::like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(QStr(ent->d_name)) && sb::islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
+        if(! sb::like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(ent->d_name) && sb::islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
         {
             if(pid) *pid = QStr(ent->d_name).toUShort();
             closedir(dir);

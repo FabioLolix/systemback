@@ -45,7 +45,7 @@ error:
         emsg = tr("Cannot start Systemback scheduler daemon!") % "\n\n" % tr("Unable to get root permissions.");
     }
 
-    if(! emsg.isEmpty()) sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % "\"", nullptr, false, true);
+    if(! emsg.isEmpty()) sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, false, true);
     qApp->exit(rv);
     return;
 }
@@ -58,35 +58,39 @@ start:
 
     QStr cmd((qApp->arguments().value(1) == "systemback" ? "systemback authorization " : "sbscheduler ") % (qEnvironmentVariableIsEmpty("USER") ? "root" : qgetenv("USER")));
 
-    if(getuid() + getgid() > 0)
     {
-        if(cmd.startsWith("systemback"))
+        bool uidinr(getuid() > 0), gidinr(getgid() > 0);
+
+        if(uidinr || gidinr)
         {
-            if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! qgetenv("PATH").startsWith("/usr/lib/systemback"))
+            if(cmd.startsWith("systemback"))
             {
-                rv = 4;
+                if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1) || ! qgetenv("PATH").startsWith("/usr/lib/systemback"))
+                {
+                    rv = 4;
+                    goto error;
+                }
+
+                QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
+
+                if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (usrhm.isEmpty() || ! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
+                {
+                    rv = 3;
+                    goto error;
+                }
+
+                if(! clrenv(xauth, "/root"))
+                {
+                    sb::remove(xauth);
+                    rv = 4;
+                    goto error;
+                }
+            }
+            else if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1) || ! clrenv(qgetenv("XAUTHORITY"), qgetenv("HOME")))
+            {
+                rv = 5;
                 goto error;
             }
-
-            QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
-
-            if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (usrhm.isEmpty() || ! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
-            {
-                rv = 3;
-                goto error;
-            }
-
-            if(! clrenv(xauth, "/root"))
-            {
-                sb::remove(xauth);
-                rv = 4;
-                goto error;
-            }
-        }
-        else if((getuid() > 0 && setuid(0) == -1) || setgid(0) == -1 || ! clrenv(qgetenv("XAUTHORITY"), qgetenv("HOME")))
-        {
-            rv = 5;
-            goto error;
         }
     }
 

@@ -1716,15 +1716,13 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                 {
                     QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
-                    if(! cline.startsWith('#') && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
-                    {
-                        for(QStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
+                    if(! cline.startsWith('#') && like(cline.contains("\\040") ? QStr(cline).replace("\\040", " ") : cline, {"* /media/" % item % " *", "* /media/" % item % "/*"}))
+                        for(cQStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
                             if(! cdname.isEmpty())
                             {
-                                fdir.append('/' % cdname.replace("\\040", " "));
+                                fdir.append('/' % (cdname.contains("\\040") ? QStr(cdname).replace("\\040", " ") : cdname));
                                 if(! isdir(trgt % "/media" % fdir) && ! cpdir("/media" % fdir, trgt % "/media" % fdir)) goto err_8;
                             }
-                    }
 
                     if(ThrdKill) return false;
                     continue;
@@ -2963,11 +2961,11 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     {
                         QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
-                        if(! cline.startsWith('#') && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
-                            for(QStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
+                        if(! cline.startsWith('#') && like(cline.contains("\\040") ? QStr(cline).replace("\\040", " ") : cline, {"* /media/" % item % " *", "* /media/" % item % "/*"}))
+                            for(cQStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
                                 if(! cdname.isEmpty())
                                 {
-                                    fdir.append('/' % cdname.replace("\\040", " "));
+                                    fdir.append('/' % (cdname.contains("\\040") ? QStr(cdname).replace("\\040", " ") : cdname));
                                     if(! isdir("/.sbsystemcopy/media" % fdir) && ! cpdir("/media" % fdir, "/.sbsystemcopy/media" % fdir)) goto err_8;
                                 }
 
@@ -3204,11 +3202,11 @@ bool sb::thrdlvprpr(bool iudata)
             {
                 QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
 
-                if(! cline.startsWith('#') && like(cline.replace("\\040", " "), {"* /media/" % item % " *", "* /media/" % item % "/*"}))
-                    for(QStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
+                if(! cline.startsWith('#') && like(cline.contains("\\040") ? QStr(cline).replace("\\040", " ") : cline, {"* /media/" % item % " *", "* /media/" % item % "/*"}))
+                    for(cQStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
                         if(! cdname.isEmpty())
                         {
-                            fdir.append('/' % cdname.replace("\\040", " "));
+                            fdir.append('/' % (cdname.contains("\\040") ? QStr(cdname).replace("\\040", " ") : cdname));
 
                             if(! isdir("/media/.sblvtmp/media" % fdir))
                             {

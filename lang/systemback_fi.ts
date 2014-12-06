@@ -21,7 +21,7 @@
     <message>
         <location filename="../systemback/main.cpp" line="34"/>
         <source>Please do not use &apos;sudo&apos; command.</source>
-        <translation type="unfinished"></translation>
+        <translation>Alä käytä &apos;sudo&apos; komentoa.</translation>
     </message>
 </context>
 <context>
@@ -74,7 +74,7 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
         <source>This system is a Live.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tämä järjestelmä on Live.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="45"/>
@@ -1010,11 +1010,6 @@
         <translation>Tällä hetkellä käytössä järjestelmä</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="487"/>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="702"/>
         <location filename="../systemback/systemback.cpp" line="8789"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="398"/>
@@ -1152,14 +1147,29 @@
         <translation>Anna uusi nimi.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3133"/>
-        <source>The specified name contain(s) unsupported character(s)!</source>
-        <translation>Nimi sisältää ei tuettuja merkkejä!</translation>
+        <location filename="../systemback/systemback.cpp" line="3278"/>
+        <source>Live system creation is completed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3278"/>
+        <source>The created .sblive file can be written to pendrive.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3138"/>
         <source>Restore the system files to the following restore point:</source>
         <translation>Palauta järjestelmän tiedostot seuraavaan palautuspisteen:</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="487"/>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3133"/>
+        <source>The specified name contain(s) unsupported character(s)!</source>
+        <translation>Nimi sisältää ei tuettuja merkkejä!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3144"/>
@@ -1282,11 +1292,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3253"/>
-        <source>An error occurred while reinstalling GRUB.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="3288"/>
         <source>Format the %1, and write the following Live system image:</source>
         <translation type="unfinished"></translation>
@@ -1330,16 +1335,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3268"/>
-        <source>An error occurred while creating file system image.</source>
-        <translation>Virhe luotaessa tiedostojärjestelmän kuva.</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3273"/>
-        <source>An error occurred while creating container file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="3314"/>
         <source>The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.</source>
         <translation>Osiolla ei ole tarpeeksi vapaata tilaa järjestelmän asentamiseen. Asennettu järjestelmä ei tule toimimaan oikein.</translation>
@@ -1373,6 +1368,16 @@
         <location filename="../systemback/systemback.cpp" line="3380"/>
         <location filename="../systemback/systemback.cpp" line="3385"/>
         <source>Live system creation is aborted!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3268"/>
+        <source>An error occurred while creating file system image.</source>
+        <translation>Virhe luotaessa tiedostojärjestelmän kuva.</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="3273"/>
+        <source>An error occurred while creating container file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1425,13 +1430,8 @@
         <translation>GRUB 2:n korjaus on valmis.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3278"/>
-        <source>Live system creation is completed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="3278"/>
-        <source>The created .sblive file can be written to pendrive.</source>
+        <location filename="../systemback/systemback.cpp" line="3253"/>
+        <source>An error occurred while reinstalling GRUB.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

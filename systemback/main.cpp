@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QTranslator trnsltr;
-    if(trnsltr.load("/usr/share/systemback/lang/systemback_" % QLocale::system().name())) a.installTranslator(&trnsltr);
+    if(! QLocale::system().name().startsWith("en") && trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang")) a.installTranslator(&trnsltr);
 
     if(qgetenv("XAUTHORITY").startsWith("/home/") && getuid() == 0)
     {

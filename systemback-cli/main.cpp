@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;
-    if(trnsltr.load("/usr/share/systemback/lang/systemback_" % QLocale::system().name())) a.installTranslator(&trnsltr);
+    if(! QLocale::system().name().startsWith("en") && trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang")) a.installTranslator(&trnsltr);
     systemback c;
     QTimer::singleShot(0, &c, SLOT(main()));
     return a.exec();

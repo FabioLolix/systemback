@@ -2145,16 +2145,10 @@ start:
 
         QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
         if(intrrpt) goto exit;
-        sb::mount("/dev", "/mnt/dev");
-        sb::mount("/dev/pts", "/mnt/dev/pts");
-        sb::mount("/proc", "/mnt/proc");
-        sb::mount("/sys", "/mnt/sys");
+        for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
         dialog = sb::exec("chroot /mnt /grubinst") == 0 ? 32 : 37;
         QFile::remove("/mnt/grubinst");
-        sb::umount("/mnt/dev");
-        sb::umount("/mnt/dev/pts");
-        sb::umount("/mnt/proc");
-        sb::umount("/mnt/sys");
+        for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
         if(intrrpt) goto exit;
     }
     else
@@ -2236,16 +2230,10 @@ start:
 
                 QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
                 if(intrrpt) goto exit;
-                sb::mount("/dev", "/mnt/dev");
-                sb::mount("/dev/pts", "/mnt/dev/pts");
-                sb::mount("/proc", "/mnt/proc");
-                sb::mount("/sys", "/mnt/sys");
+                for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
                 if(sb::exec("chroot /mnt /grubinst") > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
                 QFile::remove("/mnt/grubinst");
-                sb::umount("/mnt/dev");
-                sb::umount("/mnt/dev/pts");
-                sb::umount("/mnt/proc");
-                sb::umount("/mnt/sys");
+                for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
                 if(intrrpt) goto exit;
             }
 
@@ -2889,10 +2877,7 @@ start:
 
         if(! QFile::setPermissions("/.sbsystemcopy/grubinst", QFile::ExeOwner)) goto error;
         if(intrrpt) goto exit;
-        sb::mount("/dev", "/.sbsystemcopy/dev");
-        sb::mount("/dev/pts", "/.sbsystemcopy/dev/pts");
-        sb::mount("/proc", "/.sbsystemcopy/proc");
-        sb::mount("/sys", "/.sbsystemcopy/sys");
+        for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath);
         ushort rv(sb::exec("chroot /.sbsystemcopy /grubinst"));
         QFile::remove("/.sbsystemcopy/grubinst");
 
@@ -2901,6 +2886,14 @@ start:
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 22 : 34;
             goto error;
         }
+    }
+    else if(sb::execsrch("update-grub", "/.sbsystemcopy"))
+    {
+        if(intrrpt) goto exit;
+        if(! sb::crtfile("/.sbsystemcopy/grubupdt", "#!/bin/sh\nupdate-grub\n") || ! QFile::setPermissions("/.sbsystemcopy/grubupdt", QFile::ExeOwner)) goto error;
+        for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath);
+        sb::exec("chroot /.sbsystemcopy /grubupdt");
+        QFile::remove("/.sbsystemcopy/grubupdt");
     }
 
     if(intrrpt) goto exit;

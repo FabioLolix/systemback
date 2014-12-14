@@ -105,7 +105,7 @@ start:
             goto next;
         }
 
-        if(sb::schdle[0] == "on")
+        if(sb::schdle[0] == "true")
         {
             if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1].toUShort() * 1440 + sb::schdle[2].toUShort() * 60 + sb::schdle[3].toUShort()) goto next;
             if(! sb::lock(sb::Sblock)) goto next;
@@ -116,7 +116,7 @@ start:
                 goto next;
             }
 
-            if(sb::schdle[5] == "on" || ! sb::execsrch("systemback"))
+            if(sb::schdle[5] == "true" || ! sb::execsrch("systemback"))
                 newrestorepoint();
             else
             {

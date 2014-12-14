@@ -1,4 +1,4 @@
-.TH Systemback 1 "26.06.2014."
+.TH Systemback 1 "14.12.2014."
 
 .SH NAME
 Systemback - Simple system backup and restore application with extra
@@ -9,35 +9,18 @@ Systemback - Simple system backup and restore application with extra
 \fBsystemback
 
 .SH DESCRIPTION
+
 \fBSystemback\fR makes it easy to create backups of system and users
-configuration files. In case of problems you can easily restore the
-previous state of the system. There are extra features like system
-copying, system installation and Live system creation.
+configuration files. In case of problems you can easily restore the previous
+state of the system. There are extra features like system copying, system
+installation and Live system creation.
 
 .SH FILES
 .SS /etc/systemback.conf
 configuration of GUI and CLI
-.TP
-.B storagedir=<path>
-storage directory for restore points
-.TP
-.B liveworkdir=<path>
-working directory for Live system images
-.TP
-.B pointsnumber=[3-10]
-maximum number of not highlighted restore points
-.TP
-.B timer=[on/off]
-enable or disable scheduler
-.TP
-.B schedule=[0-7]:[0-23]:[0-59]:[10-99]
-set countdown time - day(s):hour(s):minute(s):seconds
-.TP
-.B silentmode=[on/off]
-enable or disable silent mode for scheduled restore points
-.TP
-.B windowposition=[topleft/topright/center/bottomleft/bottomright]
-set popup window position for scheduled restore points
+.br
+the possible variables and values are indicated in the file, all other changes
+are lost
 
 .SS /etc/systemback.excludes
 exclude hidden user files and directories from restore points

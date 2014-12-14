@@ -46,6 +46,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     installEventFilter(this);
     cfgupdt = nrxth = false;
     ui->statuspanel->hide();
+    ui->scalingbuttonspanel->hide();
     ui->buttonspanel->hide();
     ui->resizepanel->hide();
     ui->dialogpanel->move(0, 0);
@@ -108,56 +109,62 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     else
         dialog = 2;
 
-    if(! sb::like(font().family(), {"_Ubuntu_", "_FreeSans_"}) || fontInfo().pixelSize() != 15 || fontInfo().weight() != QFont::Normal || fontInfo().bold() || fontInfo().italic() || fontInfo().overline() || fontInfo().strikeOut() || fontInfo().underline())
+    sb::cfgread();
+
     {
-        sfctr = fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal;
-        while(sfctr > Normal && (qApp->desktop()->width() - ss(30) < ss(698) || qApp->desktop()->height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
-        { QFont font;
-        font.setFamily(QFontDatabase().families().contains("Ubuntu") ? "Ubuntu" : "FreeSans");
-        font.setPixelSize(ss(15));
+        QFont font;
+        if(! sb::like(font.family(), {"_Ubuntu_", "_FreeSans_"})) font.setFamily(QFontDatabase().families().contains("Ubuntu") ? "Ubuntu" : "FreeSans");
         if(font.weight() != QFont::Normal) font.setWeight(QFont::Normal);
         if(font.bold()) font.setBold(false);
         if(font.italic()) font.setItalic(false);
         if(font.overline()) font.setOverline(false);
         if(font.strikeOut()) font.setStrikeOut(false);
         if(font.underline()) font.setUnderline(false);
-        setFont(font);
-        font.setPixelSize(ss(27));
-        ui->buttonspanel->setFont(font);
-        font.setPixelSize(ss(17));
-        font.setBold(true);
-        ui->passwordtitletext->setFont(font); }
+        if(font != this->font()) setFont(font);
 
-        if(sfctr > Normal)
+        if(! sb::like(sb::wsclng, {"_auto_", "_1_"}) || fontInfo().pixelSize() != 15)
         {
-            for(QWidget *wdgt : findChildren<QWidget *>()) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
-            for(QPushButton *pbtn : findChildren<QPushButton *>()) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
+            sfctr = sb::wsclng == "auto" ? fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal : sb::wsclng == "2" ? Max : sb::wsclng == "1.5" ? High : Normal;
+            while(sfctr > Normal && (qApp->desktop()->width() - ss(30) < ss(698) || qApp->desktop()->height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
+            font.setPixelSize(ss(15));
+            setFont(font);
+            font.setPixelSize(ss(27));
+            ui->buttonspanel->setFont(font);
+            font.setPixelSize(ss(17));
+            font.setBold(true);
+            ui->passwordtitletext->setFont(font);
 
-            if(dialog == 0 && ! sstart)
+            if(sfctr > Normal)
             {
-                ui->includeusers->setMinimumSize(ss(112), ss(32));
-                ui->grubreinstallrestore->setMinimumSize(ui->includeusers->minimumSize());
-                ui->grubreinstallrestoredisable->setMinimumSize(ui->includeusers->minimumSize());
-                ui->grubinstallcopy->setMinimumSize(ui->includeusers->minimumSize());
-                ui->grubinstallcopydisable->setMinimumSize(ui->includeusers->minimumSize());
-                ui->grubreinstallrepair->setMinimumSize(ui->includeusers->minimumSize());
-                ui->grubreinstallrepairdisable->setMinimumSize(ui->includeusers->minimumSize());
-                ui->windowposition->setMinimumSize(ui->includeusers->minimumSize());
-                ui->admins->setMinimumSize(ui->includeusers->minimumSize());
-                ui->partitionsettings->verticalHeader()->setDefaultSectionSize(ss(20));
-                ui->livedevices->verticalHeader()->setDefaultSectionSize(ui->partitionsettings->verticalHeader()->defaultSectionSize());
-                QStyleOption optn;
-                optn.init(ui->pointpipe1);
-                QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
-                for(QCheckBox *ckbx : findChildren<QCheckBox *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
-                optn.init(ui->pnumber3);
-                nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
-                for(QRadioButton *rbtn : findChildren<QRadioButton *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+                for(QWidget *wdgt : findChildren<QWidget *>()) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
+                for(QPushButton *pbtn : findChildren<QPushButton *>()) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
+
+                if(dialog == 0 && ! sstart)
+                {
+                    ui->includeusers->setMinimumSize(ss(112), ss(32));
+                    ui->grubreinstallrestore->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->grubreinstallrestoredisable->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->grubinstallcopy->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->grubinstallcopydisable->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->grubreinstallrepair->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->grubreinstallrepairdisable->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->windowposition->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->admins->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->partitionsettings->verticalHeader()->setDefaultSectionSize(ss(20));
+                    ui->livedevices->verticalHeader()->setDefaultSectionSize(ui->partitionsettings->verticalHeader()->defaultSectionSize());
+                    QStyleOption optn;
+                    optn.init(ui->pointpipe1);
+                    QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
+                    for(QCheckBox *ckbx : findChildren<QCheckBox *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+                    optn.init(ui->pnumber3);
+                    nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
+                    for(QRadioButton *rbtn : findChildren<QRadioButton *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+                }
             }
         }
+        else
+            sfctr = Normal;
     }
-    else
-        sfctr = Normal;
 
     if(dialog > 0)
     {
@@ -219,6 +226,22 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             ui->function1->setForegroundRole(QPalette::Base);
             ui->function2->setForegroundRole(QPalette::Base);
             ui->function4->setForegroundRole(QPalette::Base);
+            ui->scalingbutton->setForegroundRole(QPalette::Base);
+            ui->scalingbuttonspanel->move(0, 0);
+            ui->scalingbuttonspanel->setBackgroundRole(QPalette::Highlight);
+            ui->subscalingbuttonspanel->setBackgroundRole(QPalette::Background);
+
+            if(sb::wsclng == "auto")
+                ui->scalingdown->setDisabled(true);
+            else if(sb::wsclng == "2")
+            {
+                ui->scalingfactor->setText("x2");
+                ui->scalingup->setDisabled(true);
+            }
+            else
+                ui->scalingfactor->setText('x' % sb::wsclng);
+
+            ui->scalingfactor->setBackgroundRole(QPalette::Base);
             ui->windowbutton1->setForegroundRole(QPalette::Base);
             ui->windowbutton2->setForegroundRole(QPalette::Base);
             ui->windowbutton4->setForegroundRole(QPalette::Base);
@@ -227,6 +250,10 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             connect(ui->function1, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
             connect(ui->function1, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
             connect(ui->function1, SIGNAL(Mouse_DblClick()), this, SLOT(wdblclck()));
+            connect(ui->scalingbutton, SIGNAL(Mouse_Pressed()), this, SLOT(sbttnpressed()));
+            connect(ui->scalingbutton, SIGNAL(Mouse_Released()), this, SLOT(sbttnreleased()));
+            connect(ui->scalingbutton, SIGNAL(Mouse_Move()), this, SLOT(sbttnmove()));
+            connect(ui->scalingbuttonspanel, SIGNAL(Mouse_Leave()), this, SLOT(sbttnleave()));
             connect(ui->windowbutton1, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
             connect(ui->windowbutton1, SIGNAL(Mouse_Pressed()), this, SLOT(benter()));
             connect(ui->chooseresize, SIGNAL(Mouse_Enter()), this, SLOT(chssenter()));
@@ -388,7 +415,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         }
     }
 
-    if((unity = pisrng("unity-panel-service"))) setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    if((unity = sb::exist("/usr/lib/unity/unity-panel-service") && pisrng("unity-panel-service"))) setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 }
 
 systemback::~systemback()
@@ -417,8 +444,6 @@ void systemback::unitimer()
 
         if(! utimer->isActive())
         {
-            sb::cfgread();
-
             switch(sb::pnumber) {
             case 3:
                 ui->pnumber3->setChecked(true);
@@ -514,8 +539,8 @@ void systemback::unitimer()
                 ui->copycover->hide();
                 ui->livecreatecover->hide();
                 ui->repaircover->hide();
-                if(sb::schdle[0] == "on") ui->schedulerstate->click();
-                if(sb::schdle[5] == "on") ui->silentmode->setChecked(true);
+                if(sb::schdle[0] == "true") ui->schedulerstate->click();
+                if(sb::schdle[5] == "true") ui->silentmode->setChecked(true);
                 ui->windowposition->addItems({tr("Top left"), tr("Top right"), tr("Center"), tr("Bottom left"), tr("Bottom right")});
 
                 if(sb::schdle[6] == "topright")
@@ -1398,6 +1423,47 @@ void systemback::xcldmove()
     }
 }
 
+void systemback::sbttnpressed()
+{
+    ui->scalingbutton->setForegroundRole(QPalette::Highlight);
+}
+
+void systemback::sbttnreleased()
+{
+    if(ui->scalingbutton->foregroundRole() == QPalette::Highlight) ui->scalingbuttonspanel->show();
+}
+
+void systemback::sbttnmove()
+{
+    if(minside({0, 0}, ui->scalingbutton->geometry()))
+    {
+        if(ui->scalingbutton->foregroundRole() == QPalette::Base) ui->scalingbutton->setForegroundRole(QPalette::Highlight);
+    }
+    else if(ui->scalingbutton->foregroundRole() == QPalette::Highlight)
+        ui->scalingbutton->setForegroundRole(QPalette::Base);
+}
+
+void systemback::sbttnleave()
+{
+    QStr nsclng(ui->scalingfactor->text() == "auto" ? "auto" : sb::right(ui->scalingfactor->text(), -1));
+
+    if(sb::wsclng == nsclng)
+    {
+        ui->scalingbutton->setForegroundRole(QPalette::Base);
+        ui->scalingbuttonspanel->hide();
+    }
+    else
+    {
+        sb::wsclng = nsclng;
+        sb::cfgwrite();
+        if(cfgupdt) cfgupdt = false;
+        nrxth = true;
+        sb::unlock(sb::Sblock);
+        sb::exec("systemback", nullptr, false, true);
+        close();
+    }
+}
+
 void systemback::hmpg1pressed()
 {
     ui->homepage1->setForegroundRole(QPalette::Highlight);
@@ -2017,52 +2083,40 @@ start:
         {
             if(ui->grubreinstallrestore->isVisibleTo(ui->restorepanel) && (! ui->grubreinstallrestore->isEnabled() || ui->grubreinstallrestore->currentText() != tr("Disabled")))
             {
+                sb::exec("update-grub");
+                if(intrrpt) goto exit;
                 uchar rv(0);
 
                 if(ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto")
                 {
-                    if(fcmp)
-                        sb::exec("update-grub");
-                    else
+                    if(! fcmp)
                     {
-                        sb::exec("update-grub");
-                        if(intrrpt) goto exit;
+                        QStr gdev;
 
-                        if(grub.isEFI)
-                            rv = sb::exec("grub-install --force");
-                        else
+                        if(! grub.isEFI)
                         {
-                            QStr mntdev;
+                            QStr mnts(sb::fload("/proc/self/mounts", true));
+                            QTS in(&mnts, QIODevice::ReadOnly);
 
+                            while(! in.atEnd())
                             {
-                                QStr mnts(sb::fload("/proc/self/mounts"));
-                                QTS in(&mnts, QIODevice::ReadOnly);
+                                QStr cline(in.readLine());
 
-                                while(! in.atEnd())
+                                if(sb::like(cline, {"* / *", "* /boot *"}))
                                 {
-                                    QStr cline(in.readLine());
-
-                                    if(cline.contains(" /boot "))
-                                    {
-                                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                                        break;
-                                    }
-                                    else if(cline.contains(" / "))
-                                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                                    gdev = sb::left(cline, 8);
+                                    break;
                                 }
                             }
 
                             if(intrrpt) goto exit;
-                            rv = sb::exec("grub-install --force " % sb::left(mntdev, 8));
                         }
+
+                        rv = sb::exec("grub-install --force " % gdev);
                     }
                 }
                 else
-                {
-                    sb::exec("update-grub");
-                    if(intrrpt) goto exit;
                     rv = sb::exec("grub-install --force " % (grub.isEFI ? nullptr : ui->grubreinstallrestore->currentText()));
-                }
 
                 if(intrrpt) goto exit;
                 if(rv > 0) dialog = 23;
@@ -2120,34 +2174,30 @@ start:
 
     if(mthd == 0)
     {
+        QStr gdev;
+
         if(ui->grubreinstallrepair->currentText() == "Auto")
         {
-            QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
+            QStr mnts(sb::fload("/proc/self/mounts", true));
             QTS in(&mnts, QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
                 QStr cline(in.readLine());
 
-                if(cline.contains(" /mnt/boot "))
+                if(sb::like(cline, {"* /mnt *", "* /mnt/boot *"}))
                 {
-                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                    gdev = sb::left(cline, 8);
                     break;
                 }
-                else if(cline.contains(" /mnt "))
-                    mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
             }
-
-            sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
         }
-        else
-            sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
+        else if(! grub.isEFI)
+            gdev = ui->grubreinstallrepair->currentText();
 
-        QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
         if(intrrpt) goto exit;
         for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
-        dialog = sb::exec("chroot /mnt /grubinst") == 0 ? 32 : 37;
-        QFile::remove("/mnt/grubinst");
+        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % gdev % "\"") == 0 ? 32 : 37;
         for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
         if(intrrpt) goto exit;
     }
@@ -2198,41 +2248,36 @@ start:
         {
             if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel) && (! ui->grubreinstallrepair->isEnabled() || ui->grubreinstallrepair->currentText() != tr("Disabled")))
             {
+                QStr gdev;
+
                 if(ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")
                 {
                     if(fcmp)
-                        sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\n");
-                    else if(grub.isEFI)
-                        sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force\n");
-                    else
+                        gdev = '-';
+                    else if(! grub.isEFI)
                     {
-                        QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
+                        QStr mnts(sb::fload("/proc/self/mounts", true));
                         QTS in(&mnts, QIODevice::ReadOnly);
 
                         while(! in.atEnd())
                         {
                             QStr cline(in.readLine());
 
-                            if(cline.contains(" /mnt/boot "))
+                            if(sb::like(cline, {"* /mnt *", "* /mnt/boot *"}))
                             {
-                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                                gdev = sb::left(cline, 8);
                                 break;
                             }
-                            else if(cline.contains(" /mnt "))
-                                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
                         }
-
-                        sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n');
                     }
                 }
-                else
-                    sb::crtfile("/mnt/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % '\n');
+                else if(! grub.isEFI)
+                    gdev = ui->grubreinstallrepair->currentText();
 
-                QFile::setPermissions("/mnt/grubinst", QFile::ExeOwner);
                 if(intrrpt) goto exit;
                 for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
-                if(sb::exec("chroot /mnt /grubinst") > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
-                QFile::remove("/mnt/grubinst");
+                sb::exec("chroot /mnt update-grub");
+                if(gdev != "-" && sb::exec("chroot /mnt grub-install --force " % gdev) > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
                 for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
                 if(intrrpt) goto exit;
             }
@@ -2256,7 +2301,6 @@ start:
 
 void systemback::systemcopy()
 {
-    QStr mnts[2];
     goto start;
 error:
     if(intrrpt) goto exit;
@@ -2272,12 +2316,9 @@ error:
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 21 : 35;
     }
 
-    mnts[0] = sb::fload("/proc/self/mounts");
-
     {
-        QTS in(&mnts[0], QIODevice::ReadOnly);
-        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-        in.setString(&mnts[1], QIODevice::ReadOnly);
+        QStr mnts(sb::fload("/proc/self/mounts", true));
+        QTS in(&mnts, QIODevice::ReadOnly);
 
         while(! in.atEnd())
         {
@@ -2291,12 +2332,9 @@ error:
     dialogopen();
     return;
 exit:
-    mnts[0] = sb::fload("/proc/self/mounts");
-
     {
-        QTS in(&mnts[0], QIODevice::ReadOnly);
-        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-        in.setString(&mnts[1], QIODevice::ReadOnly);
+        QStr mnts(sb::fload("/proc/self/mounts", true));
+        QTS in(&mnts, QIODevice::ReadOnly);
 
         while(! in.atEnd())
         {
@@ -2431,7 +2469,7 @@ start:
             else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr))
                 goto error;
 
-            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == "on" && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", "storagedir=" % sb::sdir[0] % "\nliveworkdir=" % sb::sdir[2] % "\npointsnumber=" % QStr::number(sb::pnumber) % "\ntimer=off\nschedule=" % sb::schdle[1] % ':' % sb::schdle[2] % ':' % sb::schdle[3] % ':' % sb::schdle[4] % "\nsilentmode=" % sb::schdle[5] % "\nwindowposition=" % sb::schdle[6] % '\n')) goto error;
+            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == "true" && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", "storagedir=" % sb::sdir[0] % "\nliveworkdir=" % sb::sdir[2] % "\npointsnumber=" % QStr::number(sb::pnumber) % "\ntimer=off\nschedule=" % sb::schdle[1] % ':' % sb::schdle[2] % ':' % sb::schdle[3] % ':' % sb::schdle[4] % "\nsilentmode=" % sb::schdle[5] % "\nwindowposition=" % sb::schdle[6] % '\n')) goto error;
         }
         else
         {
@@ -2847,41 +2885,31 @@ start:
     if(ui->grubinstallcopy->isVisibleTo(ui->copypanel) && ui->grubinstallcopy->currentText() != tr("Disabled"))
     {
         if(intrrpt) goto exit;
+        QStr gdev;
 
         if(ui->grubinstallcopy->currentText() == "Auto")
         {
-            QStr mntdev;
-            mnts[0] = sb::fload("/proc/self/mounts");
+            QStr mnts(sb::fload("/proc/self/mounts", true));
+            QTS in(&mnts, QIODevice::ReadOnly);
 
+            while(! in.atEnd())
             {
-                QTS in(&mnts[0], QIODevice::ReadOnly);
+                QStr cline(in.readLine());
 
-                while(! in.atEnd())
+                if(sb::like(cline, {"* /.sbsystemcopy *", "* /.sbsystemcopy/boot *"}))
                 {
-                    QStr cline(in.readLine());
-
-                    if(cline.contains(" /.sbsystemcopy/boot "))
-                    {
-                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                        break;
-                    }
-                    else if(cline.contains(" /.sbsystemcopy "))
-                        mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
+                    gdev = sb::left(cline, 8);
+                    break;
                 }
             }
-
-            if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % sb::left(mntdev, 8) % '\n')) goto error;
         }
-        else if(! sb::crtfile("/.sbsystemcopy/grubinst", "#!/bin/sh\nupdate-grub\ngrub-install --force " % (grub.isEFI ? nullptr : ui->grubinstallcopy->currentText()) % '\n'))
-            goto error;
+        else if(! grub.isEFI)
+            gdev = ui->grubinstallcopy->currentText();
 
-        if(! QFile::setPermissions("/.sbsystemcopy/grubinst", QFile::ExeOwner)) goto error;
         if(intrrpt) goto exit;
         for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath);
-        ushort rv(sb::exec("chroot /.sbsystemcopy /grubinst"));
-        QFile::remove("/.sbsystemcopy/grubinst");
 
-        if(rv > 0)
+        if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % gdev % "\"") > 0)
         {
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 22 : 34;
             goto error;
@@ -2890,20 +2918,16 @@ start:
     else if(sb::execsrch("update-grub", "/.sbsystemcopy"))
     {
         if(intrrpt) goto exit;
-        if(! sb::crtfile("/.sbsystemcopy/grubupdt", "#!/bin/sh\nupdate-grub\n") || ! QFile::setPermissions("/.sbsystemcopy/grubupdt", QFile::ExeOwner)) goto error;
         for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath);
-        sb::exec("chroot /.sbsystemcopy /grubupdt");
-        QFile::remove("/.sbsystemcopy/grubupdt");
+        sb::exec("chroot /.sbsystemcopy update-grub");
     }
 
     if(intrrpt) goto exit;
     prun = tr("Emptying cache");
-    mnts[0] = sb::fload("/proc/self/mounts");
 
     {
-        QTS in(&mnts[0], QIODevice::ReadOnly);
-        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-        in.setString(&mnts[1], QIODevice::ReadOnly);
+        QStr mnts(sb::fload("/proc/self/mounts", true));
+        QTS in(&mnts, QIODevice::ReadOnly);
 
         while(! in.atEnd())
         {
@@ -3598,7 +3622,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         ui->windowbutton4->setForegroundRole(QPalette::Dark);
         return true;
     case QEvent::Resize:
-        ui->mainpanel->resize(width(), height());
+        ui->mainpanel->resize(size());
         ui->function1->resize(width(), ui->function1->height());
         ui->border->resize(width(), ui->border->height());
         ui->windowbutton1->move(width() - ui->windowbutton1->height(), 0);
@@ -5437,7 +5461,7 @@ void systemback::on_partitionrefresh_clicked()
     }
 
     schar sn(-1);
-    QStr mntlst(sb::fload("/proc/self/mounts")), swplst(sb::fload("/proc/swaps"));
+    QStr mnts[2]{sb::fload("/proc/self/mounts"), sb::fload("/proc/swaps")};
 
     for(cQStr &cdts : plst)
     {
@@ -5546,38 +5570,38 @@ void systemback::on_partitionrefresh_clicked()
 
                 if(uuid.isEmpty())
                 {
-                    if(QStr('\n' % mntlst).contains('\n' % path % ' '))
+                    if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
                     {
-                        QStr mnt(sb::right(mntlst, - sb::instr(mntlst, path % ' ')));
+                        QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], path % ' ')));
                         short spc(sb::instr(mnt, " "));
                         mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                     }
                 }
                 else
                 {
-                    if(QStr('\n' % mntlst).contains('\n' % path % ' '))
+                    if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
                     {
-                        if(QStr('\n' % mntlst).count('\n' % path % ' ') > 1 || QStr('\n' % mntlst).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
+                        if(QStr('\n' % mnts[0]).count('\n' % path % ' ') > 1 || QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
                             mpt->setText(tr("Multiple mount points"));
                         else
                         {
-                            QStr mnt(sb::right(mntlst, - sb::instr(mntlst, path % ' ')));
+                            QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], path % ' ')));
                             short spc(sb::instr(mnt, " "));
                             mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                         }
                     }
-                    else if(QStr('\n' % mntlst).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
+                    else if(QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
                     {
-                        if(QStr('\n' % mntlst).count("\n/dev/disk/by-uuid/" % uuid % ' ') > 1)
+                        if(QStr('\n' % mnts[0]).count("\n/dev/disk/by-uuid/" % uuid % ' ') > 1)
                             mpt->setText(tr("Multiple mount points"));
                         else
                         {
-                            QStr mnt(sb::right(mntlst, - sb::instr(mntlst, "/dev/disk/by-uuid/" % uuid % ' ')));
+                            QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], "/dev/disk/by-uuid/" % uuid % ' ')));
                             short spc(sb::instr(mnt, " "));
                             mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                         }
                     }
-                    else if(QStr('\n' % swplst).contains('\n' % path % ' '))
+                    else if(QStr('\n' % mnts[1]).contains('\n' % path % ' '))
                         mpt->setText("SWAP");
                 }
 
@@ -5681,11 +5705,8 @@ void systemback::on_unmountdelete_clicked()
     {
         if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() != "SWAP")
         {
-            QStr mnts[2];
-            mnts[0] = sb::fload("/proc/self/mounts");
-            QTS in(&mnts[0], QIODevice::ReadOnly);
-            while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n');
-            in.setString(&mnts[1], QIODevice::ReadOnly);
+            QStr mnts(sb::fload("/proc/self/mounts", true));
+            QTS in(&mnts, QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -5693,12 +5714,12 @@ void systemback::on_unmountdelete_clicked()
                 if(sb::like(cline, {"* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(cline.split(' ').at(1));
             }
 
-            mnts[0] = sb::fload("/proc/self/mounts");
+            mnts = sb::fload("/proc/self/mounts");
 
             for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             {
                 QStr mpt(ui->partitionsettings->item(a, 3)->text());
-                if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')) ui->partitionsettings->item(a, 3)->setText(nullptr);
+                if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts.contains(' ' % mpt.replace(" ", "\\040") % ' ')) ui->partitionsettings->item(a, 3)->setText(nullptr);
             }
 
             sb::fssync();
@@ -5734,10 +5755,7 @@ void systemback::on_unmount_clicked()
     bool umntd(true);
 
     {
-        QStr mnts[2];
-        mnts[0] = sb::fload("/proc/self/mounts");
-        { QTS in(&mnts[0], QIODevice::ReadOnly);
-        while(! in.atEnd()) mnts[1].prepend(in.readLine() % '\n'); }
+        QStr mnts[2]{sb::fload("/proc/self/mounts", true)};
 
         for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
             if(! ui->partitionsettings->item(a, 3)->text().isEmpty())
@@ -5746,7 +5764,7 @@ void systemback::on_unmount_clicked()
                     swapoff(ui->partitionsettings->item(a, 0)->text().toStdString().c_str());
                 else
                 {
-                    QTS in(&mnts[1], QIODevice::ReadOnly);
+                    QTS in(&mnts[0], QIODevice::ReadOnly);
 
                     while(! in.atEnd())
                     {
@@ -6306,25 +6324,20 @@ void systemback::on_pointexclude_clicked()
     else if(ui->removeitem->isEnabled())
         ui->removeitem->setDisabled(true);
 
-    if(sb::isfile("/etc/systemback.excludes"))
-    {
-        QFile file("/etc/systemback.excludes");
+    QFile file("/etc/systemback.excludes");
 
-        if(file.open(QIODevice::ReadOnly))
-            while(! file.atEnd())
+    if(file.open(QIODevice::ReadOnly))
+        while(! file.atEnd())
+        {
+            QStr cline(file.readLine().trimmed());
+
+            if(cline.startsWith('.'))
             {
-                QStr cline(file.readLine().trimmed());
-
-                if(cline.startsWith('.'))
-                {
-                    if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
-                }
-                else if(ui->liveexclude->isChecked())
-                    ui->excludedlist->addItem(cline);
+                if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
             }
-    }
-    else
-        sb::crtfile("/etc/systemback.excludes");
+            else if(ui->liveexclude->isChecked())
+                ui->excludedlist->addItem(cline);
+        }
 
     {
         QFile file("/etc/passwd");
@@ -6772,6 +6785,7 @@ void systemback::on_storagedirbutton_clicked()
 {
     ui->sbpanel->hide();
     ui->choosepanel->show();
+    ui->scalingbutton->hide();
     ui->function1->setText(tr("Storage directory"));
     ui->dirchooseok->setFocus();
     windowmove(ss(642), ss(481), false);
@@ -6784,6 +6798,7 @@ void systemback::on_liveworkdirbutton_clicked()
 {
     ui->livecreatepanel->hide();
     ui->choosepanel->show();
+    ui->scalingbutton->hide();
     ui->function1->setText(tr("Working directory"));
     ui->dirchooseok->setFocus();
     windowmove(ss(642), ss(481), false);
@@ -7000,6 +7015,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
 void systemback::on_dirchoosecancel_clicked()
 {
     ui->choosepanel->hide();
+    ui->scalingbutton->show();
 
     if(ui->function1->text() == tr("Storage directory"))
     {
@@ -7072,6 +7088,7 @@ void systemback::on_dirchooseok_clicked()
             }
         }
 
+        ui->scalingbutton->show();
         windowmove(ss(698), ss(465));
         ui->dirchoose->clear();
     }
@@ -8418,33 +8435,32 @@ void systemback::on_schedulerstate_clicked()
 {
     if(ui->schedulerstate->isChecked())
     {
-        if(sb::schdle[0] != "on")
+        if(sb::schdle[0] == "false")
         {
-            sb::schdle[0] = "on";
+            sb::schdle[0] = "true";
             if(! cfgupdt) cfgupdt = true;
             if(sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
         ui->schedulerstate->setText(tr("Enabled"));
-        if(sb::schdle[1] != "0") ui->daydown->setEnabled(true);
-        if(sb::schdle[1] != "7") ui->dayup->setEnabled(true);
-        if(sb::schdle[2] != "0") ui->hourdown->setEnabled(true);
-        if(sb::schdle[2] != "23") ui->hourup->setEnabled(true);
-        if(sb::schdle[3] != "0" && (sb::schdle[1] != "0" || sb::schdle[2] != "0" || sb::schdle[3].toUShort() > 30)) ui->minutedown->setEnabled(true);
-        if(sb::schdle[3] != "59") ui->minuteup->setEnabled(true);
+        if(sb::schdle[1] > "0") ui->daydown->setEnabled(true);
+        if(sb::schdle[1] < "7") ui->dayup->setEnabled(true);
+        if(sb::schdle[2] > "0") ui->hourdown->setEnabled(true);
+        if(sb::schdle[2] < "23") ui->hourup->setEnabled(true);
+        if(sb::schdle[3] > "0" && (sb::schdle[1] > "0" || sb::schdle[2] > "0" || sb::schdle[3].toUShort() > 30)) ui->minutedown->setEnabled(true);
+        if(sb::schdle[3] < "59") ui->minuteup->setEnabled(true);
         ui->silentmode->setEnabled(true);
 
-        if(sb::schdle[5] == "off")
+        if(sb::schdle[5] == "false")
         {
-            if(sb::schdle[4] != "10") ui->seconddown->setEnabled(true);
-            if(sb::schdle[4] != "99") ui->secondup->setEnabled(true);
+            if(sb::schdle[4] > "10") ui->seconddown->setEnabled(true);
+            if(sb::schdle[4] < "99") ui->secondup->setEnabled(true);
             ui->windowposition->setEnabled(true);
         }
-
     }
     else
     {
-        sb::schdle[0] = "off";
+        sb::schdle[0] = "false";
         if(! cfgupdt) cfgupdt = true;
         ui->schedulerstate->setText(tr("Disabled"));
         if(ui->dayup->isEnabled()) ui->dayup->setDisabled(true);
@@ -8464,15 +8480,15 @@ void systemback::on_silentmode_clicked(bool checked)
 {
     if(! checked)
     {
-        sb::schdle[5] = "off";
+        sb::schdle[5] = "false";
         if(! cfgupdt) cfgupdt = true;
-        if(sb::schdle[4] != "10") ui->seconddown->setEnabled(true);
-        if(sb::schdle[4] != "99") ui->secondup->setEnabled(true);
+        if(sb::schdle[4] > "10") ui->seconddown->setEnabled(true);
+        if(sb::schdle[4] < "99") ui->secondup->setEnabled(true);
         ui->windowposition->setEnabled(true);
     }
-    else if(sb::schdle[5] == "off")
+    else if(sb::schdle[5] == "false")
     {
-        sb::schdle[5] = "on";
+        sb::schdle[5] = "true";
         if(! cfgupdt) cfgupdt = true;
         if(ui->secondup->isEnabled()) ui->secondup->setDisabled(true);
         if(ui->seconddown->isEnabled()) ui->seconddown->setDisabled(true);
@@ -8728,6 +8744,38 @@ void systemback::on_schedulerlater_clicked()
 {
     if(sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
     close();
+}
+
+void systemback::on_scalingup_clicked()
+{
+    if(ui->scalingfactor->text() == "auto")
+    {
+        ui->scalingfactor->setText("x1");
+        ui->scalingdown->setEnabled(true);
+    }
+    else if(ui->scalingfactor->text() == "x1")
+        ui->scalingfactor->setText("x1.5");
+    else
+    {
+        ui->scalingfactor->setText("x2");
+        ui->scalingup->setDisabled(true);
+    }
+}
+
+void systemback::on_scalingdown_clicked()
+{
+    if(ui->scalingfactor->text() == "x2")
+    {
+        ui->scalingfactor->setText("x1.5");
+        ui->scalingup->setEnabled(true);
+    }
+    else if(ui->scalingfactor->text() == "x1.5")
+        ui->scalingfactor->setText("x1");
+    else
+    {
+        ui->scalingfactor->setText("auto");
+        ui->scalingdown->setDisabled(true);
+    }
 }
 
 void systemback::on_newrestorepoint_clicked()

@@ -635,23 +635,25 @@ uchar systemback::restore()
     if(greinst == 1)
     {
         sb::exec("update-grub", nullptr, true);
-        QStr mntdev, mnts(sb::fload("/proc/self/mounts"));
-        QTS in(&mnts, QIODevice::ReadOnly);
+        QStr gdev;
 
-        while(! in.atEnd())
         {
-            QStr cline(in.readLine());
+            QStr mnts(sb::fload("/proc/self/mounts", true));
+            QTS in(&mnts, QIODevice::ReadOnly);
 
-            if(cline.contains(" /boot "))
+            while(! in.atEnd())
             {
-                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
-                break;
+                QStr cline(in.readLine());
+
+                if(sb::like(cline, {"* / *", "* /boot *"}))
+                {
+                    gdev = sb::left(cline, 8);
+                    break;
+                }
             }
-            else if(cline.contains(" / "))
-                mntdev = sb::left(cline, sb::instr(cline, " ") - 1);
         }
 
-        if(sb::exec("grub-install --force " % sb::left(mntdev, 8), nullptr, true) > 0)
+        if(sb::exec("grub-install --force " % gdev, nullptr, true) > 0)
         {
             ptimer->stop();
             return 7;

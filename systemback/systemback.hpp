@@ -86,10 +86,12 @@ private:
 private slots:
     void apokkeyreleased();
     void schedulertimer();
+    void sbttnreleased();
     void hmpg1released();
     void hmpg2released();
     void emailreleased();
     void buttonstimer();
+    void sbttnpressed();
     void wmaxreleased();
     void wminreleased();
     void chssreleased();
@@ -106,6 +108,7 @@ private slots:
     void wcreleased();
     void dntpressed();
     void finpsttngs();
+    void sbttnleave();
     void wreleased();
     void wmaxenter();
     void wmaxleave();
@@ -116,6 +119,7 @@ private slots:
     void chssleave();
     void xcldenter();
     void xcldleave();
+    void sbttnmove();
     void hmpg1move();
     void hmpg2move();
     void emailmove();
@@ -256,6 +260,7 @@ private slots:
     void on_liveexclude_clicked();
     void on_pointdelete_clicked();
     void on_liveconvert_clicked();
+    void on_scalingdown_clicked();
     void on_repairmenu_clicked();
     void on_repairback_clicked();
     void on_pointpipe1_clicked();
@@ -279,6 +284,7 @@ private slots:
     void on_aboutmenu_clicked();
     void on_aboutback_clicked();
     void on_interrupt_clicked();
+    void on_scalingup_clicked();
     void on_pnumber3_clicked();
     void on_pnumber4_clicked();
     void on_pnumber5_clicked();

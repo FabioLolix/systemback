@@ -39,7 +39,7 @@
 
 sb sb::SBThrd;
 QSL *sb::ThrdSlst;
-QStr sb::ThrdStr[3], sb::ThrdDbg, sb::sdir[3], sb::schdle[7], sb::pnames[15];
+QStr sb::ThrdStr[3], sb::ThrdDbg, sb::sdir[3], sb::schdle[7], sb::pnames[15], sb::wsclng;
 ullong sb::ThrdLng[2]{0, 0};
 int sb::sblock[3];
 uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0);
@@ -98,11 +98,20 @@ QStr sb::rndstr(uchar vlen)
     return val;
 }
 
-QStr sb::fload(cQStr &path)
+QStr sb::fload(cQStr &path, bool ascnt)
 {
     QFile file(path);
     if(! file.open(QIODevice::ReadOnly)) return nullptr;
-    return file.readAll();
+
+    if(ascnt)
+    {
+        QStr str[2]{file.readAll()};
+        QTS in(&str[0], QIODevice::ReadOnly);
+        while(! in.atEnd()) str[1].prepend(in.readLine() % '\n');
+        return str[1];
+    }
+    else
+        return file.readAll();
 }
 
 ullong sb::dfree(cQStr &path)
@@ -178,7 +187,18 @@ void sb::thrdelay()
 
 void sb::cfgwrite()
 {
-    crtfile("/etc/systemback.conf", "storagedir=" % sdir[0] % "\nliveworkdir=" % sdir[2] % "\npointsnumber=" % QStr::number(pnumber) % "\ntimer=" % schdle[0] % "\nschedule=" % schdle[1] % ":" % schdle[2] % ":" % schdle[3] % ":" % schdle[4] % "\nsilentmode=" % schdle[5] % "\nwindowposition=" % schdle[6] % '\n');
+    crtfile("/etc/systemback.conf", "# Restore points settings\n#  storage_directory=<path>\n#  max_temporary_restore_points=[3-10]\n\n"
+            "storage_directory=" % sdir[0] %
+            "\nmax_temporary_restore_points=" % QStr::number(pnumber) %
+            "\n\n\n# Live system settings\n#  working_directory=<path>\n\n"
+            "working_directory=" % sdir[2] %
+            "\n\n\n# Scheduler settigns\n#  enabled=[true/false]\n#  schedule=[0-7]:[0-23]:[0-59]:[10-99]\n#  silent=[true/false]\n#  window_position=[topleft/topright/center/bottomleft/bottomright]\n\n"
+            "enabled=" % schdle[0] %
+            "\nschedule=" % schdle[1] % ":" % schdle[2] % ":" % schdle[3] % ":" % schdle[4] %
+            "\nsilent=" % schdle[5] %
+            "\nwindow_position=" % schdle[6] %
+            "\n\n\n# Appearance settings\n#  window_scaling_factor=[auto/1/1.5/2]\n\n"
+            "window_scaling_factor=" % wsclng % '\n');
 }
 
 bool sb::execsrch(cQStr &fname, cQStr &ppath)
@@ -480,23 +500,28 @@ void sb::cfgread()
             {
                 QStr cline(file.readLine().trimmed()), cval(right(cline, - instr(cline, "=")));
 
-                if(cline.startsWith("storagedir="))
-                    sdir[0] = cval;
-                else if(cline.startsWith("liveworkdir="))
-                    sdir[2] = cval;
-                else if(cline.startsWith("schedule="))
+                if(! cval.isEmpty() && ! cval.startsWith('#'))
                 {
-                    QSL vals(cval.split(':'));
-                    for(uchar a(0) ; ! ilike(a, QSIL() << vals.count() << 4) ; ++a) schdle[a + 1] = vals.at(a);
+                    if(cline.startsWith("storage_directory="))
+                        sdir[0] = cval;
+                    else if(cline.startsWith("max_temporary_restore_points="))
+                        pnumber = cval.toUShort();
+                    else if(cline.startsWith("working_directory="))
+                        sdir[2] = cval;
+                    else if(cline.startsWith("enabled="))
+                        schdle[0] = cval;
+                    else if(cline.startsWith("schedule="))
+                    {
+                        QSL vals(cval.split(':'));
+                        for(uchar a(0) ; ! ilike(a, QSIL() << vals.count() << 4) ; ++a) schdle[a + 1] = vals.at(a);
+                    }
+                    else if(cline.startsWith("silent="))
+                        schdle[5] = cval;
+                    else if(cline.startsWith("window_position="))
+                        schdle[6] = cval;
+                    else if(cline.startsWith("window_scaling_factor="))
+                        wsclng = cval;
                 }
-                else if(cline.startsWith("pointsnumber="))
-                    pnumber = cval.toUShort();
-                else if(cline.startsWith("timer="))
-                    schdle[0] = cval;
-                else if(cline.startsWith("silentmode="))
-                    schdle[5] = cval;
-                else if(cline.startsWith("windowposition="))
-                    schdle[6] = cval;
             }
     }
 
@@ -516,9 +541,9 @@ void sb::cfgread()
         if(! cfgupdt) cfgupdt = true;
     }
 
-    if(! like(schdle[0], {"_on_", "_off_"}))
+    if(! like(schdle[0], {"_true_", "_false_"}))
     {
-        schdle[0] = "off";
+        schdle[0] = "false";
         if(! cfgupdt) cfgupdt = true;
     }
 
@@ -542,9 +567,9 @@ void sb::cfgread()
         if(! cfgupdt) cfgupdt = true;
     }
 
-    if(! like(schdle[5], {"_on_", "_off_"}))
+    if(! like(schdle[5], {"_true_", "_false_"}))
     {
-        schdle[5] = "off";
+        schdle[5] = "false";
         if(! cfgupdt) cfgupdt = true;
     }
 
@@ -560,8 +585,15 @@ void sb::cfgread()
         if(! cfgupdt) cfgupdt = true;
     }
 
+    if(! like(wsclng, {"_auto_", "_1_", "_1.5_", "_2_"}))
+    {
+        wsclng = "auto";
+        if(! cfgupdt) cfgupdt = true;
+    }
+
     sdir[1] = sdir[0] % "/Systemback";
     if(cfgupdt) cfgwrite();
+    if(! isfile("/etc/systemback.excludes")) sb::crtfile("/etc/systemback.excludes");
 }
 
 bool sb::copy(cQStr &srcfile, cQStr &newfile)

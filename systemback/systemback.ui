@@ -30,7 +30,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>402</x>
+      <x>518</x>
       <y>2865</y>
       <width>138</width>
       <height>48</height>
@@ -5961,6 +5961,28 @@
      <zorder>partitionsettingspanel1</zorder>
      <zorder>copycover</zorder>
     </widget>
+    <widget class="lblevent" name="scalingbutton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>3</y>
+       <width>24</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="toolTip">
+      <string>Window scaling</string>
+     </property>
+     <property name="text">
+      <string notr="true">∓</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
     <zorder>border</zorder>
     <zorder>function1</zorder>
     <zorder>installpanel</zorder>
@@ -5975,6 +5997,7 @@
     <zorder>windowbutton1</zorder>
     <zorder>restorepanel</zorder>
     <zorder>copypanel</zorder>
+    <zorder>scalingbutton</zorder>
    </widget>
    <widget class="QWidget" name="statuspanel" native="true">
     <property name="geometry">
@@ -6812,7 +6835,7 @@
    <widget class="QFrame" name="resizepanel">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>656</x>
       <y>2865</y>
       <width>20</width>
       <height>20</height>
@@ -6822,6 +6845,118 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="pnlevent" name="scalingbuttonspanel" native="true">
+    <property name="geometry">
+     <rect>
+      <x>402</x>
+      <y>2865</y>
+      <width>116</width>
+      <height>76</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <widget class="QFrame" name="subscalingbuttonspanel">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>112</width>
+       <height>72</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <widget class="QLabel" name="scalingfactor">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>24</y>
+        <width>96</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Multiplier for scaling the window</string>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>auto</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="scalingdown">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>48</y>
+        <width>112</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/pictures/down.png</normaloff>:/pictures/down.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>12</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="scalingup">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>112</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/pictures/up.png</normaloff>:/pictures/up.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>12</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+   </widget>
    <zorder>mainpanel</zorder>
    <zorder>statuspanel</zorder>
    <zorder>schedulerpanel</zorder>
@@ -6829,6 +6964,7 @@
    <zorder>passwordpanel</zorder>
    <zorder>buttonspanel</zorder>
    <zorder>resizepanel</zorder>
+   <zorder>scalingbuttonspanel</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

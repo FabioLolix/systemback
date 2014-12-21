@@ -22,6 +22,7 @@
 #include <QStringBuilder>
 #include <QDesktopWidget>
 #include <QFontDatabase>
+#include <QStyleFactory>
 #include <QTextStream>
 #include <QDateTime>
 #include <QDir>
@@ -40,11 +41,32 @@
 #undef KeyPress
 #endif
 
+#ifdef True
+#undef True
+#endif
+
+#ifdef False
+#undef False
+#endif
+
 systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
+    if(sb::style == "auto")
+        cfgupdt = false;
+    else if(QStyleFactory::keys().contains(sb::style))
+    {
+        qApp->setStyle(QStyleFactory::create(sb::style));
+        cfgupdt = false;
+    }
+    else
+    {
+        sb::style = "auto";
+        cfgupdt = true;
+    }
+
     ui->setupUi(this);
     installEventFilter(this);
-    cfgupdt = nrxth = false;
+    nrxth = false;
     ui->statuspanel->hide();
     ui->scalingbuttonspanel->hide();
     ui->buttonspanel->hide();
@@ -79,10 +101,6 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     connect(ui->windowbutton3, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
     connect(ui->windowbutton3, SIGNAL(Mouse_Pressed()), this, SLOT(benter()));
     connect(ui->buttonspanel, SIGNAL(Mouse_Leave()), this, SLOT(bleave()));
-    connect(ui->windowmaximize, SIGNAL(Mouse_Enter()), this, SLOT(wmaxenter()));
-    connect(ui->windowmaximize, SIGNAL(Mouse_Leave()), this, SLOT(wmaxleave()));
-    connect(ui->windowmaximize, SIGNAL(Mouse_Pressed()), this, SLOT(wmaxpressed()));
-    connect(ui->windowmaximize, SIGNAL(Mouse_Released()), this, SLOT(wmaxreleased()));
     connect(ui->windowminimize, SIGNAL(Mouse_Enter()), this, SLOT(wminenter()));
     connect(ui->windowminimize, SIGNAL(Mouse_Leave()), this, SLOT(wminleave()));
     connect(ui->windowminimize, SIGNAL(Mouse_Pressed()), this, SLOT(wminpressed()));
@@ -108,8 +126,6 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     }
     else
         dialog = 2;
-
-    sb::cfgread();
 
     {
         QFont font;
@@ -149,6 +165,9 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                     ui->grubreinstallrepair->setMinimumSize(ui->includeusers->minimumSize());
                     ui->grubreinstallrepairdisable->setMinimumSize(ui->includeusers->minimumSize());
                     ui->windowposition->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->languages->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->styles->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->users->setMinimumSize(ui->includeusers->minimumSize());
                     ui->admins->setMinimumSize(ui->includeusers->minimumSize());
                     ui->partitionsettings->verticalHeader()->setDefaultSectionSize(ss(20));
                     ui->livedevices->verticalHeader()->setDefaultSectionSize(ui->partitionsettings->verticalHeader()->defaultSectionSize());
@@ -206,6 +225,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             ui->schedulepanel->hide();
             ui->aboutpanel->hide();
             ui->licensepanel->hide();
+            ui->settingspanel->hide();
             ui->choosepanel->hide();
             ui->functionmenu2->hide();
             ui->storagedirbutton->hide();
@@ -246,6 +266,10 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             ui->windowbutton2->setForegroundRole(QPalette::Base);
             ui->windowbutton4->setForegroundRole(QPalette::Base);
             ui->storagedirarea->setBackgroundRole(QPalette::Base);
+            connect(ui->windowmaximize, SIGNAL(Mouse_Enter()), this, SLOT(wmaxenter()));
+            connect(ui->windowmaximize, SIGNAL(Mouse_Leave()), this, SLOT(wmaxleave()));
+            connect(ui->windowmaximize, SIGNAL(Mouse_Pressed()), this, SLOT(wmaxpressed()));
+            connect(ui->windowmaximize, SIGNAL(Mouse_Released()), this, SLOT(wmaxreleased()));
             connect(ui->function1, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
             connect(ui->function1, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
             connect(ui->function1, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
@@ -415,6 +439,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         }
     }
 
+    if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     if((unity = sb::exist("/usr/lib/unity/unity-panel-service") && pisrng("unity-panel-service"))) setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 }
 
@@ -490,6 +515,7 @@ void systemback::unitimer()
                 ui->schedulepanel->move(ui->sbpanel->pos());
                 ui->aboutpanel->move(ui->sbpanel->pos());
                 ui->licensepanel->move(ui->sbpanel->pos());
+                ui->settingspanel->move(ui->sbpanel->pos());
                 ui->choosepanel->move(ui->sbpanel->pos());
                 ui->restorepanel->setBackgroundRole(QPalette::Background);
                 ui->copypanel->setBackgroundRole(QPalette::Background);
@@ -499,6 +525,7 @@ void systemback::unitimer()
                 ui->schedulepanel->setBackgroundRole(QPalette::Background);
                 ui->aboutpanel->setBackgroundRole(QPalette::Background);
                 ui->licensepanel->setBackgroundRole(QPalette::Background);
+                ui->settingspanel->setBackgroundRole(QPalette::Background);
                 ui->choosepanel->setBackgroundRole(QPalette::Background);
                 ui->liveworkdirarea->setBackgroundRole(QPalette::Base);
                 ui->schedulerday->setBackgroundRole(QPalette::Base);
@@ -539,23 +566,168 @@ void systemback::unitimer()
                 ui->copycover->hide();
                 ui->livecreatecover->hide();
                 ui->repaircover->hide();
-                if(sb::schdle[0] == "true") ui->schedulerstate->click();
-                if(sb::schdle[5] == "true") ui->silentmode->setChecked(true);
+                if(sb::schdle[0] == sb::True) ui->schedulerstate->click();
+                if(sb::schdle[5] == sb::True) ui->silentmode->setChecked(true);
                 ui->windowposition->addItems({tr("Top left"), tr("Top right"), tr("Center"), tr("Bottom left"), tr("Bottom right")});
 
-                if(sb::schdle[6] == "topright")
+                if(sb::schdlr[0] == "topright")
                     ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Top right")));
-                else if(sb::schdle[6] == "center")
+                if(sb::schdlr[0] == "center")
                     ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Center")));
-                else if(sb::schdle[6] == "bottomleft")
+                else if(sb::schdlr[0] == "bottomleft")
                     ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Bottom left")));
-                else if(sb::schdle[6] == "bottomright")
+                else if(sb::schdlr[0] == "bottomright")
                     ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Bottom right")));
 
-                ui->schedulerday->setText(sb::schdle[1] % ' ' % tr("day(s)"));
-                ui->schedulerhour->setText(sb::schdle[2] % ' ' % tr("hour(s)"));
-                ui->schedulerminute->setText(sb::schdle[3] % ' ' % tr("minute(s)"));
-                ui->schedulersecond->setText(sb::schdle[4] % ' ' % tr("seconds"));
+                ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
+                ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
+                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+                ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
+
+                if(sb::isdir("/usr/share/systemback/lang"))
+                {
+                    ui->languages->addItem("English");
+
+                    for(cQStr &item : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
+                    {
+                        QStr lcode(sb::left(sb::right(item, -11), -3));
+
+                        if(lcode == "ar_EG")
+                            ui->languages->addItem("المصرية العربية");
+                        else if(lcode == "bg")
+                            ui->languages->addItem("български");
+                        else if(lcode == "ca_ES")
+                            ui->languages->addItem("Català");
+                        else if(lcode == "es")
+                            ui->languages->addItem("Español");
+                        else if(lcode == "fi")
+                            ui->languages->addItem("Suomi");
+                        else if(lcode == "fr")
+                            ui->languages->addItem("Français");
+                        else if(lcode == "gl_ES")
+                            ui->languages->addItem("Galego");
+                        else if(lcode == "hu")
+                            ui->languages->addItem("Magyar");
+                        else if(lcode == "in")
+                            ui->languages->addItem("Bahasa Indonesia");
+                        else if(lcode == "pt_BR")
+                            ui->languages->addItem("Português (Brasil)");
+                        else if(lcode == "ro")
+                            ui->languages->addItem("Română");
+                        else if(lcode == "tr")
+                            ui->languages->addItem("Türkçe");
+                        else if(lcode == "zh_CN")
+                            ui->languages->addItem("中文（简体）");
+                    }
+
+                    if(sb::lang != "auto")
+                    {
+                        if(sb::lang == "ar_EG")
+                            ui->languages->setCurrentIndex(ui->languages->findText("المصرية العربية"));
+                        else if(sb::lang == "bg_BG")
+                            ui->languages->setCurrentIndex(ui->languages->findText("български"));
+                        else if(sb::lang == "ca_ES")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Català"));
+                        else if(sb::lang == "es_ES")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Español"));
+                        else if(sb::lang == "fi_FI")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Suomi"));
+                        else if(sb::lang == "fr_FR")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Français"));
+                        else if(sb::lang == "gl_ES")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Galego"));
+                        else if(sb::lang == "hu_HU")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Magyar"));
+                        else if(sb::lang == "in_IN")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Bahasa Indonesia"));
+                        else if(sb::lang == "pt_BR")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Português (Brasil)"));
+                        else if(sb::lang == "ro_RO")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Română"));
+                        else if(sb::lang == "tr_TR")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Türkçe"));
+                        else if(sb::lang == "zh_CN")
+                            ui->languages->setCurrentIndex(ui->languages->findText("中文（简体）"));
+                        else if(sb::lang != "en_EN")
+                            ui->languages->setCurrentIndex(-1);
+
+                        if(ui->languages->currentIndex() == -1)
+                        {
+                            sb::lang = "auto";
+                            ui->languageoverride->setEnabled(false);
+                            if(! cfgupdt) cfgupdt = true;
+                        }
+                        else
+                        {
+                            ui->languageoverride->setChecked(true);
+                            ui->languages->setEnabled(true);
+                        }
+                    }
+                }
+                else
+                {
+                    ui->languageoverride->setEnabled(false);
+
+                    if(sb::lang != "auto")
+                    {
+                        sb::lang = "auto";
+                        if(! cfgupdt) cfgupdt = true;
+                    }
+                }
+
+                ui->styles->addItems(QStyleFactory::keys());
+
+                if(sb::style != "auto")
+                {
+                    ui->styleoverride->setChecked(true);
+                    ui->styles->setCurrentIndex(ui->styles->findText(sb::style));
+                    ui->styles->setEnabled(true);
+                }
+
+                if(sb::waot == sb::True) ui->alwaysontop->setChecked(true);
+                if(sb::incrmtl == sb::False) ui->incrementaldisable->setChecked(true);
+                if(sb::xzcmpr == sb::True) ui->usexzcompressor->setChecked(true);
+                if(sb::autoiso == sb::True) ui->autoisocreate->setChecked(true);
+
+                if(sb::schdlr[1] != "false")
+                {
+                    if(sb::schdlr[1] == "everyone")
+                    {
+                        ui->schedulerdisable->click();
+                        ui->schedulerusers->setText(tr("Everyone"));
+                    }
+                    else
+                    {
+                        ui->schedulerdisable->setChecked(true);
+                        QSL susr(sb::right(sb::schdlr[1], -1).split(','));
+                        if(! susr.contains("root")) ui->users->addItem("root");
+                        QFile file("/etc/passwd");
+
+                        if(file.open(QIODevice::ReadOnly))
+                            while(! file.atEnd())
+                            {
+                                QStr usr(file.readLine().trimmed());
+
+                                if(usr.contains(":/home/"))
+                                {
+                                    usr = sb::left(usr, sb::instr(usr, ":") -1);
+                                    if(! susr.contains(usr) && sb::isdir("/home/" % usr)) ui->users->addItem(usr);
+                                }
+
+                                qApp->processEvents();
+                            }
+
+                        if(ui->users->count() > 0)
+                        {
+                            ui->users->setEnabled(true);
+                            ui->adduser->setEnabled(true);
+                        }
+
+                        ui->schedulerusers->setText(sb::right(sb::schdlr[1], -1));
+                        ui->schedulerrefresh->setEnabled(true);
+                    }
+                }
+
                 ui->includeuserstext->resize(fontMetrics().width(ui->includeuserstext->text()) + ss(7), ui->includeuserstext->height());
                 ui->includeusers->move(ui->includeuserstext->x() + ui->includeuserstext->width(), ui->includeusers->y());
                 ui->includeusers->setMaximumWidth(width() - ui->includeusers->x() - ss(8));
@@ -601,6 +773,17 @@ void systemback::unitimer()
                 ui->pointexclude->resize(fontMetrics().width(ui->pointexclude->text()) + ss(28), ui->pointexclude->height());
                 ui->liveexclude->resize(fontMetrics().width(ui->liveexclude->text()) + ss(28), ui->liveexclude->height());
                 ui->silentmode->resize(fontMetrics().width(ui->silentmode->text()) + ss(28), ui->silentmode->height());
+                ui->languageoverride->resize(fontMetrics().width(ui->languageoverride->text()) + ss(28), ui->languageoverride->height());
+                ui->languages->move(ui->languageoverride->x() + ui->languageoverride->width() + ss(3), ui->languages->y());
+                ui->languages->setMaximumWidth(width() - ui->languages->x() - ss(8));
+                ui->styleoverride->resize(fontMetrics().width(ui->styleoverride->text()) + ss(28), ui->styleoverride->height());
+                ui->styles->move(ui->styleoverride->x() + ui->styleoverride->width() + ss(3), ui->styles->y());
+                ui->styles->setMaximumWidth(width() - ui->styles->x() - ss(8));
+                ui->alwaysontop->resize(fontMetrics().width(ui->alwaysontop->text()) + ss(28), ui->alwaysontop->height());
+                ui->incrementaldisable->resize(fontMetrics().width(ui->incrementaldisable->text()) + ss(28), ui->incrementaldisable->height());
+                ui->usexzcompressor->resize(fontMetrics().width(ui->usexzcompressor->text()) + ss(28), ui->usexzcompressor->height());
+                ui->autoisocreate->resize(fontMetrics().width(ui->autoisocreate->text()) + ss(28), ui->autoisocreate->height());
+                ui->schedulerdisable->resize(fontMetrics().width(ui->schedulerdisable->text()) + ss(28), ui->schedulerdisable->height());
                 ui->filesystem->addItems({"ext4", "ext3", "ext2"});
                 if(sb::execsrch("mkfs.btrfs")) ui->filesystem->addItem("btrfs");
                 if(sb::execsrch("mkfs.reiserfs")) ui->filesystem->addItem("reiserfs");
@@ -663,6 +846,7 @@ void systemback::unitimer()
                 ui->storagedirbutton->show();
                 ui->repairmenu->setEnabled(true);
                 ui->aboutmenu->setEnabled(true);
+                ui->settingsmenu->setEnabled(true);
                 ui->pnumber3->setEnabled(true);
                 ui->pnumber4->setEnabled(true);
                 ui->pnumber5->setEnabled(true);
@@ -724,7 +908,7 @@ void systemback::unitimer()
                 ui->processrun->setText(prun % points);
             }
 
-            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3_", '_' % tr("Writing Live image to USB device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
+            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/*", '_' % tr("Writing Live image to USB device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
             {
                 if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
                 schar cperc(sb::Progress);
@@ -746,7 +930,7 @@ void systemback::unitimer()
                 else if(ui->progressbar->maximum() == 100)
                     ui->progressbar->setMaximum(0);
             }
-            else if(prun == tr("Creating Live system") % '\n' % tr("process") % " 2/3")
+            else if(prun.startsWith(tr("Creating Live system") % '\n' % tr("process") % " 2/"))
             {
                 if(irfsc)
                 {
@@ -1138,7 +1322,7 @@ void systemback::buttonstimer()
 void systemback::schedulertimer()
 {
     if(ui->schedulernumber->text().isEmpty())
-        ui->schedulernumber->setText(sb::schdle[4] % 's');
+        ui->schedulernumber->setText(QStr::number(sb::schdle[4]) % 's');
     else if(ui->schedulernumber->text() == "1s")
         on_schedulerstart_clicked();
     else
@@ -2469,7 +2653,7 @@ start:
             else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr))
                 goto error;
 
-            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == "true" && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", "storagedir=" % sb::sdir[0] % "\nliveworkdir=" % sb::sdir[2] % "\npointsnumber=" % QStr::number(sb::pnumber) % "\ntimer=off\nschedule=" % sb::schdle[1] % ':' % sb::schdle[2] % ':' % sb::schdle[3] % ':' % sb::schdle[4] % "\nsilentmode=" % sb::schdle[5] % "\nwindowposition=" % sb::schdle[6] % '\n')) goto error;
+            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == sb::True && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", "storagedir=" % sb::sdir[0] % "\nliveworkdir=" % sb::sdir[2] % "\npointsnumber=" % QStr::number(sb::pnumber) % "\ntimer=off\nschedule=" % QStr::number(sb::schdle[1]) % ':' % QStr::number(sb::schdle[2]) % ':' % QStr::number(sb::schdle[3]) % ':' % QStr::number(sb::schdle[4]) % "\nsilentmode=" % (sb::schdle[5] == sb::True ? "true" : "false") % "\nwindowposition=" % sb::schdlr[0] % '\n')) goto error;
         }
         else
         {
@@ -3491,18 +3675,21 @@ void systemback::dialogopen()
 
 void systemback::setwontop(bool state)
 {
-    Display *dsply(XOpenDisplay(nullptr));
-    XEvent ev;
-    ev.xclient.type = ClientMessage;
-    ev.xclient.message_type = XInternAtom(dsply, "_NET_WM_STATE", 0);
-    ev.xclient.display = dsply;
-    ev.xclient.window = winId();
-    ev.xclient.format = 32;
-    ev.xclient.data.l[0] = state ? 1 : 0;
-    ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_ABOVE", 0);
-    XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
-    ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_STAYS_ON_TOP", 0);
-    XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
+    if(sb::waot == sb::False)
+    {
+        Display *dsply(XOpenDisplay(nullptr));
+        XEvent ev;
+        ev.xclient.type = ClientMessage;
+        ev.xclient.message_type = XInternAtom(dsply, "_NET_WM_STATE", 0);
+        ev.xclient.display = dsply;
+        ev.xclient.window = winId();
+        ev.xclient.format = 32;
+        ev.xclient.data.l[0] = state ? 1 : 0;
+        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_ABOVE", 0);
+        XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
+        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_STAYS_ON_TOP", 0);
+        XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
+    }
 }
 
 void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
@@ -5373,6 +5560,15 @@ void systemback::on_aboutmenu_clicked()
     repaint();
 }
 
+void systemback::on_settingsmenu_clicked()
+{
+    ui->sbpanel->hide();
+    ui->settingspanel->show();
+    ui->function1->setText(tr("Settings"));
+    ui->settingsback->setFocus();
+    repaint();
+}
+
 void systemback::on_partitionrefresh_clicked()
 {
     busy();
@@ -5919,6 +6115,15 @@ void systemback::on_licensemenu_clicked()
         ui->license->setText(sb::fload("/usr/share/common-licenses/GPL-3"));
         busy(false);
     }
+}
+
+void systemback::on_settingsback_clicked()
+{
+    ui->settingspanel->hide();
+    ui->sbpanel->show();
+    ui->function1->setText("Systemback");
+    ui->functionmenuback->setFocus();
+    repaint();
 }
 
 void systemback::on_pointpipe1_clicked()
@@ -6812,7 +7017,7 @@ void systemback::on_dirrefresh_clicked()
     busy();
     if(ui->dirchoose->topLevelItemCount() != 0) ui->dirchoose->clear();
     QStr pwdrs(sb::fload("/etc/passwd"));
-    QSL excl({"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "srv", "sys", "tmp", "usr", "var"});
+    QSL excl{"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "srv", "sys", "tmp", "usr", "var"};
 
     for(cQStr &item : QDir("/").entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
     {
@@ -8435,32 +8640,32 @@ void systemback::on_schedulerstate_clicked()
 {
     if(ui->schedulerstate->isChecked())
     {
-        if(sb::schdle[0] == "false")
+        if(sb::schdle[0] == sb::False)
         {
-            sb::schdle[0] = "true";
+            sb::schdle[0] = sb::True;
             if(! cfgupdt) cfgupdt = true;
             if(sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
         ui->schedulerstate->setText(tr("Enabled"));
-        if(sb::schdle[1] > "0") ui->daydown->setEnabled(true);
-        if(sb::schdle[1] < "7") ui->dayup->setEnabled(true);
-        if(sb::schdle[2] > "0") ui->hourdown->setEnabled(true);
-        if(sb::schdle[2] < "23") ui->hourup->setEnabled(true);
-        if(sb::schdle[3] > "0" && (sb::schdle[1] > "0" || sb::schdle[2] > "0" || sb::schdle[3].toUShort() > 30)) ui->minutedown->setEnabled(true);
-        if(sb::schdle[3] < "59") ui->minuteup->setEnabled(true);
+        if(sb::schdle[1] > 0) ui->daydown->setEnabled(true);
+        if(sb::schdle[1] < 7) ui->dayup->setEnabled(true);
+        if(sb::schdle[2] > 0) ui->hourdown->setEnabled(true);
+        if(sb::schdle[2] < 23) ui->hourup->setEnabled(true);
+        if(sb::schdle[3] > 0 && (sb::schdle[1] > 0 || sb::schdle[2] > 0 || sb::schdle[3] > 30)) ui->minutedown->setEnabled(true);
+        if(sb::schdle[3] < 59) ui->minuteup->setEnabled(true);
         ui->silentmode->setEnabled(true);
 
-        if(sb::schdle[5] == "false")
+        if(sb::schdle[5] == sb::False)
         {
-            if(sb::schdle[4] > "10") ui->seconddown->setEnabled(true);
-            if(sb::schdle[4] < "99") ui->secondup->setEnabled(true);
+            if(sb::schdle[4] > 10) ui->seconddown->setEnabled(true);
+            if(sb::schdle[4] < 99) ui->secondup->setEnabled(true);
             ui->windowposition->setEnabled(true);
         }
     }
     else
     {
-        sb::schdle[0] = "false";
+        sb::schdle[0] = sb::False;
         if(! cfgupdt) cfgupdt = true;
         ui->schedulerstate->setText(tr("Disabled"));
         if(ui->dayup->isEnabled()) ui->dayup->setDisabled(true);
@@ -8480,15 +8685,15 @@ void systemback::on_silentmode_clicked(bool checked)
 {
     if(! checked)
     {
-        sb::schdle[5] = "false";
+        sb::schdle[5] = sb::False;
         if(! cfgupdt) cfgupdt = true;
-        if(sb::schdle[4] > "10") ui->seconddown->setEnabled(true);
-        if(sb::schdle[4] < "99") ui->secondup->setEnabled(true);
+        if(sb::schdle[4] > 10) ui->seconddown->setEnabled(true);
+        if(sb::schdle[4] < 99) ui->secondup->setEnabled(true);
         ui->windowposition->setEnabled(true);
     }
-    else if(sb::schdle[5] == "false")
+    else if(sb::schdle[5] == sb::False)
     {
-        sb::schdle[5] = "true";
+        sb::schdle[5] = sb::True;
         if(! cfgupdt) cfgupdt = true;
         if(ui->secondup->isEnabled()) ui->secondup->setDisabled(true);
         if(ui->seconddown->isEnabled()) ui->seconddown->setDisabled(true);
@@ -8498,32 +8703,32 @@ void systemback::on_silentmode_clicked(bool checked)
 
 void systemback::on_dayup_clicked()
 {
-    sb::schdle[1] = QStr::number(sb::schdle[1].toUShort() + 1);
+    ++sb::schdle[1];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerday->setText(sb::schdle[1] % ' ' % tr("day(s)"));
+    ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->daydown->isEnabled()) ui->daydown->setEnabled(true);
-    if(sb::schdle[1] == "7") ui->dayup->setDisabled(true);
-    if(! ui->minutedown->isEnabled() && sb::schdle[3].toUShort() > 0) ui->minutedown->setEnabled(true);
+    if(sb::schdle[1] == 7) ui->dayup->setDisabled(true);
+    if(! ui->minutedown->isEnabled() && sb::schdle[3] > 0) ui->minutedown->setEnabled(true);
 }
 
 void systemback::on_daydown_clicked()
 {
-    sb::schdle[1] = QStr::number(sb::schdle[1].toUShort() - 1);
+    --sb::schdle[1];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerday->setText(sb::schdle[1] % ' ' % tr("day(s)"));
+    ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->dayup->isEnabled()) ui->dayup->setEnabled(true);
 
-    if(sb::schdle[1] == "0")
+    if(sb::schdle[1] == 0)
     {
-        if(sb::schdle[2] == "0")
+        if(sb::schdle[2] == 0)
         {
-            if(sb::schdle[3].toUShort() < 30)
+            if(sb::schdle[3] < 30)
             {
-                sb::schdle[3] = "30";
-                ui->schedulerminute->setText(sb::schdle[3] % ' ' % tr("minute(s)"));
+                sb::schdle[3] = 30;
+                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
             }
 
-            if(ui->minutedown->isEnabled() && sb::schdle[3].toUShort() < 31) ui->minutedown->setDisabled(true);
+            if(ui->minutedown->isEnabled() && sb::schdle[3] < 31) ui->minutedown->setDisabled(true);
         }
 
         ui->daydown->setDisabled(true);
@@ -8532,32 +8737,32 @@ void systemback::on_daydown_clicked()
 
 void systemback::on_hourup_clicked()
 {
-    sb::schdle[2] = QStr::number(sb::schdle[2].toUShort() + 1);
+    ++sb::schdle[2];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerhour->setText(sb::schdle[2] % ' ' % tr("hour(s)"));
+    ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourdown->isEnabled()) ui->hourdown->setEnabled(true);
-    if(sb::schdle[2] == "23") ui->hourup->setDisabled(true);
-    if(! ui->minutedown->isEnabled() && sb::schdle[3].toUShort() > 0) ui->minutedown->setEnabled(true);
+    if(sb::schdle[2] == 23) ui->hourup->setDisabled(true);
+    if(! ui->minutedown->isEnabled() && sb::schdle[3] > 0) ui->minutedown->setEnabled(true);
 }
 
 void systemback::on_hourdown_clicked()
 {
-    sb::schdle[2] = QStr::number(sb::schdle[2].toUShort() - 1);
+    --sb::schdle[2];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerhour->setText(sb::schdle[2] % ' ' % tr("hour(s)"));
+    ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourup->isEnabled()) ui->hourup->setEnabled(true);
 
-    if(sb::schdle[2] == "0")
+    if(sb::schdle[2] == 0)
     {
-        if(sb::schdle[1] == "0")
+        if(sb::schdle[1] == 0)
         {
-            if(sb::schdle[3].toUShort() < 30)
+            if(sb::schdle[3] < 30)
             {
-                sb::schdle[3] = "30";
-                ui->schedulerminute->setText(sb::schdle[3] % ' ' % tr("minute(s)"));
+                sb::schdle[3] = 30;
+                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
             }
 
-            if(ui->minutedown->isEnabled() && sb::schdle[3].toUShort() < 31) ui->minutedown->setDisabled(true);
+            if(ui->minutedown->isEnabled() && sb::schdle[3] < 31) ui->minutedown->setDisabled(true);
         }
 
         ui->hourdown->setDisabled(true);
@@ -8566,67 +8771,67 @@ void systemback::on_hourdown_clicked()
 
 void systemback::on_minuteup_clicked()
 {
-    sb::schdle[3] = QStr::number(sb::schdle[3].toUShort() + (sb::schdle[3] == "55" ? 4 : 5));
+    sb::schdle[3] = sb::schdle[3] + (sb::schdle[3] == 55 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerminute->setText(sb::schdle[3] % ' ' % tr("minute(s)"));
+    ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minutedown->isEnabled()) ui->minutedown->setEnabled(true);
-    if(sb::schdle[3] == "59") ui->minuteup->setDisabled(true);
+    if(sb::schdle[3] == 59) ui->minuteup->setDisabled(true);
 }
 
 void systemback::on_minutedown_clicked()
 {
-    sb::schdle[3] = QStr::number(sb::schdle[3].toUShort() - (sb::schdle[3] == "59" ? 4 : 5));
+    sb::schdle[3] = sb::schdle[3] - (sb::schdle[3] == 59 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerminute->setText(sb::schdle[3] % ' ' % tr("minute(s)"));
+    ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minuteup->isEnabled()) ui->minuteup->setEnabled(true);
-    if((sb::schdle[1] == "0" && sb::schdle[2] == "0" && sb::schdle[3] == "30") || sb::schdle[3] == "0") ui->minutedown->setDisabled(true);
+    if((sb::schdle[1] == 0 && sb::schdle[2] == 0 && sb::schdle[3] == 30) || sb::schdle[3] == 0) ui->minutedown->setDisabled(true);
 }
 
 void systemback::on_secondup_clicked()
 {
-    sb::schdle[4] = QStr::number(sb::schdle[4].toUShort() + (sb::schdle[4] == "95" ? 4 : 5));
+    sb::schdle[4] = sb::schdle[4] + (sb::schdle[4] == 95 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulersecond->setText(sb::schdle[4] % ' ' % tr("seconds"));
+    ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->seconddown->isEnabled()) ui->seconddown->setEnabled(true);
-    if(sb::schdle[4] == "99") ui->secondup->setDisabled(true);
+    if(sb::schdle[4] == 99) ui->secondup->setDisabled(true);
 }
 
 void systemback::on_seconddown_clicked()
 {
-    sb::schdle[4] = QStr::number(sb::schdle[4].toUShort() - (sb::schdle[4] == "99" ? 4 : 5));
+    sb::schdle[4] = sb::schdle[4] - (sb::schdle[4] == 99 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulersecond->setText(sb::schdle[4] % ' ' % tr("seconds"));
+    ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->secondup->isEnabled()) ui->secondup->setEnabled(true);
-    if(sb::schdle[4] == "10") ui->seconddown->setDisabled(true);
+    if(sb::schdle[4] == 10) ui->seconddown->setDisabled(true);
 }
 
 void systemback::on_windowposition_currentIndexChanged(const QStr &arg1)
 {
     if(ui->schedulepanel->isVisible())
     {
-        if(arg1 == tr("Top left") && sb::schdle[6] != "topleft")
+        if(arg1 == tr("Top left") && sb::schdlr[0] != "topleft")
         {
-            sb::schdle[6] = "topleft";
+            sb::schdlr[0] = "topleft";
             if(! cfgupdt) cfgupdt = true;
         }
-        else if(arg1 == tr("Top right") && sb::schdle[6] != "topright")
+        else if(arg1 == tr("Top right") && sb::schdlr[0] != "topright")
         {
-            sb::schdle[6] = "topright";
+            sb::schdlr[0] = "topright";
             if(! cfgupdt) cfgupdt = true;
         }
-        else if(arg1 == tr("Center") && sb::schdle[6] != "center")
+        else if(arg1 == tr("Center") && sb::schdlr[0] != "center")
         {
-            sb::schdle[6] = "center";
+            sb::schdlr[0] = "center";
             if(! cfgupdt) cfgupdt = true;
         }
-        else if(arg1 == tr("Bottom left") && sb::schdle[6] != "bottomleft")
+        else if(arg1 == tr("Bottom left") && sb::schdlr[0] != "bottomleft")
         {
-            sb::schdle[6] = "bottomleft";
+            sb::schdlr[0] = "bottomleft";
             if(! cfgupdt) cfgupdt = true;
         }
-        else if(arg1 == tr("Bottom right") && sb::schdle[6] != "bottomright")
+        else if(arg1 == tr("Bottom right") && sb::schdlr[0] != "bottomright")
         {
-            sb::schdle[6] = "bottomright";
+            sb::schdlr[0] = "bottomright";
             if(! cfgupdt) cfgupdt = true;
         }
     }
@@ -8985,7 +9190,7 @@ exit:
     return;
 start:
     statustart();
-    prun = tr("Creating Live system") % '\n' % tr("process") % " 1/3";
+    prun = tr("Creating Live system") % '\n' % tr("process") % " 1/" % (sb::autoiso == sb::True ? '4' : '3');
     QStr ckernel(ckname()), lvtype(sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live"), ifname;
 
     if(sb::exist(sb::sdir[2] % "/.sblivesystemcreate"))
@@ -9129,7 +9334,7 @@ start:
     }
 
     if(intrrpt) goto exit;
-    prun = tr("Creating Live system") % '\n' % tr("process") % " 2/3";
+    prun = tr("Creating Live system") % '\n' % tr("process") % " 2/" % (sb::autoiso == sb::True ? '4' : '3');
     QStr elist;
 
     for(cQStr &excl : {"/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"})
@@ -9140,7 +9345,7 @@ start:
             for(cQStr &item : QDir(cdir).entryList(QDir::Files))
                 if(item.contains("cryptdisks")) elist.append(" -e " % cdir % '/' % item);
 
-    if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs -info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist) > 0)
+    if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr == sb::True ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist) > 0)
     {
         dialog = 26;
         goto error;
@@ -9148,7 +9353,7 @@ start:
 
     sb::Progress = -1;
     ui->progressbar->setValue(0);
-    prun = tr("Creating Live system") % '\n' % tr("process") % " 3/3";
+    prun = tr("Creating Live system") % '\n' % tr("process") % " 3/" % (sb::autoiso == sb::True ? '4' : '3');
     sb::remove("/.sblvtmp");
     sb::remove("/media/.sblvtmp");
     sb::remove("/var/.sblvtmp");
@@ -9186,6 +9391,26 @@ start:
     }
 
     if(! QFile::setPermissions(sb::sdir[2] % '/' % ifname % ".sblive", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
+
+    if(sb::autoiso == sb::True && sb::fsize(sb::sdir[2] % '/' % ifname % ".sblive") < 4294967295)
+    {
+        sb::Progress = -1;
+        ui->progressbar->setValue(0);
+        prun = tr("Creating Live system") % '\n' % tr("process") % " 4/4";
+        if(! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux")) goto error;
+        if(intrrpt) goto exit;
+
+        if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate") > 0)
+        {
+            if(sb::isfile(sb::sdir[2] % '/' % ifname % ".iso")) sb::remove(sb::sdir[2] % '/' % ifname % ".iso");
+            dialog = 27;
+            goto error;
+        }
+
+        if(sb::exec("isohybrid " % sb::sdir[2] % '/' % ifname % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % ifname % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
+    }
+
+    if(intrrpt) goto exit;
     prun = tr("Emptying cache");
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
@@ -9235,7 +9460,6 @@ start:
         goto error;
     }
 
-    if(intrrpt) goto exit;
     if(sb::exec("isohybrid " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(intrrpt) goto exit;
@@ -9322,5 +9546,210 @@ exec:
     sb::mkpart(dev, start, ui->partitionsize->value() == ui->partitionsize->maximum() ? ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() : ullong(ui->partitionsize->value()) * 1048576, type);
 end:
     on_partitionrefresh2_clicked();
+    busy(false);
+}
+
+void systemback::on_languageoverride_clicked(bool checked)
+{
+    if(checked)
+    {
+        if(ui->languages->currentText() == "المصرية العربية")
+            sb::lang = "ar_EG";
+        else if(ui->languages->currentText() == "български")
+            sb::lang = "bg_BG";
+        else if(ui->languages->currentText() == "Català")
+            sb::lang = "ca_ES";
+        else if(ui->languages->currentText() == "English")
+            sb::lang = "en_EN";
+        else if(ui->languages->currentText() == "Español")
+            sb::lang = "es_ES";
+        else if(ui->languages->currentText() == "Suomi")
+            sb::lang = "fi_FI";
+        else if(ui->languages->currentText() == "Français")
+            sb::lang = "fr_FR";
+        else if(ui->languages->currentText() == "Galego")
+            sb::lang = "gl_ES";
+        else if(ui->languages->currentText() == "Magyar")
+            sb::lang = "hu_HU";
+        else if(ui->languages->currentText() == "Bahasa Indonesia")
+            sb::lang = "in_IN";
+        else if(ui->languages->currentText() == "Português (Brasil)")
+            sb::lang = "pt_BR";
+        else if(ui->languages->currentText() == "Română")
+            sb::lang = "ro_RO";
+        else if(ui->languages->currentText() == "Türkçe")
+            sb::lang = "tr_TR";
+        else
+            sb::lang = "zh_CN";
+
+        ui->languages->setEnabled(true);
+    }
+    else
+    {
+        sb::lang = "auto";
+        ui->languages->setEnabled(false);
+    }
+
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_languages_currentIndexChanged(const QString &arg1)
+{
+    if(ui->languages->isEnabled())
+    {
+        if(arg1 == "المصرية العربية")
+            sb::lang = "ar_EG";
+        else if(arg1 == "български")
+            sb::lang = "bg_BG";
+        else if(arg1 == "Català")
+            sb::lang = "ca_ES";
+        else if(arg1 == "English")
+            sb::lang = "en_EN";
+        else if(arg1 == "Español")
+            sb::lang = "es_ES";
+        else if(arg1 == "Suomi")
+            sb::lang = "fi_FI";
+        else if(arg1 == "Français")
+            sb::lang = "fr_FR";
+        else if(arg1 == "Galego")
+            sb::lang = "gl_ES";
+        else if(arg1 == "Magyar")
+            sb::lang = "hu_HU";
+        else if(arg1 == "Bahasa Indonesia")
+            sb::lang = "in_IN";
+        else if(arg1 == "Português (Brasil)")
+            sb::lang = "pt_BR";
+        else if(arg1 == "Română")
+            sb::lang = "ro_RO";
+        else if(arg1 == "Türkçe")
+            sb::lang = "tr_TR";
+        else
+            sb::lang = "zh_CN";
+
+        if(! cfgupdt) cfgupdt = true;
+    }
+}
+
+void systemback::on_styleoverride_clicked(bool checked)
+{
+    sb::style = checked ? ui->styles->currentText() : "auto";
+    ui->styles->setEnabled(checked);
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_styles_currentIndexChanged(const QString &arg1)
+{
+    if(ui->styles->isEnabled())
+    {
+        sb::style = arg1;
+        if(! cfgupdt) cfgupdt = true;
+    }
+}
+
+void systemback::on_alwaysontop_clicked(bool checked)
+{
+    if(checked)
+    {
+        setwontop();
+        sb::waot = sb::True;
+    }
+    else
+    {
+        sb::waot = sb::False;
+        setwontop(false);
+    }
+
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_incrementaldisable_clicked(bool checked)
+{
+    sb::incrmtl = checked ? sb::False : sb::True;
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_usexzcompressor_clicked(bool checked)
+{
+    sb::xzcmpr = checked ? sb::True : sb::False;
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_autoisocreate_clicked(bool checked)
+{
+    sb::autoiso = checked ? sb::True : sb::False;
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_schedulerdisable_clicked(bool checked)
+{
+    if(checked)
+    {
+        on_schedulerrefresh_clicked();
+        ui->adduser->setEnabled(true);
+    }
+    else
+    {
+        sb::schdlr[1] = "false";
+        ui->schedulerusers->setText(nullptr);
+        if(ui->adduser->isEnabled()) ui->adduser->setEnabled(false);
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    ui->users->setEnabled(checked);
+    ui->schedulerrefresh->setEnabled(checked);
+}
+
+void systemback::on_adduser_clicked()
+{
+    if(ui->users->count() == 1)
+    {
+        if(sb::schdlr[1] != "everyone")
+        {
+            sb::schdlr[1] = "everyone";
+            ui->schedulerusers->setText(tr("Everyone"));
+        }
+
+        ui->users->clear();
+        ui->adduser->setEnabled(false);
+    }
+    else
+    {
+        sb::schdlr[1] == "everyone" ? sb::schdlr[1] = ':' % ui->users->currentText() : sb::schdlr[1].append(',' % ui->users->currentText());
+        ui->schedulerusers->setText(sb::right(sb::schdlr[1], -1));
+        ui->users->removeItem(ui->users->findText(ui->users->currentText()));
+    }
+
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_schedulerrefresh_clicked()
+{
+    busy();
+
+    if(sb::schdlr[1] != "everyone")
+    {
+        sb::schdlr[1] = "everyone";
+        ui->schedulerusers->setText(tr("Everyone"));
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    ui->users->count() == 0 ? ui->adduser->setEnabled(true) : ui->users->clear();
+    ui->users->addItem("root");
+    QFile file("/etc/passwd");
+
+    if(file.open(QIODevice::ReadOnly))
+        while(! file.atEnd())
+        {
+            QStr usr(file.readLine().trimmed());
+
+            if(usr.contains(":/home/"))
+            {
+                usr = sb::left(usr, sb::instr(usr, ":") -1);
+                if(sb::isdir("/home/" % usr)) ui->users->addItem(usr);
+            }
+
+            qApp->processEvents();
+        }
+
     busy(false);
 }

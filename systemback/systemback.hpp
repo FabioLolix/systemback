@@ -162,8 +162,10 @@ private slots:
     void on_repairmountpoint_currentTextChanged(const QStr &arg1);
     void on_windowposition_currentIndexChanged(const QStr &arg1);
     void on_includeusers_currentIndexChanged(const QStr &arg1);
+    void on_languages_currentIndexChanged(const QString &arg1);
     void on_filesystem_currentIndexChanged(const QStr &arg1);
     void on_mountpoint_currentTextChanged(const QStr &arg1);
+    void on_styles_currentIndexChanged(const QString &arg1);
     void on_excludedlist_currentItemChanged(QLWI *current);
     void on_admins_currentIndexChanged(const QStr &arg1);
     void on_dirchoose_currentItemChanged(QTrWI *current);
@@ -172,6 +174,7 @@ private slots:
     void on_rootpassword1_textChanged(const QStr &arg1);
     void on_livelist_currentItemChanged(QLWI *current);
     void on_autorestoreoptions_clicked(bool checked);
+    void on_incrementaldisable_clicked(bool checked);
     void on_autorepairoptions_clicked(bool checked);
     void on_password1_textChanged(const QStr &arg1);
     void on_usersettingscopy_stateChanged(int arg1);
@@ -180,6 +183,8 @@ private slots:
     void on_fullname_textChanged(const QStr &arg1);
     void on_username_textChanged(const QStr &arg1);
     void on_hostname_textChanged(const QStr &arg1);
+    void on_languageoverride_clicked(bool checked);
+    void on_schedulerdisable_clicked(bool checked);
     void on_point10_textChanged(const QStr &arg1);
     void on_point11_textChanged(const QStr &arg1);
     void on_point12_textChanged(const QStr &arg1);
@@ -188,6 +193,7 @@ private slots:
     void on_point15_textChanged(const QStr &arg1);
     void on_skipfstabrepair_clicked(bool checked);
     void on_userdatainclude_clicked(bool checked);
+    void on_usexzcompressor_clicked(bool checked);
     void on_point1_textChanged(const QStr &arg1);
     void on_point2_textChanged(const QStr &arg1);
     void on_point3_textChanged(const QStr &arg1);
@@ -200,6 +206,9 @@ private slots:
     void on_dirchoose_itemExpanded(QTrWI *item);
     void on_configurationfilesrestore_clicked();
     void on_itemslist_itemExpanded(QTrWI *item);
+    void on_styleoverride_clicked(bool checked);
+    void on_autoisocreate_clicked(bool checked);
+    void on_alwaysontop_clicked(bool checked);
     void on_silentmode_clicked(bool checked);
     void on_repairpartitionrefresh_clicked();
     void on_format_clicked(bool checked);
@@ -213,6 +222,7 @@ private slots:
     void on_storagedirbutton_clicked();
     void on_partitionrefresh_clicked();
     void on_fullname_editingFinished();
+    void on_schedulerrefresh_clicked();
     void on_passwordinputok_clicked();
     void on_dirchoosecancel_clicked();
     void on_changepartition_clicked();
@@ -236,6 +246,8 @@ private slots:
     void on_pointexclude_clicked();
     void on_systemrepair_clicked();
     void on_newpartition_clicked();
+    void on_settingsmenu_clicked();
+    void on_settingsback_clicked();
     void on_startcancel_clicked();
     void on_restoremenu_clicked();
     void on_installmenu_clicked();
@@ -302,6 +314,7 @@ private slots:
     void on_additem_clicked();
     void on_daydown_clicked();
     void on_unmount_clicked();
+    void on_adduser_clicked();
     void on_hourup_clicked();
     void on_dayup_clicked();
 };

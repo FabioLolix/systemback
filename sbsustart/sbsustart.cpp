@@ -36,20 +36,17 @@ error:
         sb::error("\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
         break;
     case 3:
-        emsg = tr("Cannot start Systemback graphical user interface!") % "\n\n" % tr("Unable to connect to X server.");
+        emsg = tr("Unable to get root permissions.");
         break;
     case 4:
-        emsg = tr("Cannot start Systemback graphical user interface!") % "\n\n" % tr("Unable to get root permissions.");
-        break;
-    case 5:
-        emsg = tr("Cannot start Systemback scheduler daemon!") % "\n\n" % tr("Unable to get root permissions.");
+        emsg = tr("Unable to connect to X server.");
     }
 
     if(! emsg.isEmpty())
     {
-#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
-        uint uid(getuid());
+        emsg.prepend((qApp->arguments().value(1) == "systemback" ? tr("Cannot start Systemback graphical user interface!") : tr("Cannot start Systemback scheduler daemon!")) % "\n\n");
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
         if(uid != geteuid() && seteuid(uid) == -1)
             sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
         else
@@ -67,42 +64,77 @@ start:
         goto error;
     }
 
-    QStr cmd((qApp->arguments().value(1) == "systemback" ? "systemback authorization " : "sbscheduler ") % (qEnvironmentVariableIsEmpty("USER") ? "root" : qgetenv("USER")));
+    QStr cmd;
 
     {
+        QStr uname;
+
+        if(uid == 0)
+            uname = "root";
+        else
+        {
+            QFile file("/etc/passwd");
+
+            if(file.open(QIODevice::ReadOnly))
+                while(! file.atEnd())
+                {
+                    QStr line(file.readLine().trimmed());
+
+                    if(line.contains("x:" % QStr::number(uid) % ':'))
+                    {
+                        uname = sb::left(line, sb::instr(line, ":") - 1);
+                        break;
+                    }
+                }
+
+            if(uname.isEmpty())
+            {
+                rv = 3;
+                goto error;
+            }
+        }
+
         bool uidinr(getuid() > 0), gidinr(getgid() > 0);
 
         if(uidinr || gidinr)
         {
-            if(cmd.startsWith("systemback"))
+            if(qApp->arguments().value(1) == "systemback")
             {
                 if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1) || ! qgetenv("PATH").startsWith("/usr/lib/systemback"))
                 {
-                    rv = 4;
+                    rv = 3;
                     goto error;
                 }
 
                 QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
 
-                if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (usrhm.isEmpty() || ! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
+                if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (! sb::isfile("/home/" % uname % "/.Xauthority") || ! QFile("/home/" % uname % "/.Xauthority").copy(xauth)) && (usrhm.isEmpty() || ! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
                 {
-                    rv = 3;
+                    rv = 4;
                     goto error;
                 }
 
                 if(! clrenv(xauth, "/root"))
                 {
                     sb::remove(xauth);
-                    rv = 4;
+                    rv = 3;
                     goto error;
                 }
+
+                cmd = "systemback authorization " % uname;
             }
             else if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1) || ! clrenv(qgetenv("XAUTHORITY"), qgetenv("HOME")))
             {
-                rv = 5;
+                rv = 3;
                 goto error;
             }
+            else
+                cmd = "sbscheduler " % uname;
         }
+        else if(qApp->arguments().value(1) == "systemback")
+            cmd = "systemback";
+        else
+            cmd = "sbscheduler " % uname;
     }
 
     if(qApp->arguments().value(2) == "gtk+") qputenv("QT_STYLE_OVERRIDE", "gtk+");

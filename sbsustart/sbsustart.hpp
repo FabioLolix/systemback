@@ -27,6 +27,9 @@ class sbsustart : public QObject
 {
     Q_OBJECT
 
+public:
+    static uint uid;
+
 public slots:
     void main();
 

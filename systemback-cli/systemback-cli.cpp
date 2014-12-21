@@ -111,8 +111,6 @@ start:
     }
     else
     {
-        sb::cfgread();
-
         if(! sb::lock(sb::Sblock))
         {
             rv = 3;

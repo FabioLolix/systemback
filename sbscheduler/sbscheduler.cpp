@@ -36,15 +36,18 @@ error:
         sb::error("\n\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
         break;
     case 2:
-        sb::error("\n\n " % tr("Root privileges are required.") % "\n\n");
+        sb::error("\n\n " % tr("The process is disabled for this user.") % "\n\n");
         break;
     case 3:
-        sb::error("\n\n " % tr("This system is a Live.") % "\n\n");
+        sb::error("\n\n " % tr("Root privileges are required.") % "\n\n");
         break;
     case 4:
-        sb::error("\n\n " % tr("Already running.") % "\n\n");
+        sb::error("\n\n " % tr("This system is a Live.") % "\n\n");
         break;
     case 5:
+        sb::error("\n\n " % tr("Already running.") % "\n\n");
+        break;
+    case 6:
         sb::error("\n\n " % tr("Unable to demonize.") % "\n\n");
     }
 
@@ -56,28 +59,33 @@ start:
         rv = 1;
         goto error;
     }
-
-    if(getuid() + getgid() > 0)
+    else if(sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(qApp->arguments().value(1))))
     {
         rv = 2;
         goto error;
     }
 
-    if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
+    if(getuid() + getgid() > 0)
     {
         rv = 3;
         goto error;
     }
 
-    if(! sb::lock(sb::Schdlrlock))
+    if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
     {
         rv = 4;
         goto error;
     }
 
-    if(daemon(0, 0) == -1)
+    if(! sb::lock(sb::Schdlrlock))
     {
         rv = 5;
+        goto error;
+    }
+
+    if(daemon(0, 0) == -1)
+    {
+        rv = 6;
         goto error;
     }
 
@@ -105,9 +113,9 @@ start:
             goto next;
         }
 
-        if(sb::schdle[0] == "true")
+        if(sb::schdle[0] == sb::True)
         {
-            if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1].toUShort() * 1440 + sb::schdle[2].toUShort() * 60 + sb::schdle[3].toUShort()) goto next;
+            if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1] * 1440 + sb::schdle[2] * 60 + sb::schdle[3]) goto next;
             if(! sb::lock(sb::Sblock)) goto next;
 
             if(! sb::lock(sb::Dpkglock))
@@ -116,7 +124,7 @@ start:
                 goto next;
             }
 
-            if(sb::schdle[5] == "true" || ! sb::execsrch("systemback"))
+            if(sb::schdle[5] == sb::True || ! sb::execsrch("systemback"))
                 newrestorepoint();
             else
             {
@@ -124,7 +132,7 @@ start:
 
                 if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
                 {
-                    sb::exec("systemback schedule " % sb::schdle[6], "XAUTHORITY=" % xauth);
+                    sb::exec("systemback schedule " % sb::schdlr[0], "XAUTHORITY=" % xauth);
                     QFile::remove(xauth);
                 }
             }

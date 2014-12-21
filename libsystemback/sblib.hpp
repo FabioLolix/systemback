@@ -33,14 +33,15 @@ public:
     explicit sb(QThread *parent = nullptr);
 
     static sb SBThrd;
-    static QStr ThrdStr[3], ThrdDbg, sdir[3], schdle[7], pnames[15], wsclng;
+    static QStr ThrdStr[3], ThrdDbg, sdir[3], schdlr[2], pnames[15], lang, style, wsclng;
     static ullong ThrdLng[2];
     static cuchar Remove{0}, Copy{1}, Sync{2}, Mount{3}, Umount{4}, Readprttns{5}, Readlvdevs{6}, Ruuid{7}, Setpflag{8}, Mkptable{9}, Mkpart{10}, Delpart{11}, Crtrpoint{12}, Srestore{13}, Scopy{14}, Lvprpr{15},
                   MSDOS{0}, GPT{1}, Clear{2}, Primary{3}, Extended{4}, Logical{5}, Freespace{6}, Emptyspace{7},
                   Notexist{0}, Isfile{1}, Isdir{2}, Islink{3}, Isblock{4}, Unknow{5},
                   Read{0}, Write{1}, Exec{2}, Sblock{0}, Dpkglock{1}, Schdlrlock{2},
+                  False{0}, True{1}, Empty{100},
                   Norm{0}, All{1}, Mixed{2};
-    static uchar pnumber;
+    static uchar pnumber, schdle[6], waot, incrmtl, xzcmpr, autoiso;
     static schar Progress;
     static bool ExecKill, ThrdKill;
 

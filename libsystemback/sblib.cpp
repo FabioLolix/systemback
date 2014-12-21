@@ -39,10 +39,10 @@
 
 sb sb::SBThrd;
 QSL *sb::ThrdSlst;
-QStr sb::ThrdStr[3], sb::ThrdDbg, sb::sdir[3], sb::schdle[7], sb::pnames[15], sb::wsclng;
+QStr sb::ThrdStr[3], sb::ThrdDbg, sb::sdir[3], sb::schdlr[2], sb::pnames[15], sb::lang, sb::style, sb::wsclng;
 ullong sb::ThrdLng[2]{0, 0};
 int sb::sblock[3];
-uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0);
+uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0), sb::schdle[6]{sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty}, sb::waot(sb::Empty), sb::incrmtl(sb::Empty), sb::xzcmpr(sb::Empty), sb::autoiso(sb::Empty);
 schar sb::Progress(-1);
 bool sb::ThrdBool, sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdRslt;
 
@@ -187,18 +187,26 @@ void sb::thrdelay()
 
 void sb::cfgwrite()
 {
-    crtfile("/etc/systemback.conf", "# Restore points settings\n#  storage_directory=<path>\n#  max_temporary_restore_points=[3-10]\n\n"
+    crtfile("/etc/systemback.conf", "# Restore points settings\n#  storage_directory=<path>\n#  max_temporary_restore_points=[3-10]\n#  use_incremental_backup_method=[true/false]\n\n"
             "storage_directory=" % sdir[0] %
             "\nmax_temporary_restore_points=" % QStr::number(pnumber) %
-            "\n\n\n# Live system settings\n#  working_directory=<path>\n\n"
+            "\nuse_incremental_backup_method=" % (incrmtl == True ? "true" : "false") %
+            "\n\n\n# Live system settings\n#  working_directory=<path>\n#  use_xz_compressor=[true/false]\n#  auto_iso_images=[true/false]\n\n"
             "working_directory=" % sdir[2] %
-            "\n\n\n# Scheduler settigns\n#  enabled=[true/false]\n#  schedule=[0-7]:[0-23]:[0-59]:[10-99]\n#  silent=[true/false]\n#  window_position=[topleft/topright/center/bottomleft/bottomright]\n\n"
-            "enabled=" % schdle[0] %
-            "\nschedule=" % schdle[1] % ":" % schdle[2] % ":" % schdle[3] % ":" % schdle[4] %
-            "\nsilent=" % schdle[5] %
-            "\nwindow_position=" % schdle[6] %
-            "\n\n\n# Appearance settings\n#  window_scaling_factor=[auto/1/1.5/2]\n\n"
-            "window_scaling_factor=" % wsclng % '\n');
+            "\nuse_xz_compressor=" % (xzcmpr == True ? "true" : "false") %
+            "\nauto_iso_images=" % (autoiso == True ? "true" : "false") %
+            "\n\n\n# Scheduler settigns\n#  enabled=[true/false]\n#  schedule=[0-7]:[0-23]:[0-59]:[10-99]\n#  silent=[true/false]\n#  window_position=[topleft/topright/center/bottomleft/bottomright]\n#  disable_starting_for_users=[false/everyone/:<user,name,list>]\n\n"
+            "enabled=" % (schdle[0] == True ? "true" : "false") %
+            "\nschedule=" % QStr::number(schdle[1]) % ':' % QStr::number(schdle[2]) % ':' % QStr::number(schdle[3]) % ':' % QStr::number(schdle[4]) %
+            "\nsilent=" % (schdle[5] == True ? "true" : "false") %
+            "\nwindow_position=" % schdlr[0] %
+            "\ndisable_starting_for_users=" % schdlr[1] %
+            "\n\n\n# User interface settings\n#  language=[auto/<language_COUNTRY>]\n\n"
+            "language=" % lang %
+            "\n\n\n# Graphical user interface settings\n#  style=[auto/<name>]\n#  window_scaling_factor=[auto/1/1.5/2]\n#  always_on_top=[true/false]\n\n"
+            "style=" % style %
+            "\nwindow_scaling_factor=" % wsclng %
+            "\nalways_on_top=" % (waot == True ? "true" : "false") % '\n');
 }
 
 bool sb::execsrch(cQStr &fname, cQStr &ppath)
@@ -506,21 +514,71 @@ void sb::cfgread()
                         sdir[0] = cval;
                     else if(cline.startsWith("max_temporary_restore_points="))
                         pnumber = cval.toUShort();
+                    else if(cline.startsWith("use_incremental_backup_method="))
+                    {
+                        if(cval == "true")
+                            incrmtl = True;
+                        else if(cval == "false")
+                            incrmtl = False;
+                    }
                     else if(cline.startsWith("working_directory="))
                         sdir[2] = cval;
+                    else if(cline.startsWith("use_xz_compressor="))
+                    {
+                        if(cval == "true")
+                            xzcmpr = True;
+                        else if(cval == "false")
+                            xzcmpr = False;
+                    }
+                    else if(cline.startsWith("auto_iso_images="))
+                    {
+                        if(cval == "true")
+                            autoiso = True;
+                        else if(cval == "false")
+                            autoiso = False;
+                    }
                     else if(cline.startsWith("enabled="))
-                        schdle[0] = cval;
+                    {
+                        if(cval == "true")
+                            schdle[0] = True;
+                        else if(cval == "false")
+                            schdle[0] = False;
+                    }
                     else if(cline.startsWith("schedule="))
                     {
                         QSL vals(cval.split(':'));
-                        for(uchar a(0) ; ! ilike(a, QSIL() << vals.count() << 4) ; ++a) schdle[a + 1] = vals.at(a);
+
+                        for(uchar a(0) ; ! ilike(a, QSIL() << vals.count() << 4) ; ++a)
+                        {
+                            bool ok;
+                            uchar num(vals.at(a).toUShort(&ok));
+                            if(ok) schdle[a + 1] = num;
+                        }
                     }
                     else if(cline.startsWith("silent="))
-                        schdle[5] = cval;
+                    {
+                        if(cval == "true")
+                            schdle[5] = True;
+                        else if(cval == "false")
+                            schdle[5] = False;
+                    }
                     else if(cline.startsWith("window_position="))
-                        schdle[6] = cval;
+                        schdlr[0] = cval;
+                    else if(cline.startsWith("disable_starting_for_users="))
+                        schdlr[1] = cval;
+                    else if(cline.startsWith("language="))
+                        lang = cval;
+                    else if(cline.startsWith("style="))
+                        style = cval;
                     else if(cline.startsWith("window_scaling_factor="))
                         wsclng = cval;
+                    else if(cline.startsWith("always_on_top="))
+                    {
+                        if(cval == "true")
+                            waot = True;
+                        else if(cval == "false")
+                            waot = False;
+                    }
                 }
             }
     }
@@ -541,41 +599,58 @@ void sb::cfgread()
         if(! cfgupdt) cfgupdt = true;
     }
 
-    if(! like(schdle[0], {"_true_", "_false_"}))
+    if(incrmtl == Empty)
     {
-        schdle[0] = "false";
+        incrmtl = True;
         if(! cfgupdt) cfgupdt = true;
     }
 
-    if(schdle[1].isEmpty() || schdle[2].isEmpty() || schdle[3].isEmpty() || schdle[4].isEmpty())
+    if(xzcmpr == Empty)
     {
-        schdle[1] = '1';
-        schdle[2] = schdle[3] = '0';
-        schdle[4] = "10";
-        if(! cfgupdt) cfgupdt = true;
-    }
-    else if(schdle[1].toUShort() > 7 || schdle[2].toUShort() > 23 || schdle[3].toUShort() > 59 || schdle[4].toUShort() < 10 || schdle[4].toUShort() > 99)
-    {
-        schdle[1] = '1';
-        schdle[2] = schdle[3] = '0';
-        schdle[4] = "10";
-        if(! cfgupdt) cfgupdt = true;
-    }
-    else if(schdle[1].toUShort() == 0 && schdle[2].toUShort() == 0 && schdle[3].toUShort() < 30)
-    {
-        schdle[3] = "30";
+        xzcmpr = False;
         if(! cfgupdt) cfgupdt = true;
     }
 
-    if(! like(schdle[5], {"_true_", "_false_"}))
+    if(autoiso == Empty)
     {
-        schdle[5] = "false";
+        autoiso = False;
         if(! cfgupdt) cfgupdt = true;
     }
 
-    if(! like(schdle[6], {"_topleft_", "_topright_", "_center_", "_bottomleft_", "_bottomright_"}))
+    if(schdle[0] == Empty)
     {
-        schdle[6] = "topright";
+        schdle[0] = False;
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    if(schdle[1] > 7 || schdle[2] > 23 || schdle[3] > 59 || schdle[4] < 10 || schdle[4] > 99)
+    {
+        schdle[1] = 1;
+        schdle[2] = schdle[3] = 0;
+        schdle[4] = 10;
+        if(! cfgupdt) cfgupdt = true;
+    }
+    else if(schdle[1] == 0 && schdle[2] == 0 && schdle[3] < 30)
+    {
+        schdle[3] = 30;
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    if(schdle[5] == Empty)
+    {
+        schdle[5] = False;
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    if(! like(schdlr[0], {"_topleft_", "_topright_", "_center_", "_bottomleft_", "_bottomright_"}))
+    {
+        schdlr[0] = "topright";
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    if(! like(schdlr[1], {"_false_", "_everyone_", "_:*"}))
+    {
+        schdlr[1] = "false";
         if(! cfgupdt) cfgupdt = true;
     }
 
@@ -585,9 +660,27 @@ void sb::cfgread()
         if(! cfgupdt) cfgupdt = true;
     }
 
+    if(lang.isEmpty() || (lang != "auto" && (lang.length() != 5 || lang.at(2) != '_' || ! lang.at(0).isLower() || ! lang.at(1).isLower() || ! lang.at(3).isUpper() || ! lang.at(4).isUpper())))
+    {
+        lang = "auto";
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    if(style.isEmpty() || style.contains(' '))
+    {
+        style = "auto";
+        if(! cfgupdt) cfgupdt = true;
+    }
+
     if(! like(wsclng, {"_auto_", "_1_", "_1.5_", "_2_"}))
     {
         wsclng = "auto";
+        if(! cfgupdt) cfgupdt = true;
+    }
+
+    if(waot == Empty)
+    {
+        waot = False;
         if(! cfgupdt) cfgupdt = true;
     }
 
@@ -1409,7 +1502,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
     Progress = 0;
     QStr trgt(sdir % '/' % pname);
     if(! QDir().mkdir(trgt)) return false;
-    QSL elist({".sbuserdata", ".cache/gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"});
+    QSL elist{".sbuserdata", ".cache/gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
 
     {
         QFile file("/etc/systemback.excludes");
@@ -1425,11 +1518,12 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
     QSL rplst;
 
-    for(cQStr &item : QDir(sdir).entryList(QDir::Dirs | QDir::NoDotAndDotDot))
-    {
-        if(like(item, {"_S01_*", "_S02_*", "_S03_*", "_S04_*", "_S05_*", "_S06_*", "_S07_*", "_S08_*", "_S09_*", "_S10_*", "_H01_*", "_H02_*", "_H03_*", "_H04_*", "_H05_*"})) rplst.append(item);
-        if(ThrdKill) return false;
-    }
+    if(incrmtl == True)
+        for(cQStr &item : QDir(sdir).entryList(QDir::Dirs | QDir::NoDotAndDotDot))
+        {
+            if(like(item, {"_S01_*", "_S02_*", "_S03_*", "_S04_*", "_S05_*", "_S06_*", "_S07_*", "_S08_*", "_S09_*", "_S10_*", "_H01_*", "_H02_*", "_H03_*", "_H04_*", "_H05_*"})) rplst.append(item);
+            if(ThrdKill) return false;
+        }
 
     QStr *cditms;
     uint cnum(0);
@@ -1642,8 +1736,8 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         if(ThrdKill) return false;
     }
 
-    elist = {"/etc/mtab", "/var/.sblvtmp", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/lib/ureadahead/", "/var/log/", "/var/run/", "/var/tmp/"};
-    QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
+    elist = QSL{"/etc/mtab", "/var/.sblvtmp", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/lib/ureadahead/", "/var/log/", "/var/run/", "/var/tmp/"};
+    QSL dlst{"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
     for(uchar a(0) ; a < dlst.count() ; ++a)
     {
@@ -1919,10 +2013,10 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         }
 
         QSL elist;
-        if(trgt.isEmpty()) elist = {"/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/run/", "/var/tmp/"};
+        if(trgt.isEmpty()) elist = QSL{"/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/run/", "/var/tmp/"};
         if(trgt.isEmpty() || (isfile("/mnt/etc/xdg/autostart/sbschedule.desktop") && isfile("/mnt/etc/xdg/autostart/sbschedule-kde.desktop") && isfile("/mnt/usr/bin/systemback") && isfile("/mnt/usr/lib/systemback/libsystemback.so.1.0.0") && isfile("/mnt/usr/lib/systemback/sbscheduler") && isfile("/mnt/usr/lib/systemback/sbsustart") && isfile("/mnt/usr/lib/systemback/sbsysupgrade")&& isdir("/mnt/usr/share/systemback/lang") && isfile("/mnt/usr/share/systemback/efi.tar.gz") && isfile("/mnt/usr/share/systemback/splash.png") && isfile("/mnt/var/lib/dpkg/info/systemback.list") && isfile("/mnt/var/lib/dpkg/info/systemback.md5sums"))) elist.append({"/etc/systemback*", "/etc/xdg/autostart/sbschedule*", "/usr/bin/systemback*", "/usr/lib/systemback/", "/usr/share/systemback/", "/var/lib/dpkg/info/systemback*"});
         if(sfstab) elist.append("/etc/fstab");
-        QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
+        QSL dlst{"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
         for(uchar a(0) ; a < dlst.count() ; ++a)
         {
@@ -2115,7 +2209,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
     if(mthd != 2)
     {
-        QSL elist({".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"});
+        QSL elist{".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
 
         {
             QFile file(srcdir % "/etc/systemback.excludes");
@@ -2470,7 +2564,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     }
 
     Progress = 0;
-    QSL elist({".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"});
+    QSL elist{".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
 
     {
         QFile file(srcdir % "/etc/systemback.excludes");
@@ -2827,7 +2921,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         if(ThrdKill) return false;
     }
 
-    elist = {"/boot/efi", "/etc/crypttab", "/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/log", "/var/run/", "/var/tmp/"};
+    elist = QSL{"/boot/efi", "/etc/crypttab", "/etc/mtab", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks/mtab", "/var/log", "/var/run/", "/var/tmp/"};
     if(mthd > 2) elist.append({"/etc/machine-id", "/etc/systemback.conf", "/etc/systemback.excludes", "/var/lib/dbus/machine-id"});
     if(srcdir == "/.systembacklivepoint" && fload("/proc/cmdline").contains("noxconf")) elist.append("/etc/X11/xorg.conf");
 
@@ -2836,7 +2930,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             for(cQStr &item : QDir(srcdir % cdir).entryList(QDir::Files))
                 if(item.contains("cryptdisks")) elist.append(cdir % '/' % item);
 
-    QSL dlst = {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
+    QSL dlst{"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
     for(uchar a(0) ; a < dlst.count() ; ++a)
     {
@@ -3266,7 +3360,7 @@ bool sb::thrdlvprpr(bool iudata)
     if(ThrdKill) return false;
     if(! QDir().mkdir("/var/.sblvtmp") || ! QDir().mkdir("/var/.sblvtmp/var")) return false;
     ++ThrdLng[0];
-    QSL elist({"lib/dpkg/lock", "lib/udisks/mtab", "lib/ureadahead/", "log/", "run/", "tmp/"});
+    QSL elist{"lib/dpkg/lock", "lib/udisks/mtab", "lib/ureadahead/", "log/", "run/", "tmp/"};
 
     while(! in.atEnd())
     {
@@ -3379,7 +3473,7 @@ bool sb::thrdlvprpr(bool iudata)
 
     ++ThrdLng[0];
     if(ThrdKill) return false;
-    elist = {".sbuserdata", ".cache/gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
+    elist = QSL{".sbuserdata", ".cache/gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
 
     {
         QFile file("/etc/systemback.excludes");

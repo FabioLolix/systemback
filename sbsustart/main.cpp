@@ -25,13 +25,13 @@
 #include <QTimer>
 #include <unistd.h>
 
+uint sbsustart::uid(getuid());
+
 int main(int argc, char *argv[])
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
     {
-        uint uid(getuid());
-
-        if(uid > 0 && setuid(0) == -1 && uid != geteuid())
+        if(sbsustart::uid > 0 && setuid(0) == -1 && sbsustart::uid != geteuid())
         {
             QStr arg1(argv[1]);
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
             QStr emsg("Cannot start Systemback " % QStr(arg1 == "systemback" ? "graphical user interface" : "scheduler daemon") % "!\n\nUnable to get root permissions.");
 
-            if(seteuid(uid) == -1)
+            if(seteuid(sbsustart::uid) == -1)
                 sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
             else
                 sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, false, true);
@@ -55,7 +55,16 @@ int main(int argc, char *argv[])
 
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;
-    if(! QLocale::system().name().startsWith("en") && trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang")) a.installTranslator(&trnsltr);
+    sb::cfgread();
+
+    if(sb::lang == "auto")
+    {
+        if(! QLocale::system().name().startsWith("en")) trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
+    }
+    else if(! sb::lang.startsWith("en"))
+        trnsltr.load("systemback_" % sb::lang, "/usr/share/systemback/lang");
+
+    if(! trnsltr.isEmpty()) a.installTranslator(&trnsltr);
     sbsustart s;
     QTimer::singleShot(0, &s, SLOT(main()));
     return a.exec();

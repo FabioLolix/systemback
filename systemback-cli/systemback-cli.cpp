@@ -26,12 +26,12 @@
 #include <ncursesw/ncurses.h>
 #include <unistd.h>
 
-#ifdef instr
-#undef instr
-#endif
-
 #ifdef timeout
 #undef timeout
+#endif
+
+#ifdef instr
+#undef instr
 #endif
 
 systemback::systemback(QObject *parent) : QObject(parent)

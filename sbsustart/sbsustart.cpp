@@ -98,14 +98,14 @@ start:
 
         if(uidinr || gidinr)
         {
+            if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1))
+            {
+                rv = 3;
+                goto error;
+            }
+
             if(qApp->arguments().value(1) == "systemback")
             {
-                if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1) || ! qgetenv("PATH").startsWith("/usr/lib/systemback"))
-                {
-                    rv = 3;
-                    goto error;
-                }
-
                 QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
 
                 if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (! sb::isfile("/home/" % uname % "/.Xauthority") || ! QFile("/home/" % uname % "/.Xauthority").copy(xauth)) && (usrhm.isEmpty() || ! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
@@ -114,7 +114,7 @@ start:
                     goto error;
                 }
 
-                if(! clrenv(xauth, "/root"))
+                if(! clrenv("/root", xauth))
                 {
                     sb::remove(xauth);
                     rv = 3;
@@ -123,7 +123,7 @@ start:
 
                 cmd = "systemback authorization " % uname;
             }
-            else if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1) || ! clrenv(qgetenv("XAUTHORITY"), qgetenv("HOME")))
+            else if(! clrenv(qgetenv("HOME")))
             {
                 rv = 3;
                 goto error;
@@ -141,14 +141,14 @@ start:
     qApp->exit(sb::exec(cmd));
 }
 
-bool sbsustart::clrenv(cQStr &xpath, cQStr &usrhm)
+bool sbsustart::clrenv(cQStr &usrhm, cQStr &xpath)
 {
     for(cQStr &cvar : QProcess::systemEnvironment())
     {
         QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
-        if(! sb::like(var, {"_DISPLAY_", "_PATH_", "_LANG_"}) && ! qunsetenv(var.toStdString().c_str())) return false;
+        if(! sb::like(var, {"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"}) && ! qunsetenv(var.toStdString().c_str())) return false;
     }
 
-    if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.isEmpty() ? "/root" : usrhm.toLocal8Bit()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || (! xpath.isEmpty() && ! qputenv("XAUTHORITY", xpath.toLocal8Bit()))) return false;
+    if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.isEmpty() ? "/root" : usrhm.toLocal8Bit()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toLocal8Bit()))) return false;
     return true;
 }

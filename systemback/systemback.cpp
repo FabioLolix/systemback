@@ -41,12 +41,12 @@
 #undef KeyPress
 #endif
 
-#ifdef True
-#undef True
-#endif
-
 #ifdef False
 #undef False
+#endif
+
+#ifdef True
+#undef True
 #endif
 
 systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
@@ -608,7 +608,7 @@ void systemback::unitimer()
                             ui->languages->addItem("Galego");
                         else if(lcode == "hu")
                             ui->languages->addItem("Magyar");
-                        else if(lcode == "in")
+                        else if(lcode == "id")
                             ui->languages->addItem("Bahasa Indonesia");
                         else if(lcode == "pt_BR")
                             ui->languages->addItem("Português (Brasil)");
@@ -638,7 +638,7 @@ void systemback::unitimer()
                             ui->languages->setCurrentIndex(ui->languages->findText("Galego"));
                         else if(sb::lang == "hu_HU")
                             ui->languages->setCurrentIndex(ui->languages->findText("Magyar"));
-                        else if(sb::lang == "in_IN")
+                        else if(sb::lang == "id_ID")
                             ui->languages->setCurrentIndex(ui->languages->findText("Bahasa Indonesia"));
                         else if(sb::lang == "pt_BR")
                             ui->languages->setCurrentIndex(ui->languages->findText("Português (Brasil)"));
@@ -908,7 +908,7 @@ void systemback::unitimer()
                 ui->processrun->setText(prun % points);
             }
 
-            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/*", '_' % tr("Writing Live image to USB device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
+            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/3+1_", '_' % tr("Writing Live image to USB device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
             {
                 if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
                 schar cperc(sb::Progress);
@@ -930,7 +930,7 @@ void systemback::unitimer()
                 else if(ui->progressbar->maximum() == 100)
                     ui->progressbar->setMaximum(0);
             }
-            else if(prun.startsWith(tr("Creating Live system") % '\n' % tr("process") % " 2/"))
+            else if(prun.startsWith(tr("Creating Live system") % '\n' % tr("process") % " 2"))
             {
                 if(irfsc)
                 {
@@ -9190,7 +9190,7 @@ exit:
     return;
 start:
     statustart();
-    prun = tr("Creating Live system") % '\n' % tr("process") % " 1/" % (sb::autoiso == sb::True ? '4' : '3');
+    prun = tr("Creating Live system") % '\n' % tr("process") % " 1/3" % (sb::autoiso == sb::True ? "+1" : nullptr);
     QStr ckernel(ckname()), lvtype(sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live"), ifname;
 
     if(sb::exist(sb::sdir[2] % "/.sblivesystemcreate"))
@@ -9334,7 +9334,7 @@ start:
     }
 
     if(intrrpt) goto exit;
-    prun = tr("Creating Live system") % '\n' % tr("process") % " 2/" % (sb::autoiso == sb::True ? '4' : '3');
+    prun = tr("Creating Live system") % '\n' % tr("process") % " 2/3" % (sb::autoiso == sb::True ? "+1" : nullptr);
     QStr elist;
 
     for(cQStr &excl : {"/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"})
@@ -9353,7 +9353,7 @@ start:
 
     sb::Progress = -1;
     ui->progressbar->setValue(0);
-    prun = tr("Creating Live system") % '\n' % tr("process") % " 3/" % (sb::autoiso == sb::True ? '4' : '3');
+    prun = tr("Creating Live system") % '\n' % tr("process") % " 3/3" % (sb::autoiso == sb::True ? "+1" : nullptr);
     sb::remove("/.sblvtmp");
     sb::remove("/media/.sblvtmp");
     sb::remove("/var/.sblvtmp");
@@ -9396,7 +9396,7 @@ start:
     {
         sb::Progress = -1;
         ui->progressbar->setValue(0);
-        prun = tr("Creating Live system") % '\n' % tr("process") % " 4/4";
+        prun = tr("Creating Live system") % '\n' % tr("process") % " 4/3+1";
         if(! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux")) goto error;
         if(intrrpt) goto exit;
 
@@ -9572,7 +9572,7 @@ void systemback::on_languageoverride_clicked(bool checked)
         else if(ui->languages->currentText() == "Magyar")
             sb::lang = "hu_HU";
         else if(ui->languages->currentText() == "Bahasa Indonesia")
-            sb::lang = "in_IN";
+            sb::lang = "id_ID";
         else if(ui->languages->currentText() == "Português (Brasil)")
             sb::lang = "pt_BR";
         else if(ui->languages->currentText() == "Română")
@@ -9616,7 +9616,7 @@ void systemback::on_languages_currentIndexChanged(const QString &arg1)
         else if(arg1 == "Magyar")
             sb::lang = "hu_HU";
         else if(arg1 == "Bahasa Indonesia")
-            sb::lang = "in_IN";
+            sb::lang = "id_ID";
         else if(arg1 == "Português (Brasil)")
             sb::lang = "pt_BR";
         else if(arg1 == "Română")

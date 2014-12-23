@@ -737,8 +737,6 @@ void systemback::unitimer()
                 ui->grubinstalltext->resize(fontMetrics().width(ui->grubinstalltext->text()) + ss(7), ui->grubinstalltext->height());
                 ui->grubinstallcopy->move(ui->grubinstalltext->x() + ui->grubinstalltext->width(), ui->grubinstallcopy->y());
                 ui->grubinstallcopydisable->move(ui->grubinstallcopy->x(), ui->grubinstallcopy->y());
-                ui->efiwarning->move(ui->grubinstallcopy->x() + ui->grubinstallcopy->width() + ss(5), ui->grubinstallcopy->y() - ss(4));
-                ui->efiwarning->resize(ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
                 ui->grubreinstallrepairtext->resize(fontMetrics().width(ui->grubreinstallrepairtext->text()) + ss(7), ui->grubreinstallrepairtext->height());
                 ui->grubreinstallrepair->move(ui->grubreinstallrepairtext->x() + ui->grubreinstallrepairtext->width(), ui->grubreinstallrepair->y());
                 ui->grubreinstallrepairdisable->move(ui->grubreinstallrepair->x(), ui->grubreinstallrepair->y());
@@ -823,10 +821,13 @@ void systemback::unitimer()
                 grub.isEFI = true;
                 ui->repairmountpoint->addItem("/mnt/boot/efi");
                 ui->grubinstallcopy->hide();
-                ui->efiwarning->setForegroundRole(QPalette::Highlight);
                 ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
                 ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
                 ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
+                ui->grubinstallcopy->adjustSize();
+                ui->efiwarning->move(ui->grubinstallcopy->x() + ui->grubinstallcopy->width() + ss(5), ui->grubinstallcopy->y() - ss(4));
+                ui->efiwarning->resize(ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
+                ui->efiwarning->setForegroundRole(QPalette::Highlight);
                 goto next_1;
             noefi:
 #endif
@@ -908,7 +909,7 @@ void systemback::unitimer()
                 ui->processrun->setText(prun % points);
             }
 
-            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/3+1_", '_' % tr("Writing Live image to USB device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
+            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/3+1_", '_' % tr("Writing Live image to target device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
             {
                 if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
                 schar cperc(sb::Progress);
@@ -2534,6 +2535,7 @@ exit:
 start:
     statustart();
     prun = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? tr("Copying the system") : tr("Installing the system");
+    if(! sb::isdir("/.sbsystemcopy") && ! QDir().mkdir("/.sbsystemcopy")) goto error;
 
     {
         QSL msort;
@@ -2543,13 +2545,12 @@ start:
                 msort.append(ui->partitionsettings->item(a, 4)->text() % (ui->partitionsettings->item(a, 6)->text() == "x" ? QStr('\n' % ui->partitionsettings->item(a, 5)->text() % '\n') : "\n-\n") % ui->partitionsettings->item(a, 0)->text());
 
         msort.sort();
-        if(! sb::isdir("/.sbsystemcopy") && ! QDir().mkdir("/.sbsystemcopy")) goto error;
 
         for(cQStr &vals : msort)
         {
             QSL cval(vals.split('\n'));
             cQStr &mpoint(cval.at(0)), &fstype(cval.at(1)), &part(cval.at(2));
-            if(sb::mcheck(part)) sb::umount(part);
+            if(sb::mcheck(part) && (! grub.isEFI || mpoint != "/boot/efi" || fstype != "-")) sb::umount(part);
             if(intrrpt) goto exit;
             sb::fssync();
             if(intrrpt) goto exit;
@@ -3156,7 +3157,7 @@ error:
             break;
         case 58:
         case 59:
-            dialogdev = ldev % '1';
+            dialogdev = ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1';
         }
 
         dialogopen();
@@ -3165,7 +3166,7 @@ error:
     return;
 start:
     statustart();
-    prun = tr("Writing Live image to USB device");
+    prun = tr("Writing Live image to target device");
 
     if(! sb::exist(ldev))
     {
@@ -3178,7 +3179,7 @@ start:
         {
             QStr item("/dev/" % sitem);
 
-            if(item.length() > 8 && item.startsWith(ldev))
+            if(item.length() > (ldev.contains("mmc") ? 12 : 8) && item.startsWith(ldev))
                 while(sb::mcheck(item)) sb::umount(item);
 
             if(intrrpt) goto error;
@@ -3221,7 +3222,7 @@ start:
 
         if(intrrpt) goto error;
 
-        if(sb::exec("mkfs.ext2 -FL SBROOT " % ldev % '2') > 0)
+        if(sb::exec("mkfs.ext2 -FL SBROOT " % ldev % (ldev.contains("mmc") ? "p" : nullptr) % '2') > 0)
         {
             dialog = 59;
             goto error;
@@ -3230,20 +3231,20 @@ start:
 
     if(intrrpt) goto error;
 
-    if(sb::exec("mkfs.vfat -F 32 -n SBLIVE " % ldev % '1') > 0)
+    if(sb::exec("mkfs.vfat -F 32 -n SBLIVE " % ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1') > 0)
     {
         dialog = 59;
         goto error;
     }
 
     if(intrrpt ||
-        sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % '1', "boot") || ! sb::setpflag(ldev % '1', "lba") ||
+        sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "lba") ||
         intrrpt ||
         (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite"))) ||
         intrrpt ||
         ! QDir().mkdir("/.sblivesystemwrite") || ! QDir().mkdir("/.sblivesystemwrite/sblive")) goto error;
 
-    if(! sb::mount(ldev % '1', "/.sblivesystemwrite/sblive"))
+    if(! sb::mount(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "/.sblivesystemwrite/sblive"))
     {
         dialog = 58;
         goto error;
@@ -3255,7 +3256,7 @@ start:
     {
         if(! QDir().mkdir("/.sblivesystemwrite/sbroot")) goto error;
 
-        if(! sb::mount(ldev % '2', "/.sblivesystemwrite/sbroot"))
+        if(! sb::mount(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '2', "/.sblivesystemwrite/sbroot"))
         {
             dialog = 58;
             goto error;
@@ -3293,7 +3294,7 @@ start:
     }
 
     prun = tr("Emptying cache");
-    if(sb::exec("syslinux -ifd syslinux " % ldev % '1') > 0) goto error;
+    if(sb::exec("syslinux -ifd syslinux " % ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1') > 0) goto error;
     sb::fssync();
     sb::crtfile("/proc/sys/vm/drop_caches", "3");
     sb::umount("/.sblivesystemwrite/sblive");
@@ -3548,7 +3549,7 @@ void systemback::dialogopen()
         break;
     case 42:
         ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected partition does not have enough space to write the Live system."));
+        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system."));
         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
         break;
     case 43:
@@ -5369,25 +5370,9 @@ void systemback::on_restoremenu_clicked()
 
 void systemback::on_copymenu_clicked()
 {
-    if(! grub.isEFI)
+    if(! grub.isEFI || ui->grubinstallcopy->isVisibleTo(ui->copypanel))
     {
-        if(ppipe == 1)
-        {
-            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
-            {
-                if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
-                {
-                    ui->grubinstallcopydisable->hide();
-                    ui->grubinstallcopy->show();
-                }
-            }
-            else if(ui->grubinstallcopy->isVisibleTo(ui->copypanel))
-            {
-                ui->grubinstallcopy->hide();
-                ui->grubinstallcopydisable->show();
-            }
-        }
-        else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+        if((ppipe == 0 && sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list")) || (ppipe == 1 && sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list")))
         {
             if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
             {
@@ -5408,7 +5393,7 @@ void systemback::on_copymenu_clicked()
         ui->userdatafilescopy->show();
     }
 
-    if(ppipe > 0)
+    if(ppipe == 1)
     {
         ui->userdatafilescopy->setDisabled(true);
         if(ui->userdatafilescopy->isChecked()) ui->userdatafilescopy->setChecked(false);
@@ -5474,7 +5459,7 @@ void systemback::on_livecreatemenu_clicked()
 
 void systemback::on_repairmenu_clicked()
 {
-    if(ppipe > 0 || pname == tr("Live image"))
+    if(ppipe == 1 || pname == tr("Live image"))
     {
         if(! ui->systemrepair->isEnabled())
         {
@@ -5647,7 +5632,7 @@ void systemback::on_partitionrefresh_clicked()
         {
             QStr path(dts.split('\n').at(0));
 
-            if(path.length() == 8)
+            if(sb::ilike(path.length(), {8, 12}))
             {
                 ui->grubinstallcopy->addItem(path);
                 ui->grubreinstallrestore->addItem(path);
@@ -5665,7 +5650,7 @@ void systemback::on_partitionrefresh_clicked()
         cQStr &path(dts.at(0)), &type(dts.at(2));
         ullong bsize(dts.at(1).toULongLong());
 
-        if(path.length() == 8)
+        if(sb::ilike(path.length(), {8, 12}))
         {
             ++sn;
             ui->partitionsettings->setRowCount(sn + 1);
@@ -7526,25 +7511,9 @@ void systemback::on_skipfstabrepair_clicked(bool checked)
 
 void systemback::on_installnext_clicked()
 {
-    if(! grub.isEFI)
+    if(! grub.isEFI || ui->grubinstallcopy->isVisibleTo(ui->copypanel))
     {
-        if(ppipe == 1)
-        {
-            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
-            {
-                if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
-                {
-                    ui->grubinstallcopydisable->hide();
-                    ui->grubinstallcopy->show();
-                }
-            }
-            else if(ui->grubinstallcopy->isVisibleTo(ui->copypanel))
-            {
-                ui->grubinstallcopy->hide();
-                ui->grubinstallcopydisable->show();
-            }
-        }
-        else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+        if((ppipe == 0 && sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list")) || (ppipe == 1 && sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list")))
         {
             if(ui->grubinstallcopydisable->isVisibleTo(ui->copypanel))
             {
@@ -7755,7 +7724,20 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     ui->unmountdelete->setStyleSheet(nullptr);
                 }
 
-                if(ui->partitionsettings->item(current->row(), 3)->text() == "SWAP")
+                if(grub.isEFI && ui->partitionsettings->item(current->row(), 3)->text() == "/boot/efi")
+                {
+                    if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
+                    if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
+
+                    if(ui->mountpoint->currentText() != "/boot/efi")
+                    {
+                        if(ui->mountpoint->currentIndex() > 0)
+                            ui->mountpoint->setCurrentIndex(0);
+                        else if(! ui->mountpoint->currentText().isEmpty())
+                            ui->mountpoint->setCurrentText(nullptr);
+                    }
+                }
+                else if(ui->partitionsettings->item(current->row(), 3)->text() == "SWAP")
                 {
                     if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
                     if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
@@ -7877,23 +7859,7 @@ void systemback::on_changepartition_clicked()
 
             if(grub.isEFI)
             {
-                if(ppipe == 1)
-                {
-                    if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
-                    {
-                        if(ui->grubinstallcopydisable->isVisible())
-                        {
-                            ui->grubinstallcopydisable->hide();
-                            ui->grubinstallcopy->show();
-                        }
-                    }
-                    else if(ui->grubinstallcopy->isVisible())
-                    {
-                        ui->grubinstallcopy->hide();
-                        ui->grubinstallcopydisable->show();
-                    }
-                }
-                else if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+                if((ppipe == 0 && sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list")) || (ppipe == 1 && sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list")))
                 {
                     if(ui->grubinstallcopydisable->isVisible())
                     {
@@ -7926,6 +7892,25 @@ void systemback::on_changepartition_clicked()
         }
         else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "x")
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("-");
+    }
+    else if(grub.isEFI && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/boot/efi")
+    {
+        ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText("/boot/efi");
+        ui->efiwarning->hide();
+
+        if((ppipe == 0 && sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list")) || (ppipe == 1 && sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list")))
+        {
+            if(ui->grubinstallcopydisable->isVisible())
+            {
+                ui->grubinstallcopydisable->hide();
+                ui->grubinstallcopy->show();
+            }
+        }
+        else if(ui->grubinstallcopy->isVisible())
+        {
+            ui->grubinstallcopy->hide();
+            ui->grubinstallcopydisable->show();
+        }
     }
     else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home")
     {
@@ -7976,7 +7961,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
             ui->mountpoint->setCurrentText(sb::left(arg1, -1));
         else
         {
-            if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/home_", "_SWAP_"}))
+            if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/boot/efi_", "_/home_", "_SWAP_"}))
             {
                 if(ui->format->isEnabled())
                 {
@@ -8005,7 +7990,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
             {
                 bool check(false);
 
-                if((ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
+                if((grub.isEFI && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/boot/efi" && arg1 != "/boot/efi") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
                     check = true;
                 else if(arg1 != "SWAP")
                     for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
@@ -9392,22 +9377,27 @@ start:
 
     if(! QFile::setPermissions(sb::sdir[2] % '/' % ifname % ".sblive", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
 
-    if(sb::autoiso == sb::True && sb::fsize(sb::sdir[2] % '/' % ifname % ".sblive") < 4294967295)
+    if(sb::autoiso == sb::True)
     {
-        sb::Progress = -1;
-        ui->progressbar->setValue(0);
-        prun = tr("Creating Live system") % '\n' % tr("process") % " 4/3+1";
-        if(! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux")) goto error;
-        if(intrrpt) goto exit;
+        ullong isize(sb::fsize(sb::sdir[2] % '/' % ifname % ".sblive"));
 
-        if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate") > 0)
+        if(isize < 4294967295 && isize + 52428800 < sb::dfree(sb::sdir[2]))
         {
-            if(sb::isfile(sb::sdir[2] % '/' % ifname % ".iso")) sb::remove(sb::sdir[2] % '/' % ifname % ".iso");
-            dialog = 27;
-            goto error;
-        }
+            sb::Progress = -1;
+            ui->progressbar->setValue(0);
+            prun = tr("Creating Live system") % '\n' % tr("process") % " 4/3+1";
+            if(! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux")) goto error;
+            if(intrrpt) goto exit;
 
-        if(sb::exec("isohybrid " % sb::sdir[2] % '/' % ifname % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % ifname % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
+            if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate") > 0)
+            {
+                if(sb::isfile(sb::sdir[2] % '/' % ifname % ".iso")) sb::remove(sb::sdir[2] % '/' % ifname % ".iso");
+                dialog = 27;
+                goto error;
+            }
+
+            if(sb::exec("isohybrid " % sb::sdir[2] % '/' % ifname % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % ifname % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
+        }
     }
 
     if(intrrpt) goto exit;
@@ -9500,7 +9490,7 @@ void systemback::on_newpartition_clicked()
 {
     busy();
     ui->copycover->show();
-    QStr dev(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), 8));
+    QStr dev(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text().contains("mmc") ? 12 : 8)));
     ullong start(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong());
     uchar type;
 

@@ -349,7 +349,7 @@ bool sb::mcheck(cQStr &item)
 
     if(itm.startsWith("/dev/"))
     {
-        if(QStr('\n' % mnts).contains('\n' % itm % (itm.length() > 8 ? " " : nullptr)))
+        if(QStr('\n' % mnts).contains('\n' % itm % (itm.length() > (item.contains("mmc") ? 12 : 8) ? " " : nullptr)))
             return true;
         else
         {
@@ -724,7 +724,7 @@ bool sb::srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfsta
 
 bool sb::mkpart(cQStr &dev, ullong start, ullong len, uchar type)
 {
-    if(dev.length() > 9) return false;
+    if(dev.length() > (dev.contains("mmc") ? 12 : 8)) return false;
     ThrdType = Mkpart;
     ThrdStr[0] = dev;
     ThrdLng[0] = start;
@@ -769,7 +769,7 @@ bool sb::crtrpoint(cQStr &sdir, cQStr &pname)
 
 bool sb::setpflag(cQStr &part, cQStr &flag)
 {
-    if(part.length() < 9) return false;
+    if(part.length() < (part.contains("mmc") ? 14 : 9)) return false;
     ThrdType = Setpflag;
     ThrdStr[0] = part;
     ThrdStr[1] = flag;
@@ -789,7 +789,7 @@ bool sb::lvprpr(bool iudata)
 
 bool sb::mkptable(cQStr &dev, cQStr &type)
 {
-    if(dev.length() > 9) return false;
+    if(dev.length() > (dev.contains("mmc") ? 12 : 8)) return false;
     ThrdType = Mkptable;
     ThrdStr[0] = dev;
     ThrdStr[1] = type;
@@ -1165,7 +1165,7 @@ void sb::run()
         {
             QStr path("/dev/" % spath);
 
-            if(like(path, {"_/dev/sd*", "_/dev/hd*"}) && path.length() == 8 && devsize(path) > 536870911)
+            if(ilike(path.length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/hd*", "_/dev/mmcblk*"}) && devsize(path) > 536870911)
             {
                 PedDevice *dev(ped_device_get(path.toStdString().c_str()));
                 PedDisk *dsk(ped_disk_new(dev));
@@ -1194,7 +1194,7 @@ void sb::run()
                         {
                             if(prt->num > 0)
                             {
-                                QStr ppath(path % QStr::number(prt->num));
+                                QStr ppath(path % (path.length() == 12 ? "p" : nullptr) % QStr::number(prt->num));
 
                                 if(stype(ppath) == Isblock)
                                 {
@@ -1279,15 +1279,15 @@ void sb::run()
 
         for(cQStr &item : QDir("/dev/disk/by-id").entryList(QDir::Files))
         {
-            if(item.startsWith("usb-") && islink("/dev/disk/by-id/" % item))
+            if(like(item, {"_usb-*", "_mmc-*"}) && islink("/dev/disk/by-id/" % item))
             {
-                QStr path(rlink("/dev/disk/by-id/" % item, 10));
+                QStr path(rlink("/dev/disk/by-id/" % item, 14));
 
                 if(! path.isEmpty())
                 {
                     path = "/dev/" % right(path, -6);
 
-                    if(path.length() == 8 && like(path, {"_/dev/sd*", "_/dev/hd*"}))
+                    if(ilike(path.length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/mmcblk*"}))
                     {
                         ullong size(devsize(path));
 
@@ -1308,7 +1308,7 @@ void sb::run()
                                         while((prt = ped_disk_next_partition(dsk, prt)))
                                             if(prt->num > 0)
                                             {
-                                                QStr ppath(path % QStr::number(prt->num));
+                                                QStr ppath(path % (path.length() == 12 ? "p" : nullptr) % QStr::number(prt->num));
 
                                                 if(stype(ppath) == Isblock)
                                                 {
@@ -1356,9 +1356,9 @@ void sb::run()
         break;
     }
     case Setpflag:
-        if(stype(ThrdStr[0]) == Isblock && stype(left(ThrdStr[0], 8)) == Isblock)
+        if(stype(ThrdStr[0]) == Isblock && stype(left(ThrdStr[0], (ThrdStr[0].contains("mmc") ? 12 : 8))) == Isblock)
         {
-            PedDevice *dev(ped_device_get(left(ThrdStr[0], 8).toStdString().c_str()));
+            PedDevice *dev(ped_device_get(left(ThrdStr[0], (ThrdStr[0].contains("mmc") ? 12 : 8)).toStdString().c_str()));
             PedDisk *dsk(ped_disk_new(dev));
             PedPartition *prt(nullptr);
             if(ThrdRslt) ThrdRslt = false;

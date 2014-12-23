@@ -946,7 +946,7 @@
        <enum>Qt::ClickFocus</enum>
       </property>
       <property name="text">
-       <string>Write to USB</string>
+       <string>Write to target</string>
       </property>
      </widget>
      <widget class="QPushButton" name="liveconvert">

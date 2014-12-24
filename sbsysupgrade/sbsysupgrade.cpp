@@ -27,6 +27,15 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;
-    if(! QLocale::system().name().startsWith("en") && trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang")) a.installTranslator(&trnsltr);
+    sb::cfgread();
+
+    if(sb::lang == "auto")
+    {
+        if(! QLocale::system().name().startsWith("en")) trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
+    }
+    else if(! sb::lang.startsWith("en"))
+        trnsltr.load("systemback_" % sb::lang, "/usr/share/systemback/lang");
+
+    if(! trnsltr.isEmpty()) a.installTranslator(&trnsltr);
     sb::supgrade({QTranslator::tr("An error occurred while upgrading the system!"), QTranslator::tr("Restart upgrade ...")});
 }

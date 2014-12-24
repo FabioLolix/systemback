@@ -64,6 +64,7 @@ public:
     static bool mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = nullptr);
     static bool like(cQStr &txt, cQSL &lst, cuchar mode = Norm);
     static bool execsrch(cQStr &fname, cQStr &ppath = nullptr);
+    static bool cfgwrite(cQStr &file = "/etc/systemback.conf");
     static bool scopy(cuchar mthd, cQStr &usr, cQStr &srcdir);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool crtfile(cQStr &path, cQStr &txt = nullptr);
@@ -93,7 +94,6 @@ public:
     static void print(cQStr &txt);
     static void error(cQStr &txt);
     static void pupgrade();
-    static void cfgwrite();
     static void thrdelay();
     static void cfgread();
     static void fssync();

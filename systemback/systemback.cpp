@@ -713,8 +713,6 @@ void systemback::unitimer()
                                     usr = sb::left(usr, sb::instr(usr, ":") -1);
                                     if(! susr.contains(usr) && sb::isdir("/home/" % usr)) ui->users->addItem(usr);
                                 }
-
-                                qApp->processEvents();
                             }
 
                         if(ui->users->count() > 0)
@@ -2654,7 +2652,7 @@ start:
             else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr))
                 goto error;
 
-            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == sb::True && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", "storagedir=" % sb::sdir[0] % "\nliveworkdir=" % sb::sdir[2] % "\npointsnumber=" % QStr::number(sb::pnumber) % "\ntimer=off\nschedule=" % QStr::number(sb::schdle[1]) % ':' % QStr::number(sb::schdle[2]) % ':' % QStr::number(sb::schdle[3]) % ':' % QStr::number(sb::schdle[4]) % "\nsilentmode=" % (sb::schdle[5] == sb::True ? "true" : "false") % "\nwindowposition=" % sb::schdlr[0] % '\n')) goto error;
+            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy/etc/systemback.conf")) goto error;
         }
         else
         {
@@ -2696,23 +2694,7 @@ start:
             if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
             {
                 QStr cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
-
-                if(cfg.contains("timer=on"))
-                {
-                    QStr nconf;
-
-                    {
-                        QTS in(&cfg, QIODevice::ReadOnly);
-
-                        while(! in.atEnd())
-                        {
-                            QStr cline(in.readLine());
-                            nconf.append((cline == "timer=on" ? "timer=off" : cline) % '\n');
-                        }
-                    }
-
-                    if(! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", nconf)) goto error;
-                }
+                if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) goto error;
             }
         }
     }
@@ -2737,23 +2719,7 @@ start:
         if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
         {
             QStr cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
-
-            if(cfg.contains("timer=on"))
-            {
-                QStr nconf;
-
-                {
-                    QTS in(&cfg, QIODevice::ReadOnly);
-
-                    while(! in.atEnd())
-                    {
-                        QStr cline(in.readLine());
-                        nconf.append((cline == "timer=on" ? "timer=off" : cline) % '\n');
-                    }
-                }
-
-                if(! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", nconf)) goto error;
-            }
+            if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) goto error;
         }
     }
 
@@ -2766,7 +2732,7 @@ start:
 
         if(guname() != ui->username->text())
         {
-            if(sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text()))) goto error;
+            if(sb::exec("chroot /.sbsystemcopy sh -c \"for rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1) ; do [ $rmuser = " % guname() % " ] || [ $rmuser = root ] || userdel $rmuser ; done\"") > 0 || (sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text())))) goto error;
 
             {
                 QFile file("/.sbsystemcopy/etc/group");
@@ -2958,14 +2924,8 @@ start:
 
                 if(! sb::crtfile("/.sbsystemcopy/etc/hosts", nfile)) goto error;
                 nfile.clear();
-                if(intrrpt) goto exit;
             }
         }
-
-        if(! sb::crtfile("/.sbsystemcopy/deluser", "#!/bin/sh\nfor rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1)\ndo [ $rmuser = " % ui->username->text() % " ] || [ $rmuser = root ] || userdel $rmuser\ndone\n") || ! QFile::setPermissions("/.sbsystemcopy/deluser", QFile::ExeOwner)) goto error;
-        if(intrrpt) goto exit;
-        if(sb::exec("chroot /.sbsystemcopy /deluser") > 0) goto error;
-        QFile::remove("/.sbsystemcopy/deluser");
     }
 
     if(intrrpt) goto exit;
@@ -3056,11 +3016,8 @@ start:
 
                 if(! cline.startsWith('#') && cline.contains("UUID="))
                 {
-                    if(! sb::crtfile("/.sbsystemcopy/etc/mtab") || ! sb::crtfile("/.sbsystemcopy/uinitfs", "#!/bin/sh\nupdate-initramfs -tck all\n") || ! QFile::setPermissions("/.sbsystemcopy/uinitfs", QFile::ExeOwner)) goto error;
                     if(intrrpt) goto exit;
-                    ushort rv(sb::exec("chroot /.sbsystemcopy /uinitfs"));
-                    QFile::remove("/.sbsystemcopy/uinitfs");
-                    if(rv > 0) goto error;
+                    if(! sb::crtfile("/.sbsystemcopy/etc/mtab") || sb::exec("chroot /.sbsystemcopy update-initramfs -tck all") > 0) goto error;
                     break;
                 }
             }
@@ -5363,8 +5320,6 @@ void systemback::on_restoremenu_clicked()
                 usr = sb::left(usr, sb::instr(usr, ":") -1);
                 if(sb::isdir("/home/" % usr)) ui->includeusers->addItem(usr);
             }
-
-            qApp->processEvents();
         }
 }
 
@@ -5446,15 +5401,11 @@ void systemback::on_livecreatemenu_clicked()
 
     if(sb::isdir(sb::sdir[2]))
         for(cQStr &item : QDir(sb::sdir[2]).entryList(QDir::Files | QDir::Hidden))
-        {
             if(item.endsWith(".sblive") && ! item.contains(' ') && ! sb::islink(sb::sdir[2] % '/' % item) && sb::fsize(sb::sdir[2] % '/' % item) > 0)
             {
                 QLWI *lwi(new QLWI(sb::left(item, -7) % " (" % QStr::number(qRound64(sb::fsize(sb::sdir[2] % '/' % item) * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB, " % (sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") > 0 ? "sblive+iso" : "sblive") % ')'));
                 ui->livelist->addItem(lwi);
             }
-
-            qApp->processEvents();
-        }
 }
 
 void systemback::on_repairmenu_clicked()
@@ -8385,12 +8336,15 @@ void systemback::on_removeitem_clicked()
         }
 
         file.close();
-        sb::crtfile("/etc/systemback.excludes", excdlst);
-        on_pointexclude_clicked();
-        delete ui->excludedlist->currentItem();
-        if(ui->excludedlist->currentItem()) ui->excludedlist->currentItem()->setSelected(false);
-        ui->removeitem->setDisabled(true);
-        ui->excludeback->setFocus();
+
+        if(sb::crtfile("/etc/systemback.excludes", excdlst))
+        {
+            on_pointexclude_clicked();
+            delete ui->excludedlist->currentItem();
+            if(ui->excludedlist->currentItem()) ui->excludedlist->currentItem()->setSelected(false);
+            ui->removeitem->setDisabled(true);
+            ui->excludeback->setFocus();
+        }
     }
 
     busy(false);
@@ -8422,7 +8376,7 @@ void systemback::on_fullname_textChanged(const QStr &arg1)
     else
     {
         for(cQStr &word : arg1.split(' '))
-            if(word.at(0).isLower())
+            if(! word.isEmpty() && word.at(0).isLower())
             {
                 cpos = ui->fullname->cursorPosition();
                 ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
@@ -9237,7 +9191,6 @@ start:
                     did = sb::right(cline, - sb::instr(cline, "="));
                     break;
                 }
-
             }
         }
 
@@ -9737,8 +9690,6 @@ void systemback::on_schedulerrefresh_clicked()
                 usr = sb::left(usr, sb::instr(usr, ":") -1);
                 if(sb::isdir("/home/" % usr)) ui->users->addItem(usr);
             }
-
-            qApp->processEvents();
         }
 
     busy(false);

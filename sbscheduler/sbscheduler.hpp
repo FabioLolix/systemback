@@ -21,11 +21,15 @@
 #define SBSCHEDULER_HPP
 
 #include "../libsystemback/sblib.hpp"
+#include <QDateTime>
 #include <QObject>
 
 class scheduler : public QObject
 {
     Q_OBJECT
+
+public:
+    static QDateTime cfglmd;
 
 public slots:
     void main();

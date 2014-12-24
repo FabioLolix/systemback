@@ -24,11 +24,14 @@
 #include <QLocale>
 #include <QTimer>
 
+QDateTime scheduler::cfglmd;
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     QTranslator trnsltr;
     sb::cfgread();
+    scheduler::cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
 
     if(sb::lang == "auto")
     {

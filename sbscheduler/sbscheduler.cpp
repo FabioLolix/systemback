@@ -20,7 +20,6 @@
 #include "sbscheduler.hpp"
 #include <QCoreApplication>
 #include <QStringBuilder>
-#include <QDateTime>
 #include <QDir>
 #include <unistd.h>
 
@@ -104,7 +103,12 @@ start:
             break;
         }
 
-        sb::cfgread();
+        if(cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
+        {
+            sb::cfgread();
+            cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
+        }
+
         if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write)) goto next;
 
         if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))

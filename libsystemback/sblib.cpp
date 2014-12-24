@@ -185,9 +185,9 @@ void sb::thrdelay()
     }
 }
 
-void sb::cfgwrite()
+bool sb::cfgwrite(cQStr &file)
 {
-    crtfile("/etc/systemback.conf", "# Restore points settings\n#  storage_directory=<path>\n#  max_temporary_restore_points=[3-10]\n#  use_incremental_backup_method=[true/false]\n\n"
+    return crtfile(file, "# Restore points settings\n#  storage_directory=<path>\n#  max_temporary_restore_points=[3-10]\n#  use_incremental_backup_method=[true/false]\n\n"
             "storage_directory=" % sdir[0] %
             "\nmax_temporary_restore_points=" % QStr::number(pnumber) %
             "\nuse_incremental_backup_method=" % (incrmtl == True ? "true" : "false") %
@@ -195,8 +195,8 @@ void sb::cfgwrite()
             "working_directory=" % sdir[2] %
             "\nuse_xz_compressor=" % (xzcmpr == True ? "true" : "false") %
             "\nauto_iso_images=" % (autoiso == True ? "true" : "false") %
-            "\n\n\n# Scheduler settigns\n#  enabled=[true/false]\n#  schedule=[0-7]:[0-23]:[0-59]:[10-99]\n#  silent=[true/false]\n#  window_position=[topleft/topright/center/bottomleft/bottomright]\n#  disable_starting_for_users=[false/everyone/:<user,name,list>]\n\n"
-            "enabled=" % (schdle[0] == True ? "true" : "false") %
+            "\n\n\n# Scheduler settigns\n#  enabled=[true/false]\n#  schedule=[0-7]:[0-23]:[0-59]:[10-99]\n#  silent=[true/false]\n#  window_position=[topleft/topright/center/bottomleft/bottomright]\n#  disable_starting_for_users=[false/everyone/:<username,list>]\n\n"
+            "enabled=" % (file.startsWith("/.") ? "false" : schdle[0] == True ? "true" : "false") %
             "\nschedule=" % QStr::number(schdle[1]) % ':' % QStr::number(schdle[2]) % ':' % QStr::number(schdle[3]) % ':' % QStr::number(schdle[4]) %
             "\nsilent=" % (schdle[5] == True ? "true" : "false") %
             "\nwindow_position=" % schdlr[0] %

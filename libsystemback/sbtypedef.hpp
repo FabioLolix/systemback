@@ -31,6 +31,7 @@ typedef const QList<short> cQSIL;
 typedef QList<short> QSIL;
 typedef const QString cQStr;
 typedef QString QStr;
+typedef QByteArray QBA;
 typedef const QChar cQChar;
 typedef const QRect cQRect;
 typedef const QPoint cQPoint;

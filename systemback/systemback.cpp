@@ -449,7 +449,7 @@ systemback::~systemback()
 
     if(! nrxth)
     {
-        QStr xauth(qgetenv("XAUTHORITY"));
+        QBA xauth(qgetenv("XAUTHORITY"));
         if(xauth.startsWith("/tmp/sbXauthority-")) QFile::remove(xauth);
     }
 
@@ -504,8 +504,10 @@ void systemback::unitimer()
             if(! sstart)
             {
                 ui->storagedir->setText(sb::sdir[0]);
+                ui->storagedir->setToolTip(sb::sdir[0]);
                 ui->storagedir->setCursorPosition(0);
                 ui->liveworkdir->setText(sb::sdir[2]);
+                ui->liveworkdir->setToolTip(sb::sdir[2]);
                 ui->liveworkdir->setCursorPosition(0);
                 ui->restorepanel->move(ui->sbpanel->pos());
                 ui->copypanel->move(ui->sbpanel->pos());
@@ -1252,7 +1254,7 @@ bool systemback::pisrng(cQStr &pname, ushort *pid)
     while((ent = readdir(dir)))
         if(! sb::like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(ent->d_name) && sb::islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
         {
-            if(pid) *pid = QStr(ent->d_name).toUShort();
+            if(pid) *pid = QBA(ent->d_name).toUShort();
             closedir(dir);
             return true;
         }
@@ -2867,7 +2869,7 @@ start:
                             nline.append(ui->username->text() % ':');
                             break;
                         case 1:
-                            nline.append(QStr(crypt(ui->password1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str())) % ':');
+                            nline.append(QBA(crypt(chr(ui->password1->text()), chr(("$6$" % sb::rndstr(16))))) % ':');
                             break;
                         default:
                             nline.append(uslst.at(a) % ':');
@@ -2883,7 +2885,7 @@ start:
                     for(uchar a(0) ; a < uslst.count() ; ++a)
                         switch(a) {
                         case 1:
-                            nline.append((ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(ui->rootpassword1->text().toStdString().c_str(), QStr("$6$" % sb::rndstr(16)).toStdString().c_str()))) % ':');
+                            nline.append((ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(chr(ui->rootpassword1->text()), chr(("$6$" % sb::rndstr(16)))))) % ':');
                             break;
                         default:
                             nline.append(uslst.at(a) % ':');
@@ -3195,7 +3197,7 @@ start:
     }
 
     if(intrrpt ||
-        sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "lba") ||
+        sb::exec("dd if=/usr/lib/syslinux/" % QBA(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "lba") ||
         intrrpt ||
         (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite"))) ||
         intrrpt ||
@@ -4121,7 +4123,7 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
 
     if(ui->adminpassword->text().length() > 0) ui->adminpassword->clear();
 
-    if(! hash.isEmpty() && QStr(crypt("", hash.toStdString().c_str())) == hash)
+    if(! hash.isEmpty() && QStr(crypt("", chr(hash))) == hash)
     {
         ui->adminpasswordpipe->show();
         ui->adminpassword->setDisabled(true);
@@ -4142,7 +4144,7 @@ void systemback::on_adminpassword_textChanged(const QStr &arg1)
     {
         if(ui->adminpassworderror->isHidden()) ui->adminpassworderror->show();
     }
-    else if(QStr(crypt(ipasswd.toStdString().c_str(), hash.toStdString().c_str())) == hash)
+    else if(QStr(crypt(chr(ipasswd), chr(hash))) == hash)
     {
         sb::delay(300);
 
@@ -5697,6 +5699,7 @@ void systemback::on_partitionrefresh_clicked()
                 ui->partitionsettings->setItem(sn, 1, size);
                 QTblWI *lbl(new QTblWI(dts.at(5)));
                 lbl->setTextAlignment(Qt::AlignCenter);
+                if(! dts.at(5).isEmpty()) lbl->setToolTip(dts.at(5));
                 ui->partitionsettings->setItem(sn, 2, lbl);
                 QTblWI *mpt(new QTblWI);
 
@@ -5738,8 +5741,8 @@ void systemback::on_partitionrefresh_clicked()
                 }
 
                 mpt->setTextAlignment(Qt::AlignCenter);
+                mpt->text().isEmpty() ? ui->repairpartition->addItem(path) : mpt->setToolTip(mpt->text());
                 ui->partitionsettings->setItem(sn, 3, mpt);
-                if(mpt->text().isEmpty()) ui->repairpartition->addItem(path);
                 QTblWI *empty(new QTblWI);
                 empty->setTextAlignment(Qt::AlignCenter);
                 ui->partitionsettings->setItem(sn, 4, empty);
@@ -5851,13 +5854,21 @@ void systemback::on_unmountdelete_clicked()
             for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             {
                 QStr mpt(ui->partitionsettings->item(a, 3)->text());
-                if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts.contains(' ' % mpt.replace(" ", "\\040") % ' ')) ui->partitionsettings->item(a, 3)->setText(nullptr);
+
+                if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts.contains(' ' % mpt.replace(" ", "\\040") % ' '))
+                {
+                    ui->partitionsettings->item(a, 3)->setText(nullptr);
+                    ui->partitionsettings->item(a, 3)->setToolTip(nullptr);
+                }
             }
 
             sb::fssync();
         }
-        else if(! QStr('\n' % sb::fload("/proc/swaps")).contains('\n' % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text() % ' ') || swapoff(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text().toStdString().c_str()) == 0)
+        else if(! QStr('\n' % sb::fload("/proc/swaps")).contains('\n' % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text() % ' ') || swapoff(chr(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text())) == 0)
+        {
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->setText(nullptr);
+            ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->setToolTip(nullptr);
+        }
 
         if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().isEmpty())
         {
@@ -5893,7 +5904,7 @@ void systemback::on_unmount_clicked()
             if(! ui->partitionsettings->item(a, 3)->text().isEmpty())
             {
                 if(ui->partitionsettings->item(a, 3)->text() == "SWAP")
-                    swapoff(ui->partitionsettings->item(a, 0)->text().toStdString().c_str());
+                    swapoff(chr(ui->partitionsettings->item(a, 0)->text()));
                 else
                 {
                     QTS in(&mnts[0], QIODevice::ReadOnly);
@@ -5916,7 +5927,10 @@ void systemback::on_unmount_clicked()
             if(! mpt.isEmpty())
             {
                 if((mpt == "SWAP" && ! QStr('\n' % mnts[1]).contains('\n' % ui->partitionsettings->item(a, 0)->text() % ' ')) || (mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')))
+                {
                     ui->partitionsettings->item(a, 3)->setText(nullptr);
+                    ui->partitionsettings->item(a, 3)->setToolTip(nullptr);
+                }
                 else if(umntd)
                     umntd = false;
             }
@@ -6437,6 +6451,7 @@ void systemback::on_livedevicesrefresh_clicked()
         ui->livedevices->setItem(sn, 1, size);
         QTblWI *name(new QTblWI(dts.at(1)));
         name->setTextAlignment(Qt::AlignCenter);
+        name->setToolTip(dts.at(1));
         ui->livedevices->setItem(sn, 2, name);
         QTblWI *format(new QTblWI("-"));
         format->setTextAlignment(Qt::AlignCenter);
@@ -7194,6 +7209,7 @@ void systemback::on_dirchooseok_clicked()
                 if(! cfgupdt) cfgupdt = true;
                 sb::sdir[1] = sb::sdir[0] % "/Systemback";
                 ui->storagedir->setText(sb::sdir[0]);
+                ui->storagedir->setToolTip(sb::sdir[0]);
                 ui->storagedir->setCursorPosition(0);
                 pointupgrade();
             }
@@ -7224,6 +7240,7 @@ void systemback::on_dirchooseok_clicked()
                 sb::sdir[2] = ui->dirpath->text();
                 if(! cfgupdt) cfgupdt = true;
                 ui->liveworkdir->setText(sb::sdir[2]);
+                ui->liveworkdir->setToolTip(sb::sdir[2]);
                 ui->liveworkdir->setCursorPosition(0);
                 on_livecreatemenu_clicked();
             }
@@ -7879,6 +7896,7 @@ void systemback::on_changepartition_clicked()
     else if(! ui->mountpoint->currentText().isEmpty())
         ui->mountpoint->setCurrentText(nullptr);
 
+    ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setToolTip(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
     busy(false);
 }
 
@@ -8308,7 +8326,7 @@ void systemback::on_additem_clicked()
 
     if(file.open(QIODevice::Append))
     {
-        file.write(QStr(path % '\n').toLocal8Bit());
+        file.write(QStr(path % '\n').toUtf8());
         file.flush();
         ui->excludedlist->addItem(path);
         delete ui->itemslist->currentItem();

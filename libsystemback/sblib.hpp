@@ -20,6 +20,7 @@
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
 #define _FILE_OFFSET_BITS 64
+#define chr(qstr) qstr.toUtf8().constData()
 
 #include "sblib_global.hpp"
 #include "sbtypedef.hpp"
@@ -52,11 +53,13 @@ public:
     static QStr rndstr(cuchar vlen = 10);
     static QStr ruuid(cQStr &part);
     static QStr appver();
+    static ullong dfree(cchar *path);
     static ullong dfree(cQStr &path);
     static ullong fsize(cQStr &path);
     static ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
     static ushort rinstr(cQStr &txt, cQStr &stxt);
     static uchar exec(cQStr &cmd, cQStr &envv = nullptr, bool silent = false, bool bckgrnd = false);
+    static uchar stype(cchar *path);
     static uchar stype(cQStr &path);
     static uchar exec(cQSL &cmds);
     static bool srestore(cuchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);
@@ -72,7 +75,7 @@ public:
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
-    static bool issmfs(cQStr &item1,cQStr &item2);
+    static bool issmfs(cchar *item1,cQStr &item2);
     static bool ilike(short num, cQSIL &lst);
     static bool islnxfs(cQStr &path);
     static bool islink(cQStr &path);
@@ -81,6 +84,7 @@ public:
     static bool mcheck(cQStr &item);
     static bool lvprpr(bool iudata);
     static bool umount(cQStr &dev);
+    static bool exist(cchar *path);
     static bool exist(cQStr &path);
     static bool isdir(cQStr &path);
     static bool isnum(cQStr &txt);
@@ -225,10 +229,15 @@ inline bool sb::ilike(short num, cQSIL &lst)
     return false;
 }
 
-inline bool sb::exist(cQStr &path)
+inline bool sb::exist(cchar *path)
 {
     struct stat istat;
-    return lstat(path.toStdString().c_str(), &istat) == 0;
+    return lstat(path, &istat) == 0;
+}
+
+inline bool sb::exist(cQStr &path)
+{
+    return exist(chr(path));
 }
 
 inline bool sb::islink(cQStr &path)
@@ -246,10 +255,10 @@ inline bool sb::isdir(cQStr &path)
     return QFileInfo(path).isDir();
 }
 
-inline uchar sb::stype(cQStr &path)
+inline uchar sb::stype(cchar *path)
 {
     struct stat istat;
-    if(lstat(path.toStdString().c_str(), &istat) == -1) return Notexist;
+    if(lstat(path, &istat) == -1) return Notexist;
 
     switch(istat.st_mode & S_IFMT) {
     case S_IFREG:
@@ -263,6 +272,11 @@ inline uchar sb::stype(cQStr &path)
     default:
         return Unknow;
     }
+}
+
+inline uchar sb::stype(cQStr &path)
+{
+    return stype(chr(path));
 }
 
 inline ullong sb::fsize(cQStr &path)

@@ -2651,10 +2651,8 @@ start:
                 case Qt::Checked:
                     if(! sb::scopy(4, guname(), nullptr)) goto error;
                 }
-            else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr))
+            else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) || (sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy/etc/systemback.conf")))
                 goto error;
-
-            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel) && sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy/etc/systemback.conf")) goto error;
         }
         else
         {
@@ -2686,18 +2684,15 @@ start:
                 case Qt::Checked:
                     if(! sb::scopy(4, guname(), "/.systembacklivepoint")) goto error;
                 }
-            else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint"))
-                goto error;
-
-            sb::umount("/.systembacklivepoint");
-            if(intrrpt) goto exit;
-            QDir().rmdir("/.systembacklivepoint");
-
-            if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
+            else
             {
+                if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint")) goto error;
                 QStr cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
                 if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) goto error;
             }
+
+            sb::umount("/.systembacklivepoint");
+            QDir().rmdir("/.systembacklivepoint");
         }
     }
     else
@@ -2713,13 +2708,9 @@ start:
             case Qt::Checked:
                 if(! sb::scopy(4, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
             }
-        else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname))
-            goto error;
-
-        if(intrrpt) goto exit;
-
-        if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
+        else
         {
+            if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
             QStr cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
             if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) goto error;
         }

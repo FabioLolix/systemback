@@ -856,7 +856,7 @@ void sb::delpart(cQStr &part)
 inline QStr sb::rlink(cQStr &path, ushort blen)
 {
     char rpath[blen];
-    ushort rlen(readlink(chr(path), rpath, blen));
+    short rlen(readlink(chr(path), rpath, blen));
 
     if(rlen > 0)
     {

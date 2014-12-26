@@ -92,18 +92,19 @@ start:
     if(! sb::lock(sb::Schdlrlock)) goto error;
     QStr pfile(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
     if(! sb::crtfile(pfile, QStr::number(qApp->applicationPid()))) goto error;
+    QDateTime pflmd(QFileInfo(pfile).lastModified());
     sleep(300);
 
-    for(;;)
+    forever
     {
-        if(sb::left(sb::fload(pfile), 7) == "restart")
+        if(! sb::isfile(pfile) || (pflmd != QFileInfo(pfile).lastModified() && sb::fload(pfile) != QStr::number(qApp->applicationPid())))
         {
             sb::unlock(sb::Schdlrlock);
             sb::exec("sbscheduler " % qApp->arguments().value(1), nullptr, true, true);
             break;
         }
 
-        if(cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
+        if(! sb::isfile("/etc/systemback.conf") && cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
         {
             sb::cfgread();
             cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
@@ -145,6 +146,8 @@ start:
             sb::unlock(sb::Dpkglock);
             sleep(50);
         }
+        else
+            sleep(1790);
 
     next:
         sleep(10);

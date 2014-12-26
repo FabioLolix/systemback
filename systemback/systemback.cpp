@@ -49,6 +49,8 @@
 #undef True
 #endif
 
+ushort lblevent::MouseX, lblevent::MouseY;
+
 systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
     if(sb::style == "auto")
@@ -214,6 +216,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
         if(! sstart)
         {
+            icnt = 0;
             cpos = -1;
             irfsc = nohmcpy = uchkd = false;
             ui->restorepanel->hide();
@@ -280,21 +283,21 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             connect(ui->scalingbuttonspanel, SIGNAL(Mouse_Leave()), this, SLOT(sbttnleave()));
             connect(ui->windowbutton1, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
             connect(ui->windowbutton1, SIGNAL(Mouse_Pressed()), this, SLOT(benter()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Enter()), this, SLOT(chssenter()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Leave()), this, SLOT(chssleave()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Pressed()), this, SLOT(chsspressed()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Released()), this, SLOT(chssreleased()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Move()), this, SLOT(chssmove()));
+            connect(ui->chooseresize, SIGNAL(Mouse_Enter()), this, SLOT(chsenter()));
+            connect(ui->chooseresize, SIGNAL(Mouse_Leave()), this, SLOT(chsleave()));
+            connect(ui->chooseresize, SIGNAL(Mouse_Pressed()), this, SLOT(chspressed()));
+            connect(ui->chooseresize, SIGNAL(Mouse_Released()), this, SLOT(chsreleased()));
+            connect(ui->chooseresize, SIGNAL(Mouse_Move()), this, SLOT(rmove()));
             connect(ui->copyresize, SIGNAL(Mouse_Enter()), this, SLOT(cpyenter()));
             connect(ui->copyresize, SIGNAL(Mouse_Leave()), this, SLOT(cpyleave()));
-            connect(ui->copyresize, SIGNAL(Mouse_Pressed()), this, SLOT(chsspressed()));
-            connect(ui->copyresize, SIGNAL(Mouse_Released()), this, SLOT(chssreleased()));
-            connect(ui->copyresize, SIGNAL(Mouse_Move()), this, SLOT(cpymove()));
+            connect(ui->copyresize, SIGNAL(Mouse_Pressed()), this, SLOT(chspressed()));
+            connect(ui->copyresize, SIGNAL(Mouse_Released()), this, SLOT(chsreleased()));
+            connect(ui->copyresize, SIGNAL(Mouse_Move()), this, SLOT(rmove()));
             connect(ui->excluderesize, SIGNAL(Mouse_Enter()), this, SLOT(xcldenter()));
             connect(ui->excluderesize, SIGNAL(Mouse_Leave()), this, SLOT(xcldleave()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Pressed()), this, SLOT(chsspressed()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Released()), this, SLOT(chssreleased()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Move()), this, SLOT(xcldmove()));
+            connect(ui->excluderesize, SIGNAL(Mouse_Pressed()), this, SLOT(chspressed()));
+            connect(ui->excluderesize, SIGNAL(Mouse_Released()), this, SLOT(chsreleased()));
+            connect(ui->excluderesize, SIGNAL(Mouse_Move()), this, SLOT(rmove()));
             connect(ui->homepage1, SIGNAL(Mouse_Pressed()), this, SLOT(hmpg1pressed()));
             connect(ui->homepage1, SIGNAL(Mouse_Released()), this, SLOT(hmpg1released()));
             connect(ui->homepage1, SIGNAL(Mouse_Move()), this, SLOT(hmpg1move()));
@@ -355,10 +358,10 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                 {
                     while(! file.atEnd())
                     {
-                        QStr usrs(file.readLine().trimmed());
+                        QStr cline(file.readLine().trimmed());
 
-                        if(usrs.startsWith("sudo:"))
-                            for(cQStr &usr : sb::right(usrs, - sb::rinstr(usrs, ":")).split(','))
+                        if(cline.startsWith("sudo:"))
+                            for(cQStr &usr : sb::right(cline, - sb::rinstr(cline, ":")).split(','))
                                 if(! usr.isEmpty() && ui->admins->findText(usr) == -1) ui->admins->addItem(usr);
                     }
                 }
@@ -893,21 +896,7 @@ void systemback::unitimer()
         }
         else if(ui->statuspanel->isVisible())
         {
-            if(! prun.isEmpty())
-            {
-                if(points == "    ")
-                    points = " .  ";
-                else if(points == " .  ")
-                    points = " .. ";
-                else if(points == " .. ")
-                    points = " ...";
-                else if(points == " ...")
-                    points = "    ";
-                else
-                    points = "    ";
-
-                ui->processrun->setText(prun % points);
-            }
+            if(! prun.isEmpty()) ui->processrun->setText(prun % (points.contains('.') ? points.endsWith('.') ? points = "    " : points.replace(". ", "..") : points = " .  "));
 
             if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/3+1_", '_' % tr("Writing Live image to target device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
             {
@@ -1202,6 +1191,7 @@ QStr systemback::guname()
 {
     if(! uchkd && (ui->admins->count() == 0 || ui->admins->currentText() == "root"))
     {
+        uchkd = true;
         QSL usrs;
 
         {
@@ -1215,25 +1205,23 @@ QStr systemback::guname()
                 }
         }
 
-        for(cQStr &usr : usrs)
-            if(sb::isdir("/home/" % usr))
-            {
-                ui->admins->addItem(usr);
-                ui->admins->setCurrentIndex(ui->admins->findText(usr));
-                goto ok;
-            }
-
         if(usrs.count() > 0)
         {
-            cQStr &usr(usrs.at(0));
-            ui->admins->addItem(usr);
-            ui->admins->setCurrentIndex(ui->admins->findText(usr));
+            QStr uname;
+
+            for(cQStr &usr : usrs)
+                if(sb::isdir("/home/" % usr))
+                {
+                    uname = usr;
+                    break;
+                }
+
+            if(uname.isEmpty()) uname = usrs.at(0);
+            if(ui->admins->findText(uname) == -1) ui->admins->addItem(uname);
+            if(ui->admins->count() > 1) ui->admins->setCurrentIndex(ui->admins->findText(uname));
         }
         else if(ui->admins->currentText().isNull())
             ui->admins->addItem("root");
-
-    ok:
-        uchkd = true;
     }
 
     return ui->admins->currentText();
@@ -1538,34 +1526,24 @@ void systemback::apokkeyreleased()
     on_passwordinputok_clicked();
 }
 
-void systemback::chssenter()
+void systemback::chsenter()
 {
     if(size() != qApp->desktop()->availableGeometry().size() && ui->chooseresize->width() == ss(10)) ui->chooseresize->setGeometry(ui->chooseresize->x() - ss(20), ui->chooseresize->y() - ss(20), ss(30), ss(30));
 }
 
-void systemback::chssleave()
+void systemback::chsleave()
 {
     if(ui->chooseresize->width() == ss(30) && ! qApp->overrideCursor()) ui->chooseresize->setGeometry(ui->chooseresize->x() + ss(20), ui->chooseresize->y() + ss(20), ss(10), ss(10));
 }
 
-void systemback::chsspressed()
+void systemback::chspressed()
 {
     if(size() != qApp->desktop()->availableGeometry().size()) qApp->setOverrideCursor(Qt::SizeFDiagCursor);
 }
 
-void systemback::chssreleased()
+void systemback::chsreleased()
 {
     if(qApp->overrideCursor()) qApp->restoreOverrideCursor();
-}
-
-void systemback::chssmove()
-{
-    if(size() != qApp->desktop()->availableGeometry().size())
-    {
-        wgeom[2] = QCursor::pos().x() - x() + width() - ui->chooseresize->x() - ui->chooseresize->MouseX - ss(1);
-        wgeom[3] = QCursor::pos().y() - y() + height() - ui->chooseresize->y() - ui->chooseresize->MouseY - ss(24);
-        if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
-    }
 }
 
 void systemback::cpyenter()
@@ -1578,16 +1556,6 @@ void systemback::cpyleave()
     if(ui->copyresize->width() == ss(30) && ! qApp->overrideCursor()) ui->copyresize->setGeometry(ui->copyresize->x() + ss(20), ui->copyresize->y() + ss(20), ss(10), ss(10));
 }
 
-void systemback::cpymove()
-{
-    if(size() != qApp->desktop()->availableGeometry().size())
-    {
-        wgeom[2] = QCursor::pos().x() - x() + width() - ui->copyresize->x() - ui->copyresize->MouseX - ss(1);
-        wgeom[3] = QCursor::pos().y() - y() + height() - ui->copyresize->y() - ui->copyresize->MouseY - ss(24);
-        if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
-    }
-}
-
 void systemback::xcldenter()
 {
     if(size() != qApp->desktop()->availableGeometry().size() && ui->excluderesize->width() == ss(10)) ui->excluderesize->setGeometry(ui->excluderesize->x() - ss(20), ui->excluderesize->y() - ss(20), ss(30), ss(30));
@@ -1596,16 +1564,6 @@ void systemback::xcldenter()
 void systemback::xcldleave()
 {
     if(ui->excluderesize->width() == ss(30) && ! qApp->overrideCursor()) ui->excluderesize->setGeometry(ui->excluderesize->x() + ss(20), ui->excluderesize->y() + ss(20), ss(10), ss(10));
-}
-
-void systemback::xcldmove()
-{
-    if(size() != qApp->desktop()->availableGeometry().size())
-    {
-        wgeom[2] = QCursor::pos().x() - x() + width() - ui->excluderesize->x() - ui->excluderesize->MouseX - ss(1);
-        wgeom[3] = QCursor::pos().y() - y() + height() - ui->excluderesize->y() - ui->excluderesize->MouseY - ss(24);
-        if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
-    }
 }
 
 void systemback::sbttnpressed()
@@ -2721,87 +2679,78 @@ start:
 
     if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
     {
+        if(sb::exec("chroot /.sbsystemcopy sh -c \"for rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1) ; do [ $rmuser = " % guname() % " ] || [ $rmuser = root ] || userdel $rmuser ; done\"") > 0) goto error;
         QStr nfile;
 
-        if(guname() != ui->username->text())
+        if(guname() != "root")
         {
-            if(sb::exec("chroot /.sbsystemcopy sh -c \"for rmuser in $(grep :\\$6\\$* /etc/shadow | cut -d : -f 1) ; do [ $rmuser = " % guname() % " ] || [ $rmuser = root ] || userdel $rmuser ; done\"") > 0 || (sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text())))) goto error;
-
+            if(guname() != ui->username->text())
             {
-                QFile file("/.sbsystemcopy/etc/group");
+                if(sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text()))) goto error;
+
+                if(sb::isfile("/.sbsystemcopy/etc/subuid") && sb::isfile("/.sbsystemcopy/etc/subgid"))
+                {
+                    {
+                        QFile file("/.sbsystemcopy/etc/subuid");
+                        if(! file.open(QIODevice::ReadOnly)) goto error;
+
+                        while(! file.atEnd())
+                        {
+                            QStr nline(file.readLine().trimmed());
+                            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                            nfile.append(nline % '\n');
+                            if(intrrpt) goto exit;
+                        }
+                    }
+
+                    if(! sb::crtfile("/.sbsystemcopy/etc/subuid", nfile)) goto error;
+                    nfile.clear();
+
+                    {
+                        QFile file("/.sbsystemcopy/etc/subgid");
+                        if(! file.open(QIODevice::ReadOnly)) goto error;
+
+                        while(! file.atEnd())
+                        {
+                            QStr nline(file.readLine().trimmed());
+                            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                            nfile.append(nline % '\n');
+                            if(intrrpt) goto exit;
+                        }
+                    }
+
+                    if(! sb::crtfile("/.sbsystemcopy/etc/subgid", nfile)) goto error;
+                    nfile.clear();
+                }
+            }
+
+            for(cQStr &cfname : {"/.sbsystemcopy/etc/group", "/.sbsystemcopy/etc/gshadow"})
+            {
+                QFile file(cfname);
                 if(! file.open(QIODevice::ReadOnly)) goto error;
 
                 while(! file.atEnd())
                 {
                     QStr nline(file.readLine().trimmed());
-                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                    nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
-                    nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
-                    if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
+
+                    if(nline.startsWith("sudo:") && ui->rootpassword1->text().isEmpty() && ! sb::right(nline, - sb::rinstr(nline, ":")).split(',').contains(guname()))
+                        nline.append((nline.endsWith(':') ? nullptr : ",") % ui->username->text());
+                    else if(guname() != ui->username->text())
+                    {
+                        if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                        nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
+                        nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
+                        if(sb::like(nline, {"*:" % guname() % '_', "*," % guname() % '_'})) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
+                    }
+
                     nfile.append(nline % '\n');
                     if(intrrpt) goto exit;
                 }
-            }
 
-            if(! sb::crtfile("/.sbsystemcopy/etc/group", nfile)) goto error;
-            nfile.clear();
-
-            {
-                QFile file("/.sbsystemcopy/etc/gshadow");
-                if(! file.open(QIODevice::ReadOnly)) goto error;
-
-                while(! file.atEnd())
-                {
-                    QStr nline(file.readLine().trimmed());
-                    if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                    nline = nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
-                    nline = nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
-                    if(nline.endsWith(':' % guname())) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
-                    nfile.append(nline % '\n');
-                    if(intrrpt) goto exit;
-                }
-            }
-
-            if(! sb::crtfile("/.sbsystemcopy/etc/gshadow", nfile)) goto error;
-            nfile.clear();
-
-            if(sb::isfile("/.sbsystemcopy/etc/subuid") && sb::isfile("/.sbsystemcopy/etc/subgid"))
-            {
-                {
-                    QFile file("/.sbsystemcopy/etc/subuid");
-                    if(! file.open(QIODevice::ReadOnly)) goto error;
-
-                    while(! file.atEnd())
-                    {
-                        QStr nline(file.readLine().trimmed());
-                        if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                        nfile.append(nline % '\n');
-                        if(intrrpt) goto exit;
-                    }
-                }
-
-                if(! sb::crtfile("/.sbsystemcopy/etc/subuid", nfile)) goto error;
-                nfile.clear();
-
-                {
-                    QFile file("/.sbsystemcopy/etc/subgid");
-                    if(! file.open(QIODevice::ReadOnly)) goto error;
-
-                    while(! file.atEnd())
-                    {
-                        QStr nline(file.readLine().trimmed());
-                        if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                        nfile.append(nline % '\n');
-                        if(intrrpt) goto exit;
-                    }
-                }
-
-                if(! sb::crtfile("/.sbsystemcopy/etc/subgid", nfile)) goto error;
+                if(! sb::crtfile(cfname , nfile)) goto error;
                 nfile.clear();
             }
-        }
 
-        {
             QFile file("/.sbsystemcopy/etc/passwd");
             if(! file.open(QIODevice::ReadOnly)) goto error;
 
@@ -2836,10 +2785,10 @@ start:
 
                 if(intrrpt) goto exit;
             }
-        }
 
-        if(! sb::crtfile("/.sbsystemcopy/etc/passwd", nfile)) goto error;
-        nfile.clear();
+            if(! sb::crtfile("/.sbsystemcopy/etc/passwd", nfile)) goto error;
+            nfile.clear();
+        }
 
         {
             QFile file("/.sbsystemcopy/etc/shadow");
@@ -2857,7 +2806,7 @@ start:
                     for(uchar a(0) ; a < uslst.count() ; ++a)
                         switch(a) {
                         case 0:
-                            nline.append(ui->username->text() % ':');
+                            nline.append((guname() == "root" ? "root" : ui->username->text()) % ':');
                             break;
                         case 1:
                             nline.append(QBA(crypt(chr(ui->password1->text()), chr(("$6$" % sb::rndstr(16))))) % ':');
@@ -2909,7 +2858,7 @@ start:
                 while(! file.atEnd())
                 {
                     QStr nline(file.readLine().trimmed());
-                    nline = nline.replace('\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
+                    nline.replace('\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
                     if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
                     nfile.append(nline % '\n');
                     if(intrrpt) goto exit;
@@ -3683,16 +3632,16 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
 
 void systemback::wmove()
 {
+    if(size() != qApp->desktop()->availableGeometry().size()) move(QCursor::pos().x() - lblevent::MouseX, QCursor::pos().y() - lblevent::MouseY);
+}
+
+void systemback::rmove()
+{
     if(size() != qApp->desktop()->availableGeometry().size())
     {
-        if(ui->function1->isVisible())
-            move(QCursor::pos().x() - ui->function1->MouseX, QCursor::pos().y() - ui->function1->MouseY);
-        else if(ui->function2->isVisible())
-            move(QCursor::pos().x() - ui->function2->MouseX, QCursor::pos().y() - ui->function2->MouseY);
-        else if(ui->function3->isVisible())
-            move(QCursor::pos().x() - ui->function3->MouseX, QCursor::pos().y() - ui->function3->MouseY);
-        else if(ui->function4->isVisible())
-            move(QCursor::pos().x() - ui->function4->MouseX, QCursor::pos().y() - ui->function4->MouseY);
+        wgeom[2] = QCursor::pos().x() - x() + ss(31) - lblevent::MouseX;
+        wgeom[3] = QCursor::pos().y() - y() + ss(31) - lblevent::MouseY;
+        if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
     }
 }
 
@@ -3856,64 +3805,21 @@ void systemback::keyPressEvent(QKeyEvent *ev)
 
             if(ui->sbpanel->isVisible())
             {
-                if(ui->point1->hasFocus())
-                {
-                    if(ui->pointpipe1->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point2->hasFocus())
-                {
-                    if(ui->pointpipe2->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point3->hasFocus())
-                {
-                    if(ui->pointpipe3->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point4->hasFocus())
-                {
-                    if(ui->pointpipe4->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point5->hasFocus())
-                {
-                    if(ui->pointpipe5->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point6->hasFocus())
-                {
-                    if(ui->pointpipe6->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point7->hasFocus())
-                {
-                    if(ui->pointpipe7->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point8->hasFocus())
-                {
-                    if(ui->pointpipe8->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point9->hasFocus())
-                {
-                    if(ui->pointpipe9->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point10->hasFocus())
-                {
-                    if(ui->pointpipe10->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point11->hasFocus())
-                {
-                    if(ui->pointpipe11->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point12->hasFocus())
-                {
-                    if(ui->pointpipe12->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point13->hasFocus())
-                {
-                    if(ui->pointpipe13->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point14->hasFocus())
-                {
-                    if(ui->pointpipe14->isChecked()) on_pointrename_clicked();
-                }
-                else if(ui->point15->hasFocus() && ui->pointpipe15->isChecked())
-                    on_pointrename_clicked();
+                if(ui->pointrename->isEnabled() && ((ui->point1->hasFocus() && ui->pointpipe1->isChecked()) ||
+                                                    (ui->point2->hasFocus() && ui->pointpipe2->isChecked()) ||
+                                                    (ui->point3->hasFocus() && ui->pointpipe3->isChecked()) ||
+                                                    (ui->point4->hasFocus() && ui->pointpipe4->isChecked()) ||
+                                                    (ui->point5->hasFocus() && ui->pointpipe5->isChecked()) ||
+                                                    (ui->point6->hasFocus() && ui->pointpipe6->isChecked()) ||
+                                                    (ui->point7->hasFocus() && ui->pointpipe7->isChecked()) ||
+                                                    (ui->point8->hasFocus() && ui->pointpipe8->isChecked()) ||
+                                                    (ui->point9->hasFocus() && ui->pointpipe9->isChecked()) ||
+                                                    (ui->point10->hasFocus() && ui->pointpipe10->isChecked()) ||
+                                                    (ui->point11->hasFocus() && ui->pointpipe11->isChecked()) ||
+                                                    (ui->point12->hasFocus() && ui->pointpipe12->isChecked()) ||
+                                                    (ui->point13->hasFocus() && ui->pointpipe13->isChecked()) ||
+                                                    (ui->point14->hasFocus() && ui->pointpipe14->isChecked()) ||
+                                                    (ui->point15->hasFocus() && ui->pointpipe15->isChecked()))) on_pointrename_clicked();
             }
             else if(ui->dirchoose->hasFocus())
                 ui->dirchoose->currentItem()->setExpanded(! ui->dirchoose->currentItem()->isExpanded());
@@ -4125,6 +4031,7 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
 
 void systemback::on_adminpassword_textChanged(const QStr &arg1)
 {
+    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
     QStr ipasswd(arg1);
 
     if(arg1.isEmpty())
@@ -4139,7 +4046,7 @@ void systemback::on_adminpassword_textChanged(const QStr &arg1)
     {
         sb::delay(300);
 
-        if(ipasswd == ui->adminpassword->text())
+        if(ccnt == icnt)
         {
             if(ui->adminpassworderror->isVisible()) ui->adminpassworderror->hide();
             ui->adminpasswordpipe->show();
@@ -7915,6 +7822,8 @@ void systemback::on_format_clicked(bool checked)
 
 void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
 {
+    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+
     if(ui->mountpoint->isEnabled())
     {
         if(! arg1.isEmpty() && (! sb::like(arg1, {"_/*", "_S_", "_SW_", "_SWA_", "_SWAP_"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
@@ -7973,7 +7882,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
                     if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
                     sb::delay(300);
 
-                    if(arg1 == ui->mountpoint->currentText())
+                    if(ccnt == icnt)
                     {
                         QStr mpname(QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
 
@@ -8019,6 +7928,8 @@ void systemback::on_repairpartitionrefresh_clicked()
 
 void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
 {
+    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+
     if(! arg1.isEmpty() && (! sb::like(arg1, {"_/_", "_/m_", "_/mn_", "_/mnt_", "_/mnt/*"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
         ui->repairmountpoint->setCurrentText(sb::left(arg1, -1));
     else if(! arg1.startsWith("/mnt") || arg1.endsWith('/') || (arg1.length() > 5 && sb::issmfs("/", "/mnt")) || sb::mcheck(arg1 % '/'))
@@ -8036,7 +7947,7 @@ void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
             if(ui->repairmount->isEnabled()) ui->repairmount->setDisabled(true);
             sb::delay(300);
 
-            if(arg1 == ui->repairmountpoint->currentText())
+            if(ccnt == icnt)
             {
                 QStr mpname(QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
 
@@ -8108,6 +8019,8 @@ void systemback::on_repairmount_clicked()
 
 void systemback::on_livename_textChanged(const QStr &arg1)
 {
+    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+
     if(cpos > -1)
     {
         ui->livename->setCursorPosition(cpos);
@@ -8147,7 +8060,7 @@ void systemback::on_livename_textChanged(const QStr &arg1)
             {
                 sb::delay(300);
 
-                if(arg1 == ui->livename->text())
+                if(ccnt == icnt)
                 {
                     QStr lname("/tmp/" % arg1 % '_' % sb::rndstr());
 
@@ -8403,6 +8316,8 @@ void systemback::on_fullname_editingFinished()
 
 void systemback::on_username_textChanged(const QStr &arg1)
 {
+    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+
     if(cpos > -1)
     {
         ui->username->setCursorPosition(cpos);
@@ -8428,11 +8343,15 @@ void systemback::on_username_textChanged(const QStr &arg1)
         {
             if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
         }
+        else if(arg1 == "root")
+        {
+            if(! ui->usernameerror->isVisible()) ui->usernameerror->show();
+        }
         else
         {
             sb::delay(300);
 
-            if(arg1 == ui->username->text())
+            if(ccnt == icnt)
             {
                 uchar rval(sb::exec("useradd " % arg1, nullptr, true));
 
@@ -8440,7 +8359,7 @@ void systemback::on_username_textChanged(const QStr &arg1)
                 {
                     sb::exec("userdel " % arg1, nullptr, true);
 
-                    if(arg1 == ui->username->text())
+                    if(ccnt == icnt)
                     {
                         if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
                         ui->usernamepipe->show();
@@ -8448,13 +8367,13 @@ void systemback::on_username_textChanged(const QStr &arg1)
                 }
                 else if(rval == 9)
                 {
-                    if(arg1 == ui->username->text())
+                    if(ccnt == icnt)
                     {
                         if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
                         ui->usernamepipe->show();
                     }
                 }
-                else if(arg1 == ui->username->text() && ! ui->usernameerror->isVisible())
+                else if(ccnt == icnt && ! ui->usernameerror->isVisible())
                     ui->usernameerror->show();
             }
         }
@@ -8463,6 +8382,8 @@ void systemback::on_username_textChanged(const QStr &arg1)
 
 void systemback::on_hostname_textChanged(const QStr &arg1)
 {
+    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+
     if(cpos > -1)
     {
         ui->hostname->setCursorPosition(cpos);
@@ -8487,7 +8408,7 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
         {
             sb::delay(300);
 
-            if(arg1 == ui->hostname->text())
+            if(ccnt == icnt)
             {
                 QFile file("/etc/hostname");
 
@@ -8500,13 +8421,13 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
                     {
                         sb::exec("hostname " % hname, nullptr, true);
 
-                        if(arg1 == ui->hostname->text())
+                        if(ccnt == icnt)
                         {
                             if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
                             ui->hostnamepipe->show();
                         }
                     }
-                    else if(arg1 == ui->hostname->text() && ! ui->hostnameerror->isVisible())
+                    else if(ccnt == icnt && ! ui->hostnameerror->isVisible())
                         ui->hostnameerror->show();
                 }
                 else if(! ui->hostnameerror->isVisible())
@@ -9214,10 +9135,6 @@ start:
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
             if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
     }
-    else if(sb::isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
-    {
-        if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
-    }
     else
     {
         sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", "#!/bin/sh\nif [ \"$BOOT\" = live ] && [ ! -e /root/etc/fstab ]\nthen touch /root/etc/fstab\nfi\n");
@@ -9240,10 +9157,6 @@ start:
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
             if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
     }
-    else if(sb::isfile("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility"))
-    {
-        if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/live-bottom/30accessibility", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
-    }
     else if(! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab"))
         goto error;
 
@@ -9261,7 +9174,7 @@ start:
         if(! sb::copy("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) goto error;
     }
     else if(! sb::copy("/usr/lib/ISOLINUX/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/modules/bios/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/libcom32.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libcom32.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/libutil.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libutil.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/ldlinux.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/ldlinux.c32"))
-            goto error;
+        goto error;
 
     if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png") || ! sb::lvprpr(ui->userdatainclude->isChecked())) goto error;
     QStr ide;

@@ -7268,6 +7268,9 @@
      <property name="echoMode">
       <enum>QLineEdit::Password</enum>
      </property>
+     <property name="clearButtonEnabled">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QLabel" name="adminpasswordpipe">
      <property name="geometry">

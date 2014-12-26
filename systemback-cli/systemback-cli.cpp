@@ -310,7 +310,7 @@ uchar systemback::clistart()
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
 
-    for(;;)
+    forever
         switch(getch()) {
         case '1':
             if(! pointdelete()) return 13;
@@ -683,7 +683,7 @@ uchar systemback::restore()
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
 
-    for(;;)
+    forever
         switch(getch()) {
         case '\n':
             if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, false, true);

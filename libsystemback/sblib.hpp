@@ -75,7 +75,8 @@ public:
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
-    static bool issmfs(cchar *item1,cQStr &item2);
+    static bool issmfs(cchar *item1, cchar *item2);
+    static bool issmfs(cchar *item1, cQStr &item2);
     static bool ilike(short num, cQSIL &lst);
     static bool islnxfs(cQStr &path);
     static bool islink(cQStr &path);
@@ -296,6 +297,12 @@ inline bool sb::access(cQStr &path, cuchar mode)
     default:
         return false;
     }
+}
+
+inline bool sb::issmfs(cchar *item1, cchar *item2)
+{
+    struct stat istat[2];
+    return ilike(-1, QSIL() << stat(item1, &istat[0]) << stat(item2, &istat[1])) ? false : istat[0].st_dev == istat[1].st_dev;
 }
 
 inline bool sb::isnum(cQStr &txt)

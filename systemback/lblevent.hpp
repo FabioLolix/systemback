@@ -29,7 +29,7 @@ class lblevent : public QLabel
 
 public:
     explicit lblevent(QWidget *parent = nullptr) : QLabel(parent) {}
-    short MouseX, MouseY;
+    static ushort MouseX, MouseY;
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *ev);

@@ -62,7 +62,7 @@ private:
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash;
     short wgeom[6], cpos;
-    uchar busycnt, dialog, ppipe, sfctr;
+    uchar busycnt, dialog, ppipe, sfctr, icnt;
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr guname();
@@ -94,17 +94,17 @@ private slots:
     void sbttnpressed();
     void wmaxreleased();
     void wminreleased();
-    void chssreleased();
     void hmpg1pressed();
     void hmpg2pressed();
     void emailpressed();
     void wmaxpressed();
     void wminpressed();
+    void chsreleased();
     void dialogtimer();
-    void chsspressed();
     void dntreleased();
     void printdbgmsg();
     void foutpsttngs();
+    void chspressed();
     void wcreleased();
     void dntpressed();
     void finpsttngs();
@@ -115,8 +115,6 @@ private slots:
     void wminenter();
     void wminleave();
     void wcpressed();
-    void chssenter();
-    void chssleave();
     void xcldenter();
     void xcldleave();
     void sbttnmove();
@@ -125,16 +123,15 @@ private slots:
     void emailmove();
     void interrupt();
     void umntleave();
+    void chsenter();
+    void chsleave();
     void unitimer();
     void wpressed();
     void wdblclck();
-    void chssmove();
     void cpyenter();
     void cpyleave();
-    void xcldmove();
     void wcenter();
     void wcleave();
-    void cpymove();
     void dntmove();
     void foutp10();
     void foutp11();
@@ -156,6 +153,7 @@ private slots:
     void center();
     void cleave();
     void wmove();
+    void rmove();
 
     void on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI *previous);
     void on_livedevices_currentItemChanged(QTblWI *current, QTblWI *previous);

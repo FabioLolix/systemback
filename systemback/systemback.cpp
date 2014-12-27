@@ -7826,7 +7826,7 @@ void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
 
     if(ui->mountpoint->isEnabled())
     {
-        if(! arg1.isEmpty() && (! sb::like(arg1, {"_/*", "_S_", "_SW_", "_SWA_", "_SWAP_"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
+        if(! arg1.isEmpty() && (! sb::like(arg1, {"_/*", "_S_", "_SW_", "_SWA_", "_SWAP_"}) || sb::like(arg1, {"* *", "*//*"})))
             ui->mountpoint->setCurrentText(sb::left(arg1, -1));
         else
         {
@@ -7930,7 +7930,7 @@ void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
 {
     uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
 
-    if(! arg1.isEmpty() && (! sb::like(arg1, {"_/_", "_/m_", "_/mn_", "_/mnt_", "_/mnt/*"}) || sb::like(arg1, {"* *", "*'*", "*\"*", "*//*"})))
+    if(! arg1.isEmpty() && (! sb::like(arg1, {"_/_", "_/m_", "_/mn_", "_/mnt_", "_/mnt/*"}) || sb::like(arg1, {"* *", "*//*"})))
         ui->repairmountpoint->setCurrentText(sb::left(arg1, -1));
     else if(! arg1.startsWith("/mnt") || arg1.endsWith('/') || (arg1.length() > 5 && sb::issmfs("/", "/mnt")) || sb::mcheck(arg1 % '/'))
     {
@@ -8027,15 +8027,18 @@ void systemback::on_livename_textChanged(const QStr &arg1)
         cpos = -1;
     }
 
-    if(sb::like(arg1, {"* *", "*'*", "*\"*"}) || arg1.toLower().endsWith(".iso"))
+    if(sb::like(arg1, {"* *", "*/*"}) || arg1.toLower().endsWith(".iso"))
     {
         cpos = ui->livename->cursorPosition() - 1;
         ui->livename->setText(QStr(arg1).replace(cpos, 1, nullptr));
     }
     else
     {
-        if(ui->livenamepipe->isVisible()) ui->livenamepipe->hide();
-        if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
+        if(ui->livenamepipe->isVisible())
+        {
+            ui->livenamepipe->hide();
+            if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
+        }
 
         if(arg1 == "auto")
         {
@@ -8052,7 +8055,7 @@ void systemback::on_livename_textChanged(const QStr &arg1)
                 ui->livename->setFont(font);
             }
 
-            if(arg1.isEmpty() || arg1.length() > 32)
+            if(arg1.isEmpty() || arg1.toUtf8().length() > 32)
             {
                 if(! ui->livenameerror->isVisible()) ui->livenameerror->show();
             }
@@ -8282,30 +8285,48 @@ void systemback::on_fullname_textChanged(const QStr &arg1)
 
     if(arg1.isEmpty())
     {
-        if(ui->fullnamepipe->isVisible()) ui->fullnamepipe->hide();
-        if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
-    }
-    else if(sb::like(arg1, {"_ *", "*  *", "_-*", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
-    {
-        cpos = ui->fullname->cursorPosition() - 1;
-        ui->fullname->setText(QStr(arg1).replace(cpos, 1, nullptr));
-    }
-    else if(arg1.at(0).isLower())
-    {
-        cpos = ui->fullname->cursorPosition();
-        ui->fullname->setText(arg1.at(0).toUpper() % sb::right(arg1, -1));
+        if(ui->fullnamepipe->isVisible())
+            ui->fullnamepipe->hide();
+        else if(ui->installnext->isEnabled())
+            ui->installnext->setDisabled(true);
     }
     else
     {
-        for(cQStr &word : arg1.split(' '))
-            if(! word.isEmpty() && word.at(0).isLower())
-            {
-                cpos = ui->fullname->cursorPosition();
-                ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
-                return;
-            }
+        bool ok(true);
 
-        if(! ui->fullnamepipe->isVisible()) ui->fullnamepipe->show();
+        for(uchar a(0) ; a < arg1.length() ; ++a)
+        {
+            cQChar &ctr(arg1.at(a));
+
+            if(ctr == ':' || ctr == ',' || ctr == '=' || ! (ctr.isLetterOrNumber() || ctr.isPrint()))
+            {
+                ok = false;
+                break;
+            }
+        }
+
+        if(! ok || sb::like(arg1, {"_ *", "*  *", "*ß*"}))
+        {
+            cpos = ui->fullname->cursorPosition() - 1;
+            ui->fullname->setText(QStr(arg1).replace(cpos, 1, nullptr));
+        }
+        else if(arg1.at(0).isLower())
+        {
+            cpos = ui->fullname->cursorPosition();
+            ui->fullname->setText(arg1.at(0).toUpper() % sb::right(arg1, -1));
+        }
+        else
+        {
+            for(cQStr &word : arg1.split(' '))
+                if(! word.isEmpty() && word.at(0).isLower())
+                {
+                    cpos = ui->fullname->cursorPosition();
+                    ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
+                    return;
+                }
+
+            if(! ui->fullnamepipe->isVisible()) ui->fullnamepipe->show();
+        }
     }
 }
 
@@ -8316,131 +8337,131 @@ void systemback::on_fullname_editingFinished()
 
 void systemback::on_username_textChanged(const QStr &arg1)
 {
-    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
-
     if(cpos > -1)
     {
         ui->username->setCursorPosition(cpos);
         cpos = -1;
     }
 
-    if(sb::like(arg1, {"_-*", "* *", "*/*", "*:*", "*#*", "*,*", "*'*", "*\"*"}))
+    if(arg1.isEmpty())
     {
-        cpos = ui->username->cursorPosition() - 1;
-        ui->username->setText(QStr(arg1).replace(cpos, 1, nullptr));
+        if(ui->usernameerror->isVisible())
+            ui->usernameerror->hide();
+        else if(ui->usernamepipe->isVisible())
+        {
+            ui->usernamepipe->hide();
+            if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+        }
+    }
+    else if(arg1 == "root")
+    {
+        if(! ui->usernameerror->isVisible())
+        {
+            if(ui->usernamepipe->isVisible())
+            {
+                ui->usernamepipe->hide();
+                if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+            }
+
+            ui->usernameerror->show();
+        }
     }
     else if(arg1 != arg1.toLower())
-    {
-        cpos = ui->username->cursorPosition();
         ui->username->setText(arg1.toLower());
-    }
     else
     {
-        if(ui->usernamepipe->isVisible()) ui->usernamepipe->hide();
-        if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+        bool ok(true);
 
-        if(arg1.isEmpty())
+        for(uchar a(0) ; a < arg1.length() ; ++a)
         {
-            if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
-        }
-        else if(arg1 == "root")
-        {
-            if(! ui->usernameerror->isVisible()) ui->usernameerror->show();
-        }
-        else
-        {
-            sb::delay(300);
+            cQChar &ctr(arg1.at(a));
 
-            if(ccnt == icnt)
+            if((ctr < 'a' || ctr > 'z') && ctr != '.' && ctr != '_' && ctr != '@' && (a == 0 || (! ctr.isDigit() && ctr != '-' && ctr != '$')))
             {
-                uchar rval(sb::exec("useradd " % arg1, nullptr, true));
-
-                if(rval == 0)
-                {
-                    sb::exec("userdel " % arg1, nullptr, true);
-
-                    if(ccnt == icnt)
-                    {
-                        if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
-                        ui->usernamepipe->show();
-                    }
-                }
-                else if(rval == 9)
-                {
-                    if(ccnt == icnt)
-                    {
-                        if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
-                        ui->usernamepipe->show();
-                    }
-                }
-                else if(ccnt == icnt && ! ui->usernameerror->isVisible())
-                    ui->usernameerror->show();
+                ok = false;
+                break;
             }
+        }
+
+        if(! ok || (arg1.contains('$') && (arg1.count('$') > 1 || ! arg1.endsWith('$'))))
+        {
+            cpos = ui->username->cursorPosition() - 1;
+            ui->username->setText(QStr(arg1).replace(cpos, 1, nullptr));
+        }
+        else if(! ui->usernamepipe->isVisible())
+        {
+            if(ui->usernameerror->isVisible()) ui->usernameerror->setVisible(false);
+            ui->usernamepipe->setVisible(true);
         }
     }
 }
 
 void systemback::on_hostname_textChanged(const QStr &arg1)
 {
-    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
-
     if(cpos > -1)
     {
         ui->hostname->setCursorPosition(cpos);
         cpos = -1;
     }
 
-    if(arg1.contains(' '))
+    if(arg1.isEmpty())
     {
-        cpos = ui->hostname->cursorPosition() - 1;
-        ui->hostname->setText(QStr(arg1).replace(cpos, 1, nullptr));
+        if(ui->hostnameerror ->isVisible())
+            ui->hostnameerror->hide();
+        else if(ui->hostnamepipe->isVisible())
+        {
+            ui->hostnamepipe->hide();
+            if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+        }
+    }
+    else if(arg1.length() > 1 && sb::like(arg1, {"*._", "*-_"}) && ! sb::like(arg1, {"*..*", "*--*", "*.-*", "*-.*"}))
+    {
+        if(! ui->hostnameerror->isVisible())
+        {
+            if(ui->hostnamepipe->isVisible())
+            {
+                ui->hostnamepipe->hide();
+                if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+            }
+
+            ui->hostnameerror->show();
+        }
     }
     else
     {
-        if(ui->hostnamepipe->isVisible()) ui->hostnamepipe->hide();
-        if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+        bool ok(true);
 
-        if(arg1.isEmpty())
+        for(uchar a(0) ; a < arg1.length() ; ++a)
         {
-            if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
-        }
-        else
-        {
-            sb::delay(300);
+            cQChar &ctr(arg1.at(a));
 
-            if(ccnt == icnt)
+            if((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! ctr.isDigit() && (a == 0 || (ctr != '-' && ctr != '.')))
             {
-                QFile file("/etc/hostname");
-
-                if(file.open(QIODevice::ReadOnly))
-                {
-                    QStr hname(file.readLine().trimmed());
-                    file.close();
-
-                    if(sb::exec("hostname " % arg1, nullptr, true) == 0)
-                    {
-                        sb::exec("hostname " % hname, nullptr, true);
-
-                        if(ccnt == icnt)
-                        {
-                            if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
-                            ui->hostnamepipe->show();
-                        }
-                    }
-                    else if(ccnt == icnt && ! ui->hostnameerror->isVisible())
-                        ui->hostnameerror->show();
-                }
-                else if(! ui->hostnameerror->isVisible())
-                    ui->hostnameerror->show();
+                ok = false;
+                break;
             }
+        }
+
+        if(! ok || (arg1.length() > 1 && sb::like(arg1, {"*..*", "*--*", "*.-*", "*-.*"})))
+        {
+            cpos = ui->hostname->cursorPosition() - 1;
+            ui->hostname->setText(QStr(arg1).replace(cpos, 1, nullptr));
+        }
+        else if(! ui->hostnamepipe->isVisible())
+        {
+            if(ui->hostnameerror->isVisible()) ui->hostnameerror->setVisible(false);
+            ui->hostnamepipe->setVisible(true);
         }
     }
 }
 
 void systemback::on_password1_textChanged(const QStr &arg1)
 {
-    if(ui->passwordpipe->isVisible()) ui->passwordpipe->hide();
-    if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+    if(ui->passwordpipe->isVisible())
+    {
+        ui->passwordpipe->hide();
+        if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+    }
 
     if(arg1.isEmpty())
     {
@@ -8473,8 +8494,11 @@ void systemback::on_password2_textChanged()
 
 void systemback::on_rootpassword1_textChanged(const QStr &arg1)
 {
-    if(ui->rootpasswordpipe->isVisible()) ui->rootpasswordpipe->hide();
-    if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+    if(ui->rootpasswordpipe->isVisible())
+    {
+        ui->rootpasswordpipe->hide();
+        if(ui->installnext->isEnabled()) ui->installnext->setDisabled(true);
+    }
 
     if(arg1.isEmpty())
     {

@@ -2870,6 +2870,84 @@ start:
                 nfile.clear();
             }
         }
+
+        QStr ddm(sb::isfile("/.sbsystemcopy/etc/X11/default-display-manager") ? sb::fload("/.sbsystemcopy/etc/X11/default-display-manager").trimmed() : nullptr);
+
+        if(sb::like(ddm, {"*lightdm_", "*kdm_"}))
+        {
+            QStr fpath("/.sbsystemcopy/etc/"), vrbl;
+
+            if(ddm.endsWith("lightdm"))
+            {
+                fpath.append("lightdm/lightdm.conf");
+                vrbl = "autologin-user=";
+            }
+            else
+            {
+                fpath.append("kde4/kdm/kdmrc");
+                vrbl = "AutoLoginUser=";
+            }
+
+            if(sb::isfile(fpath))
+            {
+                QFile file(fpath);
+                if(! file.open(QIODevice::ReadOnly)) goto error;
+                bool mdfd(false);
+
+                while(! file.atEnd())
+                {
+                    QStr nline(file.readLine().trimmed());
+
+                    if(nline.startsWith(vrbl))
+                    {
+                        if(nline.endsWith('='))
+                            break;
+                        else
+                        {
+                            nline = vrbl % ui->username->text();
+                            mdfd = true;
+                        }
+                    }
+
+                    nfile.append(nline % '\n');
+                    if(intrrpt) goto exit;
+                }
+
+                if(mdfd && ! sb::crtfile(fpath, nfile)) goto error;
+            }
+        }
+        else if(sb::like(ddm, {"*gdm3_", "*mdm_"}))
+        {
+            QStr fpath(ddm.endsWith("gdm3") ? "/.sbsystemcopy/etc/gdm3/daemon.conf" : "/.sbsystemcopy/etc/mdm/mdm.conf");
+
+            if(sb::isfile(fpath))
+            {
+                QFile file(fpath);
+                if(! file.open(QIODevice::ReadOnly)) goto error;
+                bool mdfd(false);
+
+                while(! file.atEnd())
+                {
+                    QStr nline(file.readLine().trimmed());
+
+                    if(sb::like(nline, {"_AutomaticLogin=*", "_TimedLogin=*"}))
+                        if(! nline.endsWith('='))
+                        {
+                            nline = sb::left(nline, sb::instr(nline, "=")) % ui->username->text();
+                            if(! mdfd) mdfd = true;
+                        }
+
+                    nfile.append(nline % '\n');
+                    if(intrrpt) goto exit;
+                }
+
+                if(mdfd && ! sb::crtfile(fpath, nfile)) goto error;
+            }
+        }
+
+        QBA mid(sb::rndstr(16).toUtf8().toHex() % '\n');
+        if(intrrpt) goto exit;
+        if(! sb::crtfile("/.sbsystemcopy/etc/machine-id", mid) || (sb::isdir("/.sbsystemcopy/var/lib/dbus") && ! QFile::setPermissions("/.sbsystemcopy/etc/machine-id", QFile::ReadOwner | QFile::ReadGroup | QFile::ReadOther) && ! sb::crtfile("/.sbsystemcopy/var/lib/dbus/machine-id", mid))) goto error;
     }
 
     if(intrrpt) goto exit;

@@ -130,9 +130,10 @@ bool sb::crtfile(cQStr &path, cQStr &txt)
 {
     if(! ilike(stype(path), {Notexist, Isfile}) || ! isdir(left(path, rinstr(path, "/") - 1))) return false;
     QFile file(path);
+    bool exst(file.exists());
     if(! file.open(QFile::WriteOnly | QFile::Truncate) || file.write(txt.toUtf8()) == -1) return false;
     file.flush();
-    return true;
+    return exst || file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther);
 }
 
 bool sb::islnxfs(cQStr &dirpath)

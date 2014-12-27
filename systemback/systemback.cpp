@@ -793,7 +793,8 @@ void systemback::unitimer()
                 ui->systembackversion->setText(sb::appver());
                 ui->repairmountpoint->addItems({nullptr, "/mnt", "/mnt/home", "/mnt/boot"});
 #ifdef __amd64__
-                if(! sb::isdir("/sys/firmware/efi"))
+                if(sb::isdir("/sys/firmware/efi")) goto isefi;
+
                 {
                     QStr ckernel(ckname());
 
@@ -819,6 +820,7 @@ void systemback::unitimer()
                     }
                 }
 
+                goto noefi;
             isefi:
                 grub.name = "efi-amd64-bin";
                 grub.isEFI = true;

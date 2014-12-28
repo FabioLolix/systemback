@@ -143,7 +143,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
         if(! sb::like(sb::wsclng, {"_auto_", "_1_"}) || fontInfo().pixelSize() != 15)
         {
             sfctr = sb::wsclng == "auto" ? fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal : sb::wsclng == "2" ? Max : sb::wsclng == "1.5" ? High : Normal;
-            while(sfctr > Normal && (qApp->desktop()->width() - ss(30) < ss(698) || qApp->desktop()->height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
+            while(sfctr > Normal && (qApp->desktop()->screenGeometry().width() - ss(30) < ss(698) || qApp->desktop()->screenGeometry().height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
             font.setPixelSize(ss(15));
             setFont(font);
             font.setPixelSize(ss(27));
@@ -372,8 +372,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             else if(ui->admins->findText(qApp->arguments().value(2)) != -1)
                 ui->admins->setCurrentIndex(ui->admins->findText(qApp->arguments().value(2)));
 
-            wgeom[0] = qApp->desktop()->width() / 2 - ss(188);
-            wgeom[1] = qApp->desktop()->height() / 2 - ss(112);
+            wgeom[0] = qApp->desktop()->screenGeometry().width() / 2 - ss(188);
+            wgeom[1] = qApp->desktop()->screenGeometry().height() / 2 - ss(112);
             wgeom[2] = ss(376);
             wgeom[3] = ss(224);
             setFixedSize(wgeom[2], wgeom[3]);
@@ -401,22 +401,22 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                 }
                 else if(sb::schdlr[0] == "center")
                 {
-                    wgeom[0] = qApp->desktop()->width() / 2 - ss(201);
-                    wgeom[1] = qApp->desktop()->height() / 2 - ss(80);
+                    wgeom[0] = qApp->desktop()->screenGeometry().width() / 2 - ss(201);
+                    wgeom[1] = qApp->desktop()->screenGeometry().height() / 2 - ss(80);
                 }
                 else if(sb::schdlr[0] == "bottomleft")
                 {
                     wgeom[0] = ss(30);
-                    wgeom[1] = qApp->desktop()->height() - ss(191);
+                    wgeom[1] = qApp->desktop()->screenGeometry().height() - ss(191);
                 }
                 else if(sb::schdlr[0] == "bottomright")
                 {
-                    wgeom[0] = qApp->desktop()->width() - ss(432);
-                    wgeom[1] = qApp->desktop()->height() - ss(191);
+                    wgeom[0] = qApp->desktop()->screenGeometry().width() - ss(432);
+                    wgeom[1] = qApp->desktop()->screenGeometry().height() - ss(191);
                 }
                 else
                 {
-                    wgeom[0] = qApp->desktop()->width() - ss(432);
+                    wgeom[0] = qApp->desktop()->screenGeometry().width() - ss(432);
                     wgeom[1] = ss(30);
                 }
 
@@ -432,8 +432,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             else
             {
                 ui->schedulerpanel->hide();
-                wgeom[0] = qApp->desktop()->width() / 2 - ss(349);
-                wgeom[1] = qApp->desktop()->height() / 2 - ss(232);
+                wgeom[0] = qApp->desktop()->screenGeometry().width() / 2 - ss(349);
+                wgeom[1] = qApp->desktop()->screenGeometry().height() / 2 - ss(232);
                 wgeom[2] = ss(698);
                 wgeom[3] = ss(465);
                 setFixedSize(wgeom[2], wgeom[3]);
@@ -3535,8 +3535,8 @@ void systemback::dialogopen()
         else
         {
             if(! sb::ilike(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
-            wgeom[0] = qApp->desktop()->width() / 2 - ss(253);
-            wgeom[1] = qApp->desktop()->height() / 2 - ss(100);
+            wgeom[0] = qApp->desktop()->screenGeometry().width() / 2 - ss(253);
+            wgeom[1] = qApp->desktop()->screenGeometry().height() / 2 - ss(100);
             wgeom[2] = ui->dialogpanel->width();
             wgeom[3] = ui->dialogpanel->height();
             setFixedSize(wgeom[2], wgeom[3]);

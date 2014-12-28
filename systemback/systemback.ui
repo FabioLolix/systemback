@@ -163,7 +163,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>New user name to login:</string>
+       <string>New username to login:</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_11">

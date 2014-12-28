@@ -114,7 +114,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
     if(getuid() + getgid() > 0)
         dialog = 17;
-    else if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "schedule")
+    else if(qApp->arguments().count() == 2 && qApp->arguments().value(1) == "schedule")
     {
         sstart = true;
         dialog = 0;
@@ -394,22 +394,22 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                 ui->subschedulerpanel->setBackgroundRole(QPalette::Background);
                 ui->function4->setText("Systemback " % tr("scheduler"));
 
-                if(qApp->arguments().value(2) == "topleft")
+                if(sb::schdlr[0] == "topleft")
                 {
                     wgeom[0] = ss(30);
                     wgeom[1] = ss(30);
                 }
-                else if(qApp->arguments().value(2) == "center")
+                else if(sb::schdlr[0] == "center")
                 {
                     wgeom[0] = qApp->desktop()->width() / 2 - ss(201);
                     wgeom[1] = qApp->desktop()->height() / 2 - ss(80);
                 }
-                else if(qApp->arguments().value(2) == "bottomleft")
+                else if(sb::schdlr[0] == "bottomleft")
                 {
                     wgeom[0] = ss(30);
                     wgeom[1] = qApp->desktop()->height() - ss(191);
                 }
-                else if(qApp->arguments().value(2) == "bottomright")
+                else if(sb::schdlr[0] == "bottomright")
                 {
                     wgeom[0] = qApp->desktop()->width() - ss(432);
                     wgeom[1] = qApp->desktop()->height() - ss(191);
@@ -1050,46 +1050,7 @@ void systemback::unitimer()
                     }
                 }
                 else if(ui->repairpanel->isVisible())
-                {
-                    if(! sb::issmfs("/", "/mnt"))
-                    {
-                        if(ui->grubrepair->isChecked())
-                        {
-                            if(sb::execsrch("update-grub2", "/mnt") && sb::isfile("/mnt/var/lib/dpkg/info/grub-" % grub.name % ".list"))
-                            {
-                                if(ui->grubreinstallrepairdisable->isVisible())
-                                {
-                                    ui->grubreinstallrepairdisable->hide();
-                                    ui->grubreinstallrepair->show();
-                                }
-
-                                if(! ui->repairnext->isEnabled()) ui->repairnext->setEnabled(true);
-                            }
-                            else
-                            {
-                                if(ui->grubreinstallrepair->isVisible())
-                                {
-                                    ui->grubreinstallrepair->hide();
-                                    ui->grubreinstallrepairdisable->show();
-                                }
-
-                                if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
-                            }
-                        }
-                        else if(! ui->repairnext->isEnabled())
-                            ui->repairnext->setEnabled(true);
-                    }
-                    else
-                    {
-                        if(ui->grubrepair->isChecked() && ui->grubreinstallrepair->isVisible())
-                        {
-                            ui->grubreinstallrepair->hide();
-                            ui->grubreinstallrepairdisable->show();
-                        }
-
-                        if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
-                    }
-                }
+                    rmntcheck();
             }
 
             if(! prun.isEmpty()) prun.clear();
@@ -1251,6 +1212,39 @@ bool systemback::pisrng(cQStr &pname, ushort *pid)
 
     closedir(dir);
     return false;
+}
+
+QStr systemback::gdetect(cQStr rdir)
+{
+    QStr mnts(sb::fload("/proc/self/mounts", true));
+    QTS in(&mnts, QIODevice::ReadOnly);
+
+    while(! in.atEnd())
+    {
+        QStr cline(in.readLine());
+
+        if(sb::like(cline, {"* " % rdir % " *", "* " % rdir % (rdir.endsWith('/') ? nullptr : "/") % "boot *"}))
+        {
+            if(sb::like(cline, {"_/dev/sd*", "_/dev/hd*"}))
+                return sb::left(cline, 8);
+            else if(cline.startsWith("/dev/mmcblk"))
+                return sb::left(cline, 12);
+            else if(cline.startsWith("/dev/disk/by-uuid"))
+            {
+                QStr uid(sb::right(sb::left(cline, sb::instr(cline, " ") - 1), -18));
+
+                if(sb::islink("/dev/disk/by-uuid/" % uid))
+                {
+                    QStr dev(QFile("/dev/disk/by-uuid/" % uid).readLink());
+                    return dev.contains("mmc") ? sb::left(dev, 12) : sb::left(dev, 8);
+                }
+            }
+
+            break;
+        }
+    }
+
+    return nullptr;
 }
 
 void systemback::buttonstimer()
@@ -2230,41 +2224,12 @@ start:
             {
                 sb::exec("update-grub");
                 if(intrrpt) goto exit;
-                uchar rv(0);
 
-                if(ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto")
+                if((! ui->autorestoreoptions->isChecked() && ui->grubreinstallrestore->currentText() != "Auto") || ! fcmp)
                 {
-                    if(! fcmp)
-                    {
-                        QStr gdev;
-
-                        if(! grub.isEFI)
-                        {
-                            QStr mnts(sb::fload("/proc/self/mounts", true));
-                            QTS in(&mnts, QIODevice::ReadOnly);
-
-                            while(! in.atEnd())
-                            {
-                                QStr cline(in.readLine());
-
-                                if(sb::like(cline, {"* / *", "* /boot *"}))
-                                {
-                                    gdev = sb::left(cline, 8);
-                                    break;
-                                }
-                            }
-
-                            if(intrrpt) goto exit;
-                        }
-
-                        rv = sb::exec("grub-install --force " % gdev);
-                    }
+                    if(sb::exec("grub-install --force " % (ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect() : grub.isEFI ? nullptr : ui->grubreinstallrestore->currentText())) > 0) dialog = 23;
+                    if(intrrpt) goto exit;
                 }
-                else
-                    rv = sb::exec("grub-install --force " % (grub.isEFI ? nullptr : ui->grubreinstallrestore->currentText()));
-
-                if(intrrpt) goto exit;
-                if(rv > 0) dialog = 23;
             }
 
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
@@ -2319,30 +2284,8 @@ start:
 
     if(mthd == 0)
     {
-        QStr gdev;
-
-        if(ui->grubreinstallrepair->currentText() == "Auto")
-        {
-            QStr mnts(sb::fload("/proc/self/mounts", true));
-            QTS in(&mnts, QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                QStr cline(in.readLine());
-
-                if(sb::like(cline, {"* /mnt *", "* /mnt/boot *"}))
-                {
-                    gdev = sb::left(cline, 8);
-                    break;
-                }
-            }
-        }
-        else if(! grub.isEFI)
-            gdev = ui->grubreinstallrepair->currentText();
-
-        if(intrrpt) goto exit;
         for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
-        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % gdev % "\"") == 0 ? 32 : 37;
+        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (ui->grubreinstallrepair->currentText() == "Auto" ? gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % "\"") == 0 ? 32 : 37;
         for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
         if(intrrpt) goto exit;
     }
@@ -2393,36 +2336,10 @@ start:
         {
             if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel) && (! ui->grubreinstallrepair->isEnabled() || ui->grubreinstallrepair->currentText() != tr("Disabled")))
             {
-                QStr gdev;
-
-                if(ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")
-                {
-                    if(fcmp)
-                        gdev = '-';
-                    else if(! grub.isEFI)
-                    {
-                        QStr mnts(sb::fload("/proc/self/mounts", true));
-                        QTS in(&mnts, QIODevice::ReadOnly);
-
-                        while(! in.atEnd())
-                        {
-                            QStr cline(in.readLine());
-
-                            if(sb::like(cline, {"* /mnt *", "* /mnt/boot *"}))
-                            {
-                                gdev = sb::left(cline, 8);
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if(! grub.isEFI)
-                    gdev = ui->grubreinstallrepair->currentText();
-
-                if(intrrpt) goto exit;
                 for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
                 sb::exec("chroot /mnt update-grub");
-                if(gdev != "-" && sb::exec("chroot /mnt grub-install --force " % gdev) > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
+                if(intrrpt) goto exit;
+                if(((! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto") || ! fcmp) && sb::exec("chroot /mnt grub-install --force " % (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText())) > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
                 for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
                 if(intrrpt) goto exit;
             }
@@ -3049,31 +2966,9 @@ start:
     if(ui->grubinstallcopy->isVisibleTo(ui->copypanel) && ui->grubinstallcopy->currentText() != tr("Disabled"))
     {
         if(intrrpt) goto exit;
-        QStr gdev;
-
-        if(ui->grubinstallcopy->currentText() == "Auto")
-        {
-            QStr mnts(sb::fload("/proc/self/mounts", true));
-            QTS in(&mnts, QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                QStr cline(in.readLine());
-
-                if(sb::like(cline, {"* /.sbsystemcopy *", "* /.sbsystemcopy/boot *"}))
-                {
-                    gdev = sb::left(cline, 8);
-                    break;
-                }
-            }
-        }
-        else if(! grub.isEFI)
-            gdev = ui->grubinstallcopy->currentText();
-
-        if(intrrpt) goto exit;
         for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath);
 
-        if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % gdev % "\"") > 0)
+        if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % (ui->grubinstallcopy->currentText() == "Auto" ? gdetect("/.sbsystemcopy") : grub.isEFI ? nullptr : ui->grubinstallcopy->currentText()) % "\"") > 0)
         {
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 22 : 34;
             goto error;
@@ -5398,7 +5293,7 @@ void systemback::on_repairmenu_clicked()
             ui->fullrepair->setEnabled(true);
         }
 
-        on_systemrepair_clicked();
+        rmntcheck();
     }
     else if(ui->systemrepair->isEnabled())
     {
@@ -7364,46 +7259,46 @@ void systemback::on_livedevices_currentItemChanged(QTblWI *current, QTblWI *prev
     }
 }
 
-void systemback::on_systemrepair_clicked()
+void systemback::rmntcheck()
 {
-    if(ui->grubrepair->isChecked())
+    if(sb::issmfs("/", "/mnt"))
     {
-        if(ui->autorepairoptions->isEnabled()) ui->autorepairoptions->setDisabled(true);
-        if(ui->skipfstabrepair->isEnabled()) ui->skipfstabrepair->setDisabled(true);
-
-        if(! ui->grubreinstallrepair->isEnabled())
+        if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
         {
-            ui->grubreinstallrepair->setEnabled(true);
-            ui->grubreinstallrepairdisable->setEnabled(true);
+            ui->grubreinstallrepair->hide();
+            ui->grubreinstallrepairdisable->show();
         }
+
+        if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
     }
     else
     {
-        if(! ui->autorepairoptions->isEnabled())
+        if(ui->grubrepair->isChecked())
         {
-            ui->autorepairoptions->setEnabled(true);
-            on_autorepairoptions_clicked(ui->autorepairoptions->isChecked());
-        }
-
-        if(ppipe == 1)
-        {
-            if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+            if(! (grub.isEFI && sb::issmfs("/mnt/boot", "/mnt/boot/efi")) && sb::execsrch("update-grub2", "/mnt") && sb::isfile("/mnt/var/lib/dpkg/info/grub-" % grub.name % ".list"))
             {
-                if(! ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
+                if(ui->grubreinstallrepairdisable->isVisibleTo(ui->repairpanel))
                 {
-                    ui->grubreinstallrepair->show();
                     ui->grubreinstallrepairdisable->hide();
+                    ui->grubreinstallrepair->show();
                 }
+
+                if(! ui->repairnext->isEnabled()) ui->repairnext->setEnabled(true);
             }
-            else if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
+            else
             {
-                ui->grubreinstallrepair->hide();
-                ui->grubreinstallrepairdisable->show();
+                if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
+                {
+                    ui->grubreinstallrepair->hide();
+                    ui->grubreinstallrepairdisable->show();
+                }
+
+                if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
             }
         }
-        else if(pname == tr("Live image"))
+        else
         {
-            if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+            if(! (grub.isEFI && sb::issmfs("/mnt/boot", "/mnt/boot/efi")) && ((ppipe == 1 && sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list")) || (ppipe > 1 && sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))))
             {
                 if(ui->grubreinstallrepairdisable->isVisibleTo(ui->repairpanel))
                 {
@@ -7416,10 +7311,37 @@ void systemback::on_systemrepair_clicked()
                 ui->grubreinstallrepair->hide();
                 ui->grubreinstallrepairdisable->show();
             }
+
+            if(! ui->repairnext->isEnabled()) ui->repairnext->setEnabled(true);
+        }
+    }
+}
+
+void systemback::on_systemrepair_clicked()
+{
+    if(ui->grubrepair->isChecked())
+    {
+        if(ui->skipfstabrepair->isEnabled()) ui->skipfstabrepair->setDisabled(true);
+
+        if(ui->autorepairoptions->isEnabled())
+        {
+            ui->autorepairoptions->setDisabled(true);
+            ui->grubreinstallrepair->setEnabled(true);
+            ui->grubreinstallrepairdisable->setEnabled(true);
+        }
+    }
+    else
+    {
+        if(! ui->autorepairoptions->isEnabled())
+        {
+            ui->autorepairoptions->setEnabled(true);
+            on_autorepairoptions_clicked(ui->autorepairoptions->isChecked());
         }
 
         if(ui->grubreinstallrepair->findText(tr("Disabled")) == -1) ui->grubreinstallrepair->addItem(tr("Disabled"));
     }
+
+    rmntcheck();
 }
 
 void systemback::on_fullrepair_clicked()
@@ -7430,6 +7352,7 @@ void systemback::on_fullrepair_clicked()
 void systemback::on_grubrepair_clicked()
 {
     on_systemrepair_clicked();
+    if(ui->grubreinstallrepair->currentText() == tr("Disabled")) ui->grubreinstallrepair->setCurrentIndex(0);
     ui->grubreinstallrepair->removeItem(ui->grubreinstallrepair->findText(tr("Disabled")));
 }
 
@@ -7998,7 +7921,7 @@ void systemback::on_repairpartitionrefresh_clicked()
     if(grub.isEFI) ui->repairmountpoint->addItem("/mnt/boot/efi");
     ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
     ui->repairmountpoint->setCurrentIndex(1);
-    on_systemrepair_clicked();
+    rmntcheck();
     on_partitionrefresh_clicked();
     on_repairmountpoint_currentTextChanged("/mnt");
     ui->repaircover->hide();
@@ -8081,7 +8004,6 @@ void systemback::on_repairmount_clicked()
             ui->repairmount->setIcon(QIcon(":pictures/error.png"));
         }
 
-        if(ui->grubrepair->isChecked()) on_systemrepair_clicked();
         ui->repaircover->hide();
         busy(false);
 

@@ -65,6 +65,7 @@ private:
     uchar busycnt, dialog, ppipe, sfctr, icnt;
     bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
+    QStr gdetect(cQStr rdir = "/");
     QStr guname();
     QStr ckname();
     ushort ss(ushort size);
@@ -80,6 +81,7 @@ private:
     void systemcopy();
     void dialogopen();
     void livewrite();
+    void rmntcheck();
     void restore();
     void repair();
 

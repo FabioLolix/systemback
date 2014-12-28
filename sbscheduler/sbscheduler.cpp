@@ -104,7 +104,7 @@ start:
             break;
         }
 
-        if(! sb::isfile("/etc/systemback.conf") && cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
+        if(! sb::isfile("/etc/systemback.conf") || cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
         {
             sb::cfgread();
             cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
@@ -137,7 +137,7 @@ start:
 
                 if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
                 {
-                    sb::exec("systemback schedule " % sb::schdlr[0], "XAUTHORITY=" % xauth);
+                    sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
                     QFile::remove(xauth);
                 }
             }

@@ -8029,18 +8029,14 @@ void systemback::on_livename_textChanged(const QStr &arg1)
         cpos = -1;
     }
 
-    if(sb::like(arg1, {"* *", "*/*"}) || arg1.toLower().endsWith(".iso"))
+    if(sb::like(arg1, {"* *", "*/*"}) || arg1.toUtf8().length() > 32 || arg1.toLower().endsWith(".iso"))
     {
         cpos = ui->livename->cursorPosition() - 1;
         ui->livename->setText(QStr(arg1).replace(cpos, 1, nullptr));
     }
     else
     {
-        if(ui->livenamepipe->isVisible())
-        {
-            ui->livenamepipe->hide();
-            if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
-        }
+        if(ui->livenamepipe->isVisible()) ui->livenamepipe->hide();
 
         if(arg1 == "auto")
         {
@@ -8051,13 +8047,15 @@ void systemback::on_livename_textChanged(const QStr &arg1)
         }
         else
         {
+            if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
+
             if(ui->livename->fontInfo().italic())
             {
                 QFont font;
                 ui->livename->setFont(font);
             }
 
-            if(arg1.isEmpty() || arg1.toUtf8().length() > 32)
+            if(arg1.isEmpty())
             {
                 if(! ui->livenameerror->isVisible()) ui->livenameerror->show();
             }

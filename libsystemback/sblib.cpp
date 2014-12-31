@@ -1,6 +1,6 @@
 /********************************************************************
 
- Copyright(C) 2014, Krisztián Kende <nemh@freemail.hu>
+ Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1712,7 +1712,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
     for(cQStr &item : QDir("/").entryList(QDir::Files))
     {
-        if(like(item, {"_initrd.img*", "_vmlinuz*"}) && islink('/' % item))
+        if(like(item, {"_initrd.img_", "_initrd.img.old_", "_vmlinuz_", "_vmlinuz.old_"}) && islink('/' % item))
         {
             for(cQStr &cpname : rplst)
             {
@@ -1988,13 +1988,25 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         for(uchar a(0) ; a < 12 ; ++a) anum += sysitms[a].count('\n');
         Progress = 0;
 
-        for(cQStr &item : QDir(trgt.isEmpty() ? "/" : trgt).entryList(QDir::Files))
+        for(cQStr &item : QDir(trgt.isEmpty() ? "/" : trgt).entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Files | QDir::System))
         {
-            if(like(item, {"_initrd.img*", "_vmlinuz*"}) && ! islink(trgt % '/' % item) && ! exist(srcdir % '/' % item) && ! lcomp(srcdir % '/' % item, trgt % '/' % item)) QFile::remove(trgt % '/' % item);
+            if(like(item, {"_initrd.img_", "_initrd.img.old_", "_vmlinuz_", "_vmlinuz.old_"}))
+            {
+                switch(stype(trgt % '/' % item)) {
+                case Islink:
+                    if(exist(srcdir % '/' % item) && lcomp(srcdir % '/' % item, trgt % '/' % item)) break;
+                case Isfile:
+                    QFile::remove(trgt % '/' % item);
+                    break;
+                case Isdir:
+                    recrmdir(trgt % '/' % item);
+                }
+            }
+
             if(ThrdKill) return false;
         }
 
-        for(cQStr &item : QDir(srcdir).entryList(QDir::Files))
+        for(cQStr &item : QDir(srcdir).entryList(QDir::Files | QDir::System))
         {
             if(like(item, {"_initrd.img*", "_vmlinuz*"}) && ! exist(trgt % '/' % item)) cplink(srcdir % '/' % item, trgt % '/' % item);
             if(ThrdKill) return false;
@@ -2889,15 +2901,27 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         rootitms.clear();
     }
 
-    for(cQStr &item : QDir("/.sbsystemcopy").entryList(QDir::Files))
+    for(cQStr &item : QDir("/.sbsystemcopy").entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Files | QDir::System))
     {
-        if(like(item, {"_initrd.img*", "_vmlinuz*"}) && ! islink("/.sbsystemcopy/" % item) && ! islink(srcdir % '/' % item) && ! lcomp(srcdir % '/' % item, "/.sbsystemcopy/" % item) && ! QFile::remove("/.sbsystemcopy/" % item)) return false;
+        if(like(item, {"_initrd.img_", "_initrd.img.old_", "_vmlinuz_", "_vmlinuz.old_"}))
+        {
+            switch(stype("/.sbsystemcopy/" % item)) {
+            case Islink:
+                if(islink(srcdir % '/' % item) && lcomp(srcdir % '/' % item, "/.sbsystemcopy/" % item)) break;
+            case Isfile:
+                if(! QFile::remove("/.sbsystemcopy/" % item)) return false;
+                break;
+            case Isdir:
+                if(! recrmdir("/.sbsystemcopy/" % item)) return false;
+            }
+        }
+
         if(ThrdKill) return false;
     }
 
-    for(cQStr &item : QDir(srcdir.isEmpty() ? "/" : srcdir).entryList(QDir::Files))
+    for(cQStr &item : QDir(srcdir.isEmpty() ? "/" : srcdir).entryList(QDir::Files | QDir::System))
     {
-        if(like(item, {"_initrd.img*", "_vmlinuz*"}) && islink(srcdir % '/' % item) && ! exist("/.sbsystemcopy/" % item) && ! cplink(srcdir % '/' % item, "/.sbsystemcopy/" % item)) return false;
+        if(like(item, {"_initrd.img_", "_initrd.img.old_", "_vmlinuz_", "_vmlinuz.old_"}) && islink(srcdir % '/' % item) && ! exist("/.sbsystemcopy/" % item) && ! cplink(srcdir % '/' % item, "/.sbsystemcopy/" % item)) return false;
         if(ThrdKill) return false;
     }
 

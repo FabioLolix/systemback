@@ -1,6 +1,6 @@
 /********************************************************************
 
- Copyright(C) 2014, Krisztián Kende <nemh@freemail.hu>
+ Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

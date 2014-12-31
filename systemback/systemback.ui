@@ -2844,7 +2844,7 @@
        </rect>
       </property>
       <property name="text">
-       <string notr="true">(c) 2014, Krisztián Kende</string>
+       <string notr="true">(c) 2015, Krisztián Kende</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -2898,7 +2898,7 @@
        </rect>
       </property>
       <property name="text">
-       <string notr="true">(c) 2014, Krisztián Kende</string>
+       <string notr="true">(c) 2015, Krisztián Kende</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

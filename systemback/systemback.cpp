@@ -660,7 +660,7 @@ void systemback::unitimer()
                         if(ui->languages->currentIndex() == -1)
                         {
                             sb::lang = "auto";
-                            ui->languageoverride->setEnabled(false);
+                            ui->languageoverride->setDisabled(true);
                             if(! cfgupdt) cfgupdt = true;
                         }
                         else
@@ -672,7 +672,7 @@ void systemback::unitimer()
                 }
                 else
                 {
-                    ui->languageoverride->setEnabled(false);
+                    ui->languageoverride->setDisabled(true);
 
                     if(sb::lang != "auto")
                     {
@@ -5692,11 +5692,11 @@ void systemback::on_partitionrefresh2_clicked()
     if(! ui->partitionsettingspanel1->isVisible())
     {
         if(ui->partitionsettingspanel2->isVisible())
-            ui->partitionsettingspanel2->setHidden(true);
+            ui->partitionsettingspanel2->hide();
         else
-            ui->partitionsettingspanel3->setHidden(true);
+            ui->partitionsettingspanel3->hide();
 
-        ui->partitionsettingspanel1->setVisible(true);
+        ui->partitionsettingspanel1->show();
     }
 }
 
@@ -6916,7 +6916,9 @@ void systemback::on_dirchoose_currentItemChanged(QTrWI *current)
         }
         else
         {
-            current->setHidden(true);
+            delete current;
+            ui->dirchoose->setCurrentItem(nullptr);
+            ui->dirchoosecancel->setFocus();
 
             if(ui->dirpath->text() != "/")
             {
@@ -6996,15 +6998,21 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
         {
             delete item;
 
-            if(ui->dirpath->text() != "/")
+            if(ui->dirchoose->currentItem() == item)
             {
-                ui->dirpath->setText("/");
+                ui->dirchoose->setCurrentItem(nullptr);
+                ui->dirchoosecancel->setFocus();
 
-                if(ui->dirpath->styleSheet().isEmpty())
+                if(ui->dirpath->text() != "/")
                 {
-                    ui->dirpath->setStyleSheet("color: red");
-                    ui->dirchooseok->setDisabled(true);
-                    fontcheck(Dpath);
+                    ui->dirpath->setText("/");
+
+                    if(ui->dirpath->styleSheet().isEmpty())
+                    {
+                        ui->dirpath->setStyleSheet("color: red");
+                        ui->dirchooseok->setDisabled(true);
+                        fontcheck(Dpath);
+                    }
                 }
             }
         }
@@ -7097,7 +7105,9 @@ void systemback::on_dirchooseok_clicked()
     }
     else
     {
-        ui->dirchoose->currentItem()->setHidden(true);
+        delete ui->dirchoose->currentItem();
+        ui->dirchoose->setCurrentItem(nullptr);
+        ui->dirchoosecancel->setFocus();
         ui->dirpath->setText("/");
         ui->dirpath->setStyleSheet("color: red");
         ui->dirchooseok->setDisabled(true);
@@ -7204,10 +7214,11 @@ void systemback::on_livelist_currentItemChanged(QLWI *current)
         else
         {
             delete current;
-            if(ui->livelist->currentItem()) ui->livelist->currentItem()->setSelected(false);
+            ui->livelist->setCurrentItem(nullptr);
             if(ui->livedelete->isEnabled()) ui->livedelete->setDisabled(true);
             if(ui->liveconvert->isEnabled()) ui->liveconvert->setDisabled(true);
             if(ui->livewritestart->isEnabled()) ui->livewritestart->setDisabled(true);
+            ui->livecreateback->setFocus();
         }
     }
 }
@@ -7434,11 +7445,11 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
             if(! ui->partitionsettingspanel2->isVisible())
             {
                 if(ui->partitionsettingspanel1->isVisible())
-                    ui->partitionsettingspanel1->setHidden(true);
+                    ui->partitionsettingspanel1->hide();
                 else
-                    ui->partitionsettingspanel3->setHidden(true);
+                    ui->partitionsettingspanel3->hide();
 
-                ui->partitionsettingspanel2->setVisible(true);
+                ui->partitionsettingspanel2->show();
             }
 
             bool mntd(false), mntcheck(false);
@@ -7505,11 +7516,11 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
             if(! ui->partitionsettingspanel3->isVisible())
             {
                 if(ui->partitionsettingspanel1->isVisible())
-                    ui->partitionsettingspanel1->setHidden(true);
+                    ui->partitionsettingspanel1->hide();
                 else
-                    ui->partitionsettingspanel2->setHidden(true);
+                    ui->partitionsettingspanel2->hide();
 
-                ui->partitionsettingspanel3->setVisible(true);
+                ui->partitionsettingspanel3->show();
             }
 
             ui->partitionsize->setMaximum((ui->partitionsettings->item(current->row(), 10)->text().toULongLong() * 10 / 1048576 + 5) / 10);
@@ -7519,11 +7530,11 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
             if(! ui->partitionsettingspanel1->isVisible())
             {
                 if(ui->partitionsettingspanel2->isVisible())
-                    ui->partitionsettingspanel2->setHidden(true);
+                    ui->partitionsettingspanel2->hide();
                 else
-                    ui->partitionsettingspanel3->setHidden(true);
+                    ui->partitionsettingspanel3->hide();
 
-                ui->partitionsettingspanel1->setVisible(true);
+                ui->partitionsettingspanel1->show();
             }
 
             if(ui->partitionsettings->item(current->row(), 3)->text().isEmpty())
@@ -8132,8 +8143,7 @@ void systemback::on_itemslist_currentItemChanged(QTrWI *current)
 
         if(ui->removeitem->isEnabled())
         {
-            ui->excludedlist->currentItem()->setSelected(false);
-            ui->excludedlist->setCurrentRow(-1);
+            ui->itemslist->setCurrentItem(nullptr);
             ui->removeitem->setDisabled(true);
         }
     }
@@ -8147,7 +8157,6 @@ void systemback::on_excludedlist_currentItemChanged(QLWI *current)
 
         if(ui->additem->isEnabled())
         {
-            ui->itemslist->currentItem()->setSelected(false);
             ui->itemslist->setCurrentItem(nullptr);
             ui->additem->setDisabled(true);
         }
@@ -8331,8 +8340,8 @@ void systemback::on_username_textChanged(const QStr &arg1)
         }
         else if(! ui->usernamepipe->isVisible())
         {
-            if(ui->usernameerror->isVisible()) ui->usernameerror->setVisible(false);
-            ui->usernamepipe->setVisible(true);
+            if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
+            ui->usernamepipe->show();
         }
     }
 }
@@ -8390,8 +8399,8 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
         }
         else if(! ui->hostnamepipe->isVisible())
         {
-            if(ui->hostnameerror->isVisible()) ui->hostnameerror->setVisible(false);
-            ui->hostnamepipe->setVisible(true);
+            if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
+            ui->hostnamepipe->show();
         }
     }
 }
@@ -9417,7 +9426,7 @@ void systemback::on_languageoverride_clicked(bool checked)
     else
     {
         sb::lang = "auto";
-        ui->languages->setEnabled(false);
+        ui->languages->setDisabled(true);
     }
 
     if(! cfgupdt) cfgupdt = true;
@@ -9521,7 +9530,7 @@ void systemback::on_schedulerdisable_clicked(bool checked)
     {
         sb::schdlr[1] = "false";
         ui->schedulerusers->setText(nullptr);
-        if(ui->adduser->isEnabled()) ui->adduser->setEnabled(false);
+        if(ui->adduser->isEnabled()) ui->adduser->setDisabled(true);
         if(! cfgupdt) cfgupdt = true;
     }
 
@@ -9540,7 +9549,7 @@ void systemback::on_adduser_clicked()
         }
 
         ui->users->clear();
-        ui->adduser->setEnabled(false);
+        ui->adduser->setDisabled(true);
     }
     else
     {

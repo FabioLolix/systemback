@@ -1897,6 +1897,16 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+     <widget class="QWidget" name="excludecover" native="true">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>5</y>
+        <width>686</width>
+        <height>430</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="schedulepanel" native="true">
      <property name="geometry">

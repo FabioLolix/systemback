@@ -72,6 +72,8 @@ private:
     bool pisrng(cQStr &pname, ushort *pid = nullptr);
     bool minside(cQPoint &pos, cQRect &geom);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
+    void itmxpnd(cQSL &path, QTrWI *item);
+    void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);
     void busy(bool state = true);
     void fontcheck(uchar wdgt);

@@ -571,6 +571,7 @@ void systemback::unitimer()
                 ui->copycover->hide();
                 ui->livecreatecover->hide();
                 ui->repaircover->hide();
+                ui->excludecover->hide();
                 if(sb::schdle[0] == sb::True) ui->schedulerstate->click();
                 if(sb::schdle[5] == sb::True) ui->silentmode->setChecked(true);
                 ui->windowposition->addItems({tr("Top left"), tr("Top right"), tr("Center"), tr("Bottom left"), tr("Bottom right")});
@@ -3942,7 +3943,7 @@ void systemback::keyPressEvent(QKeyEvent *ev)
             else if(ui->repairmountpoint->hasFocus())
                 on_repairpartitionrefresh_clicked();
             else if(ui->itemslist->hasFocus())
-                on_pointexclude_clicked();
+                ilstupdt();
 
             break;
         case Qt::Key_Delete:
@@ -5889,12 +5890,15 @@ void systemback::on_repairback_clicked()
 
 void systemback::on_excludeback_clicked()
 {
-    windowmove(ss(698), ss(465));
-    ui->excludepanel->hide();
-    ui->sbpanel->show();
-    ui->function1->setText("Systemback");
-    ui->functionmenunext->setFocus();
-    repaint();
+    if(! ui->copycover->isVisible())
+    {
+        windowmove(ss(698), ss(465));
+        ui->excludepanel->hide();
+        ui->sbpanel->show();
+        ui->function1->setText("Systemback");
+        ui->functionmenunext->setFocus();
+        repaint();
+    }
 }
 
 void systemback::on_schedulerback_clicked()
@@ -6342,9 +6346,97 @@ void systemback::on_livedevicesrefresh_clicked()
     busy(false);
 }
 
+void systemback::ilstupdt(cQStr &dir)
+{
+    if(dir.isEmpty())
+    {
+        busy();
+
+        if(! ui->excludecover->isVisibleTo(ui->excludepanel))
+        {
+            ui->excludecover->show();
+            if(ui->itemslist->topLevelItemCount() > 0) ui->itemslist->clear();
+            if(ui->additem->isEnabled()) ui->additem->setDisabled(true);
+        }
+
+        ilstupdt("/root");
+        QFile file("/etc/passwd");
+
+        if(file.open(QIODevice::ReadOnly))
+            while(! file.atEnd())
+            {
+                QStr usr(file.readLine().trimmed());
+
+                if(usr.contains(":/home/"))
+                {
+                    usr = sb::left(usr, sb::instr(usr, ":") -1);
+                    if(sb::isdir("/home/" % usr)) ilstupdt("/home/" % usr);
+                }
+            }
+
+        ui->itemslist->sortItems(0, Qt::AscendingOrder);
+        if(ui->excludepanel->isVisible() && ! ui->excludeback->hasFocus()) ui->excludeback->setFocus();
+        ui->excludecover->hide();
+        busy(false);
+    }
+    else
+        for(cQStr &item : QDir(dir).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
+            if(((ui->pointexclude->isChecked() && item.startsWith('.')) || (ui->liveexclude->isChecked() && ! item.startsWith('.'))) && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty())
+            {
+                if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
+                {
+                    QTrWI *twi(new QTrWI);
+                    twi->setText(0, item);
+
+                    if(sb::access(dir % '/' % item) && sb::stype(dir % '/' % item) == sb::Isdir)
+                    {
+                        twi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                        ui->itemslist->addTopLevelItem(twi);
+                        QSL sdlst(QDir(dir % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
+
+                        for(cQStr &sitem : sdlst)
+                            if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                            {
+                                QTrWI *ctwi(new QTrWI);
+                                ctwi->setText(0, sitem);
+                                twi->addChild(ctwi);
+                            }
+                    }
+                    else
+                        ui->itemslist->addTopLevelItem(twi);
+                }
+                else if(sb::access(dir % '/' % item))
+                {
+                    if(sb::stype(dir % '/' % item) == sb::Isdir)
+                    {
+                        QTrWI *ctwi(ui->itemslist->findItems(item, Qt::MatchExactly).at(0));
+                        if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
+                        QSL sdlst(QDir(dir % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
+                        for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
+
+                        for(cQStr &sitem : sdlst)
+                        {
+                            if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                            {
+                                for(cQStr &citem : itmlst)
+                                    if(citem == sitem) goto next;
+
+                                QTrWI *sctwi(new QTrWI);
+                                sctwi->setText(0, sitem);
+                                ctwi->addChild(sctwi);
+                            }
+
+                        next:;
+                        }
+                    }
+                }
+            }
+}
+
 void systemback::on_pointexclude_clicked()
 {
     busy();
+    ui->excludecover->show();
     if(ui->itemslist->topLevelItemCount() > 0) ui->itemslist->clear();
     if(ui->excludedlist->count() > 0) ui->excludedlist->clear();
 
@@ -6353,144 +6445,24 @@ void systemback::on_pointexclude_clicked()
     else if(ui->removeitem->isEnabled())
         ui->removeitem->setDisabled(true);
 
-    QFile file("/etc/systemback.excludes");
-
-    if(file.open(QIODevice::ReadOnly))
-        while(! file.atEnd())
-        {
-            QStr cline(file.readLine().trimmed());
-
-            if(cline.startsWith('.'))
-            {
-                if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
-            }
-            else if(ui->liveexclude->isChecked())
-                ui->excludedlist->addItem(cline);
-        }
-
     {
-        QFile file("/etc/passwd");
+        QFile file("/etc/systemback.excludes");
 
         if(file.open(QIODevice::ReadOnly))
-        {
             while(! file.atEnd())
             {
-                QStr usr(file.readLine().trimmed());
+                QStr cline(file.readLine().trimmed());
 
-                if(usr.contains(":/home/"))
+                if(cline.startsWith('.'))
                 {
-                    usr = sb::left(usr, sb::instr(usr, ":") -1);
-
-                    if(sb::isdir("/home/" % usr))
-                        for(cQStr &item : QDir("/home/" % usr).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-                            if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}))
-                            {
-                                if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
-                                {
-                                    QTrWI *twi(new QTrWI);
-                                    twi->setText(0, item);
-
-                                    if(sb::access("/home/" % usr % '/' % item) && sb::stype("/home/" % usr % '/' % item) == sb::Isdir)
-                                    {
-                                        twi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                                        ui->itemslist->addTopLevelItem(twi);
-                                        QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
-
-                                        for(cQStr &sitem : sdlst)
-                                            if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
-                                            {
-                                                QTrWI *ctwi(new QTrWI);
-                                                ctwi->setText(0, sitem);
-                                                twi->addChild(ctwi);
-                                            }
-                                    }
-                                    else
-                                        ui->itemslist->addTopLevelItem(twi);
-                                }
-                                else if(sb::access("/home/" % usr % '/' % item))
-                                {
-                                    if(sb::stype("/home/" % usr % '/' % item) == sb::Isdir)
-                                    {
-                                        QTrWI *ctwi(ui->itemslist->findItems(item, Qt::MatchExactly).at(0));
-                                        if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
-                                        QSL sdlst(QDir("/home/" % usr % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
-                                        for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
-
-                                        for(cQStr &sitem : sdlst)
-                                        {
-                                            if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
-                                            {
-                                                for(cQStr &citem : itmlst)
-                                                    if(citem == sitem) goto unext;
-
-                                                QTrWI *sctwi(new QTrWI);
-                                                sctwi->setText(0, sitem);
-                                                ctwi->addChild(sctwi);
-                                            }
-
-                                        unext:;
-                                        }
-                                    }
-                                }
-                            }
+                    if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
                 }
+                else if(ui->liveexclude->isChecked())
+                    ui->excludedlist->addItem(cline);
             }
-        }
     }
 
-    for(cQStr &item : QDir("/root").entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-        if(((item.startsWith('.') && ui->pointexclude->isChecked()) || (! item.startsWith('.') && ui->liveexclude->isChecked())) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}))
-        {
-            if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
-            {
-                QTrWI *twi(new QTrWI);
-                twi->setText(0, item);
-
-                if(sb::access("/root/" % item) && sb::stype("/root/" % item) == sb::Isdir)
-                {
-                    twi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                    ui->itemslist->addTopLevelItem(twi);
-
-                    for(cQStr &sitem : QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-                        if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
-                        {
-                            QTrWI *ctwi(new QTrWI);
-                            ctwi->setText(0, sitem);
-                            twi->addChild(ctwi);
-                        }
-                }
-                else
-                    ui->itemslist->addTopLevelItem(twi);
-            }
-            else if(sb::access("/root/" % item))
-            {
-                if(sb::stype("/root/" % item) == sb::Isdir)
-                {
-                    QTrWI *ctwi(ui->itemslist->findItems(item, Qt::MatchExactly).at(0));
-                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                    QSL itmlst;
-                    for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
-
-                    for(cQStr &sitem : QDir("/root/" % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-                    {
-                        if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
-                        {
-                            for(cQStr &citem : itmlst)
-                                if(citem == sitem) goto rnext;
-
-                            QTrWI *sctwi(new QTrWI);
-                            sctwi->setText(0, sitem);
-                            ctwi->addChild(sctwi);
-                        }
-
-                    rnext:;
-                    }
-                }
-            }
-        }
-
-    ui->itemslist->sortItems(0, Qt::AscendingOrder);
-    if(ui->excludepanel->isVisible() && ! ui->excludeback->hasFocus()) ui->excludeback->setFocus();
+    ilstupdt();
     busy(false);
 }
 
@@ -8081,6 +8053,43 @@ void systemback::on_livename_textChanged(const QStr &arg1)
     }
 }
 
+void systemback::itmxpnd(cQSL &path, QTrWI *item)
+{
+    for(ushort a(0) ; a < item->childCount() ; ++a)
+    {
+        QTrWI *ctwi(item->child(a));
+        QStr iname(ctwi->text(0));
+
+        if(sb::stype(path.at(0) % path.at(1) % '/' % iname) == sb::Isdir)
+        {
+            if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+            QSL itmlst;
+            for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
+
+            for(cQStr &siname : QDir(path.at(0) % path.at(1) % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
+            {
+                if(ui->excludedlist->findItems(sb::right(path.at(1), -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
+                {
+                    for(ushort b(0) ; b < itmlst.count() ; ++b)
+                        if(itmlst.at(b) == siname)
+                        {
+                            itmlst.removeAt(b);
+                            goto next;
+                        }
+
+                    QTrWI *sctwi(new QTrWI);
+                    sctwi->setText(0, siname);
+                    ctwi->addChild(sctwi);
+                }
+
+            next:;
+            }
+        }
+
+        ctwi->sortChildren(0, Qt::AscendingOrder);
+    }
+}
+
 void systemback::on_itemslist_itemExpanded(QTrWI *item)
 {
     if(item->backgroundColor(0) != Qt::transparent)
@@ -8096,91 +8105,19 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
             path.prepend('/' % twi->text(0));
         }
 
-        {
-            QFile file("/etc/passwd");
+        if(sb::stype("/root" % path) == sb::Isdir) itmxpnd({"/root", path}, item);
+        QFile file("/etc/passwd");
 
-            if(file.open(QIODevice::ReadOnly))
+        if(file.open(QIODevice::ReadOnly))
+            while(! file.atEnd())
             {
-                while(! file.atEnd())
+                QStr usr(file.readLine().trimmed());
+
+                if(usr.contains(":/home/"))
                 {
-                    QStr usr(file.readLine().trimmed());
-
-                    if(usr.contains(":/home/"))
-                    {
-                        usr = sb::left(usr, sb::instr(usr, ":") -1);
-
-                        if(sb::stype("/home/" % usr % path) == sb::Isdir)
-                            for(ushort a(0) ; a < item->childCount() ; ++a)
-                            {
-                                QTrWI *ctwi(item->child(a));
-                                QStr iname(ctwi->text(0));
-
-                                if(sb::stype("/home/" % usr % path % '/' % iname) == sb::Isdir)
-                                {
-                                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                                    QSL itmlst;
-                                    for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
-
-                                    for(cQStr &siname : QDir("/home/" % usr % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-                                    {
-                                        if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
-                                        {
-                                            for(ushort b(0) ; b < itmlst.count() ; ++b)
-                                                if(itmlst.at(b) == siname)
-                                                {
-                                                    itmlst.removeAt(b);
-                                                    goto unext;
-                                                }
-
-                                            QTrWI *sctwi(new QTrWI);
-                                            sctwi->setText(0, siname);
-                                            ctwi->addChild(sctwi);
-                                        }
-
-                                    unext:;
-                                    }
-                                }
-
-                                ctwi->sortChildren(0, Qt::AscendingOrder);
-                            }
-                    }
+                    usr = sb::left(usr, sb::instr(usr, ":") -1);
+                    if(sb::stype("/home/" % usr % path) == sb::Isdir) itmxpnd({"/home/" % usr, path}, item);
                 }
-            }
-        }
-
-        if(sb::stype("/root" % path) == sb::Isdir)
-            for(ushort a(0) ; a < item->childCount() ; ++a)
-            {
-                QTrWI *ctwi(item->child(a));
-                QStr iname(ctwi->text(0));
-
-                if(sb::stype("/root" % path % '/' % iname) == sb::Isdir)
-                {
-                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                    QSL itmlst;
-                    for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
-
-                    for(cQStr &siname : QDir("/root" % path % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-                    {
-                        if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
-                        {
-                            for(ushort b(0) ; b < itmlst.count() ; ++b)
-                                if(itmlst.at(b) == siname)
-                                {
-                                    itmlst.removeAt(b);
-                                    goto rnext;
-                                }
-
-                            QTrWI *sctwi(new QTrWI);
-                            sctwi->setText(0, siname);
-                            ctwi->addChild(sctwi);
-                        }
-
-                    rnext:;
-                    }
-                }
-
-                ctwi->sortChildren(0, Qt::AscendingOrder);
             }
 
         busy(false);
@@ -8220,6 +8157,7 @@ void systemback::on_excludedlist_currentItemChanged(QLWI *current)
 void systemback::on_additem_clicked()
 {
     busy();
+    ui->excludecover->show();
     const QTrWI *twi(ui->itemslist->currentItem());
     QStr path(twi->text(0));
 
@@ -8237,17 +8175,19 @@ void systemback::on_additem_clicked()
         file.flush();
         ui->excludedlist->addItem(path);
         delete ui->itemslist->currentItem();
-        if(ui->itemslist->currentItem()) ui->itemslist->currentItem()->setSelected(false);
+        ui->itemslist->setCurrentItem(nullptr);
         ui->additem->setDisabled(true);
         ui->excludeback->setFocus();
     }
 
+    ui->excludecover->hide();
     busy(false);
 }
 
 void systemback::on_removeitem_clicked()
 {
     busy();
+    ui->excludecover->show();
     QFile file("/etc/systemback.excludes");
 
     if(file.open(QIODevice::ReadOnly))
@@ -8264,14 +8204,15 @@ void systemback::on_removeitem_clicked()
 
         if(sb::crtfile("/etc/systemback.excludes", excdlst))
         {
-            on_pointexclude_clicked();
             delete ui->excludedlist->currentItem();
-            if(ui->excludedlist->currentItem()) ui->excludedlist->currentItem()->setSelected(false);
+            ui->excludedlist->setCurrentItem(nullptr);
             ui->removeitem->setDisabled(true);
+            ilstupdt();
             ui->excludeback->setFocus();
         }
     }
 
+    ui->excludecover->hide();
     busy(false);
 }
 

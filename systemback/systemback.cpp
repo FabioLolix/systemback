@@ -8143,7 +8143,7 @@ void systemback::on_itemslist_currentItemChanged(QTrWI *current)
 
         if(ui->removeitem->isEnabled())
         {
-            ui->itemslist->setCurrentItem(nullptr);
+            ui->excludedlist->setCurrentItem(nullptr);
             ui->removeitem->setDisabled(true);
         }
     }

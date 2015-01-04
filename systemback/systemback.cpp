@@ -164,6 +164,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                     ui->grubreinstallrestoredisable->setMinimumSize(ui->includeusers->minimumSize());
                     ui->grubinstallcopy->setMinimumSize(ui->includeusers->minimumSize());
                     ui->grubinstallcopydisable->setMinimumSize(ui->includeusers->minimumSize());
+                    ui->repairpartition->setMinimumSize(ui->includeusers->minimumSize());
                     ui->grubreinstallrepair->setMinimumSize(ui->includeusers->minimumSize());
                     ui->grubreinstallrepairdisable->setMinimumSize(ui->includeusers->minimumSize());
                     ui->windowposition->setMinimumSize(ui->includeusers->minimumSize());
@@ -669,6 +670,9 @@ void systemback::unitimer()
                             ui->languages->setEnabled(true);
                         }
                     }
+
+                    for(QLabel *lbl : findChildren<QLabel *>())
+                        if(lbl->alignment() == (Qt::AlignLeft | Qt::AlignVCenter) && lbl->text().isRightToLeft()) lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 }
                 else
                 {
@@ -730,6 +734,8 @@ void systemback::unitimer()
                         ui->schedulerusers->setText(sb::right(sb::schdlr[1], -1));
                         ui->schedulerrefresh->setEnabled(true);
                     }
+
+                    ui->schedulerusers->setCursorPosition(0);
                 }
 
                 ui->includeuserstext->resize(fontMetrics().width(ui->includeuserstext->text()) + ss(7), ui->includeuserstext->height());
@@ -7912,6 +7918,15 @@ void systemback::on_repairpartitionrefresh_clicked()
     busy(false);
 }
 
+void systemback::on_repairpartition_currentIndexChanged(const QStr &arg1)
+{
+    if(! arg1.isEmpty())
+    {
+        ui->repairpartition->resize(fontMetrics().width(arg1) + ss(30), ui->repairpartition->height());
+        ui->repairpartition->move(ui->repairmountpoint->x() - ui->repairpartition->width() - ss(8), ui->repairpartition->y());
+    }
+}
+
 void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
 {
     uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
@@ -9536,6 +9551,11 @@ void systemback::on_schedulerdisable_clicked(bool checked)
 
     ui->users->setEnabled(checked);
     ui->schedulerrefresh->setEnabled(checked);
+}
+
+void systemback::on_users_currentIndexChanged(const QStr &arg1)
+{
+    ui->users->setToolTip(arg1);
 }
 
 void systemback::on_adduser_clicked()

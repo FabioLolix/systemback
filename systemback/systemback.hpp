@@ -161,6 +161,7 @@ private slots:
 
     void on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI *previous);
     void on_livedevices_currentItemChanged(QTblWI *current, QTblWI *previous);
+    void on_repairpartition_currentIndexChanged(const QStr &arg1);
     void on_repairmountpoint_currentTextChanged(const QStr &arg1);
     void on_windowposition_currentIndexChanged(const QStr &arg1);
     void on_includeusers_currentIndexChanged(const QStr &arg1);
@@ -174,6 +175,7 @@ private slots:
     void on_itemslist_currentItemChanged(QTrWI *current);
     void on_adminpassword_textChanged(const QStr &arg1);
     void on_rootpassword1_textChanged(const QStr &arg1);
+    void on_users_currentIndexChanged(const QStr &arg1);
     void on_livelist_currentItemChanged(QLWI *current);
     void on_autorestoreoptions_clicked(bool checked);
     void on_incrementaldisable_clicked(bool checked);

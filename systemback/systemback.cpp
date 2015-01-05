@@ -6825,8 +6825,9 @@ void systemback::on_dirrefresh_clicked()
     {
         QTrWI *twi(new QTrWI);
         twi->setText(0, item);
+        QStr cpath(QDir('/' % item).canonicalPath());
 
-        if(excl.contains(item))
+        if(excl.contains(item) || excl.contains(sb::right(cpath, -1)) || pwdrs.contains(':' % cpath % ':'))
         {
             twi->setTextColor(0, Qt::red);
             twi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
@@ -6852,8 +6853,9 @@ void systemback::on_dirrefresh_clicked()
             {
                 QTrWI *ctwi(new QTrWI);
                 ctwi->setText(0, sitem);
+                cpath = QDir('/' % item % '/' % sitem).canonicalPath();
 
-                if(item == "home" && pwdrs.contains(":/home/" % sitem % ":"))
+                if(excl.contains(sb::right(cpath, -1)) || pwdrs.contains(':' % cpath % ':') || (item == "home" && pwdrs.contains(":/home/" % sitem % ":")))
                 {
                     ctwi->setTextColor(0, Qt::red);
                     ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
@@ -6922,19 +6924,23 @@ void systemback::on_dirchoose_currentItemChanged(QTrWI *current)
         }
         else
         {
-            delete current;
-            ui->dirchoose->setCurrentItem(nullptr);
-            ui->dirchoosecancel->setFocus();
+            current->setDisabled(true);
 
-            if(ui->dirpath->text() != "/")
+            if(current->isSelected())
             {
-                ui->dirpath->setText("/");
+                current->setSelected(false);
+                ui->dirchoosecancel->setFocus();
 
-                if(ui->dirpath->styleSheet().isEmpty())
+                if(ui->dirpath->text() != "/")
                 {
-                    ui->dirpath->setStyleSheet("color: red");
-                    ui->dirchooseok->setDisabled(true);
-                    fontcheck(Dpath);
+                    ui->dirpath->setText("/");
+
+                    if(ui->dirpath->styleSheet().isEmpty())
+                    {
+                        ui->dirpath->setStyleSheet("color: red");
+                        ui->dirchooseok->setDisabled(true);
+                        fontcheck(Dpath);
+                    }
                 }
             }
         }
@@ -6956,6 +6962,8 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
             path.prepend('/' % twi->text(0));
         }
 
+        QStr pwdrs(sb::fload("/etc/passwd"));
+
         if(sb::isdir(path))
             for(ushort a(0) ; a < item->childCount() ; ++a)
             {
@@ -6967,7 +6975,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
 
                     if(sb::isdir(path % '/' % iname))
                     {
-                        if(sb::islnxfs(path % '/' % iname))
+                        if(! pwdrs.contains(':' % QDir(path % '/' % iname).canonicalPath() % ':') && sb::islnxfs(path % '/' % iname))
                         {
                             if(iname == "Systemback")
                             {
@@ -6997,16 +7005,16 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                         }
                     }
                     else
-                        delete ctwi;
+                        ctwi->setDisabled(true);
                 }
             }
         else
         {
-            delete item;
+            item->setDisabled(true);
 
-            if(ui->dirchoose->currentItem() == item)
+            if(item->isSelected())
             {
-                ui->dirchoose->setCurrentItem(nullptr);
+                item->setSelected(false);
                 ui->dirchoosecancel->setFocus();
 
                 if(ui->dirpath->text() != "/")

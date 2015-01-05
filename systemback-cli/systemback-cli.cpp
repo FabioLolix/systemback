@@ -332,12 +332,19 @@ uchar systemback::storagedir()
         sb::print("\n " % sb::sdir[0] % "\n\n");
     else
     {
-        QStr ndir(qApp->arguments().value(2));
+        QStr ndir;
 
-        if(qApp->arguments().count() > 3)
-            for(uchar a(3) ; a < qApp->arguments().count() ; ++a) ndir.append(' ' % qApp->arguments().value(a));
+        {
+            QStr cpath, idir(qApp->arguments().value(2));
 
-        if(sb::like(ndir, {"*/systemback_", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"}) || sb::fload("/etc/passwd").contains(':' % ndir % ':') || ! sb::islnxfs(ndir)) return 5;
+            if(qApp->arguments().count() > 3)
+                for(uchar a(3) ; a < qApp->arguments().count() ; ++a) idir.append(' ' % qApp->arguments().value(a));
+
+            ndir = QDir::cleanPath(idir);
+            cpath = QDir(idir).canonicalPath();
+            QSL excl{"*/Systemback_", "*/Systemback/*", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"};
+            if(sb::like(ndir, excl) || sb::like(cpath, excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 5;
+        }
 
         if(sb::sdir[0] != ndir)
         {

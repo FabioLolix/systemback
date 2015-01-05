@@ -597,13 +597,32 @@ void sb::cfgread()
         if(! isdir("/home/Systemback")) QDir().mkdir("/home/Systemback");
         if(! isfile("/home/Systemback/.sbschedule")) crtfile("/home/Systemback/.sbschedule");
     }
-    else if(! isdir(sdir[0] % "/Systemback") && isdir(sdir[0]) && QDir().mkdir(sdir[0] % "/Systemback"))
-        crtfile(sdir[0] % "/Systemback/.sbschedule");
+    else
+    {
+        if(! isdir(sdir[0] % "/Systemback") && isdir(sdir[0]) && QDir().mkdir(sdir[0] % "/Systemback")) crtfile(sdir[0] % "/Systemback/.sbschedule");
+        QStr cpath(QDir::cleanPath(sdir[0]));
+
+        if(sdir[0] != cpath)
+        {
+            sdir[0] = cpath;
+            cfgupdt = true;
+        }
+    }
 
     if(sdir[2].isEmpty())
     {
         sdir[2] = "/home";
         if(! cfgupdt) cfgupdt = true;
+    }
+    else
+    {
+        QStr cpath(QDir::cleanPath(sdir[2]));
+
+        if(sdir[0] != cpath)
+        {
+            sdir[2] = cpath;
+            if(! cfgupdt) cfgupdt = true;
+        }
     }
 
     if(incrmtl == Empty)

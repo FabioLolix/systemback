@@ -2816,20 +2816,25 @@ start:
             {
                 QFile file(fpath);
                 if(! file.open(QIODevice::ReadOnly)) goto error;
-                bool mdfd(false);
+                uchar mdfd(0);
 
                 while(! file.atEnd())
                 {
                     QStr nline(file.readLine().trimmed());
 
-                    if(nline.startsWith(vrbl))
+                    if(mdfd == 0 && nline.startsWith(vrbl))
                     {
                         if(nline.endsWith('='))
                             break;
-                        else
+                        else if(nline.endsWith('=' % guname()))
                         {
                             nline = vrbl % ui->username->text();
-                            mdfd = true;
+                            ++mdfd;
+                        }
+                        else
+                        {
+                            nline = vrbl;
+                            mdfd = vrbl.at(0).isUpper() ? 2 : 1;
                         }
                     }
 
@@ -2837,7 +2842,7 @@ start:
                     if(intrrpt) goto exit;
                 }
 
-                if(mdfd && ! sb::crtfile(fpath, nfile)) goto error;
+                if(mdfd > 0 && ! sb::crtfile(fpath, mdfd == 1 ? nfile : nfile.replace("AutoLoginEnabled=true", "AutoLoginEnabled=false"))) goto error;
             }
         }
         else if(sb::like(ddm, {"*gdm3_", "*mdm_"}))
@@ -2848,7 +2853,7 @@ start:
             {
                 QFile file(fpath);
                 if(! file.open(QIODevice::ReadOnly)) goto error;
-                bool mdfd(false);
+                uchar mdfd(0);
 
                 while(! file.atEnd())
                 {
@@ -2857,15 +2862,32 @@ start:
                     if(sb::like(nline, {"_AutomaticLogin=*", "_TimedLogin=*"}))
                         if(! nline.endsWith('='))
                         {
-                            nline = sb::left(nline, sb::instr(nline, "=")) % ui->username->text();
-                            if(! mdfd) mdfd = true;
+                            if(nline.endsWith('=' % guname()))
+                            {
+                                nline = sb::left(nline, sb::instr(nline, "=")) % ui->username->text();
+                                if(mdfd == 0) ++mdfd;
+                            }
+                            else
+                            {
+                                nline = sb::left(nline, sb::instr(nline, "="));
+                                mdfd = nline.at(0) == 'A' ? mdfd == 3 ? 4 : 2 : mdfd == 2 ? 4 : 3;
+                            }
                         }
 
                     nfile.append(nline % '\n');
                     if(intrrpt) goto exit;
                 }
 
-                if(mdfd && ! sb::crtfile(fpath, nfile)) goto error;
+                if(mdfd > 0)
+                {
+                    if(mdfd > 1)
+                    {
+                        if(sb::ilike(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
+                        if(sb::ilike(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
+                    }
+
+                    if(! sb::crtfile(fpath, nfile)) goto error;
+                }
             }
         }
 

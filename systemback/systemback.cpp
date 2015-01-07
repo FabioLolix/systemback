@@ -601,8 +601,6 @@ void systemback::unitimer()
 
                         if(lcode == "ar_EG")
                             ui->languages->addItem("المصرية العربية");
-                        else if(lcode == "bg")
-                            ui->languages->addItem("български");
                         else if(lcode == "ca_ES")
                             ui->languages->addItem("Català");
                         else if(lcode == "es")
@@ -631,8 +629,6 @@ void systemback::unitimer()
                     {
                         if(sb::lang == "ar_EG")
                             ui->languages->setCurrentIndex(ui->languages->findText("المصرية العربية"));
-                        else if(sb::lang == "bg_BG")
-                            ui->languages->setCurrentIndex(ui->languages->findText("български"));
                         else if(sb::lang == "ca_ES")
                             ui->languages->setCurrentIndex(ui->languages->findText("Català"));
                         else if(sb::lang == "es_ES")
@@ -9439,8 +9435,6 @@ void systemback::on_languageoverride_clicked(bool checked)
     {
         if(ui->languages->currentText() == "المصرية العربية")
             sb::lang = "ar_EG";
-        else if(ui->languages->currentText() == "български")
-            sb::lang = "bg_BG";
         else if(ui->languages->currentText() == "Català")
             sb::lang = "ca_ES";
         else if(ui->languages->currentText() == "English")
@@ -9483,8 +9477,6 @@ void systemback::on_languages_currentIndexChanged(const QString &arg1)
     {
         if(arg1 == "المصرية العربية")
             sb::lang = "ar_EG";
-        else if(arg1 == "български")
-            sb::lang = "bg_BG";
         else if(arg1 == "Català")
             sb::lang = "ca_ES";
         else if(arg1 == "English")

@@ -15,7 +15,6 @@ systemback-cli.depends = libsystemback
 
 TRANSLATIONS = lang/systemback_hu.ts \
                lang/systemback_ar_EG.ts \
-               lang/systemback_bg.ts \
                lang/systemback_ca_ES.ts \
                lang/systemback_es.ts \
                lang/systemback_fi.ts \

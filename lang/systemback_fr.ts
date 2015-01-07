@@ -359,7 +359,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="2630"/>
         <source>Simple system backup and restore application with extra features</source>
-        <translation>Application simple de sauvegarde et de restauration du système avec des fonctionnalités supplémentaires</translation>
+        <translation>Application simple de sauvegarde et de restauration du système</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2643"/>
@@ -814,7 +814,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="6408"/>
         <source>Disable incremental restore points (do not use hard links between backups)</source>
-        <translation>Désactiver les points de restauration incrémentale (ne pas utiliser de liens durs entre les sauvegardes)</translation>
+        <translation>Désactiver les points de restauration incrémentale (ne pas utiliser de liens durs)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6526"/>

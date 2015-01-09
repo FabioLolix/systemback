@@ -1449,7 +1449,7 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="3374"/>
         <source>An error occurred while creating container file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Une erreur est survenue lors de la création fichier conteneur.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3395"/>
@@ -1703,7 +1703,21 @@
   -v, --version            output Systemback version number
 
   -h, --help               show this help</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisez: systemback-cli [option]
+
+ Options:
+
+  -n, --newbackup          créer un nouveau point de restauration
+
+  -s, --storagedir &lt;path&gt;  obtenir ou définir des points de restauration
+                           chemin du répertoire de stockage
+
+  -u, --upgrade            mise à niveau du système actuel
+                           supprimer les fichiers inutiles et forfaits
+
+  -v, --version            imprimer le numéro de version de Systemback
+
+  -h, --help               montrer cette aide</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="73"/>

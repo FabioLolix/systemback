@@ -75,13 +75,13 @@ private:
     void itmxpnd(cQSL &path, QTrWI *item);
     void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);
+    void dialogopen(schar snum = -1);
     void busy(bool state = true);
     void fontcheck(uchar wdgt);
     void pointupgrade();
     void accesserror();
     void statustart();
     void systemcopy();
-    void dialogopen();
     void livewrite();
     void rmntcheck();
     void restore();

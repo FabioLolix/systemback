@@ -63,7 +63,7 @@ private:
     QStr cpoint, points, pname, prun, dialogdev, hash;
     short wgeom[6], cpos;
     uchar busycnt, dialog, ppipe, sfctr, icnt;
-    bool unity, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
+    bool unity, wismax, uchkd, nrxth, ickernel, irfsc, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr gdetect(cQStr rdir = "/");
     QStr guname();

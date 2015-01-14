@@ -91,10 +91,9 @@ QStr sb::rndstr(uchar vlen)
     uchar clen(vlen == 16 ? 64 : 62);
     qsrand(QTime::currentTime().msecsSinceStartOfDay());
 
-    do {
-        chr = chrs.mid(qrand() % clen, 1);
-        if(! val.endsWith(chr)) val.append(chr);
-    } while(val.length() < vlen);
+    do
+        if(! val.endsWith((chr = chrs.mid(qrand() % clen, 1)))) val.append(chr);
+    while(val.length() < vlen);
 
     return val;
 }
@@ -1308,58 +1307,53 @@ void sb::run()
             {
                 QStr path(rlink("/dev/disk/by-id/" % item, 14));
 
-                if(! path.isEmpty())
+                if(! path.isEmpty() && ilike((path = "/dev/" % right(path, -6)).length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/mmcblk*"}))
                 {
-                    path = "/dev/" % right(path, -6);
+                    ullong size(devsize(path));
 
-                    if(ilike(path.length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/mmcblk*"}))
+                    if(size > 536870911)
                     {
-                        ullong size(devsize(path));
-
-                        if(size > 536870911)
+                        if(! fstab.isEmpty())
                         {
-                            if(! fstab.isEmpty())
+                            QSL fchk('_' % path % '*');
+
                             {
-                                QSL fchk('_' % path % '*');
+                                PedDevice *dev(ped_device_get(chr(path)));
+                                PedDisk *dsk(ped_disk_new(dev));
 
+                                if(dsk != nullptr)
                                 {
-                                    PedDevice *dev(ped_device_get(chr(path)));
-                                    PedDisk *dsk(ped_disk_new(dev));
+                                    PedPartition *prt(nullptr);
 
-                                    if(dsk != nullptr)
-                                    {
-                                        PedPartition *prt(nullptr);
+                                    while((prt = ped_disk_next_partition(dsk, prt)))
+                                        if(prt->num > 0)
+                                        {
+                                            QStr ppath(path % (path.length() == 12 ? "p" : nullptr) % QStr::number(prt->num));
 
-                                        while((prt = ped_disk_next_partition(dsk, prt)))
-                                            if(prt->num > 0)
+                                            if(stype(ppath) == Isblock)
                                             {
-                                                QStr ppath(path % (path.length() == 12 ? "p" : nullptr) % QStr::number(prt->num));
-
-                                                if(stype(ppath) == Isblock)
-                                                {
-                                                    blkid_probe pr(blkid_new_probe_from_filename(chr(ppath)));
-                                                    blkid_do_probe(pr);
-                                                    cchar *uuid("");
-                                                    blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
-                                                    blkid_free_probe(pr);
-                                                    if(! QBA(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
-                                                }
+                                                blkid_probe pr(blkid_new_probe_from_filename(chr(ppath)));
+                                                blkid_do_probe(pr);
+                                                cchar *uuid("");
+                                                blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+                                                blkid_free_probe(pr);
+                                                if(! QBA(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
                                             }
+                                        }
 
-                                        ped_disk_destroy(dsk);
-                                    }
-
-                                    ped_device_destroy(dev);
+                                    ped_disk_destroy(dsk);
                                 }
 
-                                QTS in(&fstab, QIODevice::ReadOnly);
-
-                                while(! in.atEnd())
-                                    if(like(in.readLine().trimmed(), fchk)) goto next_3;
+                                ped_device_destroy(dev);
                             }
 
-                            ThrdSlst->append(path % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
+                            QTS in(&fstab, QIODevice::ReadOnly);
+
+                            while(! in.atEnd())
+                                if(like(in.readLine().trimmed(), fchk)) goto next_3;
                         }
+
+                        ThrdSlst->append(path % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
                     }
                 }
             }
@@ -1506,16 +1500,11 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         {
             QStr usr(file.readLine().trimmed());
 
-            if(usr.contains(":/home/"))
+            if(usr.contains(":/home/") && isdir("/home/" % (usr = left(usr, instr(usr, ":") -1))))
             {
-                usr = left(usr, instr(usr, ":") -1);
-
-                if(isdir("/home/" % usr))
-                {
-                    usrs.append(usr);
-                    homeitms.append(nullptr);
-                    if(! rodir(homeitms.last(), "/home/" % usr, true)) return false;
-                }
+                usrs.append(usr);
+                homeitms.append(nullptr);
+                if(! rodir(homeitms.last(), "/home/" % usr, true)) return false;
             }
         }
     }
@@ -1567,9 +1556,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
             while(! in.atEnd())
             {
-                ++cnum;
-                cperc = (cnum * 100 + 50) / anum;
-                if(Progress < cperc) Progress = cperc;
+                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
                 QStr cline(in.readLine()), item(right(cline, -1));
 
                 if(! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"}) && ! exclcheck(elist, item) && exist("/home/" % usr % '/' % item))
@@ -1655,9 +1642,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
         while(! in.atEnd())
         {
-            ++cnum;
-            cperc = (cnum * 100 + 50) / anum;
-            if(Progress < cperc) Progress = cperc;
+            if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
             QStr cline(in.readLine()), item(right(cline, -1));
 
             if(! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"}) && ! exclcheck(elist, item) && exist("/root/" % item))
@@ -1776,9 +1761,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
             while(! in.atEnd())
             {
-                ++cnum;
-                cperc = (cnum * 100 + 50) / anum;
-                if(Progress < cperc) Progress = cperc;
+                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
                 QStr cline(in.readLine()), item(right(cline, -1));
 
                 if(! like(cdir % '/' % item, {"+_/var/cache/apt/*", "-*.bin_", "-*.bin.*"}, Mixed) && ! like(cdir % '/' % item, {"_/var/cache/apt/archives/*", "*.deb_"}, All) && ! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*.dpkg-old_", "*~_", "*~/*"}) && ! exclcheck(elist, cdir % '/' % item) && exist(cdir % '/' % item))
@@ -2083,9 +2066,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
                 while(! in.atEnd())
                 {
-                    ++cnum;
-                    cperc = (cnum * 100 + 50) / anum;
-                    if(Progress < cperc) Progress = cperc;
+                    if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
                     QStr cline(in.readLine()), item(right(cline, -1));
 
                     if(! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*"}) && ! exclcheck(elist, cdir % '/' % item))
@@ -2292,9 +2273,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
             while(! in.atEnd())
             {
-                ++cnum;
-                cperc = (cnum * 100 + 50) / anum;
-                if(Progress < cperc) Progress = cperc;
+                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
                 QStr cline(in.readLine()), item(right(cline, -1));
 
                 if(! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"}) && ! exclcheck(elist, item))
@@ -2428,9 +2407,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
             while(! in.atEnd())
             {
-                ++cnum;
-                cperc = (cnum * 100 + 50) / anum;
-                if(Progress < cperc) Progress = cperc;
+                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
                 QStr cline(in.readLine()), item(right(cline, -1));
 
                 if(! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"}) && ! exclcheck(elist, item))
@@ -2568,12 +2545,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     while(! file.atEnd())
                     {
                         QStr usr(file.readLine().trimmed());
-
-                        if(usr.contains(":/home/"))
-                        {
-                            usr = left(usr, instr(usr, ":") -1);
-                            if(isdir("/home/" % usr)) usrs.append(usr);
-                        }
+                        if(usr.contains(":/home/") && isdir("/home/" % (usr = left(usr, instr(usr, ":") -1)))) usrs.append(usr);
                     }
                 }
                 else
@@ -2664,9 +2636,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
                 while(! in.atEnd())
                 {
-                    ++cnum;
-                    cperc = (cnum * 100 + 50) / anum;
-                    if(Progress < cperc) Progress = cperc;
+                    if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
                     QStr cline(in.readLine()), item(right(cline, -1));
 
                     if((mthd == 5 || (! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"}) && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)))) && (! srcdir.isEmpty() || exist((mthd == 5 ? "/etc/skel/" : QStr("/home/" % usr % '/')) % item)))
@@ -2768,19 +2738,14 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     {
                         QStr cline(file.readLine().trimmed()), dir;
 
-                        if(! cline.startsWith('#') && cline.contains("$HOME"))
+                        if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0 && ! isdir("/.sbsystemcopy/home/" % usr % '/' % dir))
                         {
-                            dir = left(right(cline, - instr(cline, "/")), -1);
-
-                            if(dir.length() > 0 && ! isdir("/.sbsystemcopy/home/" % usr % '/' % dir))
+                            if(isdir(srcdir % "/home/" % usr % '/' % dir))
                             {
-                                if(isdir(srcdir % "/home/" % usr % '/' % dir))
-                                {
-                                    if(! cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir)) goto err_3;
-                                }
-                                else if(srcdir.startsWith(sdir[1]) && (! QDir().mkdir("/.sbsystemcopy/home/" % usr % '/' % dir) || ! cpertime("/.sbsystemcopy/home/" % usr, "/.sbsystemcopy/home/" % usr % '/' % dir)))
-                                    goto err_3;
+                                if(! cpdir(srcdir % "/home/" % usr % '/' % dir, "/.sbsystemcopy/home/" % usr % '/' % dir)) goto err_3;
                             }
+                            else if(srcdir.startsWith(sdir[1]) && (! QDir().mkdir("/.sbsystemcopy/home/" % usr % '/' % dir) || ! cpertime("/.sbsystemcopy/home/" % usr, "/.sbsystemcopy/home/" % usr % '/' % dir)))
+                                goto err_3;
                         }
 
                         if(ThrdKill) return false;
@@ -2817,9 +2782,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
         while(! in.atEnd())
         {
-            ++cnum;
-            cperc = (cnum * 100 + 50) / anum;
-            if(Progress < cperc) Progress = cperc;
+            if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
             QStr cline(in.readLine()), item(right(cline, -1));
 
             if((mthd == 5 || (! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"}) && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)))) && (! srcdir.isEmpty() || exist((mthd == 5 ? "/etc/skel/" : "/root/") % item)))
@@ -3009,9 +2972,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
             while(! in.atEnd())
             {
-                ++cnum;
-                cperc = (cnum * 100 + 50) / anum;
-                if(Progress < cperc) Progress = cperc;
+                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
                 QStr cline(in.readLine()), item(right(cline, -1));
 
                 if(! like(item, {"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*"}) && ! exclcheck(elist, cdir % '/' % item) && (macid.isEmpty() || ! item.contains(macid)) && (mthd < 3 || ! like(cdir % '/' % item, {"_/etc/udev/rules.d*", "*-persistent-*"}, All)) && (! srcdir.isEmpty() || exist(cdir % '/' % item)))
@@ -3486,12 +3447,7 @@ bool sb::thrdlvprpr(bool iudata)
         while(! file.atEnd())
         {
             QStr usr(file.readLine().trimmed());
-
-            if(usr.contains(":/home/"))
-            {
-                usr = left(usr, instr(usr, ":") -1);
-                if(isdir("/home/" % usr)) usrs.append(usr);
-            }
+            if(usr.contains(":/home/") && isdir("/home/" % (usr = left(usr, instr(usr, ":") -1)))) usrs.append(usr);
         }
     }
 
@@ -3693,15 +3649,10 @@ bool sb::thrdlvprpr(bool iudata)
             {
                 QStr cline(file.readLine().trimmed()), dir;
 
-                if(! cline.startsWith('#') && cline.contains("$HOME"))
+                if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0 && isdir("/home/" % udir % '/' % dir) && ! isdir(usdir % '/' % udir % '/' % dir))
                 {
-                    dir = left(right(cline, - instr(cline, "/")), -1);
-
-                    if(dir.length() > 0 && isdir("/home/" % udir % '/' % dir) && ! isdir(usdir % '/' % udir % '/' % dir))
-                    {
-                        if(! cpdir("/home/" % udir % '/' % dir, usdir % '/' % udir % '/' % dir)) goto err_8;
-                        ++ThrdLng[0];
-                    }
+                    if(! cpdir("/home/" % udir % '/' % dir, usdir % '/' % udir % '/' % dir)) goto err_8;
+                    ++ThrdLng[0];
                 }
 
                 if(ThrdKill) return false;

@@ -33,7 +33,7 @@ typedef const QString cQStr;
 typedef QString QStr;
 typedef QByteArray QBA;
 typedef const QChar cQChar;
-typedef const QRect cQRect;
+typedef const QSize cQSize;
 typedef const QPoint cQPoint;
 typedef unsigned long long ullong;
 typedef long long llong;

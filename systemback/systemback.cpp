@@ -373,12 +373,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             else if(ui->admins->findText(qApp->arguments().value(2)) != -1)
                 ui->admins->setCurrentIndex(ui->admins->findText(qApp->arguments().value(2)));
 
-            wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(188);
-            wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(112);
-            wgeom[2] = ss(376);
-            wgeom[3] = ss(224);
-            setFixedSize(wgeom[2], wgeom[3]);
-            move(wgeom[0], wgeom[1]);
+            setFixedSize((wgeom[2] = ss(376)), (wgeom[3] = ss(224)));
+            move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(188)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(112)));
             setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
         }
         else
@@ -421,9 +417,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                     wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + ss(30);
                 }
 
-                wgeom[2] = ss(402);
-                wgeom[3] = ss(161);
-                setFixedSize(wgeom[2], wgeom[3]);
+                setFixedSize((wgeom[2] = ss(402)), (wgeom[3] = ss(161)));
                 move(wgeom[0], wgeom[1]);
                 shdltimer = new QTimer;
                 connect(shdltimer, SIGNAL(timeout()), this, SLOT(schedulertimer()));
@@ -433,12 +427,8 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
             else
             {
                 ui->schedulerpanel->hide();
-                wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(349);
-                wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(232);
-                wgeom[2] = ss(698);
-                wgeom[3] = ss(465);
-                setFixedSize(wgeom[2], wgeom[3]);
-                move(wgeom[0], wgeom[1]);
+                setFixedSize((wgeom[2] = ss(698)), (wgeom[3] = ss(465)));
+                move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(349)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(232)));
             }
         }
     }
@@ -714,12 +704,7 @@ void systemback::unitimer()
                             while(! file.atEnd())
                             {
                                 QStr usr(file.readLine().trimmed());
-
-                                if(usr.contains(":/home/"))
-                                {
-                                    usr = sb::left(usr, sb::instr(usr, ":") -1);
-                                    if(! susr.contains(usr) && sb::isdir("/home/" % usr)) ui->users->addItem(usr);
-                                }
+                                if(usr.contains(":/home/") && ! susr.contains((usr = sb::left(usr, sb::instr(usr, ":") -1))) && sb::isdir("/home/" % usr)) ui->users->addItem(usr);
                             }
 
                         if(ui->users->count() > 0)
@@ -1149,9 +1134,49 @@ void systemback::busy(bool state)
     }
 }
 
-inline bool systemback::minside(cQPoint &wpos, cQRect &wgeom)
+inline bool systemback::minside(cQPoint &wpos, cQSize &wsize)
 {
-    return QCursor::pos().x() < pos().x() + wpos.x() || QCursor::pos().y() < pos().y() + wpos.y() || QCursor::pos().x() > pos().x() + wpos.x() + wgeom.width() || QCursor::pos().y() > pos().y() + wpos.y() + wgeom.height() ? false : true;
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+    short wxy[2];
+
+    if(wismax)
+    {
+        schar snum(qApp->desktop()->screenNumber(this));
+        short scrxy(qApp->desktop()->availableGeometry(snum).x());
+        wxy[0] = scrxy > 0 && x() == 0 ? scrxy : x();
+        wxy[1] = (scrxy = qApp->desktop()->availableGeometry(snum).y()) > 0 && y() == 0 ? scrxy : y();
+    }
+    else
+    {
+        wxy[0] = x();
+        wxy[1] = y();
+    }
+#endif
+    return QCursor::pos().x() <
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+            wxy[0]
+#else
+            x()
+#endif
+            + wpos.x() || QCursor::pos().y() <
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+            wxy[1]
+#else
+            y()
+#endif
+            + wpos.y() || QCursor::pos().x() >
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+            wxy[0]
+#else
+            x()
+#endif
+            + wpos.x() + wsize.width() || QCursor::pos().y() >
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+            wxy[1]
+#else
+            y()
+#endif
+            + wpos.y() + wsize.height() ? false : true;
 }
 
 QStr systemback::guname()
@@ -1253,11 +1278,11 @@ QStr systemback::gdetect(cQStr rdir)
 
 void systemback::buttonstimer()
 {
-    if(minside(ui->buttonspanel->pos(), ui->buttonspanel->geometry()))
+    if(minside(ui->buttonspanel->pos(), ui->buttonspanel->size()))
     {
         if(ui->windowmaximize->isVisible())
         {
-            if(minside(ui->buttonspanel->pos() + ui->windowmaximize->pos(), ui->windowmaximize->geometry()))
+            if(minside(ui->buttonspanel->pos() + ui->windowmaximize->pos(), ui->windowmaximize->size()))
             {
                 if(ui->windowmaximize->backgroundRole() == QPalette::Foreground)
                 {
@@ -1271,7 +1296,7 @@ void systemback::buttonstimer()
                 ui->windowmaximize->setForegroundRole(QPalette::Base);
             }
         }
-        if(minside(ui->buttonspanel->pos() + ui->windowminimize->pos(), ui->windowminimize->geometry()))
+        if(minside(ui->buttonspanel->pos() + ui->windowminimize->pos(), ui->windowminimize->size()))
         {
             if(ui->windowminimize->backgroundRole() == QPalette::Foreground)
             {
@@ -1286,7 +1311,7 @@ void systemback::buttonstimer()
         }
         if(ui->windowclose->isVisible())
         {
-            if(minside(ui->buttonspanel->pos() + ui->windowclose->pos(), ui->windowclose->geometry()))
+            if(minside(ui->buttonspanel->pos() + ui->windowclose->pos(), ui->windowclose->size()))
             {
                 if(ui->windowclose->backgroundRole() == QPalette::Foreground)
                 {
@@ -1331,9 +1356,10 @@ void systemback::wpressed()
 
 void systemback::wreleased()
 {
+    if(qApp->overrideCursor()) qApp->restoreOverrideCursor();
+
     if(! wismax)
     {
-        qApp->restoreOverrideCursor();
         schar snum(qApp->desktop()->screenNumber(this));
         short scrxy(qApp->desktop()->screenGeometry(snum).x());
 
@@ -1345,9 +1371,7 @@ void systemback::wreleased()
             if(x() > scrxy + scrw - width()) wgeom[0] = scrxy + scrw - width() - ss(30);
         }
 
-        scrxy = qApp->desktop()->screenGeometry(snum).y();
-
-        if(y() < scrxy)
+        if(y() < (scrxy = qApp->desktop()->screenGeometry(snum).y()))
             wgeom[0] = scrxy + ss(30);
         else
         {
@@ -1442,8 +1466,11 @@ void systemback::benter()
 
 void systemback::bleave()
 {
-    ui->buttonspanel->hide();
-    bttnstimer->stop();
+    if(ui->buttonspanel->isVisible())
+    {
+        ui->buttonspanel->hide();
+        bttnstimer->stop();
+    }
 }
 
 void systemback::wmaxenter()
@@ -1596,7 +1623,7 @@ void systemback::sbttnreleased()
 
 void systemback::sbttnmove()
 {
-    if(minside({0, 0}, ui->scalingbutton->geometry()))
+    if(minside({0, 0}, ui->scalingbutton->size()))
     {
         if(ui->scalingbutton->foregroundRole() == QPalette::Base) ui->scalingbutton->setForegroundRole(QPalette::Highlight);
     }
@@ -1641,7 +1668,7 @@ void systemback::hmpg1released()
 
 void systemback::hmpg1move()
 {
-    if(minside(ui->aboutpanel->pos() + ui->homepage1->pos(), ui->homepage1->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->homepage1->pos(), ui->homepage1->size()))
     {
         if(ui->homepage1->foregroundRole() == QPalette::Text) ui->homepage1->setForegroundRole(QPalette::Highlight);
     }
@@ -1665,7 +1692,7 @@ void systemback::hmpg2released()
 
 void systemback::hmpg2move()
 {
-    if(minside(ui->aboutpanel->pos() + ui->homepage2->pos(), ui->homepage2->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->homepage2->pos(), ui->homepage2->size()))
     {
         if(ui->homepage2->foregroundRole() == QPalette::Text) ui->homepage2->setForegroundRole(QPalette::Highlight);
     }
@@ -1689,7 +1716,7 @@ void systemback::emailreleased()
 
 void systemback::emailmove()
 {
-    if(minside(ui->aboutpanel->pos() + ui->email->pos(), ui->email->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->email->pos(), ui->email->size()))
     {
         if(ui->email->foregroundRole() == QPalette::Text) ui->email->setForegroundRole(QPalette::Highlight);
     }
@@ -1713,7 +1740,7 @@ void systemback::dntreleased()
 
 void systemback::dntmove()
 {
-    if(minside(ui->aboutpanel->pos() + ui->donate->pos(), ui->donate->geometry()))
+    if(minside(ui->aboutpanel->pos() + ui->donate->pos(), ui->donate->size()))
     {
         if(ui->donate->foregroundRole() == QPalette::Text) ui->donate->setForegroundRole(QPalette::Highlight);
     }
@@ -3579,12 +3606,8 @@ void systemback::dialogopen(schar snum)
         else
         {
             if(! sb::ilike(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
-            wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(253);
-            wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(100);
-            wgeom[2] = ui->dialogpanel->width();
-            wgeom[3] = ui->dialogpanel->height();
-            setFixedSize(wgeom[2], wgeom[3]);
-            move(wgeom[0], wgeom[1]);
+            setFixedSize((wgeom[2] = ui->dialogpanel->width()), (wgeom[3] = ui->dialogpanel->height()));
+            move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(253)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(100)));
         }
     }
 
@@ -3619,10 +3642,7 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
         setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
     }
 
-    wgeom[2] = nwidth;
-    wgeom[3] = nheight;
-
-    if(size() != QSize(wgeom[2], wgeom[3]))
+    if(size() != QSize((wgeom[2] = nwidth), (wgeom[3] = nheight)))
     {
         ui->resizepanel->show();
         repaint();
@@ -3639,9 +3659,8 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
         }
 
         wgeom[1] = y() + (height() - wgeom[3]) / 2;
-        scrxy = qApp->desktop()->screenGeometry(snum).y();
 
-        if(wgeom[1] < scrxy + ss(30))
+        if(wgeom[1] < (scrxy = qApp->desktop()->screenGeometry(snum).y()) + ss(30))
             wgeom[1] = scrxy + ss(30);
         else
         {
@@ -3667,12 +3686,7 @@ void systemback::wmove()
 
 void systemback::rmove()
 {
-    if(! wismax)
-    {
-        wgeom[2] = QCursor::pos().x() - x() + ss(31) - lblevent::MouseX;
-        wgeom[3] = QCursor::pos().y() - y() + ss(31) - lblevent::MouseY;
-        if(width() != wgeom[2] || height() != wgeom[3]) resize(wgeom[2], wgeom[3]);
-    }
+    if(! wismax && size() != QSize((wgeom[2] = QCursor::pos().x() - x() + ss(31) - lblevent::MouseX), (wgeom[3] = QCursor::pos().y() - y() + ss(31) - lblevent::MouseY))) resize(wgeom[2], wgeom[3]);
 }
 
 void systemback::on_functionmenunext_clicked()
@@ -3717,9 +3731,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             if(x() > scrxy + scrw - width() && x() < scrxy + scrw + width()) wgeom[0] = scrxy + scrw - width() - ss(30);
         }
 
-        scrxy = qApp->desktop()->screenGeometry(snum).y();
-
-        if(y() < scrxy && y() > scrxy - height())
+        if(y() < (scrxy = qApp->desktop()->screenGeometry(snum).y()) && y() > scrxy - height())
             wgeom[1] = scrxy + ss(30);
         else
         {
@@ -5264,12 +5276,7 @@ void systemback::on_restoremenu_clicked()
         while(! file.atEnd())
         {
             QStr usr(file.readLine().trimmed());
-
-            if(usr.contains(":/home/"))
-            {
-                usr = sb::left(usr, sb::instr(usr, ":") -1);
-                if(sb::isdir("/home/" % usr)) ui->includeusers->addItem(usr);
-            }
+            if(usr.contains(":/home/") && sb::isdir("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)))) ui->includeusers->addItem(usr);
         }
 }
 
@@ -5824,7 +5831,7 @@ void systemback::on_unmountdelete_clicked()
         {
             ui->unmountdelete->setText(tr("! Delete !"));
             ui->unmountdelete->setStyleSheet("QPushButton:enabled {color: red}");
-            if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->unmountdelete->pos(), ui->unmountdelete->geometry())) ui->unmountdelete->setDisabled(true);
+            if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->unmountdelete->pos(), ui->unmountdelete->size())) ui->unmountdelete->setDisabled(true);
             if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
             ui->filesystem->setEnabled(true);
             ui->format->setEnabled(true);
@@ -6442,12 +6449,7 @@ void systemback::ilstupdt(cQStr &dir)
             while(! file.atEnd())
             {
                 QStr usr(file.readLine().trimmed());
-
-                if(usr.contains(":/home/"))
-                {
-                    usr = sb::left(usr, sb::instr(usr, ":") -1);
-                    if(sb::isdir("/home/" % usr)) ilstupdt("/home/" % usr);
-                }
+                if(usr.contains(":/home/") && sb::isdir("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)))) ilstupdt("/home/" % usr);
             }
 
         ui->itemslist->sortItems(0, Qt::AscendingOrder);
@@ -6925,9 +6927,8 @@ void systemback::on_dirrefresh_clicked()
             {
                 QTrWI *ctwi(new QTrWI);
                 ctwi->setText(0, sitem);
-                cpath = QDir('/' % item % '/' % sitem).canonicalPath();
 
-                if(excl.contains(sb::right(cpath, -1)) || pwdrs.contains(':' % cpath % ':') || (item == "home" && pwdrs.contains(":/home/" % sitem % ":")))
+                if(excl.contains(sb::right((cpath = QDir('/' % item % '/' % sitem).canonicalPath()), -1)) || pwdrs.contains(':' % cpath % ':') || (item == "home" && pwdrs.contains(":/home/" % sitem % ":")))
                 {
                     ctwi->setTextColor(0, Qt::red);
                     ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
@@ -6967,12 +6968,7 @@ void systemback::on_dirchoose_currentItemChanged(QTrWI *current)
     {
         const QTrWI *twi(current);
         QStr path('/' % current->text(0));
-
-        while(twi->parent())
-        {
-            twi = twi->parent();
-            path.prepend('/' % twi->text(0));
-        }
+        while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
 
         if(sb::isdir(path))
         {
@@ -7027,13 +7023,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
         busy();
         const QTrWI *twi(item);
         QStr path('/' % twi->text(0));
-
-        while(twi->parent())
-        {
-            twi = twi->parent();
-            path.prepend('/' % twi->text(0));
-        }
-
+        while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
         QStr pwdrs(sb::fload("/etc/passwd"));
 
         if(sb::isdir(path))
@@ -8109,10 +8099,7 @@ void systemback::on_livename_textChanged(const QStr &arg1)
     }
 
     if(sb::like(arg1, {"* *", "*/*"}) || arg1.toUtf8().length() > 32 || arg1.toLower().endsWith(".iso"))
-    {
-        cpos = ui->livename->cursorPosition() - 1;
-        ui->livename->setText(QStr(arg1).replace(cpos, 1, nullptr));
-    }
+        ui->livename->setText(QStr(arg1).replace((cpos = ui->livename->cursorPosition() - 1), 1, nullptr));
     else
     {
         if(ui->livenamepipe->isVisible()) ui->livenamepipe->hide();
@@ -8205,13 +8192,7 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
         busy();
         const QTrWI *twi(item);
         QStr path('/' % twi->text(0));
-
-        while(twi->parent())
-        {
-            twi = twi->parent();
-            path.prepend('/' % twi->text(0));
-        }
-
+        while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
         if(sb::stype("/root" % path) == sb::Isdir) itmxpnd({"/root", path}, item);
         QFile file("/etc/passwd");
 
@@ -8219,12 +8200,7 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
             while(! file.atEnd())
             {
                 QStr usr(file.readLine().trimmed());
-
-                if(usr.contains(":/home/"))
-                {
-                    usr = sb::left(usr, sb::instr(usr, ":") -1);
-                    if(sb::stype("/home/" % usr % path) == sb::Isdir) itmxpnd({"/home/" % usr, path}, item);
-                }
+                if(usr.contains(":/home/") && sb::stype("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)) % path) == sb::Isdir) itmxpnd({"/home/" % usr, path}, item);
             }
 
         busy(false);
@@ -8265,13 +8241,7 @@ void systemback::on_additem_clicked()
     ui->excludecover->show();
     const QTrWI *twi(ui->itemslist->currentItem());
     QStr path(twi->text(0));
-
-    while(twi->parent())
-    {
-        twi = twi->parent();
-        path.prepend(twi->text(0) % '/');
-    }
-
+    while(twi->parent()) path.prepend((twi = twi->parent())->text(0) % '/');
     QFile file("/etc/systemback.excludes");
 
     if(file.open(QIODevice::Append))
@@ -8352,10 +8322,7 @@ void systemback::on_fullname_textChanged(const QStr &arg1)
         }
 
         if(! ok || sb::like(arg1, {"_ *", "*  *", "*ß*"}))
-        {
-            cpos = ui->fullname->cursorPosition() - 1;
-            ui->fullname->setText(QStr(arg1).replace(cpos, 1, nullptr));
-        }
+            ui->fullname->setText(QStr(arg1).replace((cpos = ui->fullname->cursorPosition() - 1), 1, nullptr));
         else if(arg1.at(0).isLower())
         {
             cpos = ui->fullname->cursorPosition();
@@ -8430,10 +8397,7 @@ void systemback::on_username_textChanged(const QStr &arg1)
         }
 
         if(! ok || (arg1.contains('$') && (arg1.count('$') > 1 || ! arg1.endsWith('$'))))
-        {
-            cpos = ui->username->cursorPosition() - 1;
-            ui->username->setText(QStr(arg1).replace(cpos, 1, nullptr));
-        }
+            ui->username->setText(QStr(arg1).replace((cpos = ui->username->cursorPosition() - 1), 1, nullptr));
         else if(! ui->usernamepipe->isVisible())
         {
             if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
@@ -8489,10 +8453,7 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
         }
 
         if(! ok || (arg1.length() > 1 && sb::like(arg1, {"*..*", "*--*", "*.-*", "*-.*"})))
-        {
-            cpos = ui->hostname->cursorPosition() - 1;
-            ui->hostname->setText(QStr(arg1).replace(cpos, 1, nullptr));
-        }
+            ui->hostname->setText(QStr(arg1).replace((cpos = ui->hostname->cursorPosition() - 1), 1, nullptr));
         else if(! ui->hostnamepipe->isVisible())
         {
             if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
@@ -8788,15 +8749,10 @@ void systemback::on_userdatainclude_clicked(bool checked)
             {
                 QStr usr(file.readLine().trimmed());
 
-                if(usr.contains(":/home/"))
+                if(usr.contains(":/home/") && sb::isdir("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1))) && sb::dfree("/home/" % usr) != hfree)
                 {
-                    usr = sb::left(usr, sb::instr(usr, ":") -1);
-
-                    if(sb::isdir("/home/" % usr) && sb::dfree("/home/" % usr) != hfree)
-                    {
-                        ui->userdatainclude->setChecked(false);
-                        break;
-                    }
+                    ui->userdatainclude->setChecked(false);
+                    break;
                 }
             }
         else
@@ -9677,12 +9633,7 @@ void systemback::on_schedulerrefresh_clicked()
         while(! file.atEnd())
         {
             QStr usr(file.readLine().trimmed());
-
-            if(usr.contains(":/home/"))
-            {
-                usr = sb::left(usr, sb::instr(usr, ":") -1);
-                if(sb::isdir("/home/" % usr)) ui->users->addItem(usr);
-            }
+            if(usr.contains(":/home/") && sb::isdir("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)))) ui->users->addItem(usr);
         }
 
     busy(false);

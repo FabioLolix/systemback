@@ -70,7 +70,7 @@ private:
     QStr ckname();
     ushort ss(ushort size);
     bool pisrng(cQStr &pname, ushort *pid = nullptr);
-    bool minside(cQPoint &pos, cQRect &geom);
+    bool minside(cQPoint &wpos, cQSize &wsize);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
     void itmxpnd(cQSL &path, QTrWI *item);
     void ilstupdt(cQStr &dir = nullptr);

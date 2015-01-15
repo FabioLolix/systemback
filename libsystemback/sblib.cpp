@@ -100,18 +100,27 @@ QStr sb::rndstr(uchar vlen)
 
 QStr sb::fload(cQStr &path, bool ascnt)
 {
-    QFile file(path);
+    QBA ba;
+    {QFile file(path);
     if(! file.open(QIODevice::ReadOnly)) return nullptr;
+    ba = file.readAll();}
 
     if(ascnt)
     {
-        QStr str[2]{file.readAll()};
-        QTS in(&str[0], QIODevice::ReadOnly);
-        while(! in.atEnd()) str[1].prepend(in.readLine() % '\n');
-        return str[1];
+        QStr str;
+        QTS in(&ba, QIODevice::ReadOnly);
+        while(! in.atEnd()) str.prepend(in.readLine() % '\n');
+        return str;
     }
-    else
-        return file.readAll();
+
+    return ba;
+}
+
+QBA sb::fload(cQStr &path)
+{
+    QFile file(path);
+    if(! file.open(QIODevice::ReadOnly)) return nullptr;
+    return file.readAll();
 }
 
 ullong sb::dfree(cchar *path)
@@ -278,9 +287,7 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, bool silent, bool bckgrnd)
 
         switch(rprcnt) {
         case 1:
-            inum += proc.readAllStandardOutput().count('\n');
-            cperc = (inum * 100 + 50) / ThrdLng[0];
-            if(Progress < cperc) Progress = cperc;
+            if(Progress < (cperc = ((inum += proc.readAllStandardOutput().count('\n')) * 100 + 50) / ThrdLng[0])) Progress = cperc;
             QTS(stderr) << proc.readAllStandardError();
 
             if(dfree(sdir[2]) < 104857600)
@@ -293,8 +300,7 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, bool silent, bool bckgrnd)
         case 2:
         {
             QStr pout(proc.readAllStandardError());
-            cperc = mid(pout, rinstr(pout, "%") - 5, 2).toUShort();
-            if(Progress < cperc) Progress = cperc;
+            if(Progress < (cperc = mid(pout, rinstr(pout, "%") - 5, 2).toUShort())) Progress = cperc;
             break;
         }
         case 3:
@@ -310,11 +316,8 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, bool silent, bool bckgrnd)
                     if(cline.left(1).toUShort() == Isfile) ThrdLng[0] += fsize(sdir[2] % "/.sblivesystemcreate/" % item);
                 }
             }
-            else if(isfile(ThrdStr[0]))
-            {
-                cperc = (fsize(ThrdStr[0]) * 100 + 50) / ThrdLng[0];
-                if(Progress < cperc) Progress = cperc;
-            }
+            else if(isfile(ThrdStr[0]) && Progress < (cperc = (fsize(ThrdStr[0]) * 100 + 50) / ThrdLng[0]))
+                Progress = cperc;
 
             break;
         case 4:
@@ -329,8 +332,7 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, bool silent, bool bckgrnd)
                 if(cline.left(1).toUShort() == Isfile) size += fsize(ThrdStr[0] % '/' % item);
             }
 
-            cperc = (size * 100 + 50) / ThrdLng[0];
-            if(Progress < cperc) Progress = cperc;
+            if(Progress < (cperc = (size * 100 + 50) / ThrdLng[0])) Progress = cperc;
         }
     }
 
@@ -872,18 +874,11 @@ void sb::delpart(cQStr &part)
     thrdelay();
 }
 
-inline QStr sb::rlink(cQStr &path, ushort blen)
+inline QBA sb::rlink(cQStr &path, ushort blen)
 {
     char rpath[blen];
     short rlen(readlink(chr(path), rpath, blen));
-
-    if(rlen > 0)
-    {
-        rpath[rlen] = '\0';
-        return rpath;
-    }
-
-    return nullptr;
+    return rlen > 0 ? QBA(rpath).left(rlen) : nullptr;
 }
 
 inline ullong sb::psalign(ullong start, ushort ssize)
@@ -949,7 +944,7 @@ inline bool sb::cplink(cQStr &srclink, cQStr &newlink)
 {
     struct stat sistat;
     if(lstat(chr(srclink), &sistat) == -1 || ! S_ISLNK(sistat.st_mode)) return false;
-    QStr path(rlink(srclink, sistat.st_size));
+    QBA path(rlink(srclink, sistat.st_size));
     if(path.isEmpty() || ! QFile::link(path, newlink)) return false;
     timeval sitimes[2];
     sitimes[0].tv_sec = sistat.st_atim.tv_sec;
@@ -1025,7 +1020,7 @@ inline bool sb::lcomp(cQStr &link1, cQStr &link2)
 {
     struct stat istat[2];
     if(ilike(-1, QSIL() << lstat(chr(link1), &istat[0]) << lstat(chr(link2), &istat[1])) || ! S_ISLNK(istat[0].st_mode) || ! S_ISLNK(istat[1].st_mode) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
-    QStr lnk(rlink(link1, istat[0].st_size));
+    QBA lnk(rlink(link1, istat[0].st_size));
     return ! lnk.isEmpty() && lnk == rlink(link2, istat[1].st_size);
 }
 
@@ -1299,7 +1294,7 @@ void sb::run()
     }
     case Readlvdevs:
     {
-        QStr fstab(fload("/etc/fstab"));
+        QBA fstab(fload("/etc/fstab"));
 
         for(cQStr &item : QDir("/dev/disk/by-id").entryList(QDir::Files))
         {
@@ -1551,8 +1546,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         {
             cQStr &usr(usrs.at(a));
             if(! QDir().mkdir(trgt % "/home/" % usr)) return false;
-            cditms = &homeitms[a];
-            QTS in(cditms, QIODevice::ReadOnly);
+            QTS in((cditms = &homeitms[a]), QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -1756,8 +1750,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         if(isdir(cdir))
         {
             if(! QDir().mkdir(trgt % cdir)) return false;
-            cditms = &sysitms[a];
-            QTS in(cditms, QIODevice::ReadOnly);
+            QTS in((cditms = &sysitms[a]), QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -2061,8 +2054,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                     if(! QDir().mkdir(trgt % cdir) && ! fspchk(trgt)) return false;
                 }
 
-                cditms = &sysitms[a];
-                QTS in(cditms, QIODevice::ReadOnly);
+                QTS in((cditms = &sysitms[a]), QIODevice::ReadOnly);
 
                 while(! in.atEnd())
                 {
@@ -2402,8 +2394,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                 }
             }
 
-            cditms = &homeitms[a];
-            QTS in(cditms, QIODevice::ReadOnly);
+            QTS in((cditms = &homeitms[a]), QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {
@@ -2631,8 +2622,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     }
                 }
 
-                cditms = mthd == 5 ? &rootitms : &homeitms[a];
-                QTS in(cditms, QIODevice::ReadOnly);
+                QTS in((cditms = mthd == 5 ? &rootitms : &homeitms[a]), QIODevice::ReadOnly);
 
                 while(! in.atEnd())
                 {
@@ -2967,8 +2957,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                 if(! QDir().mkdir("/.sbsystemcopy" % cdir)) return false;
             }
 
-            cditms = &sysitms[a];
-            QTS in(cditms, QIODevice::ReadOnly);
+            QTS in((cditms = &sysitms[a]), QIODevice::ReadOnly);
 
             while(! in.atEnd())
             {

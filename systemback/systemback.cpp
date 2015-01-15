@@ -2613,7 +2613,7 @@ start:
             else
             {
                 if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint")) goto error;
-                QStr cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
+                QBA cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
                 if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) goto error;
             }
 
@@ -2637,7 +2637,7 @@ start:
         else
         {
             if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
-            QStr cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
+            QBA cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
             if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) goto error;
         }
     }
@@ -2837,7 +2837,7 @@ start:
             }
         }
 
-        QStr ddm(sb::isfile("/.sbsystemcopy/etc/X11/default-display-manager") ? sb::fload("/.sbsystemcopy/etc/X11/default-display-manager").trimmed() : nullptr);
+        QBA ddm(sb::isfile("/.sbsystemcopy/etc/X11/default-display-manager") ? sb::fload("/.sbsystemcopy/etc/X11/default-display-manager").trimmed() : nullptr);
 
         if(sb::like(ddm, {"*lightdm_", "*kdm_"}))
         {
@@ -5552,7 +5552,7 @@ void systemback::on_partitionrefresh_clicked()
     }
 
     schar sn(-1);
-    QStr mnts[2]{sb::fload("/proc/self/mounts"), sb::fload("/proc/swaps")};
+    QBA mnts[2]{sb::fload("/proc/self/mounts"), sb::fload("/proc/swaps")};
 
     for(cQStr &cdts : plst)
     {

@@ -47,12 +47,13 @@ public:
     static bool ExecKill, ThrdKill;
 
     static QStr mid(cQStr &txt, ushort start, ushort len);
-    static QStr fload(cQStr &path, bool ascnt = false);
+    static QStr fload(cQStr &path, bool ascnt);
     static QStr right(cQStr &txt, short len);
     static QStr left(cQStr &txt, short len);
     static QStr rndstr(cuchar vlen = 10);
     static QStr ruuid(cQStr &part);
     static QStr appver();
+    static QBA fload(cQStr &path);
     static ullong dfree(cchar *path);
     static ullong dfree(cQStr &path);
     static ullong fsize(cQStr &path);
@@ -112,7 +113,7 @@ private:
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 
-    static QStr rlink(cQStr &path, ushort blen);
+    static QBA rlink(cQStr &path, ushort blen);
     static ullong psalign(ullong start, ushort ssize);
     static ullong pealign(ullong end, ushort ssize);
     static ullong devsize(cQStr &dev);

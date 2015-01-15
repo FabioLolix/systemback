@@ -97,7 +97,7 @@ start:
 
     forever
     {
-        if(! sb::isfile(pfile) || (pflmd != QFileInfo(pfile).lastModified() && sb::fload(pfile) != QStr::number(qApp->applicationPid())))
+        if(! sb::isfile(pfile) || (pflmd != QFileInfo(pfile).lastModified() && sb::fload(pfile) != QBA::number(qApp->applicationPid())))
         {
             sb::unlock(sb::Schdlrlock);
             sb::exec("sbscheduler " % qApp->arguments().value(1), nullptr, true, true);

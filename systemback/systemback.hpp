@@ -22,6 +22,7 @@
 #define QTblWI QTableWidgetItem
 #define QLWI QListWidgetItem
 #define QTrWI QTreeWidgetItem
+#define cQTrWI const QTreeWidgetItem
 
 #include "../libsystemback/sblib.hpp"
 #include <QTableWidgetItem>
@@ -165,11 +166,11 @@ private slots:
     void on_repairmountpoint_currentTextChanged(const QStr &arg1);
     void on_windowposition_currentIndexChanged(const QStr &arg1);
     void on_includeusers_currentIndexChanged(const QStr &arg1);
-    void on_languages_currentIndexChanged(const QString &arg1);
     void on_filesystem_currentIndexChanged(const QStr &arg1);
+    void on_languages_currentIndexChanged(const QStr &arg1);
     void on_mountpoint_currentTextChanged(const QStr &arg1);
-    void on_styles_currentIndexChanged(const QString &arg1);
     void on_excludedlist_currentItemChanged(QLWI *current);
+    void on_styles_currentIndexChanged(const QStr &arg1);
     void on_admins_currentIndexChanged(const QStr &arg1);
     void on_dirchoose_currentItemChanged(QTrWI *current);
     void on_itemslist_currentItemChanged(QTrWI *current);

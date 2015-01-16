@@ -1573,7 +1573,13 @@ void systemback::apokkeyreleased()
 
 void systemback::chsenter()
 {
-    if(! wismax && ui->chooseresize->width() == ss(10)) ui->chooseresize->setGeometry(ui->chooseresize->x() - ss(20), ui->chooseresize->y() - ss(20), ss(30), ss(30));
+    if(! wismax)
+    {
+        if(ui->chooseresize->cursor().shape() == Qt::ArrowCursor) ui->chooseresize->setCursor(Qt::PointingHandCursor);
+        if(ui->chooseresize->width() == ss(10)) ui->chooseresize->setGeometry(ui->chooseresize->x() - ss(20), ui->chooseresize->y() - ss(20), ss(30), ss(30));
+    }
+    else if(ui->chooseresize->cursor().shape() == Qt::PointingHandCursor)
+        ui->chooseresize->setCursor(Qt::ArrowCursor);
 }
 
 void systemback::chsleave()
@@ -1593,7 +1599,13 @@ void systemback::chsreleased()
 
 void systemback::cpyenter()
 {
-    if(! wismax && ui->copyresize->width() == ss(10)) ui->copyresize->setGeometry(ui->copyresize->x() - ss(20), ui->copyresize->y() - ss(20), ss(30), ss(30));
+    if(! wismax)
+    {
+        if(ui->copyresize->cursor().shape() == Qt::ArrowCursor) ui->copyresize->setCursor(Qt::PointingHandCursor);
+        if(ui->copyresize->width() == ss(10)) ui->copyresize->setGeometry(ui->copyresize->x() - ss(20), ui->copyresize->y() - ss(20), ss(30), ss(30));
+    }
+    else if(ui->copyresize->cursor().shape() == Qt::PointingHandCursor)
+        ui->copyresize->setCursor(Qt::ArrowCursor);
 }
 
 void systemback::cpyleave()
@@ -1603,7 +1615,13 @@ void systemback::cpyleave()
 
 void systemback::xcldenter()
 {
-    if(! wismax && ui->excluderesize->width() == ss(10)) ui->excluderesize->setGeometry(ui->excluderesize->x() - ss(20), ui->excluderesize->y() - ss(20), ss(30), ss(30));
+    if(! wismax)
+    {
+        if(ui->excluderesize->cursor().shape() == Qt::ArrowCursor) ui->excluderesize->setCursor(Qt::PointingHandCursor);
+        if(ui->excluderesize->width() == ss(10)) ui->excluderesize->setGeometry(ui->excluderesize->x() - ss(20), ui->excluderesize->y() - ss(20), ss(30), ss(30));
+    }
+    else if(ui->excluderesize->cursor().shape() == Qt::PointingHandCursor)
+        ui->excluderesize->setCursor(Qt::ArrowCursor);
 }
 
 void systemback::xcldleave()
@@ -2284,7 +2302,7 @@ start:
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(! sb::ilike(dialog, {23, 60}))
+        if(! sb::slike(dialog, {23, 60}))
         {
             switch(mthd) {
             case 1:
@@ -2397,7 +2415,7 @@ start:
             sb::fssync();
             sb::crtfile("/proc/sys/vm/drop_caches", "3");
 
-            if(sb::ilike(dialog, {5, 6, 41}))
+            if(sb::slike(dialog, {5, 6, 41}))
             {
                 if(ppipe == 1 && sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
                 dialog = ui->fullrepair->isChecked() ? 12 : 13;
@@ -2416,7 +2434,7 @@ void systemback::systemcopy()
 error:
     if(intrrpt) goto exit;
 
-    if(! sb::ilike(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
+    if(! sb::slike(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
         {
@@ -2924,8 +2942,8 @@ start:
                 {
                     if(mdfd > 1)
                     {
-                        if(sb::ilike(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
-                        if(sb::ilike(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
+                        if(sb::slike(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
+                        if(sb::slike(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
                     }
 
                     if(! sb::crtfile(fpath, nfile)) goto error;
@@ -3605,7 +3623,7 @@ void systemback::dialogopen(schar snum)
             windowmove(ui->dialogpanel->width(), ui->dialogpanel->height());
         else
         {
-            if(! sb::ilike(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
+            if(! sb::slike(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
             setFixedSize((wgeom[2] = ui->dialogpanel->width()), (wgeom[3] = ui->dialogpanel->height()));
             move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(253)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(100)));
         }
@@ -3782,11 +3800,6 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - ss(40));
                 ui->filesystemwarning->move(ui->filesystemwarning->x(), ui->choosepanel->height() - ss(41));
                 ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
-
-                if(wismax)
-                    ui->chooseresize->setCursor(Qt::ArrowCursor);
-                else if(ui->chooseresize->cursor().shape() == Qt::ArrowCursor)
-                    ui->chooseresize->setCursor(Qt::PointingHandCursor);
             }
             else if(ui->copypanel->isVisible())
             {
@@ -3807,11 +3820,6 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 ui->copynext->move(ui->copypanel->width() - ss(152), ui->copyback->y());
                 ui->copyresize->move(ui->copypanel->width() - ui->copyresize->width(), ui->copypanel->height() - ui->copyresize->height());
                 ui->copycover->resize(ui->copypanel->width() - ss(10), ui->copypanel->height() - ss(10));
-
-                if(wismax)
-                    ui->copyresize->setCursor(Qt::ArrowCursor);
-                else if(ui->copyresize->cursor().shape() == Qt::ArrowCursor)
-                    ui->copyresize->setCursor(Qt::PointingHandCursor);
             }
             else if(ui->excludepanel->isVisible())
             {
@@ -3825,11 +3833,6 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - ss(48));
                 ui->kendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
                 ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
-
-                if(wismax)
-                    ui->excluderesize->setCursor(Qt::ArrowCursor);
-                else if(ui->excluderesize->cursor().shape() == Qt::ArrowCursor)
-                    ui->excluderesize->setCursor(Qt::PointingHandCursor);
             }
 
             repaint();
@@ -4059,7 +4062,7 @@ void systemback::keyReleaseEvent(QKeyEvent *ev)
         }
 }
 
-void systemback::on_admins_currentIndexChanged(const QStr &arg1)
+void systemback::on_admins_currentIndexChanged(cQStr &arg1)
 {
     ui->admins->resize(fontMetrics().width(arg1) + ss(30), ss(32));
     if(! hash.isEmpty()) hash.clear();
@@ -4091,7 +4094,7 @@ void systemback::on_admins_currentIndexChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_adminpassword_textChanged(const QStr &arg1)
+void systemback::on_adminpassword_textChanged(cQStr &arg1)
 {
     uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
     QStr ipasswd(arg1);
@@ -4706,7 +4709,7 @@ void systemback::on_pnumber10_clicked()
     fontcheck(Rpnts);
 }
 
-void systemback::on_point1_textChanged(const QStr &arg1)
+void systemback::on_point1_textChanged(cQStr &arg1)
 {
     if(ui->point1->isEnabled())
     {
@@ -4742,7 +4745,7 @@ void systemback::on_point1_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point2_textChanged(const QStr &arg1)
+void systemback::on_point2_textChanged(cQStr &arg1)
 {
     if(ui->point2->isEnabled())
     {
@@ -4778,7 +4781,7 @@ void systemback::on_point2_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point3_textChanged(const QStr &arg1)
+void systemback::on_point3_textChanged(cQStr &arg1)
 {
     if(ui->point3->isEnabled())
     {
@@ -4814,7 +4817,7 @@ void systemback::on_point3_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point4_textChanged(const QStr &arg1)
+void systemback::on_point4_textChanged(cQStr &arg1)
 {
     if(ui->point4->isEnabled())
     {
@@ -4850,7 +4853,7 @@ void systemback::on_point4_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point5_textChanged(const QStr &arg1)
+void systemback::on_point5_textChanged(cQStr &arg1)
 {
     if(ui->point5->isEnabled())
     {
@@ -4886,7 +4889,7 @@ void systemback::on_point5_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point6_textChanged(const QStr &arg1)
+void systemback::on_point6_textChanged(cQStr &arg1)
 {
     if(ui->point6->isEnabled())
     {
@@ -4922,7 +4925,7 @@ void systemback::on_point6_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point7_textChanged(const QStr &arg1)
+void systemback::on_point7_textChanged(cQStr &arg1)
 {
     if(ui->point7->isEnabled())
     {
@@ -4958,7 +4961,7 @@ void systemback::on_point7_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point8_textChanged(const QStr &arg1)
+void systemback::on_point8_textChanged(cQStr &arg1)
 {
     if(ui->point8->isEnabled())
     {
@@ -4994,7 +4997,7 @@ void systemback::on_point8_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point9_textChanged(const QStr &arg1)
+void systemback::on_point9_textChanged(cQStr &arg1)
 {
     if(ui->point9->isEnabled())
     {
@@ -5030,7 +5033,7 @@ void systemback::on_point9_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point10_textChanged(const QStr &arg1)
+void systemback::on_point10_textChanged(cQStr &arg1)
 {
     if(ui->point10->isEnabled())
     {
@@ -5066,7 +5069,7 @@ void systemback::on_point10_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point11_textChanged(const QStr &arg1)
+void systemback::on_point11_textChanged(cQStr &arg1)
 {
     if(ui->point11->isEnabled())
     {
@@ -5102,7 +5105,7 @@ void systemback::on_point11_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point12_textChanged(const QStr &arg1)
+void systemback::on_point12_textChanged(cQStr &arg1)
 {
     if(ui->point12->isEnabled())
     {
@@ -5138,7 +5141,7 @@ void systemback::on_point12_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point13_textChanged(const QStr &arg1)
+void systemback::on_point13_textChanged(cQStr &arg1)
 {
     if(ui->point13->isEnabled())
     {
@@ -5174,7 +5177,7 @@ void systemback::on_point13_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point14_textChanged(const QStr &arg1)
+void systemback::on_point14_textChanged(cQStr &arg1)
 {
     if(ui->point14->isEnabled())
     {
@@ -5210,7 +5213,7 @@ void systemback::on_point14_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_point15_textChanged(const QStr &arg1)
+void systemback::on_point15_textChanged(cQStr &arg1)
 {
     if(ui->point15->isEnabled())
     {
@@ -5542,7 +5545,7 @@ void systemback::on_partitionrefresh_clicked()
         {
             QStr path(dts.split('\n').at(0));
 
-            if(sb::ilike(path.length(), {8, 12}))
+            if(sb::slike(path.length(), {8, 12}))
             {
                 ui->grubinstallcopy->addItem(path);
                 ui->grubreinstallrestore->addItem(path);
@@ -5560,7 +5563,7 @@ void systemback::on_partitionrefresh_clicked()
         cQStr &path(dts.at(0)), &type(dts.at(2));
         ullong bsize(dts.at(1).toULongLong());
 
-        if(sb::ilike(path.length(), {8, 12}))
+        if(sb::slike(path.length(), {8, 12}))
         {
             ++sn;
             ui->partitionsettings->setRowCount(sn + 1);
@@ -6614,7 +6617,7 @@ void systemback::on_dialogok_clicked()
         }
         else if(! utimer->isActive() || sstart)
             close();
-        else if(sb::ilike(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
+        else if(sb::slike(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
         {
             ui->dialogpanel->hide();
             ui->mainpanel->show();
@@ -6966,7 +6969,7 @@ void systemback::on_dirchoose_currentItemChanged(QTrWI *current)
 {
     if(current)
     {
-        const QTrWI *twi(current);
+        cQTrWI *twi(current);
         QStr path('/' % current->text(0));
         while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
 
@@ -7021,7 +7024,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
     {
         item->setBackgroundColor(0, Qt::transparent);
         busy();
-        const QTrWI *twi(item);
+        cQTrWI *twi(item);
         QStr path('/' % twi->text(0));
         while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
         QStr pwdrs(sb::fload("/etc/passwd"));
@@ -7234,7 +7237,7 @@ void systemback::on_configurationfilesrestore_clicked()
     on_includeusers_currentIndexChanged(ui->includeusers->currentText());
 }
 
-void systemback::on_includeusers_currentIndexChanged(const QStr &arg1)
+void systemback::on_includeusers_currentIndexChanged(cQStr &arg1)
 {
     if(! arg1.isEmpty())
     {
@@ -7531,7 +7534,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             bool mntd(false), mntcheck(false);
 
-            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::ilike(ui->partitionsettings->item(a, 8)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
+            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::slike(ui->partitionsettings->item(a, 8)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
@@ -7861,7 +7864,7 @@ void systemback::on_changepartition_clicked()
     busy(false);
 }
 
-void systemback::on_filesystem_currentIndexChanged(const QStr &arg1)
+void systemback::on_filesystem_currentIndexChanged(cQStr &arg1)
 {
     if(! ui->format->isChecked() && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != arg1) ui->format->setChecked(true);
 }
@@ -7883,7 +7886,7 @@ void systemback::on_format_clicked(bool checked)
     }
 }
 
-void systemback::on_mountpoint_currentTextChanged(const QStr &arg1)
+void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
 {
     uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
 
@@ -7989,7 +7992,7 @@ void systemback::on_repairpartitionrefresh_clicked()
     busy(false);
 }
 
-void systemback::on_repairpartition_currentIndexChanged(const QStr &arg1)
+void systemback::on_repairpartition_currentIndexChanged(cQStr &arg1)
 {
     if(! arg1.isEmpty())
     {
@@ -7998,7 +8001,7 @@ void systemback::on_repairpartition_currentIndexChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_repairmountpoint_currentTextChanged(const QStr &arg1)
+void systemback::on_repairmountpoint_currentTextChanged(cQStr &arg1)
 {
     uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
 
@@ -8088,7 +8091,7 @@ void systemback::on_repairmount_clicked()
     if(! ui->repairback->hasFocus() && ! ui->repairmountpoint->hasFocus()) ui->repairback->setFocus();
 }
 
-void systemback::on_livename_textChanged(const QStr &arg1)
+void systemback::on_livename_textChanged(cQStr &arg1)
 {
     uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
 
@@ -8190,7 +8193,7 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
     {
         item->setBackgroundColor(0, Qt::transparent);
         busy();
-        const QTrWI *twi(item);
+        cQTrWI *twi(item);
         QStr path('/' % twi->text(0));
         while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
         if(sb::stype("/root" % path) == sb::Isdir) itmxpnd({"/root", path}, item);
@@ -8239,7 +8242,7 @@ void systemback::on_additem_clicked()
 {
     busy();
     ui->excludecover->show();
-    const QTrWI *twi(ui->itemslist->currentItem());
+    cQTrWI *twi(ui->itemslist->currentItem());
     QStr path(twi->text(0));
     while(twi->parent()) path.prepend((twi = twi->parent())->text(0) % '/');
     QFile file("/etc/systemback.excludes");
@@ -8291,7 +8294,7 @@ void systemback::on_removeitem_clicked()
     busy(false);
 }
 
-void systemback::on_fullname_textChanged(const QStr &arg1)
+void systemback::on_fullname_textChanged(cQStr &arg1)
 {
     if(cpos > -1)
     {
@@ -8348,7 +8351,7 @@ void systemback::on_fullname_editingFinished()
     if(ui->fullname->text().endsWith(' ')) ui->fullname->setText(ui->fullname->text().trimmed());
 }
 
-void systemback::on_username_textChanged(const QStr &arg1)
+void systemback::on_username_textChanged(cQStr &arg1)
 {
     if(cpos > -1)
     {
@@ -8406,7 +8409,7 @@ void systemback::on_username_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_hostname_textChanged(const QStr &arg1)
+void systemback::on_hostname_textChanged(cQStr &arg1)
 {
     if(cpos > -1)
     {
@@ -8462,7 +8465,7 @@ void systemback::on_hostname_textChanged(const QStr &arg1)
     }
 }
 
-void systemback::on_password1_textChanged(const QStr &arg1)
+void systemback::on_password1_textChanged(cQStr &arg1)
 {
     if(ui->passwordpipe->isVisible())
     {
@@ -8499,7 +8502,7 @@ void systemback::on_password2_textChanged()
     on_password1_textChanged(ui->password1->text());
 }
 
-void systemback::on_rootpassword1_textChanged(const QStr &arg1)
+void systemback::on_rootpassword1_textChanged(cQStr &arg1)
 {
     if(ui->rootpasswordpipe->isVisible())
     {
@@ -8705,7 +8708,7 @@ void systemback::on_seconddown_clicked()
     if(sb::schdle[4] == 10) ui->seconddown->setDisabled(true);
 }
 
-void systemback::on_windowposition_currentIndexChanged(const QStr &arg1)
+void systemback::on_windowposition_currentIndexChanged(cQStr &arg1)
 {
     if(ui->schedulepanel->isVisible())
     {
@@ -9482,7 +9485,7 @@ void systemback::on_languageoverride_clicked(bool checked)
     if(! cfgupdt) cfgupdt = true;
 }
 
-void systemback::on_languages_currentIndexChanged(const QString &arg1)
+void systemback::on_languages_currentIndexChanged(cQStr &arg1)
 {
     if(ui->languages->isEnabled())
     {
@@ -9524,7 +9527,7 @@ void systemback::on_styleoverride_clicked(bool checked)
     if(! cfgupdt) cfgupdt = true;
 }
 
-void systemback::on_styles_currentIndexChanged(const QString &arg1)
+void systemback::on_styles_currentIndexChanged(cQStr &arg1)
 {
     if(ui->styles->isEnabled())
     {
@@ -9586,7 +9589,7 @@ void systemback::on_schedulerdisable_clicked(bool checked)
     ui->schedulerrefresh->setEnabled(checked);
 }
 
-void systemback::on_users_currentIndexChanged(const QStr &arg1)
+void systemback::on_users_currentIndexChanged(cQStr &arg1)
 {
     ui->users->setToolTip(arg1);
 }

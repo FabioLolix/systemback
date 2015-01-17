@@ -18,7 +18,6 @@
 ********************************************************************/
 
 #include "systemback.hpp"
-#include <QStringBuilder>
 #include <QApplication>
 #include <QTranslator>
 #include <unistd.h>

@@ -26,8 +26,8 @@
 typedef QTextStream QTS;
 typedef const QStringList cQSL;
 typedef QStringList QSL;
+typedef QList<QByteArray> QBAL;
 typedef QList<long long> QLIL;
-typedef const QList<int> cQIL;
 typedef const QList<short> cQSIL;
 typedef const QString cQStr;
 typedef QString QStr;

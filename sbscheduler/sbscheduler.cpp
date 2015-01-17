@@ -19,7 +19,6 @@
 
 #include "sbscheduler.hpp"
 #include <QCoreApplication>
-#include <QStringBuilder>
 #include <QDir>
 #include <unistd.h>
 
@@ -91,7 +90,7 @@ start:
     sb::delay(100);
     if(! sb::lock(sb::Schdlrlock)) goto error;
     QStr pfile(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
-    if(! sb::crtfile(pfile, QStr::number(qApp->applicationPid()))) goto error;
+    if(! sb::crtfile(pfile, QBA::number(qApp->applicationPid()))) goto error;
     QDateTime pflmd(QFileInfo(pfile).lastModified());
     sleep(300);
 
@@ -164,7 +163,7 @@ void scheduler::newrestorepoint()
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}) && ! sb::remove(sb::sdir[1] % '/' % item)) return;
 
     for(uchar a(9) ; a > 1 ; --a)
-        if(! sb::pnames[a].isEmpty() && (a < 9 ? (a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3) : true) && ! (QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) && sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]))) return;
+        if(! sb::pnames[a].isEmpty() && (a < 9 ? (a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3) : true) && ! (QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QBA::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) && sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]))) return;
 
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
 
@@ -179,8 +178,8 @@ void scheduler::newrestorepoint()
         return;
     }
 
-    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
-        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return;
+    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QBA::number(a + 2) % '_' % sb::pnames[a])) return;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return;
 end:

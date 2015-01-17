@@ -19,7 +19,6 @@
 
 #include "sbsustart.hpp"
 #include <QCoreApplication>
-#include <QStringBuilder>
 #include <QProcess>
 #include <unistd.h>
 
@@ -58,7 +57,7 @@ error:
     return;
 }
 start:
-    if(! sb::slike(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().value(1), {"_systemback_", "_scheduler_"}))
+    if(! sb::ilike(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().value(1), {"_systemback_", "_scheduler_"}))
     {
         rv = 2;
         goto error;

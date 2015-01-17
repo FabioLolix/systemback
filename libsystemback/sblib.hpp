@@ -24,6 +24,8 @@
 
 #include "sblib_global.hpp"
 #include "sbtypedef.hpp"
+#include <QStringBuilder>
+#include <QTemporaryFile>
 #include <QFileInfo>
 #include <QThread>
 #include <sys/stat.h>
@@ -78,8 +80,7 @@ public:
     static bool setpflag(cQStr &part, cQStr &flag);
     static bool issmfs(cchar *item1, cchar *item2);
     static bool issmfs(cchar *item1, cQStr &item2);
-    static bool slike(short num, cQSIL &lst);
-    static bool ilike(short num, cQIL &lst);
+    static bool ilike(short num, cQSIL &lst);
     static bool islnxfs(cQStr &path);
     static bool islink(cQStr &path);
     static bool isfile(cQStr &path);
@@ -119,8 +120,8 @@ private:
     static ullong pealign(ullong end, ushort ssize);
     static ullong devsize(cQStr &dev);
     static uchar fcomp(cQStr &file1, cQStr &file2);
-    static bool rodir(QStr &str, cQStr &path, bool hidden = false, cuchar oplen = 0);
-    static bool odir(QSL &strlst, cQStr &path, bool hidden = false);
+    static bool rodir(QBA &ba, cQStr &path, bool hidden = false, cuchar oplen = 0);
+    static bool odir(QBAL &balst, cQStr &path, bool hidden = false);
     static bool cpertime(cQStr &srcitem, cQStr &newitem);
     static bool cplink(cQStr &srclink, cQStr &newlink);
     static bool cpfile(cQStr &srcfile, cQStr &newfile);
@@ -224,15 +225,7 @@ inline bool sb::like(cQStr &txt, cQSL &lst, cuchar mode)
     }
 }
 
-inline bool sb::slike(short num, cQSIL &lst)
-{
-    for(short val : lst)
-        if(num == val) return true;
-
-    return false;
-}
-
-inline bool sb::ilike(short num, cQIL &lst)
+inline bool sb::ilike(short num, cQSIL &lst)
 {
     for(short val : lst)
         if(num == val) return true;
@@ -309,10 +302,16 @@ inline bool sb::access(cQStr &path, cuchar mode)
     }
 }
 
+inline bool sb::islnxfs(cQStr &dirpath)
+{
+    QTemporaryFile file(dirpath % "/.sbdirtestfile_" % rndstr());
+    return file.open() && file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther) && file.permissions() == 30548;
+}
+
 inline bool sb::issmfs(cchar *item1, cchar *item2)
 {
     struct stat istat[2];
-    return ilike(-1, {stat(item1, &istat[0]), stat(item2, &istat[1])}) ? false : istat[0].st_dev == istat[1].st_dev;
+    return ilike(-1, {short(stat(item1, &istat[0])), short(stat(item2, &istat[1]))}) ? false : istat[0].st_dev == istat[1].st_dev;
 }
 
 inline bool sb::isnum(cQStr &txt)

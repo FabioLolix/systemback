@@ -19,7 +19,6 @@
 
 #include "ui_systemback.h"
 #include "systemback.hpp"
-#include <QStringBuilder>
 #include <QDesktopWidget>
 #include <QFontDatabase>
 #include <QStyleFactory>
@@ -176,10 +175,10 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
                     ui->livedevices->verticalHeader()->setDefaultSectionSize(ui->partitionsettings->verticalHeader()->defaultSectionSize());
                     QStyleOption optn;
                     optn.init(ui->pointpipe1);
-                    QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
+                    QStr nsize(QBA::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
                     for(QCheckBox *ckbx : findChildren<QCheckBox *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
                     optn.init(ui->pnumber3);
-                    nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
+                    nsize = QBA::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
                     for(QRadioButton *rbtn : findChildren<QRadioButton *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
                 }
             }
@@ -577,10 +576,10 @@ void systemback::unitimer()
                 else if(sb::schdlr[0] == "bottomright")
                     ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Bottom right")));
 
-                ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
-                ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
-                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
-                ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
+                ui->schedulerday->setText(QBA::number(sb::schdle[1]) % ' ' % tr("day(s)"));
+                ui->schedulerhour->setText(QBA::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
+                ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+                ui->schedulersecond->setText(QBA::number(sb::schdle[4]) % ' ' % tr("seconds"));
 
                 if(sb::isdir("/usr/share/systemback/lang"))
                 {
@@ -2302,7 +2301,7 @@ start:
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(! sb::slike(dialog, {23, 60}))
+        if(! sb::ilike(dialog, {23, 60}))
         {
             switch(mthd) {
             case 1:
@@ -2415,7 +2414,7 @@ start:
             sb::fssync();
             sb::crtfile("/proc/sys/vm/drop_caches", "3");
 
-            if(sb::slike(dialog, {5, 6, 41}))
+            if(sb::ilike(dialog, {5, 6, 41}))
             {
                 if(ppipe == 1 && sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
                 dialog = ui->fullrepair->isChecked() ? 12 : 13;
@@ -2434,7 +2433,7 @@ void systemback::systemcopy()
 error:
     if(intrrpt) goto exit;
 
-    if(! sb::slike(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
+    if(! sb::ilike(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
         {
@@ -2942,8 +2941,8 @@ start:
                 {
                     if(mdfd > 1)
                     {
-                        if(sb::slike(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
-                        if(sb::slike(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
+                        if(sb::ilike(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
+                        if(sb::ilike(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
                     }
 
                     if(! sb::crtfile(fpath, nfile)) goto error;
@@ -3623,7 +3622,7 @@ void systemback::dialogopen(schar snum)
             windowmove(ui->dialogpanel->width(), ui->dialogpanel->height());
         else
         {
-            if(! sb::slike(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
+            if(! sb::ilike(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
             setFixedSize((wgeom[2] = ui->dialogpanel->width()), (wgeom[3] = ui->dialogpanel->height()));
             move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(253)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(100)));
         }
@@ -4097,7 +4096,6 @@ void systemback::on_admins_currentIndexChanged(cQStr &arg1)
 void systemback::on_adminpassword_textChanged(cQStr &arg1)
 {
     uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
-    QStr ipasswd(arg1);
 
     if(arg1.isEmpty())
     {
@@ -4107,7 +4105,7 @@ void systemback::on_adminpassword_textChanged(cQStr &arg1)
     {
         if(ui->adminpassworderror->isHidden()) ui->adminpassworderror->show();
     }
-    else if(QStr(crypt(chr(ipasswd), chr(hash))) == hash)
+    else if(QStr(crypt(chr(arg1), chr(hash))) == hash)
     {
         sb::delay(300);
 
@@ -5364,7 +5362,7 @@ void systemback::on_livecreatemenu_clicked()
         for(cQStr &item : QDir(sb::sdir[2]).entryList(QDir::Files | QDir::Hidden))
             if(item.endsWith(".sblive") && ! item.contains(' ') && ! sb::islink(sb::sdir[2] % '/' % item) && sb::fsize(sb::sdir[2] % '/' % item) > 0)
             {
-                QLWI *lwi(new QLWI(sb::left(item, -7) % " (" % QStr::number(qRound64(sb::fsize(sb::sdir[2] % '/' % item) * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB, " % (sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") > 0 ? "sblive+iso" : "sblive") % ')'));
+                QLWI *lwi(new QLWI(sb::left(item, -7) % " (" % QBA::number(qRound64(sb::fsize(sb::sdir[2] % '/' % item) * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB, " % (sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") > 0 ? "sblive+iso" : "sblive") % ')'));
                 ui->livelist->addItem(lwi);
             }
 }
@@ -5545,7 +5543,7 @@ void systemback::on_partitionrefresh_clicked()
         {
             QStr path(dts.split('\n').at(0));
 
-            if(sb::slike(path.length(), {8, 12}))
+            if(sb::ilike(path.length(), {8, 12}))
             {
                 ui->grubinstallcopy->addItem(path);
                 ui->grubreinstallrestore->addItem(path);
@@ -5563,7 +5561,7 @@ void systemback::on_partitionrefresh_clicked()
         cQStr &path(dts.at(0)), &type(dts.at(2));
         ullong bsize(dts.at(1).toULongLong());
 
-        if(sb::slike(path.length(), {8, 12}))
+        if(sb::ilike(path.length(), {8, 12}))
         {
             ++sn;
             ui->partitionsettings->setRowCount(sn + 1);
@@ -6617,7 +6615,7 @@ void systemback::on_dialogok_clicked()
         }
         else if(! utimer->isActive() || sstart)
             close();
-        else if(sb::slike(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
+        else if(sb::ilike(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
         {
             ui->dialogpanel->hide();
             ui->mainpanel->show();
@@ -7534,7 +7532,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             bool mntd(false), mntcheck(false);
 
-            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::slike(ui->partitionsettings->item(a, 8)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
+            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::ilike(ui->partitionsettings->item(a, 8)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
@@ -8608,7 +8606,7 @@ void systemback::on_dayup_clicked()
 {
     ++sb::schdle[1];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
+    ui->schedulerday->setText(QBA::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->daydown->isEnabled()) ui->daydown->setEnabled(true);
     if(sb::schdle[1] == 7) ui->dayup->setDisabled(true);
     if(! ui->minutedown->isEnabled() && sb::schdle[3] > 0) ui->minutedown->setEnabled(true);
@@ -8618,7 +8616,7 @@ void systemback::on_daydown_clicked()
 {
     --sb::schdle[1];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
+    ui->schedulerday->setText(QBA::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->dayup->isEnabled()) ui->dayup->setEnabled(true);
 
     if(sb::schdle[1] == 0)
@@ -8628,7 +8626,7 @@ void systemback::on_daydown_clicked()
             if(sb::schdle[3] < 30)
             {
                 sb::schdle[3] = 30;
-                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+                ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
             }
 
             if(ui->minutedown->isEnabled() && sb::schdle[3] < 31) ui->minutedown->setDisabled(true);
@@ -8642,7 +8640,7 @@ void systemback::on_hourup_clicked()
 {
     ++sb::schdle[2];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
+    ui->schedulerhour->setText(QBA::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourdown->isEnabled()) ui->hourdown->setEnabled(true);
     if(sb::schdle[2] == 23) ui->hourup->setDisabled(true);
     if(! ui->minutedown->isEnabled() && sb::schdle[3] > 0) ui->minutedown->setEnabled(true);
@@ -8652,7 +8650,7 @@ void systemback::on_hourdown_clicked()
 {
     --sb::schdle[2];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
+    ui->schedulerhour->setText(QBA::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourup->isEnabled()) ui->hourup->setEnabled(true);
 
     if(sb::schdle[2] == 0)
@@ -8662,7 +8660,7 @@ void systemback::on_hourdown_clicked()
             if(sb::schdle[3] < 30)
             {
                 sb::schdle[3] = 30;
-                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+                ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
             }
 
             if(ui->minutedown->isEnabled() && sb::schdle[3] < 31) ui->minutedown->setDisabled(true);
@@ -8676,7 +8674,7 @@ void systemback::on_minuteup_clicked()
 {
     sb::schdle[3] = sb::schdle[3] + (sb::schdle[3] == 55 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+    ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minutedown->isEnabled()) ui->minutedown->setEnabled(true);
     if(sb::schdle[3] == 59) ui->minuteup->setDisabled(true);
 }
@@ -8685,7 +8683,7 @@ void systemback::on_minutedown_clicked()
 {
     sb::schdle[3] = sb::schdle[3] - (sb::schdle[3] == 59 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+    ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minuteup->isEnabled()) ui->minuteup->setEnabled(true);
     if((sb::schdle[1] == 0 && sb::schdle[2] == 0 && sb::schdle[3] == 30) || sb::schdle[3] == 0) ui->minutedown->setDisabled(true);
 }
@@ -8694,7 +8692,7 @@ void systemback::on_secondup_clicked()
 {
     sb::schdle[4] = sb::schdle[4] + (sb::schdle[4] == 95 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
+    ui->schedulersecond->setText(QBA::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->seconddown->isEnabled()) ui->seconddown->setEnabled(true);
     if(sb::schdle[4] == 99) ui->secondup->setDisabled(true);
 }
@@ -8703,7 +8701,7 @@ void systemback::on_seconddown_clicked()
 {
     sb::schdle[4] = sb::schdle[4] - (sb::schdle[4] == 99 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
+    ui->schedulersecond->setText(QBA::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->secondup->isEnabled()) ui->secondup->setEnabled(true);
     if(sb::schdle[4] == 10) ui->seconddown->setDisabled(true);
 }
@@ -8924,8 +8922,8 @@ start:
             if(! sb::pnames[a].isEmpty() && (a < 9 ? (a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3) : true))
             {
                 ++dnum;
-                prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-                if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+                prun = tr("Deleting old restore point") % ' ' % QBA::number(dnum) % '/' % QBA::number(ppipe);
+                if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QBA::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
                 if(intrrpt) goto error;
             }
     }
@@ -8934,8 +8932,8 @@ start:
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
     if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) goto error;
 
-    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
-        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) goto error;
+    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QBA::number(a + 2) % '_' % sb::pnames[a])) goto error;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
@@ -9012,8 +9010,8 @@ start:
         }
 
         ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+        prun = tr("Deleting restore point") % ' ' % QBA::number(dnum) % '/' % QBA::number(ppipe);
+        if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QBA::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
         if(intrrpt) goto error;
     }
 
@@ -9037,8 +9035,8 @@ start:
         }
 
         ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H0" % QStr::number(a - 9) % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+        prun = tr("Deleting restore point") % ' ' % QBA::number(dnum) % '/' % QBA::number(ppipe);
+        if(! QFile::rename(sb::sdir[1] % "/H0" % QBA::number(a - 9) % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
         if(intrrpt) goto error;
     }
 
@@ -9104,7 +9102,7 @@ start:
     while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive"))
     {
         ++ncount;
-        ncount == 1 ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(ncount);
+        ncount == 1 ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QBA::number(ncount);
     }
 
     if(intrrpt) goto exit;

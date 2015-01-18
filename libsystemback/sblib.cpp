@@ -1,24 +1,23 @@
-/********************************************************************
-
- Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
-
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-********************************************************************/
+/*
+ * Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
+ *
+ * This file is part of Systemback.
+ *
+ * Systemback is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Systemback is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Systemback. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "sblib.hpp"
-#include "libmount.hpp"
 #include <QCoreApplication>
 #include <QProcess>
 #include <QTime>
@@ -35,6 +34,16 @@
 #include <dirent.h>
 #include <utime.h>
 #include <fcntl.h>
+
+#ifdef C_MNT_LIB
+#include "libmount.hpp"
+#else
+#include <libmount/libmount.h>
+#endif
+
+#ifdef bool
+#undef bool
+#endif
 
 sb sb::SBThrd;
 QSL *sb::ThrdSlst;
@@ -227,17 +236,7 @@ bool sb::execsrch(cQStr &fname, cQStr &ppath)
 uchar sb::exec(cQStr &cmd, cQStr &envv, bool silent, bool bckgrnd)
 {
     if(ExecKill) ExecKill = false;
-    uchar rprcnt(0);
-
-    if(cmd.startsWith("mksquashfs"))
-        rprcnt = 1;
-    else if(cmd.startsWith("genisoimage"))
-        rprcnt = 2;
-    else if(cmd.startsWith("tar -cf"))
-        rprcnt = 3;
-    else if(like(cmd, {"_tar -xf*", "*--no-same-permissions_"}, All))
-        rprcnt = 4;
-
+    uchar rprcnt(cmd.startsWith("mksquashfs") ? 1 : cmd.startsWith("genisoimage") ? 2 : cmd.startsWith("tar -cf") ? 3 : like(cmd, {"_tar -xf*", "*--no-same-permissions_"}, All) ? 4 : 0);
     if(rprcnt > 0) Progress = 0;
     QProcess proc;
 
@@ -355,7 +354,7 @@ bool sb::mcheck(cQStr &item)
             cchar *uuid("");
             blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
             blkid_free_probe(pr);
-            return QBA(uuid).isEmpty() ? false : QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
+            return ! QBA(uuid).isEmpty() && QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
         }
     }
     else if(itm.endsWith('/') && itm.length() > 1)
@@ -1112,7 +1111,7 @@ inline bool sb::recrmdir(cQStr &path, bool slimit)
         }
 
     closedir(dir);
-    return ThrdKill ? false : QDir().rmdir(path) ? true : slimit;
+    return ! ThrdKill && (QDir().rmdir(path) || slimit);
 }
 
 inline bool sb::fspchk(cQStr &dir)
@@ -2648,7 +2647,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                             if(! QDir().mkdir("/.sbsystemcopy/home/" % usr % '/' % item)) return false;
                             break;
                         case Isfile:
-                            skppd = ilike(mthd, {2, 3}) ? (QFile(srcdir % "/home/" % usr % '/' % item).size() > 8000000) : false;
+                            skppd = ilike(mthd, {2, 3}) && QFile(srcdir % "/home/" % usr % '/' % item).size() > 8000000;
 
                             switch(stype("/.sbsystemcopy/home/" % usr % '/' % item)) {
                             case Isfile:
@@ -2795,7 +2794,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     if(! QDir().mkdir("/.sbsystemcopy/root/" % item)) return false;
                     break;
                 case Isfile:
-                    skppd = ilike(mthd, {2, 3}) ? (QFile(srcdir % "/root/" % item).size() > 8000000) : false;
+                    skppd = ilike(mthd, {2, 3}) && QFile(srcdir % "/root/" % item).size() > 8000000;
 
                     switch(stype("/.sbsystemcopy/root/" % item)) {
                     case Isfile:

@@ -9,6 +9,11 @@ TEMPLATE = lib
 
 DEFINES += SYSTEMBACK_LIBRARY
 
+system(./lcheck.sh):
+{
+    exists(libmount.hpp) DEFINES += C_MNT_LIB
+}
+
 SOURCES += sblib.cpp
 
 HEADERS += sblib.hpp \

@@ -1,21 +1,21 @@
-/********************************************************************
-
- Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
-
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-********************************************************************/
+/*
+ * Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
+ *
+ * This file is part of Systemback.
+ *
+ * Systemback is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Systemback is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Systemback. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "ui_systemback.h"
 #include "systemback.hpp"
@@ -1151,31 +1151,31 @@ inline bool systemback::minside(cQPoint &wpos, cQSize &wsize)
         wxy[1] = y();
     }
 #endif
-    return QCursor::pos().x() <
+    return QCursor::pos().x() >
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
             wxy[0]
 #else
             x()
 #endif
-            + wpos.x() || QCursor::pos().y() <
+            + wpos.x() && QCursor::pos().y() >
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
             wxy[1]
 #else
             y()
 #endif
-            + wpos.y() || QCursor::pos().x() >
+            + wpos.y() && QCursor::pos().x() <
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
             wxy[0]
 #else
             x()
 #endif
-            + wpos.x() + wsize.width() || QCursor::pos().y() >
+            + wpos.x() + wsize.width() && QCursor::pos().y() <
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
             wxy[1]
 #else
             y()
 #endif
-            + wpos.y() + wsize.height() ? false : true;
+            + wpos.y() + wsize.height();
 }
 
 QStr systemback::guname()
@@ -8912,14 +8912,14 @@ start:
         }
 
     for(uchar a(9) ; a > 1 ; --a)
-        if(! sb::pnames[a].isEmpty() && (a < 9 ? (a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3) : true)) ++ppipe;
+        if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3)) ++ppipe;
 
     if(ppipe > 0)
     {
         uchar dnum(0);
 
         for(uchar a(9) ; a > 1 ; --a)
-            if(! sb::pnames[a].isEmpty() && (a < 9 ? (a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3) : true))
+            if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
             {
                 ++dnum;
                 prun = tr("Deleting old restore point") % ' ' % QBA::number(dnum) % '/' % QBA::number(ppipe);

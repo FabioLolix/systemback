@@ -3,7 +3,6 @@
 configure: configure-stamp
 
 configure-stamp:
-	sed -e "s/*old,/*old_table,/g" -e "s/*new);/*new_table);/g" /usr/include/libmount/libmount.h > libsystemback/libmount.hpp
 	qmake -qt5
 	touch configure-stamp
 

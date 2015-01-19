@@ -123,7 +123,7 @@
         <location filename="../systemback/systemback.ui" line="4608"/>
         <location filename="../systemback/systemback.ui" line="5140"/>
         <location filename="../systemback/systemback.ui" line="5374"/>
-        <location filename="../systemback/systemback.ui" line="6184"/>
+        <location filename="../systemback/systemback.ui" line="6178"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="307"/>
         <source>Back</source>
         <translation>Voltar</translation>
@@ -394,8 +394,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3058"/>
-        <location filename="../systemback/systemback.ui" line="7095"/>
-        <location filename="../systemback/systemback.ui" line="7364"/>
+        <location filename="../systemback/systemback.ui" line="7089"/>
+        <location filename="../systemback/systemback.ui" line="7358"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="448"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
@@ -757,68 +757,68 @@
         <translation>Configurações da partição</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5986"/>
+        <location filename="../systemback/systemback.ui" line="5980"/>
         <source>Need to set the mount point as &apos;/boot/efi&apos;!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6022"/>
+        <location filename="../systemback/systemback.ui" line="6016"/>
         <source>Window DPI scaling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6071"/>
+        <location filename="../systemback/systemback.ui" line="6065"/>
         <source>Multiplier factor for scaling the window contents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6213"/>
+        <location filename="../systemback/systemback.ui" line="6207"/>
         <source>User interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6291"/>
+        <location filename="../systemback/systemback.ui" line="6285"/>
         <source>Window always on top</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6310"/>
+        <location filename="../systemback/systemback.ui" line="6304"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6332"/>
+        <location filename="../systemback/systemback.ui" line="6326"/>
         <source>Disable scheduler daemon starting for the following users:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6351"/>
+        <location filename="../systemback/systemback.ui" line="6345"/>
         <source>Use XZ compressor for squashfs filesystems</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6370"/>
+        <location filename="../systemback/systemback.ui" line="6364"/>
         <source>Override auto-detected language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6389"/>
+        <location filename="../systemback/systemback.ui" line="6383"/>
         <source>Override the used style:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6408"/>
+        <location filename="../systemback/systemback.ui" line="6402"/>
         <source>Disable incremental restore points (do not use hard links between backups)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6526"/>
+        <location filename="../systemback/systemback.ui" line="6520"/>
         <source>Create Live ISO images automatically (faster than the conversion)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5636"/>
-        <location filename="../systemback/systemback.ui" line="5848"/>
+        <location filename="../systemback/systemback.ui" line="5842"/>
         <location filename="../systemback/systemback.cpp" line="4040"/>
         <location filename="../systemback/systemback.cpp" line="5504"/>
         <location filename="../systemback/systemback.cpp" line="5797"/>
@@ -838,12 +838,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5753"/>
+        <location filename="../systemback/systemback.ui" line="5747"/>
         <source>Mount point:</source>
         <translation>Ponto de montagem:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5820"/>
+        <location filename="../systemback/systemback.ui" line="5814"/>
         <location filename="../systemback/systemback.cpp" line="1875"/>
         <location filename="../systemback/systemback.cpp" line="5502"/>
         <location filename="../systemback/systemback.cpp" line="5833"/>
@@ -853,17 +853,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5883"/>
+        <location filename="../systemback/systemback.ui" line="5877"/>
         <source>Add new partition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5941"/>
+        <location filename="../systemback/systemback.ui" line="5935"/>
         <source>Create new:</source>
         <translation>Criar nova:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5712"/>
+        <location filename="../systemback/systemback.ui" line="5709"/>
         <source>Filesystem:</source>
         <translation>Sistema de arquivos:</translation>
     </message>
@@ -876,8 +876,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5604"/>
-        <location filename="../systemback/systemback.ui" line="5785"/>
-        <location filename="../systemback/systemback.ui" line="5915"/>
+        <location filename="../systemback/systemback.ui" line="5779"/>
+        <location filename="../systemback/systemback.ui" line="5909"/>
         <source>Reset partitions settings</source>
         <translation>Resetar as configurações da partição</translation>
     </message>
@@ -912,17 +912,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6698"/>
+        <location filename="../systemback/systemback.ui" line="6692"/>
         <source>! Interrupt !</source>
         <translation>! Interromper !</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6835"/>
+        <location filename="../systemback/systemback.ui" line="6829"/>
         <source>Creates a scheduled restore point within few seconds.</source>
         <translation>Cria um ponto de restauração programada em poucos segundos.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6863"/>
+        <location filename="../systemback/systemback.ui" line="6857"/>
         <location filename="../systemback/systemback.cpp" line="3303"/>
         <location filename="../systemback/systemback.cpp" line="3309"/>
         <location filename="../systemback/systemback.cpp" line="3315"/>
@@ -938,22 +938,22 @@
         <translation>Iniciar</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6888"/>
+        <location filename="../systemback/systemback.ui" line="6882"/>
         <source>Later</source>
         <translation>Mais tarde</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7209"/>
+        <location filename="../systemback/systemback.ui" line="7203"/>
         <source>Systemback user authentication</source>
         <translation>Autenticação do usuário Systemback</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7228"/>
+        <location filename="../systemback/systemback.ui" line="7222"/>
         <source>Administrator:</source>
         <translation>Administrador:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7263"/>
+        <location filename="../systemback/systemback.ui" line="7257"/>
         <source>Password:</source>
         <translation>Senha:</translation>
     </message>

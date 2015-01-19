@@ -5697,9 +5697,6 @@
        </property>
       </widget>
       <widget class="QLabel" name="label_40">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -5738,9 +5735,6 @@
        </property>
       </widget>
       <widget class="QLabel" name="label_39">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
        <property name="geometry">
         <rect>
          <x>0</x>

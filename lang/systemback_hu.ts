@@ -128,7 +128,7 @@
         <location filename="../systemback/systemback.ui" line="4608"/>
         <location filename="../systemback/systemback.ui" line="5140"/>
         <location filename="../systemback/systemback.ui" line="5374"/>
-        <location filename="../systemback/systemback.ui" line="6184"/>
+        <location filename="../systemback/systemback.ui" line="6178"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="307"/>
         <source>Back</source>
         <translation>Vissza</translation>
@@ -399,8 +399,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3058"/>
-        <location filename="../systemback/systemback.ui" line="7095"/>
-        <location filename="../systemback/systemback.ui" line="7364"/>
+        <location filename="../systemback/systemback.ui" line="7089"/>
+        <location filename="../systemback/systemback.ui" line="7358"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="448"/>
         <source>Cancel</source>
         <translation>Mégsem</translation>
@@ -762,68 +762,68 @@
         <translation>Partíció beállítás</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5986"/>
+        <location filename="../systemback/systemback.ui" line="5980"/>
         <source>Need to set the mount point as &apos;/boot/efi&apos;!</source>
         <translation>Be kell állítani a &apos;/boot/efi&apos; csatolási pontot!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6022"/>
+        <location filename="../systemback/systemback.ui" line="6016"/>
         <source>Window DPI scaling</source>
         <translation>Ablak méretezése a képernyőfelbontáshoz</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6071"/>
+        <location filename="../systemback/systemback.ui" line="6065"/>
         <source>Multiplier factor for scaling the window contents</source>
         <translation>Szorzási tényező az ablaktartalom méretezéséhez</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6213"/>
+        <location filename="../systemback/systemback.ui" line="6207"/>
         <source>User interface</source>
         <translation>Felhasználói felület</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6291"/>
+        <location filename="../systemback/systemback.ui" line="6285"/>
         <source>Window always on top</source>
         <translation>Az ablak mindig felül</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6310"/>
+        <location filename="../systemback/systemback.ui" line="6304"/>
         <source>System</source>
         <translation>Rendszer</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6332"/>
+        <location filename="../systemback/systemback.ui" line="6326"/>
         <source>Disable scheduler daemon starting for the following users:</source>
         <translation>Ütemező démon indításának letiltása a következő felhasználóknál:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6351"/>
+        <location filename="../systemback/systemback.ui" line="6345"/>
         <source>Use XZ compressor for squashfs filesystems</source>
         <translation>XZ tömörítő használata squashfs fájlrendszerekhez</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6370"/>
+        <location filename="../systemback/systemback.ui" line="6364"/>
         <source>Override auto-detected language:</source>
         <translation>Automatikusan érzékelt nyelv felülbírálása:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6389"/>
+        <location filename="../systemback/systemback.ui" line="6383"/>
         <source>Override the used style:</source>
         <translation>Használt stílus felülbírálása:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6408"/>
+        <location filename="../systemback/systemback.ui" line="6402"/>
         <source>Disable incremental restore points (do not use hard links between backups)</source>
         <translation>Visszaállítási pontok egymásra építésének tiltása (hard linkek használatának mellőzése)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6526"/>
+        <location filename="../systemback/systemback.ui" line="6520"/>
         <source>Create Live ISO images automatically (faster than the conversion)</source>
         <translation>Live ISO képfájlok automatikus létrehozása (gyorsabb mint a konvertálás)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5636"/>
-        <location filename="../systemback/systemback.ui" line="5848"/>
+        <location filename="../systemback/systemback.ui" line="5842"/>
         <location filename="../systemback/systemback.cpp" line="4040"/>
         <location filename="../systemback/systemback.cpp" line="5504"/>
         <location filename="../systemback/systemback.cpp" line="5797"/>
@@ -838,12 +838,12 @@
         <translation>Kiírás céleszközre</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5753"/>
+        <location filename="../systemback/systemback.ui" line="5747"/>
         <source>Mount point:</source>
         <translation>Csatolási pont:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5820"/>
+        <location filename="../systemback/systemback.ui" line="5814"/>
         <location filename="../systemback/systemback.cpp" line="1875"/>
         <location filename="../systemback/systemback.cpp" line="5502"/>
         <location filename="../systemback/systemback.cpp" line="5833"/>
@@ -853,17 +853,17 @@
         <translation>! Törlés !</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5883"/>
+        <location filename="../systemback/systemback.ui" line="5877"/>
         <source>Add new partition</source>
         <translation>Új partíció hozzáadása</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5941"/>
+        <location filename="../systemback/systemback.ui" line="5935"/>
         <source>Create new:</source>
         <translation>Új készítése:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5712"/>
+        <location filename="../systemback/systemback.ui" line="5709"/>
         <source>Filesystem:</source>
         <translation>Fájlrendszer:</translation>
     </message>
@@ -876,8 +876,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5604"/>
-        <location filename="../systemback/systemback.ui" line="5785"/>
-        <location filename="../systemback/systemback.ui" line="5915"/>
+        <location filename="../systemback/systemback.ui" line="5779"/>
+        <location filename="../systemback/systemback.ui" line="5909"/>
         <source>Reset partitions settings</source>
         <translation>Partícióbeállítások újrakezdése</translation>
     </message>
@@ -912,17 +912,17 @@
         <translation>Felhasználói beállítás- és adatfájlok átvitele</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6698"/>
+        <location filename="../systemback/systemback.ui" line="6692"/>
         <source>! Interrupt !</source>
         <translation>! Megszakítás !</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6835"/>
+        <location filename="../systemback/systemback.ui" line="6829"/>
         <source>Creates a scheduled restore point within few seconds.</source>
         <translation>Ütemezett visszaállítási pont készítése néhány másodpercen belül.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6863"/>
+        <location filename="../systemback/systemback.ui" line="6857"/>
         <location filename="../systemback/systemback.cpp" line="3303"/>
         <location filename="../systemback/systemback.cpp" line="3309"/>
         <location filename="../systemback/systemback.cpp" line="3315"/>
@@ -938,22 +938,22 @@
         <translation>Indítás</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6888"/>
+        <location filename="../systemback/systemback.ui" line="6882"/>
         <source>Later</source>
         <translation>Később</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7209"/>
+        <location filename="../systemback/systemback.ui" line="7203"/>
         <source>Systemback user authentication</source>
         <translation>Systemback felhasználó hitelesítés</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7228"/>
+        <location filename="../systemback/systemback.ui" line="7222"/>
         <source>Administrator:</source>
         <translation>Adminisztrátor:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7263"/>
+        <location filename="../systemback/systemback.ui" line="7257"/>
         <source>Password:</source>
         <translation>Jelszó:</translation>
     </message>

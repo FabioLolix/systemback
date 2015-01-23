@@ -583,36 +583,43 @@ void systemback::unitimer()
 
                 if(sb::isdir("/usr/share/systemback/lang"))
                 {
-                    ui->languages->addItem("English");
-
-                    for(cQStr &item : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
                     {
-                        QStr lcode(sb::left(sb::right(item, -11), -3));
+                        QSL lst("English");
 
-                        if(lcode == "ar_EG")
-                            ui->languages->addItem("المصرية العربية");
-                        else if(lcode == "ca_ES")
-                            ui->languages->addItem("Català");
-                        else if(lcode == "es")
-                            ui->languages->addItem("Español");
-                        else if(lcode == "fi")
-                            ui->languages->addItem("Suomi");
-                        else if(lcode == "fr")
-                            ui->languages->addItem("Français");
-                        else if(lcode == "gl_ES")
-                            ui->languages->addItem("Galego");
-                        else if(lcode == "hu")
-                            ui->languages->addItem("Magyar");
-                        else if(lcode == "id")
-                            ui->languages->addItem("Bahasa Indonesia");
-                        else if(lcode == "pt_BR")
-                            ui->languages->addItem("Português (Brasil)");
-                        else if(lcode == "ro")
-                            ui->languages->addItem("Română");
-                        else if(lcode == "tr")
-                            ui->languages->addItem("Türkçe");
-                        else if(lcode == "zh_CN")
-                            ui->languages->addItem("中文（简体）");
+                        for(cQStr &item : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
+                        {
+                            QStr lcode(sb::left(sb::right(item, -11), -3));
+
+                            if(lcode == "ar_EG")
+                                lst.append("المصرية العربية");
+                            else if(lcode == "ca_ES")
+                                lst.append("Català");
+                            else if(lcode == "cs")
+                                lst.append("Čeština");
+                            else if(lcode == "es")
+                                lst.append("Español");
+                            else if(lcode == "fi")
+                                lst.append("Suomi");
+                            else if(lcode == "fr")
+                                lst.append("Français");
+                            else if(lcode == "gl_ES")
+                                lst.append("Galego");
+                            else if(lcode == "hu")
+                                lst.append("Magyar");
+                            else if(lcode == "id")
+                                lst.append("Bahasa Indonesia");
+                            else if(lcode == "pt_BR")
+                                lst.append("Português (Brasil)");
+                            else if(lcode == "ro")
+                                lst.append("Română");
+                            else if(lcode == "tr")
+                                lst.append("Türkçe");
+                            else if(lcode == "zh_CN")
+                                lst.append("中文（简体）");
+                        }
+
+                        lst.sort();
+                        ui->languages->addItems(lst);
                     }
 
                     if(sb::lang != "auto")
@@ -621,6 +628,10 @@ void systemback::unitimer()
                             ui->languages->setCurrentIndex(ui->languages->findText("المصرية العربية"));
                         else if(sb::lang == "ca_ES")
                             ui->languages->setCurrentIndex(ui->languages->findText("Català"));
+                        else if(sb::lang == "cs_CS")
+                            ui->languages->setCurrentIndex(ui->languages->findText("Čeština"));
+                        else if(sb::lang == "en_EN")
+                            ui->languages->setCurrentIndex(ui->languages->findText("English"));
                         else if(sb::lang == "es_ES")
                             ui->languages->setCurrentIndex(ui->languages->findText("Español"));
                         else if(sb::lang == "fi_FI")
@@ -631,8 +642,6 @@ void systemback::unitimer()
                             ui->languages->setCurrentIndex(ui->languages->findText("Galego"));
                         else if(sb::lang == "hu_HU")
                             ui->languages->setCurrentIndex(ui->languages->findText("Magyar"));
-                        else if(sb::lang == "id_ID")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Bahasa Indonesia"));
                         else if(sb::lang == "pt_BR")
                             ui->languages->setCurrentIndex(ui->languages->findText("Português (Brasil)"));
                         else if(sb::lang == "ro_RO")
@@ -641,7 +650,7 @@ void systemback::unitimer()
                             ui->languages->setCurrentIndex(ui->languages->findText("Türkçe"));
                         else if(sb::lang == "zh_CN")
                             ui->languages->setCurrentIndex(ui->languages->findText("中文（简体）"));
-                        else if(sb::lang != "en_EN")
+                        else if(sb::lang != "id_ID")
                             ui->languages->setCurrentIndex(-1);
 
                         if(ui->languages->currentIndex() == -1)
@@ -3779,6 +3788,18 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         ui->windowbutton3->setForegroundRole(QPalette::Dark);
         ui->function4->setForegroundRole(QPalette::Dark);
         ui->windowbutton4->setForegroundRole(QPalette::Dark);
+
+        if(ui->copypanel->isVisible())
+        {
+            if(ui->partitionsettings->hasFocus()) ui->copyback->setFocus();
+        }
+        else if(ui->livecreatepanel->isVisible())
+        {
+            if(ui->livelist->hasFocus() || ui->livedevices->hasFocus()) ui->livecreateback->setFocus();
+        }
+        else if(ui->excludepanel->isVisible() && (ui->itemslist->hasFocus() || ui->excludedlist->hasFocus()))
+            ui->excludeback->setFocus();
+
         return true;
     case QEvent::Resize:
         ui->mainpanel->resize(size());
@@ -9449,6 +9470,8 @@ void systemback::on_languageoverride_clicked(bool checked)
             sb::lang = "ar_EG";
         else if(ui->languages->currentText() == "Català")
             sb::lang = "ca_ES";
+        else if(ui->languages->currentText() == "Čeština")
+            sb::lang = "cs_CS";
         else if(ui->languages->currentText() == "English")
             sb::lang = "en_EN";
         else if(ui->languages->currentText() == "Español")
@@ -9491,6 +9514,8 @@ void systemback::on_languages_currentIndexChanged(cQStr &arg1)
             sb::lang = "ar_EG";
         else if(arg1 == "Català")
             sb::lang = "ca_ES";
+        else if(arg1 == "Čeština")
+            sb::lang = "cs_CS";
         else if(arg1 == "English")
             sb::lang = "en_EN";
         else if(arg1 == "Español")

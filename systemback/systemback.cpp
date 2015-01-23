@@ -3791,14 +3791,18 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 
         if(ui->copypanel->isVisible())
         {
-            if(ui->partitionsettings->hasFocus()) ui->copyback->setFocus();
+            if(ui->partitionsettings->hasFocus() && ui->partitionsettings->currentRow() == -1) ui->copyback->setFocus();
         }
         else if(ui->livecreatepanel->isVisible())
         {
-            if(ui->livelist->hasFocus() || ui->livedevices->hasFocus()) ui->livecreateback->setFocus();
+            if((ui->livelist->hasFocus() && ui->livelist->currentRow() == -1) || (ui->livedevices->hasFocus() && ui->livedevices->currentRow() == -1)) ui->livecreateback->setFocus();
         }
-        else if(ui->excludepanel->isVisible() && (ui->itemslist->hasFocus() || ui->excludedlist->hasFocus()))
-            ui->excludeback->setFocus();
+        else if(ui->excludepanel->isVisible())
+        {
+            if((ui->itemslist->hasFocus() && ! ui->itemslist->currentItem()) || (ui->excludedlist->hasFocus() && ui->excludedlist->currentRow() == -1)) ui->excludeback->setFocus();
+        }
+        else if(ui->choosepanel->isVisible() && ui->dirchoose->hasFocus() && ! ui->dirchoose->currentItem())
+            ui->dirchoosecancel->setFocus();
 
         return true;
     case QEvent::Resize:

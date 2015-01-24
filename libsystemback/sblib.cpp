@@ -426,7 +426,7 @@ void sb::supgrade(cQSL &estr)
                                 QStr subk(kernel % '-' % QBA::number(kver.toUShort() - a));
 
                                 for(cQStr &ritem : dlst)
-                                    if(ritem.startsWith("vmlinuz-" % subk % '-')) rklist.append(' ' % subk % "-*");
+                                    if(ritem.startsWith("vmlinuz-" % subk % '-') && ! rklist.contains(' ' % subk % "-*")) rklist.append(' ' % subk % "-*");
                             }
                         }
                     }

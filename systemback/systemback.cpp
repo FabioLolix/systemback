@@ -433,7 +433,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     }
 
     if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-    if((unity = sb::exist("/usr/lib/unity/unity-panel-service") && pisrng("unity-panel-service"))) setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    if(sb::exist("/usr/bin/compiz") && pisrng("compiz")) setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     installEventFilter(this);
 }
 
@@ -1549,7 +1549,12 @@ void systemback::wminpressed()
 
 void systemback::wminreleased()
 {
-    if(ui->buttonspanel->isVisible() && ui->windowminimize->foregroundRole() == QPalette::Highlight) showMinimized();
+    if(ui->buttonspanel->isVisible() && ui->windowminimize->foregroundRole() == QPalette::Highlight)
+    {
+        Display *dsply(XOpenDisplay(nullptr));
+        XIconifyWindow(dsply, winId(), 0);
+        XFlush(dsply);
+    }
 }
 
 void systemback::wcenter()
@@ -3871,7 +3876,6 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         if(wismax && geometry() != qApp->desktop()->screenGeometry(this)) setGeometry(qApp->desktop()->screenGeometry(this));
         return true;
     case QEvent::WindowStateChange:
-        if(isMinimized() && unity) showNormal();
         if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
         return true;
     default:

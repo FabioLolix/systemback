@@ -50,7 +50,7 @@
 
 ushort lblevent::MouseX, lblevent::MouseY;
 
-systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
+systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint), ui(new Ui::systemback)
 {
     if(sb::style == "auto")
         cfgupdt = false;
@@ -433,7 +433,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     }
 
     if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-    if(sb::exist("/usr/bin/compiz") && pisrng("compiz")) setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
+    QTimer::singleShot(0, this, SLOT(frmwrkrnd()));
     installEventFilter(this);
 }
 
@@ -448,6 +448,15 @@ systemback::~systemback()
     }
 
     delete ui;
+}
+
+void systemback::frmwrkrnd()
+{
+    Display *dsply(XOpenDisplay(nullptr));
+    Atom atm(XInternAtom(dsply, "_MOTIF_WM_HINTS", 0));
+    ulong hnts[3]{2, 0, 0};
+    XChangeProperty(dsply, winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 3);
+    XFlush(dsply);
 }
 
 void systemback::closeEvent(QCloseEvent *ev)
@@ -1234,23 +1243,6 @@ QStr systemback::ckname()
     return snfo.release;
 }
 
-bool systemback::pisrng(cQStr &pname, ushort *pid)
-{
-    DIR *dir(opendir("/proc"));
-    dirent *ent;
-
-    while((ent = readdir(dir)))
-        if(! sb::like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(ent->d_name) && sb::islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith('/' % pname))
-        {
-            if(pid) *pid = QBA(ent->d_name).toUShort();
-            closedir(dir);
-            return true;
-        }
-
-    closedir(dir);
-    return false;
-}
-
 QStr systemback::gdetect(cQStr rdir)
 {
     QStr mnts(sb::fload("/proc/self/mounts", true));
@@ -1552,7 +1544,9 @@ void systemback::wminreleased()
     if(ui->buttonspanel->isVisible() && ui->windowminimize->foregroundRole() == QPalette::Highlight)
     {
         Display *dsply(XOpenDisplay(nullptr));
-        XIconifyWindow(dsply, winId(), 0);
+        XWindowAttributes attr;
+        XGetWindowAttributes(dsply, winId(), &attr);
+        XIconifyWindow(dsply, winId(), XScreenNumberOfScreen(attr.screen));
         XFlush(dsply);
     }
 }
@@ -6706,8 +6700,16 @@ void systemback::on_dialogok_clicked()
     }
     else if(ui->dialogok->text() == tr("X restart"))
     {
-        ushort pid;
-        if(pisrng("Xorg", &pid)) kill(pid, SIGTERM);
+        DIR *dir(opendir("/proc"));
+        dirent *ent;
+
+        while((ent = readdir(dir)))
+            if(! sb::like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(ent->d_name) && sb::islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith("/Xorg"))
+            {
+                closedir(dir);
+                kill(QBA(ent->d_name).toUShort(), SIGTERM);
+            }
+
         close();
     }
 }

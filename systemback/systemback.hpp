@@ -70,7 +70,6 @@ private:
     QStr guname();
     QStr ckname();
     ushort ss(ushort size);
-    bool pisrng(cQStr &pname, ushort *pid = nullptr);
     bool minside(cQPoint &wpos, cQSize &wsize);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
     void itmxpnd(cQSL &path, QTrWI *item);
@@ -114,6 +113,7 @@ private slots:
     void dntpressed();
     void finpsttngs();
     void sbttnleave();
+    void frmwrkrnd();
     void wreleased();
     void wmaxenter();
     void wmaxleave();

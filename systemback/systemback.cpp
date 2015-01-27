@@ -433,7 +433,6 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     }
 
     if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-    QTimer::singleShot(0, this, SLOT(frmwrkrnd()));
     installEventFilter(this);
 }
 
@@ -448,15 +447,6 @@ systemback::~systemback()
     }
 
     delete ui;
-}
-
-void systemback::frmwrkrnd()
-{
-    Display *dsply(XOpenDisplay(nullptr));
-    Atom atm(XInternAtom(dsply, "_MOTIF_WM_HINTS", 0));
-    ulong hnts[3]{2, 0, 0};
-    XChangeProperty(dsply, winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 3);
-    XFlush(dsply);
 }
 
 void systemback::closeEvent(QCloseEvent *ev)
@@ -1144,10 +1134,10 @@ void systemback::busy(bool state)
 
     switch(busycnt) {
     case 0:
-        qApp->restoreOverrideCursor();
+        if(qApp->overrideCursor()->shape() == Qt::WaitCursor) qApp->restoreOverrideCursor();
         break;
     case 1:
-        if(! qApp->overrideCursor()) qApp->setOverrideCursor(Qt::WaitCursor);
+        if(! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::WaitCursor) qApp->setOverrideCursor(Qt::WaitCursor);
     }
 }
 
@@ -1356,7 +1346,7 @@ void systemback::wpressed()
 
 void systemback::wreleased()
 {
-    if(qApp->overrideCursor()) qApp->restoreOverrideCursor();
+    if(qApp->overrideCursor() && qApp->overrideCursor()->shape() == Qt::SizeAllCursor) busycnt > 0 ? qApp->setOverrideCursor(Qt::WaitCursor) : qApp->restoreOverrideCursor();
 
     if(! wismax)
     {
@@ -1591,7 +1581,7 @@ void systemback::chsenter()
 
 void systemback::chsleave()
 {
-    if(ui->chooseresize->width() == ss(30) && ! qApp->overrideCursor()) ui->chooseresize->setGeometry(ui->chooseresize->x() + ss(20), ui->chooseresize->y() + ss(20), ss(10), ss(10));
+    if(ui->chooseresize->width() == ss(30) && (! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor)) ui->chooseresize->setGeometry(ui->chooseresize->x() + ss(20), ui->chooseresize->y() + ss(20), ss(10), ss(10));
 }
 
 void systemback::chspressed()
@@ -1601,7 +1591,7 @@ void systemback::chspressed()
 
 void systemback::chsreleased()
 {
-    if(qApp->overrideCursor()) qApp->restoreOverrideCursor();
+    if(qApp->overrideCursor() && qApp->overrideCursor()->shape() == Qt::SizeFDiagCursor) busycnt > 0 ? qApp->setOverrideCursor(Qt::WaitCursor) : qApp->restoreOverrideCursor();
 }
 
 void systemback::cpyenter()
@@ -1617,7 +1607,7 @@ void systemback::cpyenter()
 
 void systemback::cpyleave()
 {
-    if(ui->copyresize->width() == ss(30) && ! qApp->overrideCursor()) ui->copyresize->setGeometry(ui->copyresize->x() + ss(20), ui->copyresize->y() + ss(20), ss(10), ss(10));
+    if(ui->copyresize->width() == ss(30) && (! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor)) ui->copyresize->setGeometry(ui->copyresize->x() + ss(20), ui->copyresize->y() + ss(20), ss(10), ss(10));
 }
 
 void systemback::xcldenter()
@@ -1633,7 +1623,7 @@ void systemback::xcldenter()
 
 void systemback::xcldleave()
 {
-    if(ui->excluderesize->width() == ss(30) && ! qApp->overrideCursor()) ui->excluderesize->setGeometry(ui->excluderesize->x() + ss(20), ui->excluderesize->y() + ss(20), ss(10), ss(10));
+    if(ui->excluderesize->width() == ss(30) && (! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor)) ui->excluderesize->setGeometry(ui->excluderesize->x() + ss(20), ui->excluderesize->y() + ss(20), ss(10), ss(10));
 }
 
 void systemback::sbttnpressed()

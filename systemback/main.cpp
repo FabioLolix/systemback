@@ -20,6 +20,7 @@
 #include "systemback.hpp"
 #include <QApplication>
 #include <QTranslator>
+#include <X11/Xlib.h>
 #include <unistd.h>
 
 int main(int argc, char *argv[])
@@ -44,6 +45,11 @@ int main(int argc, char *argv[])
     }
 
     systemback w;
+    { Display *dsply(XOpenDisplay(nullptr));
+    Atom atm(XInternAtom(dsply, "_MOTIF_WM_HINTS", 0));
+    ulong hnts[5]{3, 44, 0, 0, 0};
     w.show();
+    XChangeProperty(dsply, w.winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 5);
+    XFlush(dsply); }
     return a.exec();
 }

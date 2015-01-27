@@ -113,7 +113,6 @@ private slots:
     void dntpressed();
     void finpsttngs();
     void sbttnleave();
-    void frmwrkrnd();
     void wreleased();
     void wmaxenter();
     void wmaxleave();

@@ -19,7 +19,6 @@
 
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
-#define _FILE_OFFSET_BITS 64
 #define chr(qstr) qstr.toUtf8().constData()
 
 #include "sblib_global.hpp"

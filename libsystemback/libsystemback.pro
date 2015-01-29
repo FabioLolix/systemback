@@ -9,9 +9,12 @@ TEMPLATE = lib
 
 DEFINES += SYSTEMBACK_LIBRARY
 
-system(./lcheck.sh):
-{
-    exists(libmount.hpp) DEFINES += C_MNT_LIB
+! equals(QMAKE_HOST.arch, x86_64) {
+    DEFINES += _FILE_OFFSET_BITS=64
+}
+
+system(./lcheck.sh):exists(libmount.hpp) {
+    DEFINES += C_MNT_LIB
 }
 
 SOURCES += sblib.cpp

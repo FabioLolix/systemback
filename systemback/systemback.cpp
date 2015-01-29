@@ -50,7 +50,7 @@
 
 ushort lblevent::MouseX, lblevent::MouseY;
 
-systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint), ui(new Ui::systemback)
+systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
     if(sb::style == "auto")
         cfgupdt = false;
@@ -433,6 +433,11 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     }
 
     if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    Display *dsply(XOpenDisplay(nullptr));
+    Atom atm(XInternAtom(dsply, "_MOTIF_WM_HINTS", 0));
+    ulong hnts[5]{3, 44, 0, 0, 0};
+    XChangeProperty(dsply, winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 5);
+    XFlush(dsply);
     installEventFilter(this);
 }
 

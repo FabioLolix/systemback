@@ -956,8 +956,18 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
             llong size(0);
 
             do {
-                llong csize(size);
-                if((size += sendfile(dst, src, nullptr, fstat.st_size - size)) <= csize) err = true;
+                llong csize(size)
+#ifdef __i386__
+                        , rsize(fstat.st_size - size)
+#endif
+                        ;
+                if((size += sendfile(dst, src, nullptr,
+#ifdef __i386__
+                                     rsize < 2147483648 ? rsize : 2147483647
+#else
+                                     fstat.st_size - size
+#endif
+                                     )) <= csize) err = true;
             } while(! err && size < fstat.st_size);
         }
 

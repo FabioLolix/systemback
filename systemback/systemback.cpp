@@ -438,6 +438,7 @@ systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     ulong hnts[5]{3, 44, 0, 0, 0};
     XChangeProperty(dsply, winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 5);
     XFlush(dsply);
+    XCloseDisplay(dsply);
     installEventFilter(this);
 }
 
@@ -1543,6 +1544,7 @@ void systemback::wminreleased()
         XGetWindowAttributes(dsply, winId(), &attr);
         XIconifyWindow(dsply, winId(), XScreenNumberOfScreen(attr.screen));
         XFlush(dsply);
+        XCloseDisplay(dsply);
     }
 }
 
@@ -3651,6 +3653,7 @@ void systemback::setwontop(bool state)
         XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
         ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_STAYS_ON_TOP", 0);
         XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
+        XCloseDisplay(dsply);
     }
 }
 

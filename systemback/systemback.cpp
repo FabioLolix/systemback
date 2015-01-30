@@ -2213,6 +2213,7 @@ void systemback::statustart()
 
     ui->statuspanel->show();
     ui->progressbar->setMaximum(0);
+    ui->focusfix->setFocus();
     repaint();
 }
 

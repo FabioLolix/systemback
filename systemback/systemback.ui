@@ -6698,9 +6698,23 @@
        </size>
       </property>
      </widget>
+     <widget class="QWidget" name="focusfix" native="true">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>116</y>
+        <width>20</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+     </widget>
      <zorder>interrupt</zorder>
      <zorder>processrun</zorder>
      <zorder>progressbar</zorder>
+     <zorder>focusfix</zorder>
     </widget>
     <zorder>border_2</zorder>
     <zorder>function2</zorder>

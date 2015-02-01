@@ -2307,7 +2307,7 @@ start:
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(! sb::ilike(dialog, {23, 60}))
+        if(! sb::like(dialog, {23, 60}))
         {
             switch(mthd) {
             case 1:
@@ -2420,7 +2420,7 @@ start:
             sb::fssync();
             sb::crtfile("/proc/sys/vm/drop_caches", "3");
 
-            if(sb::ilike(dialog, {5, 6, 41}))
+            if(sb::like(dialog, {5, 6, 41}))
             {
                 if(ppipe == 1 && sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
                 dialog = ui->fullrepair->isChecked() ? 12 : 13;
@@ -2439,7 +2439,7 @@ void systemback::systemcopy()
 error:
     if(intrrpt) goto exit;
 
-    if(! sb::ilike(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
+    if(! sb::like(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
         {
@@ -2947,8 +2947,8 @@ start:
                 {
                     if(mdfd > 1)
                     {
-                        if(sb::ilike(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
-                        if(sb::ilike(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
+                        if(sb::like(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
+                        if(sb::like(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
                     }
 
                     if(! sb::crtfile(fpath, nfile)) goto error;
@@ -3628,7 +3628,7 @@ void systemback::dialogopen(schar snum)
             windowmove(ui->dialogpanel->width(), ui->dialogpanel->height());
         else
         {
-            if(! sb::ilike(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
+            if(! sb::like(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
             setFixedSize((wgeom[2] = ui->dialogpanel->width()), (wgeom[3] = ui->dialogpanel->height()));
             move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(253)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(100)));
         }
@@ -5565,7 +5565,7 @@ void systemback::on_partitionrefresh_clicked()
         {
             QStr path(dts.split('\n').at(0));
 
-            if(sb::ilike(path.length(), {8, 12}))
+            if(sb::like(path.length(), {8, 12}))
             {
                 ui->grubinstallcopy->addItem(path);
                 ui->grubreinstallrestore->addItem(path);
@@ -5583,7 +5583,7 @@ void systemback::on_partitionrefresh_clicked()
         cQStr &path(dts.at(0)), &type(dts.at(2));
         ullong bsize(dts.at(1).toULongLong());
 
-        if(sb::ilike(path.length(), {8, 12}))
+        if(sb::like(path.length(), {8, 12}))
         {
             ++sn;
             ui->partitionsettings->setRowCount(sn + 1);
@@ -6637,7 +6637,7 @@ void systemback::on_dialogok_clicked()
         }
         else if(! utimer->isActive() || sstart)
             close();
-        else if(sb::ilike(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
+        else if(sb::like(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
         {
             ui->dialogpanel->hide();
             ui->mainpanel->show();
@@ -7562,7 +7562,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             bool mntd(false), mntcheck(false);
 
-            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::ilike(ui->partitionsettings->item(a, 8)->text().toUShort(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
+            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::like(uchar(ui->partitionsettings->item(a, 8)->text().toUShort()), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());

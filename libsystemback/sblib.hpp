@@ -79,7 +79,8 @@ public:
     static bool setpflag(cQStr &part, cQStr &flag);
     static bool issmfs(cchar *item1, cchar *item2);
     static bool issmfs(cchar *item1, cQStr &item2);
-    static bool ilike(short num, cQSIL &lst);
+    static bool like(uchar num, cQUCL &lst);
+    static bool like(int num, cQIL &lst);
     static bool islnxfs(cQStr &path);
     static bool islink(cQStr &path);
     static bool isfile(cQStr &path);
@@ -224,12 +225,14 @@ inline bool sb::like(cQStr &txt, cQSL &lst, cuchar mode)
     }
 }
 
-inline bool sb::ilike(short num, cQSIL &lst)
+inline bool sb::like(uchar num, cQUCL &lst)
 {
-    for(short val : lst)
-        if(num == val) return true;
+    return lst.contains(num);
+}
 
-    return false;
+inline bool sb::like(int num, cQIL &lst)
+{
+    return lst.contains(num);
 }
 
 inline bool sb::exist(cchar *path)
@@ -310,7 +313,7 @@ inline bool sb::islnxfs(cQStr &dirpath)
 inline bool sb::issmfs(cchar *item1, cchar *item2)
 {
     struct stat istat[2];
-    return ! ilike(-1, {short(stat(item1, &istat[0])), short(stat(item2, &istat[1]))}) && istat[0].st_dev == istat[1].st_dev;
+    return stat(item1, &istat[0]) != -1 && stat(item2, &istat[1]) != -1 && istat[0].st_dev == istat[1].st_dev;
 }
 
 inline bool sb::isnum(cQStr &txt)

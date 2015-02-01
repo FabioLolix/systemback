@@ -144,7 +144,7 @@ ullong sb::dfree(cQStr &path)
 
 bool sb::crtfile(cQStr &path, cQStr &txt)
 {
-    if(! ilike(stype(path), {Notexist, Isfile}) || ! isdir(left(path, rinstr(path, "/") - 1))) return false;
+    if(! like(stype(path), {Notexist, Isfile}) || ! isdir(left(path, rinstr(path, "/") - 1))) return false;
     QFile file(path);
     bool exst(file.exists());
     if(! file.open(QFile::WriteOnly | QFile::Truncate) || file.write(txt.toUtf8()) == -1) return false;
@@ -434,7 +434,7 @@ void sb::supgrade(cQSL &estr)
 
             uchar cproc(rklist.isEmpty() ? 0 : exec("apt-get autoremove --purge " % rklist));
 
-            if(ilike(cproc, {0, 1}))
+            if(like(cproc, {0, 1}))
             {
                 QStr iplist;
                 QProcess proc;
@@ -544,12 +544,13 @@ void sb::cfgread()
                     {
                         QSL vals(cval.split(':'));
 
-                        for(uchar a(0) ; ! ilike(a, {short(vals.count()), 4}) ; ++a)
-                        {
-                            bool ok;
-                            uchar num(vals.at(a).toUShort(&ok));
-                            if(ok) schdle[a + 1] = num;
-                        }
+                        if(vals.count() == 4)
+                            for(uchar a(0) ; a < 4 ; ++a)
+                            {
+                                bool ok;
+                                uchar num(vals.at(a).toUShort(&ok));
+                                if(ok) schdle[a + 1] = num;
+                            }
                     }
                     else if(cline.startsWith("silent="))
                     {
@@ -900,7 +901,7 @@ inline ullong sb::devsize(cQStr &dev)
 inline uchar sb::fcomp(cQStr &file1, cQStr &file2)
 {
     struct stat fstat[2];
-    if(ilike(-1, {short(stat(chr(file1), &fstat[0])), short(stat(chr(file2), &fstat[1]))})) return 0;
+    if(stat(chr(file1), &fstat[0]) == -1 || stat(chr(file2), &fstat[1]) == -1) return 0;
     if(fstat[0].st_size == fstat[1].st_size && fstat[0].st_mtim.tv_sec == fstat[1].st_mtim.tv_sec) return fstat[0].st_mode == fstat[1].st_mode && fstat[0].st_uid == fstat[1].st_uid && fstat[0].st_gid == fstat[1].st_gid ? 2 : 1;
     return 0;
 }
@@ -908,7 +909,7 @@ inline uchar sb::fcomp(cQStr &file1, cQStr &file2)
 inline bool sb::cpertime(cQStr &srcitem, cQStr &newitem)
 {
     struct stat istat[2];
-    if(ilike(-1, {short(stat(chr(srcitem), &istat[0])), short(stat(chr(newitem), &istat[1]))})) return false;
+    if(stat(chr(srcitem), &istat[0]) == -1 || stat(chr(newitem), &istat[1]) == -1) return false;
 
     if(istat[0].st_uid != istat[1].st_uid || istat[0].st_gid != istat[1].st_gid)
     {
@@ -1017,7 +1018,7 @@ inline bool sb::issmfs(cchar *item1, cQStr &item2)
 inline bool sb::lcomp(cQStr &link1, cQStr &link2)
 {
     struct stat istat[2];
-    if(ilike(-1, {short(lstat(chr(link1), &istat[0])), short(lstat(chr(link2), &istat[1]))}) || ! S_ISLNK(istat[0].st_mode) || ! S_ISLNK(istat[1].st_mode) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
+    if(lstat(chr(link1), &istat[0]) == -1 || lstat(chr(link2), &istat[1]) == -1 || ! S_ISLNK(istat[0].st_mode) || ! S_ISLNK(istat[1].st_mode) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
     QBA lnk(rlink(link1, istat[0].st_size));
     return ! lnk.isEmpty() && lnk == rlink(link2, istat[1].st_size);
 }
@@ -1182,7 +1183,7 @@ void sb::run()
         {
             QStr path("/dev/" % spath);
 
-            if(ilike(path.length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/hd*", "_/dev/mmcblk*"}) && devsize(path) > 536870911)
+            if(like(path.length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/hd*", "_/dev/mmcblk*"}) && devsize(path) > 536870911)
             {
                 PedDevice *dev(ped_device_get(chr(path)));
                 PedDisk *dsk(ped_disk_new(dev));
@@ -1300,7 +1301,7 @@ void sb::run()
             {
                 QStr path(rlink("/dev/disk/by-id/" % item, 14));
 
-                if(! path.isEmpty() && ilike((path = "/dev/" % right(path, -6)).length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/mmcblk*"}))
+                if(! path.isEmpty() && like((path = "/dev/" % right(path, -6)).length(), {8, 12}) && like(path, {"_/dev/sd*", "_/dev/mmcblk*"}))
                 {
                     ullong size(devsize(path));
 
@@ -1934,7 +1935,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
     if(mthd != 2)
     {
-        if(! ilike(mthd, {4, 6}))
+        if(! like(mthd, {4, 6}))
         {
             if(isdir(srcdir % "/root") && ! rodir(rootitms, srcdir % "/root", true)) return false;
 
@@ -2235,9 +2236,9 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
         bool skppd;
 
-        if(! ilike(mthd, {4, 6}) || usr == "root")
+        if(! like(mthd, {4, 6}) || usr == "root")
         {
-            if(! ilike(mthd, {3, 4}))
+            if(! like(mthd, {3, 4}))
             {
                 QBAL sdlst;
                 if(! odir(sdlst, trgt % "/root", true)) return false;
@@ -2288,7 +2289,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                         switch(stype(trgt % "/root/" % item)) {
                         case Isdir:
                         {
-                            if(! ilike(mthd, {3, 4}))
+                            if(! like(mthd, {3, 4}))
                             {
                                 QBAL sdlst;
                                 if(! odir(sdlst, trgt % "/root/" % item)) return false;
@@ -2370,7 +2371,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                 if(exist(trgt % "/home/" % usr)) QFile::remove(trgt % "/home/" % usr);
                 if(! QDir().mkdir(trgt % "/home/" % usr) && ! fspchk(trgt)) return false;
             }
-            else if(! ilike(mthd, {3, 4}))
+            else if(! like(mthd, {3, 4}))
             {
                 QBAL sdlst;
                 if(! odir(sdlst, trgt % "/home/" % usr, true)) return false;
@@ -2421,7 +2422,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                         switch(stype(trgt % "/home/" % usr % '/' % item)) {
                         case Isdir:
                         {
-                            if(! ilike(mthd, {3, 4}))
+                            if(! like(mthd, {3, 4}))
                             {
                                 QBAL sdlst;
                                 if(! odir(sdlst, trgt % "/home/" % usr % '/' % item)) return false;
@@ -2527,7 +2528,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     {
         if(isdir(srcdir % "/home"))
         {
-            if(ilike(mthd, {1, 2}))
+            if(like(mthd, {1, 2}))
             {
                 if(srcdir.isEmpty())
                 {
@@ -2657,7 +2658,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                             if(! QDir().mkdir("/.sbsystemcopy/home/" % usr % '/' % item)) return false;
                             break;
                         case Isfile:
-                            skppd = ilike(mthd, {2, 3}) && QFile(srcdir % "/home/" % usr % '/' % item).size() > 8000000;
+                            skppd = like(mthd, {2, 3}) && QFile(srcdir % "/home/" % usr % '/' % item).size() > 8000000;
 
                             switch(stype("/.sbsystemcopy/home/" % usr % '/' % item)) {
                             case Isfile:
@@ -2804,7 +2805,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     if(! QDir().mkdir("/.sbsystemcopy/root/" % item)) return false;
                     break;
                 case Isfile:
-                    skppd = ilike(mthd, {2, 3}) && QFile(srcdir % "/root/" % item).size() > 8000000;
+                    skppd = like(mthd, {2, 3}) && QFile(srcdir % "/root/" % item).size() > 8000000;
 
                     switch(stype("/.sbsystemcopy/root/" % item)) {
                     case Isfile:

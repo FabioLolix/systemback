@@ -163,8 +163,8 @@ start:
 
 uchar systemback::uinit()
 {
-    int pgid(tcgetpgrp(STDIN_FILENO));
-    if(pgid == -1 || pgid != qApp->applicationPid()) return 255;
+    int pgid(getpgrp());
+    if(pgid == -1 || pgid != tcgetpgrp(STDIN_FILENO) || pgid != tcgetpgrp(STDOUT_FILENO)) return 255;
     initscr();
     uchar rv(has_colors() ? LINES < 24 || COLS < 80 ? 12 : 0 : 11);
 

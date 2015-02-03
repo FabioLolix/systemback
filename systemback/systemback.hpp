@@ -40,7 +40,7 @@ class systemback : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit systemback(QWidget *parent = nullptr);
+    explicit systemback(QWidget *prnt = nullptr);
     ~systemback();
 
 protected:

@@ -27,7 +27,7 @@ class pnlevent : public QWidget
     Q_OBJECT
 
 public:
-    explicit pnlevent(QWidget *parent = nullptr) : QWidget(parent) {}
+    inline explicit pnlevent(QWidget *prnt) : QWidget(prnt) {}
 
 protected:
     void leaveEvent(QEvent *);

@@ -54,7 +54,7 @@ uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0), sb::schdle[6]{sb::Empty, sb::Em
 schar sb::Progress(-1);
 bool sb::ThrdBool, sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdRslt;
 
-sb::sb(QThread *parent) : QThread(parent)
+sb::sb()
 {
     qputenv("PATH", "/usr/lib/systemback:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin");
     setlocale(LC_ALL, "C.UTF-8");
@@ -906,10 +906,18 @@ inline uchar sb::fcomp(cQStr &file1, cQStr &file2)
     return 0;
 }
 
-inline bool sb::cpertime(cQStr &srcitem, cQStr &newitem)
+inline bool sb::cpertime(cQStr &srcitem, cQStr &newitem, bool skel)
 {
     struct stat istat[2];
     if(stat(chr(srcitem), &istat[0]) == -1 || stat(chr(newitem), &istat[1]) == -1) return false;
+
+    if(skel)
+    {
+        struct stat ustat;
+        if(stat(chr(left(newitem, instr(newitem, "/", 21) - 1)), &ustat) == -1) return false;
+        istat[0].st_uid = ustat.st_uid;
+        istat[0].st_gid = ustat.st_gid;
+    }
 
     if(istat[0].st_uid != istat[1].st_uid || istat[0].st_gid != istat[1].st_gid)
     {
@@ -942,7 +950,7 @@ inline bool sb::cplink(cQStr &srclink, cQStr &newlink)
     return lutimes(chr(newlink), sitimes) == 0;
 }
 
-inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
+inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile, bool skel)
 {
     struct stat fstat;
     if(stat(chr(srcfile), &fstat) == -1) return false;
@@ -976,7 +984,17 @@ inline bool sb::cpfile(cQStr &srcfile, cQStr &newfile)
     }
 
     close(src);
-    if(err || (fstat.st_uid + fstat.st_gid > 0 && (chown(chr(newfile), fstat.st_uid, fstat.st_gid) == -1 || (fstat.st_mode != (fstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(chr(newfile), fstat.st_mode) == -1)))) return false;
+    if(err) return false;
+
+    if(skel)
+    {
+        struct stat ustat;
+        if(stat(chr(left(newfile, instr(newfile, "/", 21) - 1)), &ustat) == -1) return false;
+        fstat.st_uid = ustat.st_uid;
+        fstat.st_gid = ustat.st_gid;
+    }
+
+    if(fstat.st_uid + fstat.st_gid > 0 && (chown(chr(newfile), fstat.st_uid, fstat.st_gid) == -1 || (fstat.st_mode != (fstat.st_mode & ~(S_ISUID | S_ISGID)) && chmod(chr(newfile), fstat.st_mode) == -1))) return false;
     utimbuf sftimes;
     sftimes.actime = fstat.st_atim.tv_sec;
     sftimes.modtime = fstat.st_mtim.tv_sec;
@@ -1881,7 +1899,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
             switch(cline.left(1).toUShort()) {
             case Isdir:
-                if(! cpdir("/var/log/" % item, trgt % "/var/log/" % item)) goto err_9;
+                if(! QDir().mkdir(trgt % "/var/log/" % item)) goto err_9;
                 break;
             case Isfile:
                 if(! like(item, {"*.gz_", "*.old_"}) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
@@ -2666,7 +2684,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                                 {
                                     switch(fcomp("/.sbsystemcopy/home/" % usr % '/' % item, srcdir % "/etc/skel/" % item)) {
                                     case 1:
-                                        if(! cpertime(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/home/" % usr % '/' % item)) goto err_1;
+                                        if(! cpertime(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/home/" % usr % '/' % item, true)) goto err_1;
                                     case 2:
                                         goto nitem_1;
                                     }
@@ -2691,7 +2709,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
                             if(mthd == 5)
                             {
-                                if(! cpfile(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/home/" % usr % '/' % item)) goto err_1;
+                                if(! cpfile(srcdir % "/etc/skel/" % item, "/.sbsystemcopy/home/" % usr % '/' % item, true)) goto err_1;
                             }
                             else if(! skppd && ! cpfile(srcdir % "/home/" % usr % '/' % item, "/.sbsystemcopy/home/" % usr % '/' % item))
                                 goto err_1;
@@ -2711,7 +2729,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                 while(! in.atEnd())
                 {
                     QStr cline(in.readLine()), item(right(cline, -1));
-                    if(cline.left(1).toUShort() == Isdir && exist("/.sbsystemcopy/home/" % usr % '/' % item) && ! cpertime(srcdir % (mthd == 5 ? "/etc/skel/" : QStr("/home/" % usr % '/')) % item, "/.sbsystemcopy/home/" % usr % '/' % item)) goto err_2;
+                    if(cline.left(1).toUShort() == Isdir && exist("/.sbsystemcopy/home/" % usr % '/' % item) && ! cpertime(srcdir % (mthd == 5 ? "/etc/skel/" : QStr("/home/" % usr % '/')) % item, "/.sbsystemcopy/home/" % usr % '/' % item, mthd == 5)) goto err_2;
                     if(ThrdKill) return false;
                     continue;
                 err_2:
@@ -3162,7 +3180,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
             switch(cline.left(1).toUShort()) {
             case Isdir:
-                if(! cpdir(srcdir % "/var/log/" % item, "/.sbsystemcopy/var/log/" % item)) goto err_10;
+                if(! QDir().mkdir("/.sbsystemcopy/var/log/" % item)) goto err_10;
                 break;
             case Isfile:
                 if(! like(item, {"*.gz_", "*.old_"}) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))

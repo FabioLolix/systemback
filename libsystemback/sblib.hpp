@@ -32,7 +32,7 @@
 class SHARED_EXPORT_IMPORT sb : public QThread
 {
 public:
-    explicit sb(QThread *parent = nullptr);
+    sb();
 
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdlr[2], pnames[15], lang, style, wsclng;
@@ -122,9 +122,9 @@ private:
     static uchar fcomp(cQStr &file1, cQStr &file2);
     static bool rodir(QBA &ba, cQStr &path, bool hidden = false, cuchar oplen = 0);
     static bool odir(QBAL &balst, cQStr &path, bool hidden = false);
-    static bool cpertime(cQStr &srcitem, cQStr &newitem);
+    static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
     static bool cplink(cQStr &srclink, cQStr &newlink);
-    static bool cpfile(cQStr &srcfile, cQStr &newfile);
+    static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
     static bool cpdir(cQStr &srcdir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);
     static bool lcomp(cQStr &link1, cQStr &link2);

@@ -28,7 +28,7 @@ class systemback : public QObject
     Q_OBJECT
 
 public:
-    explicit systemback(QObject *parent = nullptr);
+    systemback();
 
 public slots:
     void progress();

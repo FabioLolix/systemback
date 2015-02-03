@@ -27,7 +27,7 @@ class bttnevent : public QPushButton
     Q_OBJECT
 
 public:
-    explicit bttnevent(QWidget *parent = nullptr) : QPushButton(parent) {}
+    inline explicit bttnevent(QWidget *prnt) : QPushButton(prnt) {}
 
 protected:
     void leaveEvent(QEvent *);

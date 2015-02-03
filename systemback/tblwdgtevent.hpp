@@ -27,7 +27,7 @@ class tblwdgtevent : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit tblwdgtevent(QWidget *parent = nullptr) : QTableWidget(parent) {}
+    inline explicit tblwdgtevent(QWidget *prnt) : QTableWidget(prnt) {}
 
 protected:
     void focusInEvent(QFocusEvent *ev);

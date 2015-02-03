@@ -28,7 +28,7 @@ class lblevent : public QLabel
     Q_OBJECT
 
 public:
-    explicit lblevent(QWidget *parent = nullptr) : QLabel(parent) {}
+    inline explicit lblevent(QWidget *prnt) : QLabel(prnt) {}
     static ushort MouseX, MouseY;
 
 protected:

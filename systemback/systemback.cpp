@@ -50,7 +50,7 @@
 
 ushort lblevent::MouseX, lblevent::MouseY;
 
-systemback::systemback(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::systemback)
+systemback::systemback(QWidget *prnt) : QMainWindow(prnt, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
     if(sb::style == "auto")
         cfgupdt = false;

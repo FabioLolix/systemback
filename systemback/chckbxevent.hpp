@@ -27,7 +27,7 @@ class chckbxevent : public QCheckBox
     Q_OBJECT
 
 public:
-    explicit chckbxevent(QWidget *parent = nullptr) : QCheckBox(parent) {}
+    inline explicit chckbxevent(QWidget *prnt) : QCheckBox(prnt) {}
 
 protected:
     void enterEvent(QEvent *);

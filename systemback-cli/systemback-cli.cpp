@@ -33,7 +33,7 @@
 #undef instr
 #endif
 
-systemback::systemback(QObject *parent) : QObject(parent)
+systemback::systemback()
 {
     yn[0] = tr("(Y/N)").at(1);
     yn[1] = tr("(Y/N)").at(3);

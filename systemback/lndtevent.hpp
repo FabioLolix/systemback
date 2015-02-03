@@ -27,7 +27,7 @@ class lndtevent : public QLineEdit
     Q_OBJECT
 
 public:
-    explicit lndtevent(QWidget *parent = nullptr) : QLineEdit(parent) {}
+    inline explicit lndtevent(QWidget *prnt) : QLineEdit(prnt) {}
 
 protected:
     void focusOutEvent(QFocusEvent *ev);

@@ -646,7 +646,7 @@ void sb::cfgread()
         schdle[4] = 10;
         if(! cfgupdt) cfgupdt = true;
     }
-    else if(schdle[1] == 0 && schdle[2] == 0 && schdle[3] < 30)
+    else if(schdle[3] < 30 && like(0, {schdle[1], schdle[2]}, true))
     {
         schdle[3] = 30;
         if(! cfgupdt) cfgupdt = true;
@@ -901,7 +901,7 @@ inline ullong sb::devsize(cQStr &dev)
 inline uchar sb::fcomp(cQStr &file1, cQStr &file2)
 {
     struct stat fstat[2];
-    if(stat(chr(file1), &fstat[0]) == -1 || stat(chr(file2), &fstat[1]) == -1) return 0;
+    if(like(-1, {stat(chr(file1), &fstat[0]), stat(chr(file2), &fstat[1])})) return 0;
     if(fstat[0].st_size == fstat[1].st_size && fstat[0].st_mtim.tv_sec == fstat[1].st_mtim.tv_sec) return fstat[0].st_mode == fstat[1].st_mode && fstat[0].st_uid == fstat[1].st_uid && fstat[0].st_gid == fstat[1].st_gid ? 2 : 1;
     return 0;
 }
@@ -909,7 +909,7 @@ inline uchar sb::fcomp(cQStr &file1, cQStr &file2)
 inline bool sb::cpertime(cQStr &srcitem, cQStr &newitem, bool skel)
 {
     struct stat istat[2];
-    if(stat(chr(srcitem), &istat[0]) == -1 || stat(chr(newitem), &istat[1]) == -1) return false;
+    if(like(-1, {stat(chr(srcitem), &istat[0]), stat(chr(newitem), &istat[1])})) return false;
 
     if(skel)
     {
@@ -1036,7 +1036,7 @@ inline bool sb::issmfs(cchar *item1, cQStr &item2)
 inline bool sb::lcomp(cQStr &link1, cQStr &link2)
 {
     struct stat istat[2];
-    if(lstat(chr(link1), &istat[0]) == -1 || lstat(chr(link2), &istat[1]) == -1 || ! S_ISLNK(istat[0].st_mode) || ! S_ISLNK(istat[1].st_mode) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
+    if(like(-1, {lstat(chr(link1), &istat[0]), lstat(chr(link2), &istat[1])}) || ! S_ISLNK(istat[0].st_mode) || ! S_ISLNK(istat[1].st_mode) || istat[0].st_mtim.tv_sec != istat[1].st_mtim.tv_sec) return false;
     QBA lnk(rlink(link1, istat[0].st_size));
     return ! lnk.isEmpty() && lnk == rlink(link2, istat[1].st_size);
 }
@@ -1397,7 +1397,7 @@ void sb::run()
             while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
                 if(QStr(ped_partition_get_path(prt)) == ThrdStr[0])
                 {
-                    if(ped_partition_set_flag(prt, ped_partition_flag_get_by_name(chr(ThrdStr[1])), 1) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
+                    if(like(1, {ped_partition_set_flag(prt, ped_partition_flag_get_by_name(chr(ThrdStr[1])), 1), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
                     ped_disk_commit_to_os(dsk);
                 }
 
@@ -1433,7 +1433,7 @@ void sb::run()
             if(ThrdLng[0] > 0 && ThrdLng[1] > 0)
             {
                 PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ullong(dev->length - 1048576 / dev->sector_size) >= (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1 ? pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size) : (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1));
-                if(ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
+                if(like(1, {ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
                 ped_disk_commit_to_os(dsk);
             }
             else
@@ -1441,7 +1441,7 @@ void sb::run()
                     if(prt->type == PED_PARTITION_FREESPACE && prt->geom.length >= 1048576 / dev->sector_size)
                     {
                         PedPartition *crtprt(ped_partition_new(dsk, PED_PARTITION_NORMAL, ped_file_system_type_get("ext2"), ThrdLng[0] == 0 ? psalign(prt->geom.start, dev->sector_size) : psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ThrdLng[1] == 0 ? prt->next && prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : pealign(prt->geom.end, dev->sector_size) : pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size)));
-                        if(ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)) == 1 && ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
+                        if(like(1, {ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
                         ped_disk_commit_to_os(dsk);
                         break;
                     }

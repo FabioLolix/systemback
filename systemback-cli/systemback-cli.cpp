@@ -164,7 +164,7 @@ start:
 uchar systemback::uinit()
 {
     int pgid(getpgrp());
-    if(pgid == -1 || pgid != tcgetpgrp(STDIN_FILENO) || pgid != tcgetpgrp(STDOUT_FILENO)) return 255;
+    if(pgid == -1 || ! sb::like(pgid, {tcgetpgrp(STDIN_FILENO), tcgetpgrp(STDOUT_FILENO)}, true)) return 255;
     initscr();
     uchar rv(has_colors() ? LINES < 24 || COLS < 80 ? 12 : 0 : 11);
 
@@ -719,7 +719,7 @@ void systemback::progress()
             {
                 if(cbperc < cperc || (cbperc == 0 && pbar != "(0%)"))
                     pbar = " (" % QBA::number(cperc) % "%)";
-                else if(cperc == 99 && cbperc == 99)
+                else if(sb::like(99, {cperc, cbperc}, true))
                     pbar = " (100%)";
             }
             else if(cbperc < 100)

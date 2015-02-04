@@ -50,7 +50,7 @@
 
 ushort lblevent::MouseX, lblevent::MouseY;
 
-systemback::systemback(QWidget *prnt) : QMainWindow(prnt, Qt::FramelessWindowHint), ui(new Ui::systemback)
+systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
     if(sb::style == "auto")
         cfgupdt = false;
@@ -915,7 +915,7 @@ void systemback::unitimer()
                     {
                         if(ui->progressbar->value() < cperc)
                             ui->progressbar->setValue(cperc);
-                        else if(cperc == 99 && ui->progressbar->value() == 99)
+                        else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
                             ui->progressbar->setValue(100);
                     }
                     else if(ui->progressbar->value() < 100)
@@ -8715,7 +8715,7 @@ void systemback::on_minutedown_clicked()
     if(! cfgupdt) cfgupdt = true;
     ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minuteup->isEnabled()) ui->minuteup->setEnabled(true);
-    if((sb::schdle[1] == 0 && sb::schdle[2] == 0 && sb::schdle[3] == 30) || sb::schdle[3] == 0) ui->minutedown->setDisabled(true);
+    if(sb::schdle[3] == 0 || (sb::schdle[3] == 30 && sb::like(0, {sb::schdle[1], sb::schdle[2]}, true))) ui->minutedown->setDisabled(true);
 }
 
 void systemback::on_secondup_clicked()

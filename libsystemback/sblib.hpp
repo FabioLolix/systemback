@@ -73,14 +73,13 @@ public:
     static bool scopy(cuchar mthd, cQStr &usr, cQStr &srcdir);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool crtfile(cQStr &path, cQStr &txt = nullptr);
+    static bool like(int num, cSIL &lst, bool all = false);
     static bool access(cQStr &path, cuchar mode = Read);
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
     static bool issmfs(cchar *item1, cchar *item2);
     static bool issmfs(cchar *item1, cQStr &item2);
-    static bool like(uchar num, cQUCL &lst);
-    static bool like(int num, cQIL &lst);
     static bool islnxfs(cQStr &path);
     static bool islink(cQStr &path);
     static bool isfile(cQStr &path);
@@ -121,10 +120,10 @@ private:
     static ullong devsize(cQStr &dev);
     static uchar fcomp(cQStr &file1, cQStr &file2);
     static bool rodir(QBA &ba, cQStr &path, bool hidden = false, cuchar oplen = 0);
-    static bool odir(QBAL &balst, cQStr &path, bool hidden = false);
     static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
-    static bool cplink(cQStr &srclink, cQStr &newlink);
     static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
+    static bool odir(QBAL &balst, cQStr &path, bool hidden = false);
+    static bool cplink(cQStr &srclink, cQStr &newlink);
     static bool cpdir(cQStr &srcdir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);
     static bool lcomp(cQStr &link1, cQStr &link2);
@@ -225,14 +224,12 @@ inline bool sb::like(cQStr &txt, cQSL &lst, cuchar mode)
     }
 }
 
-inline bool sb::like(uchar num, cQUCL &lst)
+inline bool sb::like(int num, cSIL &lst, bool all)
 {
-    return lst.contains(num);
-}
+    for(int val : lst)
+        if(all ? num != val : num == val) return ! all;
 
-inline bool sb::like(int num, cQIL &lst)
-{
-    return lst.contains(num);
+    return all;
 }
 
 inline bool sb::exist(cchar *path)

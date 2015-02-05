@@ -39,12 +39,12 @@
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="41"/>
         <source>Unable to connect to X server.</source>
-        <translation>Nelze se připojit ke grafickému X serveru.</translation>
+        <translation>Nelze se připojit ke grafickému serveru X.</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="46"/>
         <source>Cannot start Systemback graphical user interface!</source>
-        <translation>Nezdařilo se spustit grafické uživatelské rozhraní aplikace Systemback!</translation>
+        <translation>Nelze spustit grafické uživatelské rozhraní aplikace Systemback!</translation>
     </message>
     <message>
         <location filename="../sbsustart/sbsustart.cpp" line="46"/>
@@ -67,7 +67,7 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="37"/>
         <source>The process is disabled for this user.</source>
-        <translation>Pro tohoto uživatele je služba plánovače vypnutá.</translation>
+        <translation>Tento proces je pro tohoto uživatele vypnutý.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="40"/>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="43"/>
         <source>This system is a Live.</source>
-        <translation>Tento systém je spuštěný z vyjímatelného média.</translation>
+        <translation>Nacházíte se v systému, spuštěném z vyjímatelného média.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
@@ -672,7 +672,7 @@
         <location filename="../systemback/systemback.cpp" line="7145"/>
         <location filename="../systemback/systemback.cpp" line="7194"/>
         <source>Live system create</source>
-        <translation>Vytvořit Live systému</translation>
+        <translation>Vytvořit živý systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4418"/>
@@ -1150,7 +1150,7 @@
         <location filename="../systemback/systemback.cpp" line="9273"/>
         <location filename="../systemback/systemback.cpp" line="9320"/>
         <source>Creating Live system</source>
-        <translation>Vytvoření Live systém</translation>
+        <translation>Vytvoření Live systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="905"/>

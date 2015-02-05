@@ -7562,7 +7562,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             bool mntd(false), mntcheck(false);
 
-            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::like(uchar(ui->partitionsettings->item(a, 8)->text().toUShort()), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
+            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::like(ui->partitionsettings->item(a, 8)->text().toInt(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());

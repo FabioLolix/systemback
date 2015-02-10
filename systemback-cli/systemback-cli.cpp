@@ -396,15 +396,15 @@ start:
         if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
         {
             if(prun != tr("Deleting old restore point(s)")) prun = tr("Deleting old restore point(s)");
-            if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QBA::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+            if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
         }
 
     prun = tr("Creating restore point");
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
     if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) goto error;
 
-    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
-        if(! QFile::rename(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QBA::number(a + 2) % '_' % sb::pnames[a])) goto error;
+    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) goto error;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
@@ -718,7 +718,7 @@ void systemback::progress()
             else if(cperc < 100)
             {
                 if(cbperc < cperc || (cbperc == 0 && pbar != "(0%)"))
-                    pbar = " (" % QBA::number(cperc) % "%)";
+                    pbar = " (" % QStr::number(cperc) % "%)";
                 else if(sb::like(99, {cperc, cbperc}, true))
                     pbar = " (100%)";
             }

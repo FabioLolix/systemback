@@ -175,10 +175,10 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                     ui->livedevices->verticalHeader()->setDefaultSectionSize(ui->partitionsettings->verticalHeader()->defaultSectionSize());
                     QStyleOption optn;
                     optn.init(ui->pointpipe1);
-                    QStr nsize(QBA::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
+                    QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
                     for(QCheckBox *ckbx : findChildren<QCheckBox *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
                     optn.init(ui->pnumber3);
-                    nsize = QBA::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
+                    nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
                     for(QRadioButton *rbtn : findChildren<QRadioButton *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
                 }
             }
@@ -435,7 +435,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     Display *dsply(XOpenDisplay(nullptr));
     Atom atm(XInternAtom(dsply, "_MOTIF_WM_HINTS", 0));
-    ulong hnts[5]{3, 44, 0, 0, 0};
+    ulong hnts[]{3, 44, 0, 0, 0};
     XChangeProperty(dsply, winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 5);
     XFlush(dsply);
     XCloseDisplay(dsply);
@@ -581,10 +581,10 @@ void systemback::unitimer()
                 else if(sb::schdlr[0] == "bottomright")
                     ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Bottom right")));
 
-                ui->schedulerday->setText(QBA::number(sb::schdle[1]) % ' ' % tr("day(s)"));
-                ui->schedulerhour->setText(QBA::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
-                ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
-                ui->schedulersecond->setText(QBA::number(sb::schdle[4]) % ' ' % tr("seconds"));
+                ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
+                ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
+                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+                ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
 
                 if(sb::isdir("/usr/share/systemback/lang"))
                 {
@@ -877,7 +877,7 @@ void systemback::unitimer()
 
             pointupgrade();
             if(sstart) ui->schedulerstart->setEnabled(true);
-            QStr ckernel(ckname()), fend[2]{"order", "builtin"};
+            QStr ckernel(ckname()), fend[]{"order", "builtin"};
 
             for(uchar a(0) ; a < 2 ; ++a)
                 if(sb::isfile("/lib/modules/" % ckernel % "/modules." % fend[a]))
@@ -2308,7 +2308,6 @@ start:
         }
 
         if(! sb::like(dialog, {23, 60}))
-        {
             switch(mthd) {
             case 1:
                 dialog = 20;
@@ -2319,7 +2318,6 @@ start:
             default:
                 dialog = ui->keepfiles->isChecked() ? 10 : 9;
             }
-        }
     }
     else
         dialog = 60;
@@ -2356,9 +2354,11 @@ start:
 
     if(mthd == 0)
     {
-        for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
+        QSL mlst{"dev", "dev/pts", "proc", "sys"};
+        if(sb::mcheck("/run")) mlst.append("/run");
+        for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/mnt/" % bpath);
         dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (ui->grubreinstallrepair->currentText() == "Auto" ? gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % "\"") == 0 ? 32 : 37;
-        for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
+        for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
         if(intrrpt) goto exit;
     }
     else
@@ -2408,11 +2408,13 @@ start:
         {
             if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel) && (! ui->grubreinstallrepair->isEnabled() || ui->grubreinstallrepair->currentText() != tr("Disabled")))
             {
-                for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/mnt/" % bpath);
+                QSL mlst{"dev", "dev/pts", "proc", "sys"};
+                if(sb::mcheck("/run")) mlst.append("/run");
+                for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/mnt/" % bpath);
                 sb::exec("chroot /mnt update-grub");
                 if(intrrpt) goto exit;
                 if(((! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto") || ! fcmp) && sb::exec("chroot /mnt grub-install --force " % (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText())) > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
-                for(cQStr &pend : {"dev", "dev/pts", "proc", "sys"}) sb::umount("/mnt/" % pend);
+                for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
                 if(intrrpt) goto exit;
             }
 
@@ -2679,6 +2681,12 @@ start:
             {
                 if(sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text()))) goto error;
 
+                if(sb::isfile("/.sbsystemcopy/home/" % ui->username->text() % "/.config/gtk-3.0/bookmarks"))
+                {
+                    QStr cnt(sb::fload("/.sbsystemcopy/home/" % ui->username->text() % "/.config/gtk-3.0/bookmarks"));
+                    if(cnt.contains("file:///home/" % guname() % '/') && ! sb::crtfile("/.sbsystemcopy/home/" % ui->username->text() % "/.config/gtk-3.0/bookmarks", cnt.replace("file:///home/" % guname() % '/', "file:///home/" % ui->username->text() % '/'))) goto error;
+                }
+
                 if(sb::isfile("/.sbsystemcopy/etc/subuid") && sb::isfile("/.sbsystemcopy/etc/subgid"))
                 {
                     {
@@ -2800,7 +2808,7 @@ start:
                             nline.append((guname() == "root" ? "root" : ui->username->text()) % ':');
                             break;
                         case 1:
-                            nline.append(QBA(crypt(chr(ui->password1->text()), chr(("$6$" % sb::rndstr(16))))) % ':');
+                            nline.append(QStr(crypt(chr(ui->password1->text()), chr(("$6$" % sb::rndstr(16))))) % ':');
                             break;
                         default:
                             nline.append(uslst.at(a) % ':');
@@ -3060,7 +3068,9 @@ start:
     if(ui->grubinstallcopy->isVisibleTo(ui->copypanel) && ui->grubinstallcopy->currentText() != tr("Disabled"))
     {
         if(intrrpt) goto exit;
-        for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath);
+        { QSL mlst{"dev", "dev/pts", "proc", "sys"};
+        if(sb::mcheck("/run")) mlst.append("/run");
+        for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath); }
 
         if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % (ui->grubinstallcopy->currentText() == "Auto" ? gdetect("/.sbsystemcopy") : grub.isEFI ? nullptr : ui->grubinstallcopy->currentText()) % "\"") > 0)
         {
@@ -3071,7 +3081,9 @@ start:
     else if(sb::execsrch("update-grub", "/.sbsystemcopy"))
     {
         if(intrrpt) goto exit;
-        for(cQStr &bpath : {"dev", "dev/pts", "proc", "sys"}) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath);
+        { QSL mlst{"dev", "dev/pts", "proc", "sys"};
+        if(sb::mcheck("/run")) mlst.append("/run");
+        for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath); }
         sb::exec("chroot /.sbsystemcopy update-grub");
     }
 
@@ -3206,7 +3218,7 @@ start:
     }
 
     if(intrrpt ||
-        sb::exec("dd if=/usr/lib/syslinux/" % QBA(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "lba") ||
+        sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "lba") ||
         intrrpt ||
         (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite"))) ||
         intrrpt ||
@@ -5384,7 +5396,7 @@ void systemback::on_livecreatemenu_clicked()
         for(cQStr &item : QDir(sb::sdir[2]).entryList(QDir::Files | QDir::Hidden))
             if(item.endsWith(".sblive") && ! item.contains(' ') && ! sb::islink(sb::sdir[2] % '/' % item) && sb::fsize(sb::sdir[2] % '/' % item) > 0)
             {
-                QLWI *lwi(new QLWI(sb::left(item, -7) % " (" % QBA::number(qRound64(sb::fsize(sb::sdir[2] % '/' % item) * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB, " % (sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") > 0 ? "sblive+iso" : "sblive") % ')'));
+                QLWI *lwi(new QLWI(sb::left(item, -7) % " (" % QStr::number(qRound64(sb::fsize(sb::sdir[2] % '/' % item) * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB, " % (sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") > 0 ? "sblive+iso" : "sblive") % ')'));
                 ui->livelist->addItem(lwi);
             }
 }
@@ -5575,7 +5587,7 @@ void systemback::on_partitionrefresh_clicked()
     }
 
     schar sn(-1);
-    QBA mnts[2]{sb::fload("/proc/self/mounts"), sb::fload("/proc/swaps")};
+    QBA mnts[]{sb::fload("/proc/self/mounts"), sb::fload("/proc/swaps")};
 
     for(cQStr &cdts : plst)
     {
@@ -6671,7 +6683,6 @@ void systemback::on_dialogok_clicked()
             on_dialogcancel_clicked();
     }
     else if(ui->dialogok->text() == tr("Start"))
-    {
         switch(dialog) {
         case 4:
         case 7:
@@ -6691,7 +6702,6 @@ void systemback::on_dialogok_clicked()
         case 30:
             livewrite();
         }
-    }
     else if(ui->dialogok->text() == tr("Reboot"))
     {
         sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, false, true);
@@ -6703,11 +6713,15 @@ void systemback::on_dialogok_clicked()
         dirent *ent;
 
         while((ent = readdir(dir)))
-            if(! sb::like(ent->d_name, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(ent->d_name) && sb::islink("/proc/" % QStr(ent->d_name) % "/exe") && QFile::readLink("/proc/" % QStr(ent->d_name) % "/exe").endsWith("/Xorg"))
+        {
+            QStr iname(ent->d_name);
+
+            if(! sb::like(iname, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(iname) && sb::islink("/proc/" % iname % "/exe") && QFile::readLink("/proc/" % iname % "/exe").endsWith("/Xorg"))
             {
                 closedir(dir);
-                kill(QBA(ent->d_name).toUShort(), SIGTERM);
+                kill(iname.toInt(), SIGTERM);
             }
+        }
 
         close();
     }
@@ -7611,7 +7625,6 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
         case sb::Freespace:
             for(ushort a(0) ; a < ui->partitionsettings->rowCount() && pcount < 4 ; ++a)
                 if(ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), 8)))
-                {
                     switch(ui->partitionsettings->item(a, 8)->text().toUShort()) {
                     case sb::GPT:
                         pcount = 5;
@@ -7619,7 +7632,6 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     case sb::Extended:
                         ++pcount;
                     }
-                }
         case sb::Emptyspace:
             if(! ui->partitionsettingspanel3->isVisible())
             {
@@ -8636,7 +8648,7 @@ void systemback::on_dayup_clicked()
 {
     ++sb::schdle[1];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerday->setText(QBA::number(sb::schdle[1]) % ' ' % tr("day(s)"));
+    ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->daydown->isEnabled()) ui->daydown->setEnabled(true);
     if(sb::schdle[1] == 7) ui->dayup->setDisabled(true);
     if(! ui->minutedown->isEnabled() && sb::schdle[3] > 0) ui->minutedown->setEnabled(true);
@@ -8646,7 +8658,7 @@ void systemback::on_daydown_clicked()
 {
     --sb::schdle[1];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerday->setText(QBA::number(sb::schdle[1]) % ' ' % tr("day(s)"));
+    ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->dayup->isEnabled()) ui->dayup->setEnabled(true);
 
     if(sb::schdle[1] == 0)
@@ -8656,7 +8668,7 @@ void systemback::on_daydown_clicked()
             if(sb::schdle[3] < 30)
             {
                 sb::schdle[3] = 30;
-                ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
             }
 
             if(ui->minutedown->isEnabled() && sb::schdle[3] < 31) ui->minutedown->setDisabled(true);
@@ -8670,7 +8682,7 @@ void systemback::on_hourup_clicked()
 {
     ++sb::schdle[2];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerhour->setText(QBA::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
+    ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourdown->isEnabled()) ui->hourdown->setEnabled(true);
     if(sb::schdle[2] == 23) ui->hourup->setDisabled(true);
     if(! ui->minutedown->isEnabled() && sb::schdle[3] > 0) ui->minutedown->setEnabled(true);
@@ -8680,7 +8692,7 @@ void systemback::on_hourdown_clicked()
 {
     --sb::schdle[2];
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerhour->setText(QBA::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
+    ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourup->isEnabled()) ui->hourup->setEnabled(true);
 
     if(sb::schdle[2] == 0)
@@ -8690,7 +8702,7 @@ void systemback::on_hourdown_clicked()
             if(sb::schdle[3] < 30)
             {
                 sb::schdle[3] = 30;
-                ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+                ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
             }
 
             if(ui->minutedown->isEnabled() && sb::schdle[3] < 31) ui->minutedown->setDisabled(true);
@@ -8704,7 +8716,7 @@ void systemback::on_minuteup_clicked()
 {
     sb::schdle[3] = sb::schdle[3] + (sb::schdle[3] == 55 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+    ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minutedown->isEnabled()) ui->minutedown->setEnabled(true);
     if(sb::schdle[3] == 59) ui->minuteup->setDisabled(true);
 }
@@ -8713,7 +8725,7 @@ void systemback::on_minutedown_clicked()
 {
     sb::schdle[3] = sb::schdle[3] - (sb::schdle[3] == 59 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulerminute->setText(QBA::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
+    ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minuteup->isEnabled()) ui->minuteup->setEnabled(true);
     if(sb::schdle[3] == 0 || (sb::schdle[3] == 30 && sb::like(0, {sb::schdle[1], sb::schdle[2]}, true))) ui->minutedown->setDisabled(true);
 }
@@ -8722,7 +8734,7 @@ void systemback::on_secondup_clicked()
 {
     sb::schdle[4] = sb::schdle[4] + (sb::schdle[4] == 95 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulersecond->setText(QBA::number(sb::schdle[4]) % ' ' % tr("seconds"));
+    ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->seconddown->isEnabled()) ui->seconddown->setEnabled(true);
     if(sb::schdle[4] == 99) ui->secondup->setDisabled(true);
 }
@@ -8731,7 +8743,7 @@ void systemback::on_seconddown_clicked()
 {
     sb::schdle[4] = sb::schdle[4] - (sb::schdle[4] == 99 ? 4 : 5);
     if(! cfgupdt) cfgupdt = true;
-    ui->schedulersecond->setText(QBA::number(sb::schdle[4]) % ' ' % tr("seconds"));
+    ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->secondup->isEnabled()) ui->secondup->setEnabled(true);
     if(sb::schdle[4] == 10) ui->seconddown->setDisabled(true);
 }
@@ -8952,8 +8964,8 @@ start:
             if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
             {
                 ++dnum;
-                prun = tr("Deleting old restore point") % ' ' % QBA::number(dnum) % '/' % QBA::number(ppipe);
-                if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QBA::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+                prun = tr("Deleting old restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
+                if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
                 if(intrrpt) goto error;
             }
     }
@@ -8962,8 +8974,8 @@ start:
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
     if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) goto error;
 
-    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
-        if(! QFile::rename(sb::sdir[1] % "/S0" % QBA::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QBA::number(a + 2) % '_' % sb::pnames[a])) goto error;
+    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) goto error;
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
@@ -9040,8 +9052,8 @@ start:
         }
 
         ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QBA::number(dnum) % '/' % QBA::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QBA::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
+        if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
         if(intrrpt) goto error;
     }
 
@@ -9065,8 +9077,8 @@ start:
         }
 
         ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QBA::number(dnum) % '/' % QBA::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H0" % QBA::number(a - 9) % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
+        if(! QFile::rename(sb::sdir[1] % "/H0" % QStr::number(a - 9) % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
         if(intrrpt) goto error;
     }
 
@@ -9132,7 +9144,7 @@ start:
     while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive"))
     {
         ++ncount;
-        ncount == 1 ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QBA::number(ncount);
+        ncount == 1 ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(ncount);
     }
 
     if(intrrpt) goto exit;
@@ -9433,7 +9445,6 @@ void systemback::on_newpartition_clicked()
 
         for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             if(ui->partitionsettings->item(a, 0)->text().startsWith(dev))
-            {
                 switch(ui->partitionsettings->item(a, 8)->text().toUShort()) {
                 case sb::GPT:
                     type = sb::Primary;
@@ -9447,7 +9458,6 @@ void systemback::on_newpartition_clicked()
                 case sb::Freespace:
                     ++fcount;
                 }
-            }
 
         if(pcount > 2 && (fcount > 1 || ui->partitionsize->value() < ui->partitionsize->maximum()))
         {

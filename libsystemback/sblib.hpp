@@ -114,12 +114,14 @@ private:
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 
-    static QBA rlink(cQStr &path, ushort blen);
+    static QStr rlink(cQStr &path, ushort blen);
     static ullong psalign(ullong start, ushort ssize);
     static ullong pealign(ullong end, ushort ssize);
     static ullong devsize(cQStr &dev);
     static uchar fcomp(cQStr &file1, cQStr &file2);
-    static bool rodir(QBA &ba, cQStr &path, bool hidden = false, cuchar oplen = 0);
+    static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden = false, cuchar oplen = 0);
+    static bool rodir(QUCL &ucl, cQStr &path, cuchar oplen = 0);
+    static bool rodir(QBA &ba, cQStr &path, cuchar oplen = 0);
     static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
     static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
     static bool odir(QBAL &balst, cQStr &path, bool hidden = false);

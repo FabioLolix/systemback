@@ -758,6 +758,9 @@ bool sb::mkpart(cQStr &dev, ullong start, ullong len, uchar type)
 
 bool sb::mount(cQStr &dev, cQStr &mpoint, cQStr &moptns)
 {
+#ifdef C_MNT_LIB
+    if(moptns == "loop") return sb::exec("mount -o loop " % dev % ' ' % mpoint) == 0;
+#endif
     ThrdType = Mount;
     ThrdStr[0] = dev;
     ThrdStr[1] = mpoint;
@@ -1296,13 +1299,6 @@ void sb::run()
         break;
     case Mount:
     {
-#ifdef C_MNT_LIB
-        if(ThrdStr[2] == "loop")
-        {
-            ThrdRslt = sb::exec("mount -o loop " % ThrdStr[0] % ' ' % ThrdStr[1]) == 0;
-            break;
-        }
-#endif
         libmnt_context *mcxt(mnt_new_context());
         mnt_context_set_source(mcxt, chr(ThrdStr[0]));
         mnt_context_set_target(mcxt, chr(ThrdStr[1]));

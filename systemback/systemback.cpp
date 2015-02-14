@@ -2381,13 +2381,7 @@ start:
                 QDir().mkdir("/.systembacklivepoint");
             }
 
-            if(
-#ifdef C_MNT_LIB
-                    sb::exec("mount -o loop " % QStr(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs") % " /.systembacklivepoint") > 0
-#else
-                    ! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop")
-#endif
-                    )
+            if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop"))
             {
                 dialog = 55;
                 dialogopen();
@@ -2616,13 +2610,7 @@ start:
             if(intrrpt) goto exit;
             QStr mdev(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs");
 
-            if(
-#ifdef C_MNT_LIB
-                    sb::exec("mount -o loop " % mdev % " /.systembacklivepoint") > 0
-#else
-                    ! sb::mount(mdev, "/.systembacklivepoint", "loop")
-#endif
-                    )
+            if(! sb::mount(mdev, "/.systembacklivepoint", "loop"))
             {
                 dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 53 : 54;
                 goto error;
@@ -9096,7 +9084,7 @@ start:
     ui->mainpanel->show();
     ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
     windowmove(ss(698), ss(465));
- }
+}
 
 void systemback::on_livecreatenew_clicked()
 {

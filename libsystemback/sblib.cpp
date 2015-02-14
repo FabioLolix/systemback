@@ -1296,6 +1296,13 @@ void sb::run()
         break;
     case Mount:
     {
+#ifdef C_MNT_LIB
+        if(ThrdStr[2] == "loop")
+        {
+            ThrdRslt = sb::exec("mount -o loop " % ThrdStr[0] % ' ' % ThrdStr[1]) == 0;
+            break;
+        }
+#endif
         libmnt_context *mcxt(mnt_new_context());
         mnt_context_set_source(mcxt, chr(ThrdStr[0]));
         mnt_context_set_target(mcxt, chr(ThrdStr[1]));

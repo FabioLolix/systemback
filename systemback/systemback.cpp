@@ -926,13 +926,7 @@ void systemback::unitimer()
             }
             else if(prun.startsWith(tr("Creating Live system") % '\n' % tr("process") % " 2"))
             {
-                if(irfsc)
-                {
-                    if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
-                }
-                else if(! ui->interrupt->isEnabled())
-                    ui->interrupt->setEnabled(true);
-
+                if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
                 schar cperc(sb::Progress);
 
                 if(cperc != -1)
@@ -945,7 +939,7 @@ void systemback::unitimer()
             }
             else
             {
-                if(sb::like(prun, {'_' % tr("Deleting restore point") % "*", '_' % tr("Deleting old restore point") % "*", '_' % tr("Deleting incomplete restore point") % '_', '_' % tr("Creating Live system") % "\n*"}))
+                if(! irfsc && sb::like(prun, {'_' % tr("Deleting restore point") % "*", '_' % tr("Deleting old restore point") % "*", '_' % tr("Deleting incomplete restore point") % '_', '_' % tr("Creating Live system") % "\n*"}))
                 {
                     if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
                 }
@@ -2387,7 +2381,13 @@ start:
                 QDir().mkdir("/.systembacklivepoint");
             }
 
-            if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop"))
+            if(
+#ifdef C_MNT_LIB
+                    sb::exec("mount -o loop " % QStr(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs") % " /.systembacklivepoint") > 0
+#else
+                    ! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop")
+#endif
+                    )
             {
                 dialog = 55;
                 dialogopen();
@@ -2616,7 +2616,13 @@ start:
             if(intrrpt) goto exit;
             QStr mdev(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs");
 
-            if(! sb::mount(mdev, "/.systembacklivepoint", "loop"))
+            if(
+#ifdef C_MNT_LIB
+                    sb::exec("mount -o loop " % mdev % " /.systembacklivepoint") > 0
+#else
+                    ! sb::mount(mdev, "/.systembacklivepoint", "loop")
+#endif
+                    )
             {
                 dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 53 : 54;
                 goto error;
@@ -6903,7 +6909,7 @@ void systemback::on_autorepairoptions_clicked(bool checked)
             ui->grubreinstallrepairdisable->setEnabled(true);
         }
     }
- }
+}
 
 void systemback::on_storagedirbutton_clicked()
 {

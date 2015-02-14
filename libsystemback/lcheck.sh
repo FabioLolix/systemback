@@ -17,4 +17,4 @@
 # You should have received a copy of the GNU General Public License
 # along with Systemback. If not, see <http://www.gnu.org/licenses/>.
 
-grep "*new)" /usr/include/libmount/libmount.h && sed "s/*new)/*new_table)/g" /usr/include/libmount/libmount.h > libmount.hpp
+grep "*new)" /usr/include/libmount/libmount.h >/dev/null && sed "s/*new)/*new_table)/g" /usr/include/libmount/libmount.h > libmount.hpp

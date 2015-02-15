@@ -41,4 +41,4 @@ inline void pnlevent::leaveEvent(QEvent *)
     emit Mouse_Leave();
 }
 
-#endif // PNLEVENT_HPP
+#endif

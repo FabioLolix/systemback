@@ -91,4 +91,4 @@ inline void lblevent::leaveEvent(QEvent *)
     emit Mouse_Leave();
 }
 
-#endif // LBLEVENT_HPP
+#endif

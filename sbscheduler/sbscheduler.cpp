@@ -185,5 +185,5 @@ void scheduler::newrestorepoint()
 end:
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
     sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }

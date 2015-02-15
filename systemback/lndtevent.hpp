@@ -42,4 +42,4 @@ inline void lndtevent::focusOutEvent(QFocusEvent *ev)
     emit Focus_Out();
 }
 
-#endif // LNDTEVENT_HPP
+#endif

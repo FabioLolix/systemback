@@ -37,4 +37,4 @@ private:
     bool clrenv(cQStr &usrhm, cQStr &xpath = nullptr);
 };
 
-#endif // SBSUSTART_HPP
+#endif

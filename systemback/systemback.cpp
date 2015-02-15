@@ -696,6 +696,7 @@ void systemback::unitimer()
 
                 if(sb::waot == sb::True) ui->alwaysontop->setChecked(true);
                 if(sb::incrmtl == sb::False) ui->incrementaldisable->setChecked(true);
+                if(sb::ecache == sb::False) ui->cachemptydisable->setChecked(true);
                 if(sb::xzcmpr == sb::True) ui->usexzcompressor->setChecked(true);
                 if(sb::autoiso == sb::True) ui->autoisocreate->setChecked(true);
 
@@ -784,6 +785,7 @@ void systemback::unitimer()
                 ui->styles->setMaximumWidth(width() - ui->styles->x() - ss(8));
                 ui->alwaysontop->resize(fontMetrics().width(ui->alwaysontop->text()) + ss(28), ui->alwaysontop->height());
                 ui->incrementaldisable->resize(fontMetrics().width(ui->incrementaldisable->text()) + ss(28), ui->incrementaldisable->height());
+                ui->cachemptydisable->resize(fontMetrics().width(ui->cachemptydisable->text()) + ss(28), ui->cachemptydisable->height());
                 ui->usexzcompressor->resize(fontMetrics().width(ui->usexzcompressor->text()) + ss(28), ui->usexzcompressor->height());
                 ui->autoisocreate->resize(fontMetrics().width(ui->autoisocreate->text()) + ss(28), ui->autoisocreate->height());
                 ui->schedulerdisable->resize(fontMetrics().width(ui->schedulerdisable->text()) + ss(28), ui->schedulerdisable->height());
@@ -1264,6 +1266,13 @@ QStr systemback::gdetect(cQStr rdir)
     }
 
     return nullptr;
+}
+
+void systemback::emptycache()
+{
+    prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
+    sb::fssync();
+    if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }
 
 void systemback::buttonstimer()
@@ -2412,9 +2421,7 @@ start:
                 if(intrrpt) goto exit;
             }
 
-            prun = tr("Emptying cache");
-            sb::fssync();
-            sb::crtfile("/proc/sys/vm/drop_caches", "3");
+            emptycache();
 
             if(sb::like(dialog, {5, 6, 41}))
             {
@@ -3082,7 +3089,7 @@ start:
     }
 
     if(intrrpt) goto exit;
-    prun = tr("Emptying cache");
+    prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
 
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));
@@ -3097,7 +3104,7 @@ start:
 
     QDir().rmdir("/.sbsystemcopy");
     sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
     dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 25 : 33;
     dialogopen();
 }
@@ -3267,10 +3274,10 @@ start:
         goto error;
     }
 
-    prun = tr("Emptying cache");
+    prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
     if(sb::exec("syslinux -ifd syslinux " % ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1') > 0) goto error;
     sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
     sb::umount("/.sblivesystemwrite/sblive");
     QDir().rmdir("/.sblivesystemwrite/sblive");
 
@@ -6598,9 +6605,7 @@ void systemback::on_dialogok_clicked()
 
                     if(sb::remove(sb::sdir[1] % '/' % item))
                     {
-                        prun = tr("Emptying cache");
-                        sb::fssync();
-                        sb::crtfile("/proc/sys/vm/drop_caches", "3");
+                        emptycache();
 
                         if(sstart)
                         {
@@ -8974,9 +8979,7 @@ start:
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
     if(intrrpt) goto error;
-    prun = tr("Emptying cache");
-    sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    emptycache();
 
     if(sstart)
     {
@@ -9077,9 +9080,7 @@ start:
     }
 
     pointupgrade();
-    prun = tr("Emptying cache");
-    sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    emptycache();
     ui->statuspanel->hide();
     ui->mainpanel->show();
     ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
@@ -9339,9 +9340,7 @@ start:
     }
 
     if(intrrpt) goto exit;
-    prun = tr("Emptying cache");
-    sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    emptycache();
     dialog = 28;
     sb::remove(sb::sdir[2] % "/.sblivesystemcreate");
     on_livecreatemenu_clicked();
@@ -9391,9 +9390,7 @@ start:
     if(sb::exec("isohybrid " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(intrrpt) goto exit;
-    prun = tr("Emptying cache");
-    sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    emptycache();
     ui->livelist->currentItem()->setText(sb::left(ui->livelist->currentItem()->text(), sb::rinstr(ui->livelist->currentItem()->text(), " ")) % "sblive+iso)");
     ui->liveconvert->setDisabled(true);
     ui->statuspanel->hide();
@@ -9591,6 +9588,12 @@ void systemback::on_alwaysontop_clicked(bool checked)
 void systemback::on_incrementaldisable_clicked(bool checked)
 {
     sb::incrmtl = checked ? sb::False : sb::True;
+    if(! cfgupdt) cfgupdt = true;
+}
+
+void systemback::on_cachemptydisable_clicked(bool checked)
+{
+    sb::ecache = checked ? sb::False : sb::True;
     if(! cfgupdt) cfgupdt = true;
 }
 

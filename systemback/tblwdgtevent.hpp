@@ -50,4 +50,4 @@ inline void tblwdgtevent::focusOutEvent(QFocusEvent *ev)
     emit Focus_Out();
 }
 
-#endif // TBLWDGTEVENT_HPP
+#endif

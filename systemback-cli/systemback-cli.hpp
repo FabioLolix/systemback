@@ -45,6 +45,7 @@ private:
     uchar uinit();
     bool newrestorepoint();
     bool pointdelete();
+    void emptycache();
 };
 
-#endif // SYSTEMBACKCLI_HPP
+#endif

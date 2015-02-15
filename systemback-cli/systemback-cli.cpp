@@ -375,6 +375,13 @@ uchar systemback::storagedir()
     return 0;
 }
 
+void systemback::emptycache()
+{
+    prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
+    sb::fssync();
+    if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
+}
+
 bool systemback::newrestorepoint()
 {
     goto start;
@@ -408,9 +415,7 @@ start:
 
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
-    prun = tr("Emptying cache");
-    sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    emptycache();
     ptimer->stop();
     return true;
 }
@@ -426,9 +431,7 @@ start:
     QTimer::singleShot(0, this, SLOT(progress()));
     ptimer->start();
     if(! QFile::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname)) goto error;
-    prun = tr("Emptying cache");
-    sb::fssync();
-    sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    emptycache();
     ptimer->stop();
     return true;
 }

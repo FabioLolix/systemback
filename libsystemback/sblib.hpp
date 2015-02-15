@@ -43,7 +43,7 @@ public:
                   Read{0}, Write{1}, Exec{2}, Sblock{0}, Dpkglock{1}, Schdlrlock{2},
                   False{0}, True{1}, Empty{100},
                   Norm{0}, All{1}, Mixed{2};
-    static uchar pnumber, schdle[6], waot, incrmtl, xzcmpr, autoiso;
+    static uchar pnumber, schdle[6], waot, incrmtl, xzcmpr, autoiso, ecache;
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
@@ -323,4 +323,4 @@ inline bool sb::isnum(cQStr &txt)
     return ! txt.isEmpty();
 }
 
-#endif // SBLIB_HPP
+#endif

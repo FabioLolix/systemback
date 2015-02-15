@@ -41,4 +41,4 @@ inline void bttnevent::leaveEvent(QEvent *)
     emit Mouse_Leave();
 }
 
-#endif // BTTNEVENT_HPP
+#endif

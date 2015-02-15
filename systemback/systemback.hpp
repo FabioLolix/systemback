@@ -80,6 +80,7 @@ private:
     void fontcheck(uchar wdgt);
     void pointupgrade();
     void accesserror();
+    void emptycache();
     void statustart();
     void systemcopy();
     void livewrite();
@@ -189,6 +190,7 @@ private slots:
     void on_hostname_textChanged(const QStr &arg1);
     void on_languageoverride_clicked(bool checked);
     void on_schedulerdisable_clicked(bool checked);
+    void on_cachemptydisable_clicked(bool checked);
     void on_point10_textChanged(const QStr &arg1);
     void on_point11_textChanged(const QStr &arg1);
     void on_point12_textChanged(const QStr &arg1);
@@ -323,4 +325,4 @@ private slots:
     void on_dayup_clicked();
 };
 
-#endif // SYSTEMBACK_HPP
+#endif

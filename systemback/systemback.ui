@@ -6289,7 +6289,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>144</y>
+        <y>140</y>
         <width>696</width>
         <height>32</height>
        </rect>
@@ -6311,7 +6311,7 @@
       <property name="geometry">
        <rect>
         <x>8</x>
-        <y>278</y>
+        <y>306</y>
         <width>426</width>
         <height>20</height>
        </rect>
@@ -6330,7 +6330,7 @@
       <property name="geometry">
        <rect>
         <x>8</x>
-        <y>214</y>
+        <y>242</y>
         <width>327</width>
         <height>20</height>
        </rect>
@@ -6387,7 +6387,7 @@
       <property name="geometry">
        <rect>
         <x>8</x>
-        <y>182</y>
+        <y>178</y>
         <width>539</width>
         <height>20</height>
        </rect>
@@ -6406,7 +6406,7 @@
       <property name="geometry">
        <rect>
         <x>200</x>
-        <y>306</y>
+        <y>334</y>
         <width>416</width>
         <height>32</height>
        </rect>
@@ -6425,7 +6425,7 @@
       <property name="geometry">
        <rect>
         <x>24</x>
-        <y>306</y>
+        <y>334</y>
         <width>112</width>
         <height>32</height>
        </rect>
@@ -6450,7 +6450,7 @@
       <property name="geometry">
        <rect>
         <x>144</x>
-        <y>302</y>
+        <y>330</y>
         <width>48</width>
         <height>40</height>
        </rect>
@@ -6479,7 +6479,7 @@
       <property name="geometry">
        <rect>
         <x>624</x>
-        <y>302</y>
+        <y>330</y>
         <width>48</width>
         <height>40</height>
        </rect>
@@ -6505,7 +6505,7 @@
       <property name="geometry">
        <rect>
         <x>8</x>
-        <y>246</y>
+        <y>274</y>
         <width>470</width>
         <height>20</height>
        </rect>
@@ -6518,6 +6518,25 @@
       </property>
       <property name="text">
        <string>Create Live ISO images automatically (faster than the conversion)</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cachemptydisable">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>210</y>
+        <width>427</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>Do not empty memory cache at the end of some processes</string>
       </property>
      </widget>
     </widget>

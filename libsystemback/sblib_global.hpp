@@ -28,4 +28,4 @@
 #define SHARED_EXPORT_IMPORT Q_DECL_IMPORT
 #endif
 
-#endif // SBLIB_GLOBAL_HPP
+#endif

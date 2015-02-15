@@ -45,4 +45,4 @@ typedef const unsigned char cuchar;
 typedef const char cchar;
 typedef signed char schar;
 
-#endif // SBTYPEDEF_HPP
+#endif

@@ -48,4 +48,4 @@ inline void chckbxevent::leaveEvent(QEvent *)
     emit Mouse_Leave();
 }
 
-#endif // CHCKBXEVENT_HPP
+#endif

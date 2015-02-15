@@ -38,4 +38,4 @@ private:
     void newrestorepoint();
 };
 
-#endif // SBSCHEDULER_HPP
+#endif

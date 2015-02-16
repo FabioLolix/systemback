@@ -2504,7 +2504,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         {
             QBA sbitms;
             QUCL sbitmst;
-            if(! rodir(sbitms, sbitmst, srcdir % "/.systemback")) return false;
+            if(! rodir(sbitms, sbitmst, "/.systembacklivepoint/.systemback")) return false;
             lcnt = 0;
             QTS in(&sbitms, QIODevice::ReadOnly);
 
@@ -2514,10 +2514,10 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
                 switch(sbitmst.at(lcnt++)) {
                 case Islink:
-                    if((item != "etc/fstab" || ! sfstab) && ! cplink(srcdir % "/.systemback/" % item, trgt % '/' % item) && ! fspchk(trgt)) return false;
+                    if((! sfstab || item != "etc/fstab") && ! cplink("/.systembacklivepoint/.systemback/" % item, trgt % '/' % item) && ! fspchk(trgt)) return false;
                     break;
                 case Isfile:
-                    if((item != "etc/fstab" || ! sfstab) && ! cpfile(srcdir % "/.systemback/" % item, trgt % '/' % item) && ! fspchk(trgt)) return false;
+                    if((! sfstab || item != "etc/fstab") && ! cpfile("/.systembacklivepoint/.systemback/" % item, trgt % '/' % item) && ! fspchk(trgt)) return false;
                     break;
                 }
 
@@ -2530,7 +2530,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
             while(! in.atEnd())
             {
                 QStr item(in.readLine());
-                if(sbitmst.at(lcnt++) == Isdir) cpertime(srcdir % "/.systemback/" % item, trgt % '/' % item);
+                if(sbitmst.at(lcnt++) == Isdir) cpertime("/.systembacklivepoint/.systemback/" % item, trgt % '/' % item);
                 if(ThrdKill) return false;
             }
         }
@@ -3475,6 +3475,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                                 if(! cpfile(srci, trgi)) goto err_4;
                             }
 
+                            goto nitem_4;
                         err_4:
                             ThrdDbg = '@' % pdi;
                             return false;
@@ -3526,7 +3527,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         if(isdir(srcd))
         {
             if(isdir(trgd))
-                for(cQStr &item : QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot))
+                for(cQStr &item : QDir(trgd).entryList(QDir::Dirs | QDir::NoDotAndDotDot))
                 {
                     QStr trgi(trgd % '/' % item);
                     if(! exist(srcdir % '/' % item) && ! mcheck(trgi % '/')) recrmdir(trgi);
@@ -3542,7 +3543,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             {
                 if(isfile("/etc/fstab"))
                 {
-                    QSL dlst(QDir("/media").entryList(QDir::Dirs | QDir::NoDotAndDotDot));
+                    QSL dlst(QDir(srcd).entryList(QDir::Dirs | QDir::NoDotAndDotDot));
                     QFile file("/etc/fstab");
                     if(! file.open(QIODevice::ReadOnly)) return false;
 
@@ -3685,7 +3686,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     {
         QBA sbitms;
         QUCL sbitmst;
-        if(! rodir(sbitms, sbitmst, srcdir % "/.systemback")) return false;
+        if(! rodir(sbitms, sbitmst, "/.systembacklivepoint/.systemback")) return false;
         lcnt = 0;
         QTS in(&sbitms, QIODevice::ReadOnly);
 

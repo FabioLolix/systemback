@@ -218,7 +218,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         {
             icnt = 0;
             cpos = -1;
-            irfsc = nohmcpy = uchkd = false;
+            irblck = nohmcpy = uchkd = false;
             ui->restorepanel->hide();
             ui->copypanel->hide();
             ui->installpanel->hide();
@@ -906,7 +906,13 @@ void systemback::unitimer()
 
             if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/3+1_", '_' % tr("Writing Live image to target device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
             {
-                if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
+                if(irblck)
+                {
+                    if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+                }
+                else if(! ui->interrupt->isEnabled())
+                    ui->interrupt->setEnabled(true);
+
                 schar cperc(sb::Progress);
 
                 if(cperc != -1)
@@ -941,7 +947,7 @@ void systemback::unitimer()
             }
             else
             {
-                if(! irfsc && sb::like(prun, {'_' % tr("Deleting restore point") % "*", '_' % tr("Deleting old restore point") % "*", '_' % tr("Deleting incomplete restore point") % '_', '_' % tr("Creating Live system") % "\n*"}))
+                if(! irblck && sb::like(prun, {'_' % tr("Deleting restore point") % "*", '_' % tr("Deleting old restore point") % "*", '_' % tr("Deleting incomplete restore point") % '_', '_' % tr("Creating Live system") % "\n*"}))
                 {
                     if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
                 }
@@ -2446,6 +2452,7 @@ error:
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
         {
+            irblck = true;
             if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 39 : 40;
         }
@@ -2466,6 +2473,7 @@ error:
 
     QDir().rmdir("/.sbsystemcopy");
     if(sb::isdir("/.systembacklivepoint")) QDir().rmdir("/.systembacklivepoint");
+    if(irblck) irblck = false;
     dialogopen();
     return;
 exit:
@@ -8873,7 +8881,7 @@ void systemback::interrupt()
 
 void systemback::on_interrupt_clicked()
 {
-    QTimer::singleShot(0, this, SLOT(interrupt()));
+    if(! irblck) QTimer::singleShot(0, this, SLOT(interrupt()));
 }
 
 void systemback::on_livewritestart_clicked()
@@ -9165,7 +9173,7 @@ start:
     }
 
     if(intrrpt) goto exit;
-    irfsc = true;
+    irblck = true;
 
     if(lvtype == "casper")
     {
@@ -9230,7 +9238,7 @@ start:
         goto error;
     }
 
-    irfsc = false;
+    irblck = false;
     if((xmntry && ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) || ! sb::copy("/boot/initrd.img-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/initrd.gz")) goto error;
 
     if(sb::isfile("/usr/lib/syslinux/isolinux.bin"))

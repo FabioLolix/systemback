@@ -818,7 +818,7 @@ void systemback::unitimer()
                         if(file.open(QIODevice::ReadOnly))
                             while(! file.atEnd())
                             {
-                                QStr cline(file.readLine().trimmed());
+                                QBA cline(file.readLine().trimmed());
                                 if(cline.endsWith("efivars.ko") && sb::isfile("/lib/modules/" % ckernel % '/' % cline) && sb::exec("modprobe efivars", nullptr, true) == 0 && sb::isdir("/sys/firmware/efi")) goto isefi;
                             }
                     }
@@ -3054,7 +3054,7 @@ start:
 
             while(! file.atEnd())
             {
-                QStr cline(file.readLine().trimmed());
+                QBA cline(file.readLine().trimmed());
 
                 if(! cline.startsWith('#') && cline.contains("UUID="))
                 {
@@ -6565,7 +6565,7 @@ void systemback::on_pointexclude_clicked()
         if(file.open(QIODevice::ReadOnly))
             while(! file.atEnd())
             {
-                QStr cline(file.readLine().trimmed());
+                QBA cline(file.readLine().trimmed());
 
                 if(cline.startsWith('.'))
                 {
@@ -6864,9 +6864,9 @@ void systemback::on_pointrename_clicked()
     if(dialog == 3) dialogopen();
 }
 
-void systemback::on_autorestoreoptions_clicked(bool checked)
+void systemback::on_autorestoreoptions_clicked(bool chckd)
 {
-    if(checked)
+    if(chckd)
     {
         ui->skipfstabrestore->setDisabled(true);
         ui->grubreinstallrestore->setDisabled(true);
@@ -6880,9 +6880,9 @@ void systemback::on_autorestoreoptions_clicked(bool checked)
     }
 }
 
-void systemback::on_autorepairoptions_clicked(bool checked)
+void systemback::on_autorepairoptions_clicked(bool chckd)
 {
-    if(checked)
+    if(chckd)
     {
         if(ui->skipfstabrepair->isEnabled()) ui->skipfstabrepair->setDisabled(true);
 
@@ -7006,19 +7006,19 @@ void systemback::on_dirrefresh_clicked()
     busy(false);
 }
 
-void systemback::on_dirchoose_currentItemChanged(QTrWI *current)
+void systemback::on_dirchoose_currentItemChanged(QTrWI *crrnt)
 {
-    if(current)
+    if(crrnt)
     {
-        cQTrWI *twi(current);
-        QStr path('/' % current->text(0));
+        cQTrWI *twi(crrnt);
+        QStr path('/' % crrnt->text(0));
         while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
 
         if(sb::isdir(path))
         {
             ui->dirpath->setText(path);
 
-            if(current->textColor(0) == Qt::red)
+            if(crrnt->textColor(0) == Qt::red)
             {
                 if(ui->dirpath->styleSheet().isEmpty())
                 {
@@ -7036,11 +7036,11 @@ void systemback::on_dirchoose_currentItemChanged(QTrWI *current)
         }
         else
         {
-            current->setDisabled(true);
+            crrnt->setDisabled(true);
 
-            if(current->isSelected())
+            if(crrnt->isSelected())
             {
-                current->setSelected(false);
+                crrnt->setSelected(false);
                 ui->dirchoosecancel->setFocus();
 
                 if(ui->dirpath->text() != "/")
@@ -7307,16 +7307,16 @@ void systemback::on_restorenext_clicked()
     dialogopen();
 }
 
-void systemback::on_livelist_currentItemChanged(QLWI *current)
+void systemback::on_livelist_currentItemChanged(QLWI *crrnt)
 {
-    if(current)
+    if(crrnt)
     {
-        if(sb::isfile(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"))
+        if(sb::isfile(sb::sdir[2] % '/' % sb::left(crrnt->text(), sb::instr(crrnt->text(), " ") - 1) % ".sblive"))
         {
             if(! ui->livedelete->isEnabled()) ui->livedelete->setEnabled(true);
-            ullong isize(sb::fsize(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".sblive"));
+            ullong isize(sb::fsize(sb::sdir[2] % '/' % sb::left(crrnt->text(), sb::instr(crrnt->text(), " ") - 1) % ".sblive"));
 
-            if(isize > 0 && isize < 4294967295 && isize * 2 + 104857600 < sb::dfree(sb::sdir[2]) && ! sb::exist(sb::sdir[2] % '/' % sb::left(current->text(), sb::instr(current->text(), " ") - 1) % ".iso"))
+            if(isize > 0 && isize < 4294967295 && isize * 2 + 104857600 < sb::dfree(sb::sdir[2]) && ! sb::exist(sb::sdir[2] % '/' % sb::left(crrnt->text(), sb::instr(crrnt->text(), " ") - 1) % ".iso"))
             {
                 if(! ui->liveconvert->isEnabled()) ui->liveconvert->setEnabled(true);
             }
@@ -7333,7 +7333,7 @@ void systemback::on_livelist_currentItemChanged(QLWI *current)
         }
         else
         {
-            delete current;
+            delete crrnt;
             ui->livelist->setCurrentItem(nullptr);
             if(ui->livedelete->isEnabled()) ui->livedelete->setDisabled(true);
             if(ui->liveconvert->isEnabled()) ui->liveconvert->setDisabled(true);
@@ -7352,12 +7352,12 @@ void systemback::on_livedelete_clicked()
     busy(false);
 }
 
-void systemback::on_livedevices_currentItemChanged(QTblWI *current, QTblWI *previous)
+void systemback::on_livedevices_currentItemChanged(QTblWI *crrnt, QTblWI *prvs)
 {
-    if(current && (! previous || current->row() != previous->row()))
+    if(crrnt && (! prvs || crrnt->row() != prvs->row()))
     {
-        ui->livedevices->item(current->row(), 3)->setText("x");
-        if(previous) ui->livedevices->item(previous->row(), 3)->setText("-");
+        ui->livedevices->item(crrnt->row(), 3)->setText("x");
+        if(prvs) ui->livedevices->item(prvs->row(), 3)->setText("-");
         if(ui->livelist->currentItem() && ! ui->livewritestart->isEnabled()) ui->livewritestart->setEnabled(true);
     }
 }
@@ -7471,14 +7471,14 @@ void systemback::on_repairnext_clicked()
     dialogopen();
 }
 
-void systemback::on_skipfstabrestore_clicked(bool checked)
+void systemback::on_skipfstabrestore_clicked(bool chckd)
 {
-    if(checked && ! sb::isfile("/etc/fstab")) ui->skipfstabrestore->setChecked(false);
+    if(chckd && ! sb::isfile("/etc/fstab")) ui->skipfstabrestore->setChecked(false);
 }
 
-void systemback::on_skipfstabrepair_clicked(bool checked)
+void systemback::on_skipfstabrepair_clicked(bool chckd)
 {
-    if(checked && ! sb::isfile("/mnt/etc/fstab")) ui->skipfstabrepair->setChecked(false);
+    if(chckd && ! sb::isfile("/mnt/etc/fstab")) ui->skipfstabrepair->setChecked(false);
 }
 
 void systemback::on_installnext_clicked()
@@ -7544,18 +7544,18 @@ void systemback::on_installnext_clicked()
     }
 }
 
-void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI *previous)
+void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *prvs)
 {
-    if(current && (! previous || current->row() != previous->row()))
+    if(crrnt && (! prvs || crrnt->row() != prvs->row()))
     {
         if(ui->partitionsettingspanel2->isVisible())
-            for(ushort a(previous->row() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
+            for(ushort a(prvs->row() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QBrush());
                 ui->partitionsettings->item(a, 0)->setForeground(QBrush());
             }
 
-        uchar type(ui->partitionsettings->item(current->row(), 8)->text().toUShort()), pcount(0);
+        uchar type(ui->partitionsettings->item(crrnt->row(), 8)->text().toUShort()), pcount(0);
 
         switch(type) {
         case sb::MSDOS:
@@ -7575,7 +7575,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
             bool mntd(false), mntcheck(false);
 
-            for(ushort a(current->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(current->row(), 0)->text(), 8)) && sb::like(ui->partitionsettings->item(a, 8)->text().toInt(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(current->row(), 0)->text()))) ; ++a)
+            for(ushort a(crrnt->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(crrnt->row(), 0)->text(), 8)) && sb::like(ui->partitionsettings->item(a, 8)->text().toInt(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(crrnt->row(), 0)->text()))) ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
@@ -7593,7 +7593,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                         if(file.open(QIODevice::ReadOnly))
                             while(! file.atEnd())
                             {
-                                QStr cline(file.readLine().trimmed().replace('\t', ' '));
+                                QBA cline(file.readLine().trimmed().replace('\t', ' '));
 
                                 if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(a, 3)->text() % " *", "* " % ui->partitionsettings->item(a, 3)->text() % "/ *"}))
                                 {
@@ -7642,7 +7642,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 ui->partitionsettingspanel3->show();
             }
 
-            ui->partitionsize->setMaximum((ui->partitionsettings->item(current->row(), 10)->text().toULongLong() * 10 / 1048576 + 5) / 10);
+            ui->partitionsize->setMaximum((ui->partitionsettings->item(crrnt->row(), 10)->text().toULongLong() * 10 / 1048576 + 5) / 10);
             ui->partitionsize->setValue(ui->partitionsize->maximum());
             break;
         default:
@@ -7656,7 +7656,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                 ui->partitionsettingspanel1->show();
             }
 
-            if(ui->partitionsettings->item(current->row(), 3)->text().isEmpty())
+            if(ui->partitionsettings->item(crrnt->row(), 3)->text().isEmpty())
             {
                 if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
 
@@ -7695,7 +7695,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                     ui->unmountdelete->setStyleSheet(nullptr);
                 }
 
-                if(grub.isEFI && ui->partitionsettings->item(current->row(), 3)->text() == "/boot/efi")
+                if(grub.isEFI && ui->partitionsettings->item(crrnt->row(), 3)->text() == "/boot/efi")
                 {
                     if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
                     if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
@@ -7708,7 +7708,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                             ui->mountpoint->setCurrentText(nullptr);
                     }
                 }
-                else if(ui->partitionsettings->item(current->row(), 3)->text() == "SWAP")
+                else if(ui->partitionsettings->item(crrnt->row(), 3)->text() == "SWAP")
                 {
                     if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
                     if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
@@ -7720,14 +7720,14 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                         else if(! ui->mountpoint->currentText().isEmpty())
                             ui->mountpoint->setCurrentText(nullptr);
                     }
-                    else if(ui->partitionsettings->item(current->row(), 4)->text() == "SWAP")
+                    else if(ui->partitionsettings->item(crrnt->row(), 4)->text() == "SWAP")
                     {
                         if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
                     }
                     else if(! ui->changepartition->isEnabled())
                         ui->changepartition->setEnabled(true);
                 }
-                else if(ui->partitionsettings->item(current->row(), 3)->text() == "/home" && ui->userdatafilescopy->isVisible())
+                else if(ui->partitionsettings->item(crrnt->row(), 3)->text() == "/home" && ui->userdatafilescopy->isVisible())
                 {
                     if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
                     if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
@@ -7754,7 +7754,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
 
                     bool mntcheck(false);
 
-                    if(sb::sdir[0].startsWith(ui->partitionsettings->item(current->row(), 3)->text()) || sb::like(ui->partitionsettings->item(current->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                    if(sb::sdir[0].startsWith(ui->partitionsettings->item(crrnt->row(), 3)->text()) || sb::like(ui->partitionsettings->item(crrnt->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
                         mntcheck = true;
                     else if(sb::isfile("/etc/fstab"))
                     {
@@ -7763,9 +7763,9 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *current, QTblWI
                         if(file.open(QIODevice::ReadOnly))
                             while(! file.atEnd())
                             {
-                                QStr cline(file.readLine().trimmed().replace('\t', ' '));
+                                QBA cline(file.readLine().trimmed().replace('\t', ' '));
 
-                                if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(current->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(current->row(), 3)->text() % "/ *"}))
+                                if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(crrnt->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(crrnt->row(), 3)->text() % "/ *"}))
                                 {
                                     mntcheck = true;
                                     break;
@@ -7908,9 +7908,9 @@ void systemback::on_filesystem_currentIndexChanged(cQStr &arg1)
     if(! ui->format->isChecked() && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != arg1) ui->format->setChecked(true);
 }
 
-void systemback::on_format_clicked(bool checked)
+void systemback::on_format_clicked(bool chckd)
 {
-    if(! checked)
+    if(! chckd)
     {
         if(ui->mountpoint->currentText() == "/boot/efi")
         {
@@ -8249,9 +8249,9 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
     }
 }
 
-void systemback::on_itemslist_currentItemChanged(QTrWI *current)
+void systemback::on_itemslist_currentItemChanged(QTrWI *crrnt)
 {
-    if(current && ! ui->additem->isEnabled())
+    if(crrnt && ! ui->additem->isEnabled())
     {
         ui->additem->setEnabled(true);
 
@@ -8263,9 +8263,9 @@ void systemback::on_itemslist_currentItemChanged(QTrWI *current)
     }
 }
 
-void systemback::on_excludedlist_currentItemChanged(QLWI *current)
+void systemback::on_excludedlist_currentItemChanged(QLWI *crrnt)
 {
-    if(current && ! ui->removeitem->isEnabled())
+    if(crrnt && ! ui->removeitem->isEnabled())
     {
         ui->removeitem->setEnabled(true);
 
@@ -8623,9 +8623,9 @@ void systemback::on_schedulerstate_clicked()
     }
 }
 
-void systemback::on_silentmode_clicked(bool checked)
+void systemback::on_silentmode_clicked(bool chckd)
 {
-    if(! checked)
+    if(! chckd)
     {
         sb::schdle[5] = sb::False;
         if(! cfgupdt) cfgupdt = true;
@@ -8779,9 +8779,9 @@ void systemback::on_windowposition_currentIndexChanged(cQStr &arg1)
     }
 }
 
-void systemback::on_userdatainclude_clicked(bool checked)
+void systemback::on_userdatainclude_clicked(bool chckd)
 {
-    if(checked)
+    if(chckd)
     {
         ullong hfree(sb::dfree("/home"));
         QFile file("/etc/passwd");
@@ -9472,9 +9472,9 @@ end:
     busy(false);
 }
 
-void systemback::on_languageoverride_clicked(bool checked)
+void systemback::on_languageoverride_clicked(bool chckd)
 {
-    if(checked)
+    if(chckd)
     {
         if(ui->languages->currentText() == "المصرية العربية")
             sb::lang = "ar_EG";
@@ -9553,10 +9553,10 @@ void systemback::on_languages_currentIndexChanged(cQStr &arg1)
     }
 }
 
-void systemback::on_styleoverride_clicked(bool checked)
+void systemback::on_styleoverride_clicked(bool chckd)
 {
-    sb::style = checked ? ui->styles->currentText() : "auto";
-    ui->styles->setEnabled(checked);
+    sb::style = chckd ? ui->styles->currentText() : "auto";
+    ui->styles->setEnabled(chckd);
     if(! cfgupdt) cfgupdt = true;
 }
 
@@ -9569,9 +9569,9 @@ void systemback::on_styles_currentIndexChanged(cQStr &arg1)
     }
 }
 
-void systemback::on_alwaysontop_clicked(bool checked)
+void systemback::on_alwaysontop_clicked(bool chckd)
 {
-    if(checked)
+    if(chckd)
     {
         setwontop();
         sb::waot = sb::True;
@@ -9585,33 +9585,33 @@ void systemback::on_alwaysontop_clicked(bool checked)
     if(! cfgupdt) cfgupdt = true;
 }
 
-void systemback::on_incrementaldisable_clicked(bool checked)
+void systemback::on_incrementaldisable_clicked(bool chckd)
 {
-    sb::incrmtl = checked ? sb::False : sb::True;
+    sb::incrmtl = chckd ? sb::False : sb::True;
     if(! cfgupdt) cfgupdt = true;
 }
 
-void systemback::on_cachemptydisable_clicked(bool checked)
+void systemback::on_cachemptydisable_clicked(bool chckd)
 {
-    sb::ecache = checked ? sb::False : sb::True;
+    sb::ecache = chckd ? sb::False : sb::True;
     if(! cfgupdt) cfgupdt = true;
 }
 
-void systemback::on_usexzcompressor_clicked(bool checked)
+void systemback::on_usexzcompressor_clicked(bool chckd)
 {
-    sb::xzcmpr = checked ? sb::True : sb::False;
+    sb::xzcmpr = chckd ? sb::True : sb::False;
     if(! cfgupdt) cfgupdt = true;
 }
 
-void systemback::on_autoisocreate_clicked(bool checked)
+void systemback::on_autoisocreate_clicked(bool chckd)
 {
-    sb::autoiso = checked ? sb::True : sb::False;
+    sb::autoiso = chckd ? sb::True : sb::False;
     if(! cfgupdt) cfgupdt = true;
 }
 
-void systemback::on_schedulerdisable_clicked(bool checked)
+void systemback::on_schedulerdisable_clicked(bool chckd)
 {
-    if(checked)
+    if(chckd)
     {
         on_schedulerrefresh_clicked();
         ui->adduser->setEnabled(true);
@@ -9624,8 +9624,8 @@ void systemback::on_schedulerdisable_clicked(bool checked)
         if(! cfgupdt) cfgupdt = true;
     }
 
-    ui->users->setEnabled(checked);
-    ui->schedulerrefresh->setEnabled(checked);
+    ui->users->setEnabled(chckd);
+    ui->schedulerrefresh->setEnabled(chckd);
 }
 
 void systemback::on_users_currentIndexChanged(cQStr &arg1)

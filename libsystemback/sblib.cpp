@@ -76,7 +76,7 @@ QStr sb::appver()
 {
     QFile file(":version");
     file.open(QIODevice::ReadOnly);
-    QStr vstr(file.readLine().trimmed() % "_Qt" % (QStr(qVersion()) == QT_VERSION_STR ? QStr(qVersion()) : QStr(qVersion()) % '(' % QT_VERSION_STR % ')') % '_');
+    QStr vrsn(qVersion()), vstr(file.readLine().trimmed() % "_Qt" % (vrsn == QT_VERSION_STR ? vrsn : vrsn % '(' % QT_VERSION_STR % ')') % '_');
 #ifdef __clang__
     vstr.append("Clang" % QStr::number(__clang_major__) % '.' % QStr::number(__clang_minor__) % '.' % QStr::number(__clang_patchlevel__));
 #elif defined(__INTEL_COMPILER) || ! defined(__GNUC__)
@@ -1680,7 +1680,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
         while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
+            QBA cline(file.readLine().trimmed());
             if(cline.startsWith('.')) elist.append(cline);
             if(ThrdKill) return false;
         }
@@ -2548,7 +2548,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
             while(! file.atEnd())
             {
-                QStr cline(file.readLine().trimmed());
+                QBA cline(file.readLine().trimmed());
                 if(cline.startsWith('.')) elist.append(cline);
                 if(ThrdKill) return false;
             }
@@ -2930,7 +2930,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
         while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
+            QBA cline(file.readLine().trimmed());
             if(cline.startsWith('.')) elist.append(cline);
             if(ThrdKill) return false;
         }
@@ -3975,8 +3975,7 @@ bool sb::thrdlvprpr(bool iudata)
 
         while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
-            elist.append(cline);
+            elist.append(file.readLine().trimmed());
             if(ThrdKill) return false;
         }
     }

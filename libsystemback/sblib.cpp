@@ -2105,23 +2105,10 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
 bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab)
 {
-    QBA sysitms[12];
-    QUCL sysitmst[12];
-    uint anum(0);
-
-    if(mthd < 3)
-    {
-        QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var"};
-
-        for(uchar a(0) ; a < 12 ; ++a)
-            if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
-
-        for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
-    }
-
     QSL usrs;
     QBAL homeitms;
     QUCLL homeitmst;
+    uint anum(0);
 
     if(mthd != 2)
     {
@@ -2161,7 +2148,6 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         for(cQUCL &cucl : homeitmst) anum += cucl.count();
     }
 
-    Progress = 0;
     QBA *cditms;
     QUCL *cditmst;
     uint cnum(0), lcnt;
@@ -2169,6 +2155,19 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
     if(mthd < 3)
     {
+        QBA sysitms[12];
+        QUCL sysitmst[12];
+
+        {
+            QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var"};
+
+            for(uchar a(0) ; a < 12 ; ++a)
+                if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+        }
+
+        for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
+        Progress = 0;
+
         {
             QSL incl{"_initrd.img_", "_initrd.img.old_", "_vmlinuz_", "_vmlinuz.old_"};
 
@@ -2452,6 +2451,8 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
             }
         }
     }
+    else
+        Progress = 0;
 
     if(mthd != 2)
     {

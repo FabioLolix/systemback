@@ -2267,15 +2267,7 @@ start:
     }
     else
     {
-        if(ui->keepfiles->isChecked() && ui->includeusers->currentIndex() == 0)
-            mthd = 3;
-        else if(ui->keepfiles->isChecked())
-            mthd = 4;
-        else if(ui->includeusers->currentIndex() == 0)
-            mthd = 5;
-        else
-            mthd = 6;
-
+        mthd = ui->keepfiles->isChecked() ? ui->includeusers->currentIndex() == 0 ? 3 : 4 : ui->includeusers->currentIndex() == 0 ? 5 : 6;
         prun = tr("Restoring user(s) configuration files");
     }
 
@@ -5816,9 +5808,9 @@ void systemback::on_partitionrefresh2_clicked()
 {
     on_partitionrefresh_clicked();
 
-    if(! ui->partitionsettingspanel1->isVisible())
+    if(! ui->partitionsettingspanel1->isVisibleTo(ui->copypanel))
     {
-        if(ui->partitionsettingspanel2->isVisible())
+        if(ui->partitionsettingspanel2->isVisibleTo(ui->copypanel))
             ui->partitionsettingspanel2->hide();
         else
             ui->partitionsettingspanel3->hide();
@@ -8032,7 +8024,7 @@ void systemback::on_repairpartitionrefresh_clicked()
     ui->repairmountpoint->addItems({"/mnt/usr", "/mnt/var", "/mnt/opt", "/mnt/usr/local"});
     ui->repairmountpoint->setCurrentIndex(1);
     rmntcheck();
-    on_partitionrefresh_clicked();
+    on_partitionrefresh2_clicked();
     on_repairmountpoint_currentTextChanged("/mnt");
     ui->repaircover->hide();
     if(ui->repairpanel->isVisible() && ! ui->repairback->hasFocus()) ui->repairback->setFocus();
@@ -8107,7 +8099,7 @@ void systemback::on_repairmount_clicked()
 
         if(sb::mount(ui->repairpartition->currentText(), ui->repairmountpoint->currentText()))
         {
-            on_partitionrefresh_clicked();
+            on_partitionrefresh2_clicked();
 
             if(ui->repairmountpoint->currentIndex() > 0)
             {

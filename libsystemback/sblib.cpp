@@ -1632,16 +1632,14 @@ void sb::run()
 
 bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 {
-    QBA sysitms[12], rootitms;
-    QUCL sysitmst[12], rootitmst;
+    QBA sysitms[12];
+    QUCL sysitmst[12];
 
     {
-        QStr dirs[]{"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var", "/root"};
+        QStr dirs[]{"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
 
         for(uchar a(0) ; a < 12 ; ++a)
             if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
-
-        if(isdir(dirs[12]) && ! rodir(rootitms, rootitmst, dirs[12], true)) return false;
     }
 
     QSL usrs;
@@ -1661,12 +1659,23 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                 usrs.append(usr);
                 homeitms.append(nullptr);
                 homeitmst.append(QUCL());
-                if(! rodir(homeitms.last(), homeitmst.last(), "/home/" % usr, true)) return false;
             }
         }
     }
 
-    uint anum(rootitmst.count());
+    usrs.append(isdir("/root") ? "" : nullptr);
+
+    if(! usrs.last().isNull())
+    {
+        homeitms.append(nullptr);
+        homeitmst.append(QUCL());
+        if(! rodir(homeitms.last(), homeitmst.last(), "/root", true)) return false;
+    }
+
+    for(schar a(usrs.count() - 2) ; a > -1 ; --a)
+        if(! rodir(homeitms[a], homeitmst[a], "/home/" % usrs.at(a), true)) return false;
+
+    uint anum(0);
     for(cQUCL &cucl : homeitmst) anum += cucl.count();
     for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
     Progress = 0;
@@ -1699,6 +1708,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
         }
     }
 
+    if(isdir("/home") && ! QDir().mkdir(trgt % "/home")) return false;
     QBA *cditms;
     QUCL *cditmst;
     uint cnum(0), lcnt;
@@ -1707,14 +1717,14 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
     {
         QSL excl{"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"};
 
-        if(isdir("/home"))
+        for(uchar a(0) ; a < usrs.count() ; ++a)
         {
-            if(! QDir().mkdir(trgt % "/home")) return false;
+            cQStr &usr(usrs.at(a));
 
-            for(uchar a(0) ; a < usrs.count() ; ++a)
+            if(! usr.isNull())
             {
-                cQStr &usr(usrs.at(a));
-                if(! QDir().mkdir(trgt % "/home/" % usr)) return false;
+                QStr srcd(usr.isEmpty() ? QStr("/root") : "/home/" % usr);
+                if(! QDir().mkdir(trgt % srcd)) return false;
                 lcnt = 0;
                 cditmst = &homeitmst[a];
                 QTS in((cditms = &homeitms[a]), QIODevice::ReadOnly);
@@ -1726,7 +1736,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
                     if(! like(item, excl) && ! exclcheck(elist, item))
                     {
-                        QStr srci("/home/" % usr % '/' % item);
+                        QStr srci(srcd % '/' % item);
 
                         if(exist(srci))
                         {
@@ -1793,7 +1803,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
                     if(cditmst->at(lcnt++) == Isdir)
                     {
-                        QStr srci("/home/" % usr % '/' % item), nrpi(trgt % srci);
+                        QStr srci(srcd % '/' % item), nrpi(trgt % srci);
 
                         if(exist(nrpi) && ! cpertime(srci, nrpi))
                         {
@@ -1808,120 +1818,19 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                 cditms->clear();
                 cditmst->clear();
 
-                if(! cpertime("/home/" % usr, trgt % "/home/" % usr))
+                if(! cpertime(srcd, trgt % srcd))
                 {
-                    ThrdDbg = "@/home/" % usr, trgt % "/home/" % usr;
+                    ThrdDbg = '@' % srcd;
                     return false;
                 }
             }
-
-            if(! cpertime("/home", trgt % "/home"))
-            {
-                ThrdDbg = "@/home";
-                return false;
-            }
         }
+    }
 
-        if(isdir("/root"))
-        {
-            if(! QDir().mkdir(trgt % "/root")) return false;
-            lcnt = 0;
-            QTS in(&rootitms, QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
-                QStr item(in.readLine());
-
-                if(! like(item, excl) && ! exclcheck(elist, item))
-                {
-                    QStr srci("/root/" % item);
-
-                    if(exist(srci))
-                    {
-                        QStr nrpi(trgt % srci);
-
-                        switch(rootitmst.at(lcnt)) {
-                        case Islink:
-                            for(cQStr &cpname : rplst)
-                            {
-                                QStr orpi(sdir % '/' % cpname % srci);
-
-                                if(stype(orpi) == Islink && lcomp(srci, orpi))
-                                {
-                                    if(link(chr(orpi), chr(nrpi)) == -1) goto err_2;
-                                    goto nitem_2;
-                                }
-
-                                if(ThrdKill) return false;
-                            }
-
-                            if(! cplink(srci, nrpi)) goto err_2;
-                            break;
-                        case Isdir:
-                            if(! QDir().mkdir(nrpi)) return false;
-                            break;
-                        case Isfile:
-                            if(QFile(srci).size() <= 8000000)
-                            {
-                                for(cQStr &cpname : rplst)
-                                {
-                                    QStr orpi(sdir % '/' % cpname % srci);
-
-                                    if(stype(orpi) == Isfile && fcomp(srci, orpi) == 2)
-                                    {
-                                        if(link(chr(orpi), chr(nrpi)) == -1) goto err_2;
-                                        goto nitem_2;
-                                    }
-
-                                    if(ThrdKill) return false;
-                                }
-
-                                if(! cpfile(srci, nrpi)) goto err_2;
-                            }
-                        }
-
-                        goto nitem_2;
-                    err_2:
-                        ThrdDbg = '@' % srci;
-                        return false;
-                    }
-                }
-
-            nitem_2:
-                if(ThrdKill) return false;
-                ++lcnt;
-            }
-
-            in.seek(0);
-            lcnt = 0;
-
-            while(! in.atEnd())
-            {
-                QStr item(in.readLine());
-
-                if(rootitmst.at(lcnt++) == Isdir)
-                {
-                    QStr srci("/root/" % item), nrpi(trgt % srci);
-
-                    if(exist(nrpi) && ! cpertime(srci, nrpi))
-                    {
-                        ThrdDbg = '@' % srci;
-                        return false;
-                    }
-                }
-
-                if(ThrdKill) return false;
-            }
-
-            rootitms.clear();
-
-            if(! cpertime("/root", trgt % "/root"))
-            {
-                ThrdDbg = "@/root";
-                return false;
-            }
-        }
+    if(isdir(trgt % "/home") && ! cpertime("/home", trgt % "/home"))
+    {
+        ThrdDbg = "@/home";
+        return false;
     }
 
     {
@@ -1943,8 +1852,8 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
                         if(stype(orpi) == Islink && lcomp(srci, orpi))
                         {
-                            if(link(chr(orpi), chr(nrpi)) == -1) goto err_3;
-                            goto nitem_3;
+                            if(link(chr(orpi), chr(nrpi)) == -1) goto err_2;
+                            goto nitem_2;
                         }
 
                         if(ThrdKill) return false;
@@ -1952,14 +1861,14 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
                     if(! cplink(srci, nrpi)) return false;
 
-                    goto nitem_3;
-                err_3:
+                    goto nitem_2;
+                err_2:
                     ThrdDbg = '@' % srci;
                     return false;
                 }
             }
 
-        nitem_3:
+        nitem_2:
             if(ThrdKill) return false;
         }
     }
@@ -2005,14 +1914,14 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
                                 if(stype(orpi) == Islink && lcomp(srci, orpi))
                                 {
-                                    if(link(chr(orpi), chr(nrpi)) == -1) goto err_4;
-                                    goto nitem_4;
+                                    if(link(chr(orpi), chr(nrpi)) == -1) goto err_3;
+                                    goto nitem_3;
                                 }
 
                                 if(ThrdKill) return false;
                             }
 
-                            if(! cplink(srci, nrpi)) goto err_4;
+                            if(! cplink(srci, nrpi)) goto err_3;
                             break;
                         case Isdir:
                             if(! QDir().mkdir(nrpi)) return false;
@@ -2024,24 +1933,24 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
                                 if(stype(orpi) == Isfile && fcomp(srci, orpi) == 2)
                                 {
-                                    if(link(chr(orpi), chr(nrpi)) == -1) goto err_4;
-                                    goto nitem_4;
+                                    if(link(chr(orpi), chr(nrpi)) == -1) goto err_3;
+                                    goto nitem_3;
                                 }
 
                                 if(ThrdKill) return false;
                             }
 
-                            if(! cpfile(srci, nrpi)) goto err_4;
+                            if(! cpfile(srci, nrpi)) goto err_3;
                         }
 
-                        goto nitem_4;
-                    err_4:
+                        goto nitem_3;
+                    err_3:
                         ThrdDbg = '@' % srci;
                         return false;
                     }
                 }
 
-            nitem_4:
+            nitem_3:
                 if(ThrdKill) return false;
                 ++lcnt;
             }
@@ -2140,20 +2049,20 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
             switch(logitmst.at(lcnt++)) {
             case Isdir:
-                if(! QDir().mkdir(trgt % "/var/log/" % item)) goto err_5;
+                if(! QDir().mkdir(trgt % "/var/log/" % item)) goto err_4;
                 break;
             case Isfile:
                 if(! like(item, excl) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                 {
                     QStr srci("/var/log/" % item), nrpi(trgt % srci);
                     crtfile(nrpi);
-                    if(! cpertime(srci, nrpi)) goto err_5;
+                    if(! cpertime(srci, nrpi)) goto err_4;
                 }
             }
 
             if(ThrdKill) return false;
             continue;
-        err_5:
+        err_4:
             ThrdDbg = "@/var/log/" % item;
             return false;
         }
@@ -2196,61 +2105,70 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
 bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab)
 {
+    QBA sysitms[12];
+    QUCL sysitmst[12];
+    uint anum(0);
+
+    if(mthd < 3)
+    {
+        QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var"};
+
+        for(uchar a(0) ; a < 12 ; ++a)
+            if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+
+        for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
+    }
+
     QSL usrs;
     QBAL homeitms;
     QUCLL homeitmst;
-    QBA rootitms;
-    QUCL rootitmst;
-    uint anum(0);
 
     if(mthd != 2)
     {
         if(! like(mthd, {4, 6}))
         {
-            if(isdir(srcdir % "/root") && ! rodir(rootitms, rootitmst, srcdir % "/root", true)) return false;
-
             if(isdir(srcdir % "/home"))
                 for(cQStr &usr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoDotAndDotDot))
                 {
                     usrs.append(usr);
                     homeitms.append(nullptr);
                     homeitmst.append(QUCL());
-                    if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/home/" % usr, true)) return false;
                 }
+
+            usrs.append(isdir(srcdir % "/root") ? "" : nullptr);
         }
         else if(usr == "root")
-        {
-            if(isdir(srcdir % "/root") && ! rodir(rootitms, rootitmst, srcdir % "/root", true)) return false;
-        }
+            usrs.append(isdir(srcdir % "/root") ? "" : nullptr);
         else if(isdir(srcdir % "/home/" % usr))
         {
-            usrs.append(usr);
+            usrs = QSL{usr, nullptr};
             homeitms.append(nullptr);
             homeitmst.append(QUCL());
-            if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/home/" % usr, true)) return false;
+        }
+        else
+            usrs.append(nullptr);
+
+        if(! usrs.last().isNull())
+        {
+            homeitms.append(nullptr);
+            homeitmst.append(QUCL());
+            if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/root", true)) return false;
         }
 
+        for(schar a(usrs.count() - 2) ; a > -1 ; --a)
+            if(! rodir(homeitms[a], homeitmst[a], srcdir % "/home/" % usrs.at(a), true)) return false;
+
         for(cQUCL &cucl : homeitmst) anum += cucl.count();
-        anum += rootitmst.count();
     }
 
-    QBA sysitms[12], *cditms;
-    QUCL sysitmst[12], *cditmst;
+    Progress = 0;
+    QBA *cditms;
+    QUCL *cditmst;
     uint cnum(0), lcnt;
     uchar cperc;
 
     if(mthd < 3)
     {
-        {
-            QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var"};
-
-            for(uchar a(0) ; a < 12 ; ++a)
-                if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
-        }
-
-        for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
-        Progress = 0;
-
         {
             QSL incl{"_initrd.img_", "_initrd.img.old_", "_vmlinuz_", "_vmlinuz.old_"};
 
@@ -2441,11 +2359,10 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
                 cditms->clear();
                 cditmst->clear();
+                cpertime(srcd, trgd);
             }
             else if(exist(trgd))
                 stype(trgd) == Isdir ? recrmdir(trgd) : QFile::remove(trgd);
-
-            cpertime(srcd, trgd);
         }
 
         {
@@ -2535,8 +2452,6 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
             }
         }
     }
-    else
-        Progress = 0;
 
     if(mthd != 2)
     {
@@ -2557,301 +2472,174 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         bool skppd;
         QSL excl[]{{"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"}, {"_lost+found_", "_Systemback_", "*~_"}};
 
-        if(! like(mthd, {4, 6}) || usr == "root")
+        for(schar a(usrs.count() - 1) ; a > -1 ; --a)
         {
-            if(! like(mthd, {3, 4}))
+            cQStr &usr(usrs.at(a));
+
+            if(! usr.isNull())
             {
-                QBAL sdlst;
-                if(! odir(sdlst, trgt % "/root", true)) return false;
+                QStr srcd(srcdir), trgd(trgt);
 
-                for(cQStr &item : sdlst)
+                if(usr.isEmpty())
                 {
-                    if(! item.endsWith('~') && ! exclcheck(elist, item) && ! exist(srcdir % "/root/" % item))
-                    {
-                        QStr trgi(trgt % "/root/" % item);
+                    srcd.append("/root");
+                    trgd.append("/root");
+                }
+                else
+                {
+                    QStr hdir("/home/" % usr);
+                    srcd.append(hdir);
+                    trgd.append(hdir);
+                }
 
-                        switch(stype(trgi)) {
+                {
+                    if(! isdir(trgd))
+                    {
+                        if(exist(trgd)) QFile::remove(trgd);
+                        if(! QDir().mkdir(trgd) && ! fspchk(trgt)) return false;
+                    }
+                    else if(! like(mthd, {3, 4}))
+                    {
+                        QBAL sdlst;
+                        if(! odir(sdlst, trgd, true)) return false;
+
+                        for(cQStr &item : sdlst)
+                        {
+                            if(! item.endsWith('~') && ! exclcheck(elist, item) && ! exist(srcd % '/' % item))
+                            {
+                                QStr trgi(trgd % '/' % item);
+
+                                switch(stype(trgi)) {
+                                case Isdir:
+                                    recrmdir(trgi, true);
+                                    break;
+                                case Isfile:
+                                    if(QFile(trgi).size() > 8000000) break;
+                                case Islink:
+                                    QFile::remove(trgi);
+                                }
+                            }
+
+                            if(ThrdKill) return false;
+                        }
+                    }
+                }
+
+                lcnt = 0;
+                cditmst = &homeitmst[a];
+                QTS in((cditms = &homeitms[a]), QIODevice::ReadOnly);
+
+                while(! in.atEnd())
+                {
+                    if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
+                    QStr item(in.readLine());
+
+                    if(! like(item, excl[0]) && ! exclcheck(elist, item))
+                    {
+                        QStr srci(srcd % '/' % item), trgi(trgd % '/' % item);
+
+                        switch(cditmst->at(lcnt)) {
+                        case Islink:
+                            switch(stype(trgi)) {
+                            case Islink:
+                                if(lcomp(srci, trgi)) goto nitem_2;
+                            case Isfile:
+                                QFile::remove(trgi);
+                                break;
+                            case Isdir:
+                                recrmdir(trgi);
+                            }
+
+                            if(! cplink(srci, trgi) && ! fspchk(trgt)) return false;
+                            break;
                         case Isdir:
-                            recrmdir(trgi, true);
+                            switch(stype(trgi)) {
+                            case Isdir:
+                            {
+                                if(! like(mthd, {3, 4}))
+                                {
+                                    QBAL sdlst;
+                                    if(! odir(sdlst, trgi)) return false;
+
+                                    for(cQStr &sitem : sdlst)
+                                    {
+                                        if(! like(sitem, excl[1]) && ! exclcheck(elist, item % '/' % sitem) && ! exist(srci % '/' % sitem))
+                                        {
+                                            QStr strgi(trgi % '/' % sitem);
+
+                                            switch(stype(strgi)) {
+                                            case Isdir:
+                                                recrmdir(strgi, true);
+                                                break;
+                                            case Isfile:
+                                                if(QFile(strgi).size() > 8000000) break;
+                                            case Islink:
+                                                QFile::remove(strgi);
+                                            }
+                                        }
+
+                                        if(ThrdKill) return false;
+                                    }
+                                }
+
+                                goto nitem_2;
+                            }
+                            case Islink:
+                            case Isfile:
+                                QFile::remove(trgi);
+                            }
+
+                            if(! QDir().mkdir(trgi) && ! fspchk(trgt)) return false;
                             break;
                         case Isfile:
-                            if(QFile(trgi).size() > 8000000) break;
-                        case Islink:
-                            QFile::remove(trgi);
+                            skppd = QFile(srci).size() > 8000000;
+
+                            switch(stype(trgi)) {
+                            case Isfile:
+                                switch(fcomp(trgi, srci)) {
+                                case 1:
+                                    cpertime(srci, trgi);
+                                case 2:
+                                    goto nitem_2;
+                                }
+
+                                if(skppd) goto nitem_2;
+                            case Islink:
+                                QFile::remove(trgi);
+                                break;
+                            case Isdir:
+                                recrmdir(trgi);
+                            }
+
+                            if(! skppd && ! cpfile(srci, trgi) && ! fspchk(trgt)) return false;
                         }
+                    }
+
+                nitem_2:
+                    if(ThrdKill) return false;
+                    ++lcnt;
+                }
+
+                in.seek(0);
+                lcnt = 0;
+
+                while(! in.atEnd())
+                {
+                    QStr item(in.readLine());
+
+                    if(cditmst->at(lcnt++) == Isdir)
+                    {
+                        QStr trgi(trgd % '/' % item);
+                        if(exist(trgi)) cpertime(srcd % '/' % item, trgi);
                     }
 
                     if(ThrdKill) return false;
                 }
+
+                cditms->clear();
+                cditmst->clear();
+                cpertime(srcd, trgd);
             }
-
-            lcnt = 0;
-            QTS in(&rootitms, QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
-                QStr item(in.readLine());
-
-                if(! like(item, excl[0]) && ! exclcheck(elist, item))
-                {
-                    QStr srci(srcdir % "/root/" % item), trgi(trgt % "/root/" % item);
-
-                    switch(rootitmst.at(lcnt)) {
-                    case Islink:
-                        switch(stype(trgi)) {
-                        case Islink:
-                            if(lcomp(srci, trgi)) goto nitem_2;
-                        case Isfile:
-                            QFile::remove(trgi);
-                            break;
-                        case Isdir:
-                            recrmdir(trgi);
-                        }
-
-                        if(! cplink(srci, trgi) && ! fspchk(trgt)) return false;
-                        break;
-                    case Isdir:
-                        switch(stype(trgi)) {
-                        case Isdir:
-                        {
-                            if(! like(mthd, {3, 4}))
-                            {
-                                QBAL sdlst;
-                                if(! odir(sdlst, trgi)) return false;
-
-                                for(cQStr &sitem : sdlst)
-                                {
-                                    if(! like(sitem, excl[1]) && ! exclcheck(elist, item % '/' % sitem) && ! exist(srci % '/' % sitem))
-                                    {
-                                        QStr strgi(trgi % '/' % sitem);
-
-                                        switch(stype(strgi)) {
-                                        case Isdir:
-                                            recrmdir(strgi, true);
-                                            break;
-                                        case Isfile:
-                                            if(QFile(strgi).size() > 8000000) break;
-                                        case Islink:
-                                            QFile::remove(strgi);
-                                        }
-                                    }
-
-                                    if(ThrdKill) return false;
-                                }
-                            }
-
-                            goto nitem_2;
-                        }
-                        case Islink:
-                        case Isfile:
-                            QFile::remove(trgi);
-                        }
-
-                        if(! QDir().mkdir(trgi) && ! fspchk(trgt)) return false;
-                        break;
-                    case Isfile:
-                        skppd = QFile(srci).size() > 8000000;
-
-                        switch(stype(trgi)) {
-                        case Isfile:
-                            switch(fcomp(trgi, srci)) {
-                            case 1:
-                                cpertime(srci, trgi);
-                            case 2:
-                                goto nitem_2;
-                            }
-
-                            if(skppd) goto nitem_2;
-                        case Islink:
-                            QFile::remove(trgi);
-                            break;
-                        case Isdir:
-                            recrmdir(trgi);
-                        }
-
-                        if(! skppd && ! cpfile(srci, trgi) && ! fspchk(trgt)) return false;
-                    }
-                }
-
-            nitem_2:
-                if(ThrdKill) return false;
-                ++lcnt;
-            }
-
-            in.seek(0);
-            lcnt = 0;
-
-            while(! in.atEnd())
-            {
-                QStr item(in.readLine());
-
-                if(rootitmst.at(lcnt++) == Isdir)
-                {
-                    QStr trgi(trgt % "/root/" % item);
-                    if(exist(trgi)) cpertime(srcdir % "/root/" % item, trgi);
-                }
-
-                if(ThrdKill) return false;
-            }
-
-            rootitms.clear();
-            rootitmst.clear();
-        }
-
-        for(uchar a(0) ; a < usrs.count() ; ++a)
-        {
-            cQStr &usr(usrs.at(a));
-
-            {
-                QStr trgd(trgt % "/home/" % usr);
-
-                if(! isdir(trgd))
-                {
-                    if(exist(trgd)) QFile::remove(trgd);
-                    if(! QDir().mkdir(trgd) && ! fspchk(trgt)) return false;
-                }
-                else if(! like(mthd, {3, 4}))
-                {
-                    QBAL sdlst;
-                    if(! odir(sdlst, trgd, true)) return false;
-
-                    for(cQStr &item : sdlst)
-                    {
-                        if(! item.endsWith('~') && ! exclcheck(elist, item) && ! exist(srcdir % "/home/" % usr % '/' % item))
-                        {
-                            QStr trgi(trgd % '/' % item);
-
-                            switch(stype(trgi)) {
-                            case Isdir:
-                                recrmdir(trgi, true);
-                                break;
-                            case Isfile:
-                                if(QFile(trgi).size() > 8000000) break;
-                            case Islink:
-                                QFile::remove(trgi);
-                            }
-                        }
-
-                        if(ThrdKill) return false;
-                    }
-                }
-            }
-
-            lcnt = 0;
-            cditmst = &homeitmst[a];
-            QTS in((cditms = &homeitms[a]), QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
-                QStr item(in.readLine());
-
-                if(! like(item, excl[0]) && ! exclcheck(elist, item))
-                {
-                    QStr srci(srcdir % "/home/" % usr % '/' % item), trgi(trgt % "/home/" % usr % '/' % item);
-
-                    switch(cditmst->at(lcnt)) {
-                    case Islink:
-                        switch(stype(trgi)) {
-                        case Islink:
-                            if(lcomp(srci, trgi)) goto nitem_3;
-                        case Isfile:
-                            QFile::remove(trgi);
-                            break;
-                        case Isdir:
-                            recrmdir(trgi);
-                        }
-
-                        if(! cplink(srci, trgi) && ! fspchk(trgt)) return false;
-                        break;
-                    case Isdir:
-                        switch(stype(trgi)) {
-                        case Isdir:
-                        {
-                            if(! like(mthd, {3, 4}))
-                            {
-                                QBAL sdlst;
-                                if(! odir(sdlst, trgi)) return false;
-
-                                for(cQStr &sitem : sdlst)
-                                {
-                                    if(! like(sitem, excl[1]) && ! exclcheck(elist, item % '/' % sitem) && ! exist(srci % '/' % sitem))
-                                    {
-                                        QStr strgi(trgi % '/' % sitem);
-
-                                        switch(stype(strgi)) {
-                                        case Isdir:
-                                            recrmdir(strgi, true);
-                                            break;
-                                        case Isfile:
-                                            if(QFile(strgi).size() > 8000000) break;
-                                        case Islink:
-                                            QFile::remove(strgi);
-                                        }
-                                    }
-
-                                    if(ThrdKill) return false;
-                                }
-                            }
-
-                            goto nitem_3;
-                        }
-                        case Islink:
-                        case Isfile:
-                            QFile::remove(trgi);
-                        }
-
-                        if(! QDir().mkdir(trgi) && ! fspchk(trgt)) return false;
-                        break;
-                    case Isfile:
-                        skppd = QFile(srci).size() > 8000000;
-
-                        switch(stype(trgi)) {
-                        case Isfile:
-                            switch(fcomp(trgi, srci)) {
-                            case 1:
-                                cpertime(srci, trgi);
-                            case 2:
-                                goto nitem_3;
-                            }
-
-                            if(skppd) goto nitem_3;
-                        case Islink:
-                            QFile::remove(trgi);
-                            break;
-                        case Isdir:
-                            recrmdir(trgi);
-                        }
-
-                        if(! skppd && ! cpfile(srci, trgi) && ! fspchk(trgt)) return false;
-                    }
-                }
-
-            nitem_3:
-                if(ThrdKill) return false;
-                ++lcnt;
-            }
-
-            in.seek(0);
-            lcnt = 0;
-
-            while(! in.atEnd())
-            {
-                QStr item(in.readLine());
-
-                if(cditmst->at(lcnt++) == Isdir)
-                {
-                    QStr trgi(trgt % "/home/" % usr % '/' % item);
-                    if(exist(trgi)) cpertime(srcdir % "/home/" % usr % '/' % item, trgi);
-                }
-
-                if(ThrdKill) return false;
-            }
-
-            cditms->clear();
-            cditmst->clear();
-            cpertime(srcdir % "/home/" % usr, trgt % "/home/" % usr);
         }
     }
 
@@ -2860,67 +2648,78 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
 bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 {
-    QBA sysitms[12], rootitms;
-    QUCL sysitmst[12], rootitmst;
+    QBA sysitms[12];
+    QUCL sysitmst[12];
 
     {
-        QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var", srcdir % "/root"};
+        QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var"};
 
         for(uchar a(0) ; a < 12 ; ++a)
             if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
-
-        if(isdir(dirs[12]) && ! (mthd == 5 ? rodir(rootitms, rootitmst, srcdir % "/etc/skel") : rodir(rootitms, rootitmst, dirs[12], true))) return false;
     }
 
-    uint anum(rootitmst.count());
-    for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
     QSL usrs;
     QBAL homeitms;
     QUCLL homeitmst;
 
-    if(mthd > 0)
+    if(mthd > 2)
     {
-        if(isdir(srcdir % "/home"))
+        if(isdir(srcdir % "/home/" % usr)) usrs.append(usr);
+        homeitms.append(nullptr);
+        homeitmst.append(QUCL());
+    }
+    else if(mthd > 0 && isdir(srcdir % "/home"))
+    {
+        if(srcdir.isEmpty())
         {
-            if(like(mthd, {1, 2}))
+            QFile file("/etc/passwd");
+            if(! file.open(QIODevice::ReadOnly)) return false;
+
+            while(! file.atEnd())
             {
-                if(srcdir.isEmpty())
+                QStr usr(file.readLine().trimmed());
+
+                if(usr.contains(":/home/") && isdir("/home/" % (usr = left(usr, instr(usr, ":") -1))))
                 {
-                    QFile file("/etc/passwd");
-                    if(! file.open(QIODevice::ReadOnly)) return false;
-
-                    while(! file.atEnd())
-                    {
-                        QStr usr(file.readLine().trimmed());
-                        if(usr.contains(":/home/") && isdir("/home/" % (usr = left(usr, instr(usr, ":") -1)))) usrs.append(usr);
-                    }
-                }
-                else
-                    for(cQStr &usr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) usrs.append(usr);
-            }
-
-            if(ThrdKill) return false;
-
-            if(mthd < 3)
-                for(uchar a(0) ; a < usrs.count() ; ++a)
-                {
-                    cQStr &usr(usrs.at(a));
+                    usrs.append(usr);
                     homeitms.append(nullptr);
                     homeitmst.append(QUCL());
-                    if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/home/" % usr, mthd == 2)) return false;
                 }
-            else if(isdir(srcdir % "/home/" % usr))
+            }
+        }
+        else
+            for(cQStr &usr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoDotAndDotDot))
             {
                 usrs.append(usr);
                 homeitms.append(nullptr);
                 homeitmst.append(QUCL());
-                if(mthd < 5 && ! rodir(homeitms.last(), homeitmst.last(), srcdir % "/home/" % usr, mthd == 3)) return false;
             }
-        }
 
-        for(cQUCL &cucl : homeitmst) anum += cucl.count();
+        if(ThrdKill) return false;
     }
 
+    usrs.append(isdir(srcdir % "/root") ? "" : nullptr);
+
+    if(mthd == 5)
+    {
+        if(! rodir(homeitms[0], homeitmst[0], srcdir % "/etc/skel")) return false;
+    }
+    else
+    {
+        if(! usrs.last().isNull())
+        {
+            homeitms.append(nullptr);
+            homeitmst.append(QUCL());
+            if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/root", like(mthd, {2, 3}))) return false;
+        }
+
+        for(schar a(usrs.count() - 2) ; a > -1 ; --a)
+            if(! rodir(homeitms[a], homeitmst[a], srcdir % "/home/" % usrs.at(a), like(mthd, {2, 3}))) return false;
+    }
+
+    uint anum(0);
+    for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
+    for(cQUCL &cucl : homeitmst) anum += cucl.count();
     Progress = 0;
     QSL elist{".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
 
@@ -2951,6 +2750,12 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
          }
     }
 
+    if(isdir(srcdir % "/home") && ! isdir("/.sbsystemcopy/home") && ! QDir().mkdir("/.sbsystemcopy/home"))
+    {
+        QFile::rename("/.sbsystemcopy/home", "/.sbsystemcopy/home_" % rndstr());
+        if(! QDir().mkdir("/.sbsystemcopy/home")) return false;
+    }
+
     QBA *cditms;
     QUCL *cditmst;
     uint cnum(0), lcnt;
@@ -2960,326 +2765,211 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     {
         QSL excl{"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"};
 
-        if(isdir(srcdir % "/home"))
+        for(uchar a(0) ; a < usrs.count() ; ++a)
         {
-            if(! isdir("/.sbsystemcopy/home") && ! QDir().mkdir("/.sbsystemcopy/home"))
+            cQStr &usr(usrs.at(a));
+
+            if(! usr.isNull())
             {
-                QFile::rename("/.sbsystemcopy/home", "/.sbsystemcopy/home_" % rndstr());
-                if(! QDir().mkdir("/.sbsystemcopy/home")) return false;
-            }
+                QStr srcd[2], trgd;
 
-            if(mthd > 0)
-                for(uchar a(0) ; a < usrs.count() ; ++a)
+                if(usr.isEmpty())
                 {
-                    cQStr &usr(usrs.at(a));
-                    QStr srcd(srcdir % "/home/" % usr), trgd("/.sbsystemcopy/home/" % usr);
+                    srcd[0] = srcdir % "/root";
+                    trgd = "/.sbsystemcopy/root";
+                }
+                else
+                {
+                    srcd[0] = srcdir % "/home/" % usr;
+                    trgd = "/.sbsystemcopy/home/" % usr;
+                }
 
-                    if(! isdir(trgd))
+                srcd[1] = mthd == 5 ? srcdir % "/etc/skel" : srcd[0];
+
+                if(! isdir(trgd))
+                {
+                    if(exist(trgd)) QFile::remove(trgd);
+
+                    if(! cpdir(srcd[0], trgd))
                     {
-                        if(exist(trgd)) QFile::remove(trgd);
-
-                        if(! cpdir(srcd, trgd))
-                        {
-                            ThrdDbg = "@/home/" % usr;
-                            return false;
-                        }
+                        ThrdDbg = '@' % right(trgd, -14);
+                        return false;
                     }
+                }
 
-                    lcnt = 0;
-                    cditmst = mthd == 5 ? &rootitmst : &homeitmst[a];
-                    QTS in((cditms = mthd == 5 ? &rootitms : &homeitms[a]), QIODevice::ReadOnly);
+                lcnt = 0;
+                cditmst = &homeitmst[mthd == 5 ? 0 : a];
+                QTS in((cditms = &homeitms[mthd == 5 ? 0 : a]), QIODevice::ReadOnly);
 
-                    while(! in.atEnd())
+                while(! in.atEnd())
+                {
+                    if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
+                    QStr item(in.readLine());
+
+                    if((mthd == 5 || (! like(item, excl) && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)))) && (! srcdir.isEmpty() || exist(srcd[1] % '/' % item)))
                     {
-                        if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
-                        QStr item(in.readLine());
+                        QStr trgi(trgd % '/' % item);
 
-                        if((mthd == 5 || (! like(item, excl) && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)))) && (! srcdir.isEmpty() || exist((mthd == 5 ? "/etc/skel/" : QStr("/home/" % usr % '/')) % item)))
+                        switch(cditmst->at(lcnt)) {
+                        case Islink:
                         {
-                            QStr trgi(trgd % '/' % item);
+                            QStr srci(srcd[1] % '/' % item);
 
-                            switch(cditmst->at(lcnt)) {
+                            switch(stype(trgi)) {
                             case Islink:
-                            {
-                                QStr srci(srcdir % (mthd == 5 ? "/etc/skel/" : QStr("/home/" % usr % '/')) % item);
-
-                                switch(stype(trgi)) {
-                                case Islink:
-                                    if(! lcomp(srci, trgi)) goto nitem_1;
-                                case Isfile:
-                                    QFile::remove(trgi);
-                                    break;
-                                case Isdir:
-                                    recrmdir(trgi);
-                                }
-
-                                if(! cplink(srci, trgi)) goto err_1;
-                                break;
-                            }
-                            case Isdir:
-                                switch(stype(trgi)) {
-                                case Isdir:
-                                    goto nitem_1;
-                                default:
-                                    QFile::remove(trgi);
-                                }
-
-                                if(! QDir().mkdir(trgi)) return false;
-                                break;
+                                if(! lcomp(srci, trgi)) goto nitem_1;
                             case Isfile:
-                                QStr srci(mthd == 5 ? QStr(srcdir % "/etc/skel/" % item) : QStr(srcd % '/' % item));
-                                skppd = like(mthd, {2, 3}) && QFile(srci).size() > 8000000;
-
-                                switch(stype(trgi)) {
-                                case Isfile:
-                                    if(mthd == 5)
-                                        switch(fcomp(trgi, srci)) {
-                                        case 1:
-                                            if(! cpertime(srci, trgi, true)) goto err_1;
-                                        case 2:
-                                            goto nitem_1;
-                                        }
-                                    else
-                                    {
-                                        switch(fcomp(trgi, srci)) {
-                                        case 1:
-                                            if(! cpertime(srci, trgi)) goto err_1;
-                                        case 2:
-                                            goto nitem_1;
-                                        }
-
-                                        if(skppd) goto nitem_1;
-                                    }
-                                case Islink:
-                                    QFile::remove(trgi);
-                                    break;
-                                case Isdir:
-                                    recrmdir(trgi);
-                                }
-
-                                if(mthd == 5)
-                                {
-                                    if(! cpfile(srci, trgi, true)) goto err_1;
-                                }
-                                else if(! skppd && ! cpfile(srci, trgi))
-                                    goto err_1;
+                                QFile::remove(trgi);
+                                break;
+                            case Isdir:
+                                recrmdir(trgi);
                             }
 
-                            goto nitem_1;
-                        err_1:
-                            ThrdDbg = (mthd == 5 ? "@/etc/skel/" : QStr("@/home/" % usr % '/')) % item;
-                            return false;
+                            if(! cplink(srci, trgi)) goto err_1;
+                            break;
+                        }
+                        case Isdir:
+                            switch(stype(trgi)) {
+                            case Isdir:
+                                goto nitem_1;
+                            default:
+                                QFile::remove(trgi);
+                            }
+
+                            if(! QDir().mkdir(trgi)) return false;
+                            break;
+                        case Isfile:
+                            QStr srci(srcd[1] % '/' % item);
+                            skppd = like(mthd, {2, 3}) && QFile(srci).size() > 8000000;
+
+                            switch(stype(trgi)) {
+                            case Isfile:
+                                if(mthd == 5)
+                                    switch(fcomp(trgi, srci)) {
+                                    case 1:
+                                        if(! cpertime(srci, trgi, ! usr.isEmpty())) goto err_1;
+                                    case 2:
+                                        goto nitem_1;
+                                    }
+                                else
+                                {
+                                    switch(fcomp(trgi, srci)) {
+                                    case 1:
+                                        if(! cpertime(srci, trgi)) goto err_1;
+                                    case 2:
+                                        goto nitem_1;
+                                    }
+
+                                    if(skppd) goto nitem_1;
+                                }
+                            case Islink:
+                                QFile::remove(trgi);
+                                break;
+                            case Isdir:
+                                recrmdir(trgi);
+                            }
+
+                            if(mthd == 5)
+                            {
+                                if(! cpfile(srci, trgi, ! usr.isEmpty())) goto err_1;
+                            }
+                            else if(! skppd && ! cpfile(srci, trgi))
+                                goto err_1;
                         }
 
-                    nitem_1:
-                        if(ThrdKill) return false;
-                        ++lcnt;
+                        goto nitem_1;
+                    err_1:
+                        ThrdDbg = '@' % right(trgd, -14) % '/' % item;
+                        return false;
                     }
 
-                    in.seek(0);
-                    lcnt = 0;
+                nitem_1:
+                    if(ThrdKill) return false;
+                    ++lcnt;
+                }
 
-                    while(! in.atEnd())
+                in.seek(0);
+                lcnt = 0;
+
+                while(! in.atEnd())
+                {
+                    QStr item(in.readLine());
+
+                    if(cditmst->at(lcnt++) == Isdir)
                     {
-                        QStr item(in.readLine());
+                        QStr trgi(trgd % '/' % item);
 
-                        if(cditmst->at(lcnt++) == Isdir)
+                        if(exist(trgi) && ! cpertime(srcd[1] % '/' % item, trgi, mthd == 5 && ! usr.isEmpty()))
                         {
-                            QStr trgi(trgd % '/' % item);
+                            ThrdDbg = '@' % right(trgd, -14) % '/' % item;
+                            return false;
+                        }
+                    }
 
-                            if(exist(trgi) && ! cpertime(srcdir % (mthd == 5 ? "/etc/skel/" : QStr("/home/" % usr % '/')) % item, trgi, mthd == 5))
+                    if(ThrdKill) return false;
+                }
+
+                if(mthd < 5)
+                {
+                    cditms->clear();
+                    cditmst->clear();
+                }
+
+                if(! usr.isEmpty() && isfile(srcd[0] % "/.config/user-dirs.dirs"))
+                {
+                    QFile file(srcd[0] % "/.config/user-dirs.dirs");
+                    if(! file.open(QIODevice::ReadOnly)) return false;
+
+                    while(! file.atEnd())
+                    {
+                        QStr cline(file.readLine().trimmed()), dir;
+
+                        if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0)
+                        {
+                            QStr trgi(trgd % '/' % dir);
+
+                            if(! isdir(trgi))
                             {
-                                ThrdDbg = (mthd == 5 ? "@/etc/skel/" : QStr("@/home/" % usr % '/')) % item;
+                                QStr srci(srcd[0] % '/' % dir);
+
+                                if(isdir(srci))
+                                {
+                                    if(! cpdir(srci, trgi)) goto err_2;
+                                }
+                                else if(srcdir.startsWith(sdir[1]) && (! QDir().mkdir(trgi) || ! cpertime(trgd, trgi)))
+                                    goto err_2;
+
+                                goto nitem_2;
+                            err_2:
+                                ThrdDbg = '@' % right(trgd, -14) % '/' % dir;
                                 return false;
                             }
                         }
 
+                    nitem_2:
                         if(ThrdKill) return false;
                     }
-
-                    if(mthd < 5)
-                    {
-                        cditms->clear();
-                        cditmst->clear();
-                    }
-
-                    if(isfile(srcd % "/.config/user-dirs.dirs"))
-                    {
-                        QFile file(srcd % "/.config/user-dirs.dirs");
-                        if(! file.open(QIODevice::ReadOnly)) return false;
-
-                        while(! file.atEnd())
-                        {
-                            QStr cline(file.readLine().trimmed()), dir;
-
-                            if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0)
-                            {
-                                QStr trgi(trgd % '/' % dir);
-
-                                if(! isdir(trgi))
-                                {
-                                    QStr srci(srcd % '/' % dir);
-
-                                    if(isdir(srci))
-                                    {
-                                        if(! cpdir(srci, trgi)) goto err_2;
-                                    }
-                                    else if(srcdir.startsWith(sdir[1]) && (! QDir().mkdir(trgi) || ! cpertime(trgd, trgi)))
-                                        goto err_2;
-
-                                    goto nitem_2;
-                                err_2:
-                                    ThrdDbg = "@/home/" % usr % '/' % dir;
-                                    return false;
-                                }
-                            }
-
-                        nitem_2:
-                            if(ThrdKill) return false;
-                        }
-                    }
-
-                    if(! cpertime(srcd, trgd))
-                    {
-                        ThrdDbg = "@/home/" % usr;
-                        return false;
-                    }
                 }
 
-            if(! cpertime(srcdir % "/home", "/.sbsystemcopy/home"))
-            {
-                ThrdDbg = "@/home";
-                return false;
-            }
-        }
-
-        if(isdir(srcdir % "/root"))
-        {
-            if(! isdir("/.sbsystemcopy/root") && ! QDir().mkdir("/.sbsystemcopy/root"))
-            {
-                QFile::rename("/.sbsystemcopy/root", "/.sbsystemcopy/root_" % rndstr());
-                if(! QDir().mkdir("/.sbsystemcopy/root")) return false;
-            }
-
-            lcnt = 0;
-            QTS in(&rootitms, QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                if(Progress < (cperc = (++cnum * 100 + 50) / anum)) Progress = cperc;
-                QStr item(in.readLine());
-
-                if((mthd == 5 || (! like(item, excl) && ! exclcheck(elist, item) && (macid.isEmpty() || ! item.contains(macid)))) && (! srcdir.isEmpty() || exist((mthd == 5 ? "/etc/skel/" : "/root/") % item)))
+                if(! cpertime(srcd[0], trgd))
                 {
-                    QStr trgi("/.sbsystemcopy/root/" % item);
-
-                    switch(rootitmst.at(lcnt)) {
-                    case Islink:
-                    {
-                        QStr srci(srcdir % (mthd == 5 ? "/etc/skel/" : "/root/") % item);
-
-                        switch(stype(trgi)) {
-                        case Islink:
-                            if(! lcomp(srci, trgi)) goto nitem_3;
-                        case Isfile:
-                            QFile::remove(trgi);
-                            break;
-                        case Isdir:
-                            recrmdir(trgi);
-                        }
-
-                        if(! cplink(srci, trgi)) goto err_3;
-                        break;
-                    }
-                    case Isdir:
-                        switch(stype(trgi)) {
-                        case Isdir:
-                            goto nitem_3;
-                            break;
-                        default:
-                            QFile::remove(trgi);
-                        }
-
-                        if(! QDir().mkdir(trgi)) return false;
-                        break;
-                    case Isfile:
-                        QStr srci(mthd == 5 ? QStr(srcdir % "/etc/skel/" % item) : QStr(srcdir % "/root/" % item));
-                        skppd = like(mthd, {2, 3}) && QFile(srci).size() > 8000000;
-
-                        switch(stype(trgi)) {
-                        case Isfile:
-                            if(mthd == 5)
-                                switch(fcomp(trgi, srci)) {
-                                case 1:
-                                    if(! cpertime(srci, trgi)) goto err_3;
-                                case 2:
-                                    goto nitem_3;
-                                }
-                            else
-                                switch(fcomp(trgi, srci)) {
-                                case 1:
-                                    if(! cpertime(srci, trgi)) goto err_3;
-                                case 2:
-                                    goto nitem_3;
-                                }
-
-                                if(skppd) goto nitem_3;
-                        case Islink:
-                            QFile::remove(trgi);
-                            break;
-                        case Isdir:
-                            recrmdir(trgi);
-                        }
-
-                        if(mthd == 5)
-                        {
-                            if(! cpfile(srci, trgi)) goto err_3;
-                        }
-                        else if(! skppd && ! cpfile(srci, trgi))
-                            goto err_3;
-                    }
-
-                    goto nitem_3;
-                err_3:
-                    ThrdDbg = (mthd == 5 ? "@/etc/skel/" : "@/root/") % item;
+                    ThrdDbg = '@' % right(trgd, -14);
                     return false;
                 }
-
-            nitem_3:
-                if(ThrdKill) return false;
-                ++lcnt;
             }
-
-            in.seek(0);
-            lcnt = 0;
-
-            while(! in.atEnd())
-            {
-                QStr item(in.readLine());
-
-                if(rootitmst.at(lcnt++) == Isdir)
-                {
-                    QStr trgi("/.sbsystemcopy/root/" % item);
-
-                    if(exist(trgi) && ! cpertime(srcdir % (mthd == 5 ? "/etc/skel/" : "/root/") % item, trgi))
-                    {
-                        ThrdDbg = (mthd == 5 ? "@/etc/skel/" : "@/root/") % item;
-                        return false;
-                    }
-                }
-
-                if(ThrdKill) return false;
-            }
-
-            if(! cpertime(srcdir % "/root", "/.sbsystemcopy/root"))
-            {
-                ThrdDbg = "@/root";
-                return false;
-            }
-
-            rootitms.clear();
-            rootitmst.clear();
         }
+    }
+
+    if(mthd == 5)
+    {
+        homeitms[0].clear();
+        homeitmst[0].clear();
+    }
+
+    if(! cpertime(srcdir % "/home", "/.sbsystemcopy/home"))
+    {
+        ThrdDbg = "@/home";
+        return false;
     }
 
     {
@@ -3419,7 +3109,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                             case Islink:
                                 switch(stype(trgi)) {
                                 case Islink:
-                                    if(lcomp(srci, trgi)) goto nitem_4;
+                                    if(lcomp(srci, trgi)) goto nitem_3;
                                 case Isfile:
                                     QFile::remove(trgi);
                                     break;
@@ -3427,7 +3117,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                                     recrmdir(trgi);
                                 }
 
-                                if(! cplink(srci, trgi)) goto err_4;
+                                if(! cplink(srci, trgi)) goto err_3;
                                 break;
                             case Isdir:
                                 switch(stype(trgi)) {
@@ -3447,7 +3137,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                                         if(ThrdKill) return false;
                                     }
 
-                                    goto nitem_4;
+                                    goto nitem_3;
                                 }
                                 case Islink:
                                 case Isfile:
@@ -3461,9 +3151,9 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                                 case Isfile:
                                     switch(fcomp(trgi, srci)) {
                                     case 1:
-                                        if(! cpertime(srci, trgi)) goto err_4;
+                                        if(! cpertime(srci, trgi)) goto err_3;
                                     case 2:
-                                        goto nitem_4;
+                                        goto nitem_3;
                                     }
                                 case Islink:
                                     QFile::remove(trgi);
@@ -3472,17 +3162,17 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                                     recrmdir(trgi);
                                 }
 
-                                if(! cpfile(srci, trgi)) goto err_4;
+                                if(! cpfile(srci, trgi)) goto err_3;
                             }
 
-                            goto nitem_4;
-                        err_4:
+                            goto nitem_3;
+                        err_3:
                             ThrdDbg = '@' % pdi;
                             return false;
                         }
                     }
 
-                nitem_4:
+                nitem_3:
                     if(ThrdKill) return false;
                     ++lcnt;
                 }
@@ -3595,14 +3285,14 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                             if(! QDir().mkdir(trgi)) return false;
                         }
 
-                        if(! cpertime(srcdir % "/media/" % item, trgi)) goto err_5;
+                        if(! cpertime(srcdir % "/media/" % item, trgi)) goto err_4;
                     }
                     else if(! cpdir(srcdir % "/media/" % item, trgi))
-                        goto err_5;
+                        goto err_4;
 
                     if(ThrdKill) return false;
                     continue;
-                err_5:
+                err_4:
                     ThrdDbg = "@/media/" % item;
                     return false;
                 }
@@ -3636,20 +3326,20 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
             switch(logitmst.at(lcnt++)) {
             case Isdir:
-                if(! QDir().mkdir("/.sbsystemcopy/var/log/" % item)) goto err_6;
+                if(! QDir().mkdir("/.sbsystemcopy/var/log/" % item)) goto err_5;
                 break;
             case Isfile:
                 if(! like(item, excl) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
                 {
                     QStr trgi("/.sbsystemcopy/var/log/" % item);
                     crtfile(trgi);
-                    if(! cpertime(srcdir % "/var/log/" % item, trgi)) goto err_6;
+                    if(! cpertime(srcdir % "/var/log/" % item, trgi)) goto err_5;
                 }
             }
 
             if(ThrdKill) return false;
             continue;
-        err_6:
+        err_5:
             ThrdDbg = "@/var/log/" % item;
             return false;
         }
@@ -3696,15 +3386,15 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
             switch(sbitmst.at(lcnt++)) {
             case Islink:
-                if(item != "etc/fstab" && ! cplink("/.systembacklivepoint/.systemback/" % item, "/.sbsystemcopy/" % item)) goto err_7;
+                if(item != "etc/fstab" && ! cplink("/.systembacklivepoint/.systemback/" % item, "/.sbsystemcopy/" % item)) goto err_6;
                 break;
             case Isfile:
-                if(item != "etc/fstab" && ! cpfile("/.systembacklivepoint/.systemback/" % item, "/.sbsystemcopy/" % item)) goto err_7;
+                if(item != "etc/fstab" && ! cpfile("/.systembacklivepoint/.systemback/" % item, "/.sbsystemcopy/" % item)) goto err_6;
             }
 
             if(ThrdKill) return false;
             continue;
-        err_7:
+        err_6:
             ThrdDbg = "@/.systemback/" % item;
             return false;
         }
@@ -3937,17 +3627,18 @@ bool sb::thrdlvprpr(bool iudata)
         while(! file.atEnd())
         {
             QStr usr(file.readLine().trimmed());
-            if(usr.contains(":/home/") && isdir("/home/" % (usr = left(usr, instr(usr, ":") -1)))) usrs.append(usr);
+            if(usr.contains(":/home/") && isdir("/home/" % (usr = left(usr, instr(usr, ":") -1)))) usrs.prepend(usr);
         }
     }
 
+    usrs.prepend(isdir("/root") ? "" : nullptr);
     if(ThrdKill) return false;
     bool uhl(true);
 
     if(dfree("/home") > 104857600 && dfree("/root") > 104857600)
-        for(cQStr &usr : usrs)
+        for(uchar a(1) ; a < usrs.count() ; ++a)
         {
-            if(! issmfs("/home", "/home/" % usr))
+            if(! issmfs("/home", "/home/" % usrs.at(a)))
             {
                 uhl = false;
                 break;
@@ -3983,231 +3674,154 @@ bool sb::thrdlvprpr(bool iudata)
 
     QSL excl{"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"};
 
-    if(isdir("/root"))
+    for(cQStr &usr : usrs)
     {
-        QStr usdir;
-
-        if(uhl)
+        if(! usr.isNull())
         {
-            usdir = "/root/.sbuserdata";
-            if(exist(usdir)) stype(usdir) == Isdir ? recrmdir(usdir) : QFile::remove(usdir);
-            if(! QDir().mkdir(usdir)) return false;
-        }
-        else
-            usdir = sdir[2] % "/.sblivesystemcreate/userdata";
+            QStr usdir;
 
-        if(! QDir().mkdir(usdir % "/root")) return false;
-        ++ThrdLng[0];
-        if(ThrdKill) return false;
-        QBA rootitms;
-        QUCL rootitmst;
-        if(! rodir(rootitms, rootitmst, "/root", ! iudata)) return false;
-        lcnt = 0;
-        QTS in(&rootitms, QIODevice::ReadOnly);
-
-        while(! in.atEnd())
-        {
-            QStr item(in.readLine());
-
-            if(! like(item, excl) && ! exclcheck(elist, item))
+            if(uhl)
             {
-                QStr srci("/root/" % item);
-
-                if(exist(srci))
+                if(usr.isEmpty())
                 {
-                    switch(rootitmst.at(lcnt)) {
-                    case Islink:
-                        if(uhl)
-                        {
-                            if(link(chr(srci), chr((usdir % srci))) == -1) goto err_2;
-                        }
-                        else if(! cplink(srci, usdir % srci))
-                            goto err_2;
+                    usdir = "/root/.sbuserdata";
+                    if(exist(usdir)) stype(usdir) == Isdir ? recrmdir(usdir) : QFile::remove(usdir);
+                    if(! QDir().mkdir(usdir) || ! QDir().mkdir(usdir.append("/root"))) return false;
+                }
+                else
+                {
+                    usdir = "/home/.sbuserdata/home/" % usr;
+                    if(! QDir().mkdir(usdir)) return false;
+                }
+            }
+            else
+            {
+                usdir = sdir[2] % (usr.isEmpty() ? "/.sblivesystemcreate/userdata/root" : QStr("/.sblivesystemcreate/userdata/home/" % usr));
+                if(! QDir().mkdir(usdir)) return false;
+            }
 
-                        ++ThrdLng[0];
-                        break;
-                    case Isdir:
-                        if(! QDir().mkdir(usdir % srci)) return false;
-                        ++ThrdLng[0];
-                        break;
-                    case Isfile:
-                        if(iudata || QFile(srci).size() <= 8000000)
-                        {
+            ++ThrdLng[0];
+            QStr srcd(usr.isEmpty() ? "/root" : QStr("/home/" % usr));
+            QBA useritms;
+            QUCL useritmst;
+            if(! rodir(useritms, useritmst, srcd, ! iudata)) return false;
+            lcnt = 0;
+            QTS in(&useritms, QIODevice::ReadOnly);
+
+            while(! in.atEnd())
+            {
+                QStr item(in.readLine());
+
+                if(! like(item, excl) && ! exclcheck(elist, item))
+                {
+                    QStr srci(srcd % '/' % item);
+
+                    if(exist(srci))
+                    {
+                        switch(useritmst.at(lcnt)) {
+                        case Islink:
                             if(uhl)
                             {
-                                if(link(chr(srci), chr((usdir % srci))) == -1) goto err_2;
+                                if(link(chr(srci), chr((usdir % '/' % item))) == -1) goto err_2;
                             }
-                            else if(! cpfile(srci, usdir % srci))
+                            else if(! cplink(srci, usdir % '/' % item))
                                 goto err_2;
 
                             ++ThrdLng[0];
-                        }
-                    }
-
-                    goto nitem_2;
-                err_2:
-                    ThrdDbg = '@' % srci;
-                    return false;
-                }
-            }
-
-        nitem_2:
-            if(ThrdKill) return false;
-            ++lcnt;
-        }
-
-        in.seek(0);
-        lcnt = 0;
-
-        while(! in.atEnd())
-        {
-            QStr item(in.readLine());
-
-            if(rootitmst.at(lcnt++) == Isdir)
-            {
-                QStr sbli(usdir % "/root/" % item);
-
-                if(exist(sbli) && ! cpertime("/root/" % item, sbli))
-                {
-                    ThrdDbg = "@/root/" % item;
-                    return false;
-                }
-            }
-
-            if(ThrdKill) return false;
-        }
-
-        if(! cpertime("/root", usdir % "/root"))
-        {
-            ThrdDbg = "@/root";
-            return false;
-        }
-    }
-
-    for(cQStr &udir : usrs)
-    {
-        QStr usdir(uhl ? "/home/.sbuserdata/home" : QStr(sdir[2] % "/.sblivesystemcreate/userdata/home"));
-        if(! QDir().mkdir(usdir % '/' % udir)) return false;
-        ++ThrdLng[0];
-        QBA useritms;
-        QUCL useritmst;
-        if(! rodir(useritms, useritmst, "/home/" % udir, ! iudata)) return false;
-        lcnt = 0;
-        QTS in(&useritms, QIODevice::ReadOnly);
-
-        while(! in.atEnd())
-        {
-            QStr item(in.readLine());
-
-            if(! like(item, excl) && ! exclcheck(elist, item))
-            {
-                QStr srci("/home/" % udir % '/' % item);
-
-                if(exist(srci))
-                {
-                    switch(useritmst.at(lcnt)) {
-                    case Islink:
-                        if(uhl)
-                        {
-                            if(link(chr(srci), chr((usdir % '/' % udir % '/' % item))) == -1) goto err_3;
-                        }
-                        else if(! cplink(srci, usdir % '/' % udir % '/' % item))
-                            goto err_3;
-
-                        ++ThrdLng[0];
-                        break;
-                    case Isdir:
-                        if(! QDir().mkdir(usdir % '/' % udir % '/' % item)) return false;
-                        ++ThrdLng[0];
-                        break;
-                    case Isfile:
-                        if(iudata || QFile(srci).size() <= 8000000)
-                        {
-                            if(uhl)
-                            {
-                                if(link(chr(srci), chr((usdir % '/' % udir % '/' % item))) == -1) goto err_3;
-                            }
-                            else if(! cpfile(srci, usdir % '/' % udir % '/' % item))
-                                goto err_3;
-
+                            break;
+                        case Isdir:
+                            if(! QDir().mkdir(usdir % '/' % item)) return false;
                             ++ThrdLng[0];
+                            break;
+                        case Isfile:
+                            if(iudata || QFile(srci).size() <= 8000000)
+                            {
+                                if(uhl)
+                                {
+                                    if(link(chr(srci), chr((usdir % '/' % item))) == -1) goto err_2;
+                                }
+                                else if(! cpfile(srci, usdir % '/' % item))
+                                    goto err_2;
+
+                                ++ThrdLng[0];
+                            }
                         }
+
+                        goto nitem_2;
+                    err_2:
+                        ThrdDbg = '@' % srci;
+                        return false;
                     }
-
-                    goto nitem_3;
-                err_3:
-                    ThrdDbg = '@' % srci;
-                    return false;
                 }
+
+            nitem_2:
+                if(ThrdKill) return false;
+                ++lcnt;
             }
 
-        nitem_3:
-            if(ThrdKill) return false;
-            ++lcnt;
-        }
+            in.seek(0);
+            lcnt = 0;
 
-        in.seek(0);
-        lcnt = 0;
-
-        while(! in.atEnd())
-        {
-            QStr item(in.readLine());
-
-            if(useritmst.at(lcnt++) == Isdir)
+            while(! in.atEnd())
             {
-                QStr sbli(usdir % '/' % udir % '/' % item);
+                QStr item(in.readLine());
 
-                if(exist(sbli) && ! cpertime("/home/" % udir % '/' % item, sbli))
+                if(useritmst.at(lcnt++) == Isdir)
                 {
-                    ThrdDbg = "@/home/" % udir % '/' % item;
-                    return false;
-                }
-            }
+                    QStr sbli(usdir % '/' % item);
 
-            if(ThrdKill) return false;
-        }
-
-        if(! iudata && isfile("/home/" % udir % "/.config/user-dirs.dirs"))
-        {
-            QFile file("/home/" % udir % "/.config/user-dirs.dirs");
-            if(! file.open(QIODevice::ReadOnly)) return false;
-
-            while(! file.atEnd())
-            {
-                QStr cline(file.readLine().trimmed()), dir;
-
-                if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0)
-                {
-                    QStr srcd("/home/" % udir % '/' % dir);
-
-                    if(isdir(srcd))
+                    if(exist(sbli) && ! cpertime(srcd % '/' % item, sbli))
                     {
-                        QStr sbld(usdir % '/' % udir % '/' % dir);
-
-                        if(! isdir(sbld))
-                        {
-                            if(! cpdir(srcd, sbld))
-                            {
-                                ThrdDbg = "@/home/" % udir % '/' % dir;
-                                return false;
-                            }
-
-                            ++ThrdLng[0];
-                        }
+                        ThrdDbg = '@' % srcd % '/' % item;
+                        return false;
                     }
                 }
 
                 if(ThrdKill) return false;
-                continue;
             }
 
-            file.close();
-        }
+            if(! iudata && ! usr.isEmpty() && isfile(srcd % "/.config/user-dirs.dirs"))
+            {
+                QFile file(srcd % "/.config/user-dirs.dirs");
+                if(! file.open(QIODevice::ReadOnly)) return false;
 
-        if(! cpertime("/home/" % udir, usdir % '/' % udir))
-        {
-            ThrdDbg = "@/home/" % udir;
-            return false;
+                while(! file.atEnd())
+                {
+                    QStr cline(file.readLine().trimmed()), dir;
+
+                    if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0)
+                    {
+                        QStr srci(srcd % '/' % dir);
+
+                        if(isdir(srci))
+                        {
+                            QStr sbld(usdir % '/' % dir);
+
+                            if(! isdir(sbld))
+                            {
+                                if(! cpdir(srci, sbld))
+                                {
+                                    ThrdDbg = '@' % srcd % '/' % dir;
+                                    return false;
+                                }
+
+                                ++ThrdLng[0];
+                            }
+                        }
+                    }
+
+                    if(ThrdKill) return false;
+                    continue;
+                }
+
+                file.close();
+            }
+
+            if(! cpertime(srcd, usdir))
+            {
+                ThrdDbg = '@' % srcd;
+                return false;
+            }
         }
     }
 

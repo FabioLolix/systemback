@@ -1071,8 +1071,8 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="708"/>
         <location filename="../systemback/systemback.cpp" line="5302"/>
-        <location filename="../systemback/systemback.cpp" line="9643"/>
-        <location filename="../systemback/systemback.cpp" line="9666"/>
+        <location filename="../systemback/systemback.cpp" line="9658"/>
+        <location filename="../systemback/systemback.cpp" line="9681"/>
         <source>Everyone</source>
         <translation>Všichni</translation>
     </message>
@@ -1153,7 +1153,7 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9327"/>
+        <location filename="../systemback/systemback.cpp" line="9342"/>
         <source>Creating Live system</source>
         <translation>Vytvoření Live systému</translation>
     </message>
@@ -1163,9 +1163,9 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9327"/>
-        <location filename="../systemback/systemback.cpp" line="9366"/>
-        <location filename="../systemback/systemback.cpp" line="9379"/>
+        <location filename="../systemback/systemback.cpp" line="9342"/>
+        <location filename="../systemback/systemback.cpp" line="9381"/>
+        <location filename="../systemback/systemback.cpp" line="9394"/>
         <source>process</source>
         <translation>proces</translation>
     </message>
@@ -1177,8 +1177,8 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="907"/>
-        <location filename="../systemback/systemback.cpp" line="9366"/>
-        <location filename="../systemback/systemback.cpp" line="9379"/>
+        <location filename="../systemback/systemback.cpp" line="9381"/>
+        <location filename="../systemback/systemback.cpp" line="9394"/>
         <source>Converting Live system image</source>
         <translation>Probíhá přeměna obrazu spouštěcího média</translation>
     </message>
@@ -1646,44 +1646,44 @@
         <translation>Pracovní vlákno aplikace Systemback bylo přerušeno uživatelem.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9292"/>
-        <location filename="../systemback/systemback.cpp" line="9293"/>
+        <location filename="../systemback/systemback.cpp" line="9307"/>
+        <location filename="../systemback/systemback.cpp" line="9308"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Zavést systém spouštěný z vyjímatelného média bez souboru xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9297"/>
-        <location filename="../systemback/systemback.cpp" line="9299"/>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9312"/>
+        <location filename="../systemback/systemback.cpp" line="9314"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Boot Live system</source>
         <translation>Zavést systém z vyjímatelného média</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9297"/>
-        <location filename="../systemback/systemback.cpp" line="9299"/>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9312"/>
+        <location filename="../systemback/systemback.cpp" line="9314"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Zavést systém z vyjímatelného média, ve slučitelném grafickém režimu</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9297"/>
-        <location filename="../systemback/systemback.cpp" line="9299"/>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9312"/>
+        <location filename="../systemback/systemback.cpp" line="9314"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Boot Live in debug mode</source>
         <translation>Zavést systém z vyjímatelného média, v ladicím režimu</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9298"/>
+        <location filename="../systemback/systemback.cpp" line="9313"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Úpravu zahájíte stiskem klávesy &apos;E&apos;</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Press TAB key to edit</source>
         <translation>Úpravu zahájíte stiskem klávesy TAB</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9404"/>
+        <location filename="../systemback/systemback.cpp" line="9419"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation>V pracovním vlákně aplikace Systemback došlo k chybě kvůli následující položce:</translation>
     </message>

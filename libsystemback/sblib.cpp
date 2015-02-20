@@ -1317,12 +1317,7 @@ void sb::run()
         libmnt_context *mcxt(mnt_new_context());
         mnt_context_set_source(mcxt, chr(ThrdStr[0]));
         mnt_context_set_target(mcxt, chr(ThrdStr[1]));
-
-        if(! ThrdStr[2].isEmpty())
-            mnt_context_set_options(mcxt, chr(ThrdStr[2]));
-        else if(isdir(ThrdStr[0]))
-            mnt_context_set_options(mcxt, "bind");
-
+        mnt_context_set_options(mcxt, ! ThrdStr[2].isEmpty() ? chr(ThrdStr[2]) : isdir(ThrdStr[0]) ? "bind" : "noatime");
         ThrdRslt = mnt_context_mount(mcxt) == 0;
         mnt_free_context(mcxt);
         break;

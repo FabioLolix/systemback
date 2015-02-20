@@ -824,7 +824,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="6539"/>
         <source>Do not empty memory cache at the end of some processes</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu goli memoria cache la sfârșitul unor procese</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5636"/>
@@ -1140,7 +1140,7 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9327"/>
+        <location filename="../systemback/systemback.cpp" line="9342"/>
         <source>Creating Live system</source>
         <translation>Creare sistem Live</translation>
     </message>
@@ -1165,14 +1165,6 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="398"/>
         <source>Deleting incomplete restore point</source>
         <translation>Ștergerea punctelor de restabilire incomplete</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="1279"/>
-        <location filename="../systemback/systemback.cpp" line="3092"/>
-        <location filename="../systemback/systemback.cpp" line="3277"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="380"/>
-        <source>Flushing filesystem buffers</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1354"/>
@@ -1238,6 +1230,14 @@
         <location filename="../systemback/systemback.cpp" line="3150"/>
         <source>Writing Live image to target device</source>
         <translation>Scrierea imagini Live la dispozitivul țintă</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="1279"/>
+        <location filename="../systemback/systemback.cpp" line="3092"/>
+        <location filename="../systemback/systemback.cpp" line="3277"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="380"/>
+        <source>Flushing filesystem buffers</source>
+        <translation>Golire bufferul sistemului de fișiere</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3316"/>
@@ -1386,7 +1386,7 @@
         <translation>Întreruperea procesului actual</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9404"/>
+        <location filename="../systemback/systemback.cpp" line="9419"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation>Eroare la firul de lucru Systemback din cauza următoarelor elemente:</translation>
     </message>
@@ -1590,8 +1590,8 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="708"/>
         <location filename="../systemback/systemback.cpp" line="5302"/>
-        <location filename="../systemback/systemback.cpp" line="9643"/>
-        <location filename="../systemback/systemback.cpp" line="9666"/>
+        <location filename="../systemback/systemback.cpp" line="9658"/>
+        <location filename="../systemback/systemback.cpp" line="9681"/>
         <source>Everyone</source>
         <translation>Toți</translation>
     </message>
@@ -1625,53 +1625,53 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9327"/>
-        <location filename="../systemback/systemback.cpp" line="9366"/>
-        <location filename="../systemback/systemback.cpp" line="9379"/>
+        <location filename="../systemback/systemback.cpp" line="9342"/>
+        <location filename="../systemback/systemback.cpp" line="9381"/>
+        <location filename="../systemback/systemback.cpp" line="9394"/>
         <source>process</source>
         <translation>proces</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9292"/>
-        <location filename="../systemback/systemback.cpp" line="9293"/>
+        <location filename="../systemback/systemback.cpp" line="9307"/>
+        <location filename="../systemback/systemback.cpp" line="9308"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Pornire Live fără fișier xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9297"/>
-        <location filename="../systemback/systemback.cpp" line="9299"/>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9312"/>
+        <location filename="../systemback/systemback.cpp" line="9314"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Boot Live system</source>
         <translation>Pornire sistem Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9297"/>
-        <location filename="../systemback/systemback.cpp" line="9299"/>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9312"/>
+        <location filename="../systemback/systemback.cpp" line="9314"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Pornire Live în modul de grafică redusă</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9297"/>
-        <location filename="../systemback/systemback.cpp" line="9299"/>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9312"/>
+        <location filename="../systemback/systemback.cpp" line="9314"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Boot Live in debug mode</source>
         <translation>Poenire Live în modul de depanare</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9298"/>
+        <location filename="../systemback/systemback.cpp" line="9313"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Apăsați tasta &apos;E&apos; pentru editare</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9301"/>
+        <location filename="../systemback/systemback.cpp" line="9316"/>
         <source>Press TAB key to edit</source>
         <translation>Apăsați tasta TAB pentru editare</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="907"/>
-        <location filename="../systemback/systemback.cpp" line="9366"/>
-        <location filename="../systemback/systemback.cpp" line="9379"/>
+        <location filename="../systemback/systemback.cpp" line="9381"/>
+        <location filename="../systemback/systemback.cpp" line="9394"/>
         <source>Converting Live system image</source>
         <translation>Conversare imagine sistem Live</translation>
     </message>

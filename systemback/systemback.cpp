@@ -9296,9 +9296,29 @@ start:
             {
                 QStr cline(file.readLine().trimmed());
 
-                if(cline.startsWith("GRUB_CMDLINE_LINUX_DEFAULT="))
+                if(cline.startsWith("GRUB_CMDLINE_LINUX_DEFAULT=") && cline.count('\"') > 1)
+                {
+                    QStr pprt;
+
                     for(cQStr &cprmtr : sb::left(sb::right(cline, - sb::instr(cline, "\"")), -1).split(' '))
-                        if(! cprmtr.isEmpty() && ! sb::like(cprmtr, {"_quiet_", "_splash_", "_xforcevesa_"})) prmtrs.append(' ' % cprmtr);
+                        if(! cprmtr.isEmpty() && ! (pprt.isEmpty() && sb::like(cprmtr, {"_quiet_", "_splash_", "_xforcevesa_"})))
+                        {
+                            if(cprmtr.contains("\\\""))
+                            {
+                                if(pprt.isEmpty())
+                                    pprt = cprmtr % ' ';
+                                else
+                                {
+                                    prmtrs.append(' ' % pprt.append(cprmtr).replace("\\\"", "\""));
+                                    pprt.clear();
+                                }
+                            }
+                            else if(pprt.isEmpty())
+                                prmtrs.append(' ' % cprmtr);
+                            else
+                                pprt.append(cprmtr % ' ');
+                        }
+                }
             }
     }
 

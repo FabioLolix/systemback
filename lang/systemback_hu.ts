@@ -1140,7 +1140,7 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9342"/>
+        <location filename="../systemback/systemback.cpp" line="9362"/>
         <source>Creating Live system</source>
         <translation>Live rendszer készítése</translation>
     </message>
@@ -1386,7 +1386,7 @@
         <translation>Jelenleg futó folyamat megszakítása</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9419"/>
+        <location filename="../systemback/systemback.cpp" line="9439"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation>Systemback munkaszál hiba a következő elem miatt:</translation>
     </message>
@@ -1590,8 +1590,8 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="708"/>
         <location filename="../systemback/systemback.cpp" line="5302"/>
-        <location filename="../systemback/systemback.cpp" line="9658"/>
-        <location filename="../systemback/systemback.cpp" line="9681"/>
+        <location filename="../systemback/systemback.cpp" line="9678"/>
+        <location filename="../systemback/systemback.cpp" line="9701"/>
         <source>Everyone</source>
         <translation>Mindenki</translation>
     </message>
@@ -1625,53 +1625,53 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9342"/>
-        <location filename="../systemback/systemback.cpp" line="9381"/>
-        <location filename="../systemback/systemback.cpp" line="9394"/>
+        <location filename="../systemback/systemback.cpp" line="9362"/>
+        <location filename="../systemback/systemback.cpp" line="9401"/>
+        <location filename="../systemback/systemback.cpp" line="9414"/>
         <source>process</source>
         <translation>folyamat</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9307"/>
-        <location filename="../systemback/systemback.cpp" line="9308"/>
+        <location filename="../systemback/systemback.cpp" line="9327"/>
+        <location filename="../systemback/systemback.cpp" line="9328"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Live inditasa xorg.conf fajl nelkul</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9312"/>
-        <location filename="../systemback/systemback.cpp" line="9314"/>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9332"/>
+        <location filename="../systemback/systemback.cpp" line="9334"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Boot Live system</source>
         <translation>Live rendszer inditasa</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9312"/>
-        <location filename="../systemback/systemback.cpp" line="9314"/>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9332"/>
+        <location filename="../systemback/systemback.cpp" line="9334"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Live inditasa csokkentett grafikus modban</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9312"/>
-        <location filename="../systemback/systemback.cpp" line="9314"/>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9332"/>
+        <location filename="../systemback/systemback.cpp" line="9334"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Boot Live in debug mode</source>
         <translation>Live inditasa debug modban</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9313"/>
+        <location filename="../systemback/systemback.cpp" line="9333"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Szerkeszteshez nyomd le az &apos;E&apos; billentyut</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Press TAB key to edit</source>
         <translation>Szerkeszteshez nyomd le a TAB billentyut</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="907"/>
-        <location filename="../systemback/systemback.cpp" line="9381"/>
-        <location filename="../systemback/systemback.cpp" line="9394"/>
+        <location filename="../systemback/systemback.cpp" line="9401"/>
+        <location filename="../systemback/systemback.cpp" line="9414"/>
         <source>Converting Live system image</source>
         <translation>Live rendszerkép konvertálása</translation>
     </message>

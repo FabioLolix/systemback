@@ -1071,8 +1071,8 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="708"/>
         <location filename="../systemback/systemback.cpp" line="5302"/>
-        <location filename="../systemback/systemback.cpp" line="9658"/>
-        <location filename="../systemback/systemback.cpp" line="9681"/>
+        <location filename="../systemback/systemback.cpp" line="9678"/>
+        <location filename="../systemback/systemback.cpp" line="9701"/>
         <source>Everyone</source>
         <translation>Semua orang</translation>
     </message>
@@ -1153,7 +1153,7 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9342"/>
+        <location filename="../systemback/systemback.cpp" line="9362"/>
         <source>Creating Live system</source>
         <translation>Membuat system Live</translation>
     </message>
@@ -1163,16 +1163,16 @@
         <location filename="../systemback/systemback.cpp" line="9126"/>
         <location filename="../systemback/systemback.cpp" line="9261"/>
         <location filename="../systemback/systemback.cpp" line="9280"/>
-        <location filename="../systemback/systemback.cpp" line="9342"/>
-        <location filename="../systemback/systemback.cpp" line="9381"/>
-        <location filename="../systemback/systemback.cpp" line="9394"/>
+        <location filename="../systemback/systemback.cpp" line="9362"/>
+        <location filename="../systemback/systemback.cpp" line="9401"/>
+        <location filename="../systemback/systemback.cpp" line="9414"/>
         <source>process</source>
         <translation>proses</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="907"/>
-        <location filename="../systemback/systemback.cpp" line="9381"/>
-        <location filename="../systemback/systemback.cpp" line="9394"/>
+        <location filename="../systemback/systemback.cpp" line="9401"/>
+        <location filename="../systemback/systemback.cpp" line="9414"/>
         <source>Converting Live system image</source>
         <translation>Mengkonversi bekas sistem Live</translation>
     </message>
@@ -1646,44 +1646,44 @@
         <translation>Rangkain kerja systemback diinterupsi pengguna.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9307"/>
-        <location filename="../systemback/systemback.cpp" line="9308"/>
+        <location filename="../systemback/systemback.cpp" line="9327"/>
+        <location filename="../systemback/systemback.cpp" line="9328"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Boot Live tanpa berkas xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9312"/>
-        <location filename="../systemback/systemback.cpp" line="9314"/>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9332"/>
+        <location filename="../systemback/systemback.cpp" line="9334"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Boot Live system</source>
         <translation>Boot sistem Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9312"/>
-        <location filename="../systemback/systemback.cpp" line="9314"/>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9332"/>
+        <location filename="../systemback/systemback.cpp" line="9334"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Boot Live dalam mode grafis aman</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9312"/>
-        <location filename="../systemback/systemback.cpp" line="9314"/>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9332"/>
+        <location filename="../systemback/systemback.cpp" line="9334"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Boot Live in debug mode</source>
         <translation>Boot Live dalam mode debug</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9313"/>
+        <location filename="../systemback/systemback.cpp" line="9333"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Tekan &apos;E&apos; untuk mengubah</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9316"/>
+        <location filename="../systemback/systemback.cpp" line="9336"/>
         <source>Press TAB key to edit</source>
         <translation>Tekan TAB untuk mengubah</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="9419"/>
+        <location filename="../systemback/systemback.cpp" line="9439"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation>Kesalahan pada Systemback worker thread karena item-item berikut:</translation>
     </message>

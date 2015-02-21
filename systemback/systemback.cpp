@@ -590,6 +590,7 @@ void systemback::unitimer()
                 {
                     {
                         QSL lst("English");
+                        lst.reserve(13);
 
                         for(cQStr &item : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
                         {
@@ -2491,6 +2492,7 @@ start:
 
     {
         QSL msort;
+        msort.reserve(ui->partitionsettings->rowCount());
 
         for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
             if(! ui->partitionsettings->item(a, 4)->text().isEmpty() && (ui->partitionsettings->item(a, 4)->text() != "/home" || ui->partitionsettings->item(a, 3)->text().isEmpty()))
@@ -8200,6 +8202,7 @@ void systemback::itmxpnd(cQSL &path, QTrWI *item)
         {
             if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
             QSL itmlst;
+            itmlst.reserve(ctwi->childCount());
             for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
 
             for(cQStr &siname : QDir(path.at(0) % path.at(1) % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
@@ -9111,6 +9114,7 @@ error:
     if(sb::isdir("/home/.sbuserdata")) sb::remove("/home/.sbuserdata");
     if(sb::isdir("/root/.sbuserdata")) sb::remove("/root/.sbuserdata");
     if(sb::isdir(sb::sdir[2] % "/.sblivesystemcreate")) sb::remove(sb::sdir[2] % "/.sblivesystemcreate");
+    if(sb::autoiso == sb::True) on_livecreatemenu_clicked();
     dialogopen();
     return;
 exit:
@@ -9119,6 +9123,7 @@ exit:
     if(sb::isdir("/var/.sblvtmp")) sb::remove("/var/.sblvtmp");
     if(sb::isdir("/home/.sbuserdata")) sb::remove("/home/.sbuserdata");
     if(sb::isdir("/root/.sbuserdata")) sb::remove("/root/.sbuserdata");
+    if(sb::autoiso == sb::True) on_livecreatemenu_clicked();
     intrrpt = false;
     return;
 start:
@@ -9298,6 +9303,7 @@ start:
 
                 if(cline.startsWith("GRUB_CMDLINE_LINUX_DEFAULT=") && cline.count('\"') > 1)
                 {
+                    if(! prmtrs.isEmpty()) prmtrs.clear();
                     QStr pprt;
 
                     for(cQStr &cprmtr : sb::left(sb::right(cline, - sb::instr(cline, "\"")), -1).split(' '))

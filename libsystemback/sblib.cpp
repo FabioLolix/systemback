@@ -298,8 +298,10 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, bool silent, bool bckgrnd)
             if(ThrdLng[0] == 0)
             {
                 QBA itms;
+                itms.reserve(10000);
                 QUCL itmst;
-                uchar lcnt(0);
+                itmst.reserve(500);
+                ushort lcnt(0);
                 rodir(itms, itmst, sdir[2] % "/.sblivesystemcreate");
                 QTS in(&itms, QIODevice::ReadOnly);
 
@@ -315,8 +317,10 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, bool silent, bool bckgrnd)
             break;
         case 4:
             QBA itms;
+            itms.reserve(10000);
             QUCL itmst;
-            uchar lcnt(0);
+            itmst.reserve(500);
+            ushort lcnt(0);
             rodir(itms, itmst, ThrdStr[0]);
             QTS in(&itms, QIODevice::ReadOnly);
             ullong size(0);
@@ -1117,6 +1121,7 @@ inline bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
     }
 
     closedir(dir);
+    if(oplen == 0 && ! ThrdKill) ba.squeeze();
     return ! ThrdKill;
 }
 
@@ -1165,6 +1170,7 @@ inline bool sb::rodir(QBA &ba, cQStr &path, uchar oplen)
     }
 
     closedir(dir);
+    if(oplen == 0 && ! ThrdKill) ba.squeeze();
     return ! ThrdKill;
 }
 
@@ -1217,6 +1223,7 @@ inline bool sb::rodir(QUCL &ucl, cQStr &path, uchar oplen)
 
 inline bool sb::odir(QBAL &balst, cQStr &path, bool hidden)
 {
+    balst.reserve(1000);
     DIR *dir(opendir(chr(path)));
     dirent *ent;
     QSL dd{"_._", "_.._"};
@@ -1337,6 +1344,7 @@ void sb::run()
     }
     case Readprttns:
     {
+        ThrdSlst->reserve(25);
         QSL dlst{"_/dev/sd*", "_/dev/hd*", "_/dev/mmcblk*"};
 
         for(cQStr &spath : QDir("/dev").entryList(QDir::System))
@@ -1451,6 +1459,7 @@ void sb::run()
     }
     case Readlvdevs:
     {
+        ThrdSlst->reserve(10);
         QBA fstab(fload("/etc/fstab"));
         QSL dlst[]{{"_usb-*", "_mmc-*"}, {"_/dev/sd*", "_/dev/mmcblk*"}};
 
@@ -1632,9 +1641,15 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
 
     {
         QStr dirs[]{"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"};
+        uint bbs[]{10000, 20000, 100000, 500000, 10000, 10000, 100000, 10000, 10000, 10000, 10000000, 1000000}, ibs[]{500, 1000, 10000, 20000, 500, 500, 5000, 1000, 500, 500, 500000, 50000};
 
         for(uchar a(0) ; a < 12 ; ++a)
-            if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+            if(isdir(dirs[a]))
+            {
+                sysitms[a].reserve(bbs[a]);
+                sysitmst[a].reserve(ibs[a]);
+                if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+            }
     }
 
     QSL usrs;
@@ -1663,12 +1678,18 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
     if(! usrs.last().isNull())
     {
         homeitms.append(nullptr);
+        homeitms.last().reserve(50000);
         homeitmst.append(QUCL());
+        homeitmst.last().reserve(1000);
         if(! rodir(homeitms.last(), homeitmst.last(), "/root", true)) return false;
     }
 
     for(schar a(usrs.count() - 2) ; a > -1 ; --a)
+    {
+        homeitms[a].reserve(5000000);
+        homeitmst[a].reserve(100000);
         if(! rodir(homeitms[a], homeitmst[a], "/home/" % usrs.at(a), true)) return false;
+    }
 
     uint anum(0);
     for(cQUCL &cucl : homeitmst) anum += cucl.count();
@@ -1691,6 +1712,7 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
     }
 
     QSL rplst;
+    rplst.reserve(15);
 
     if(incrmtl == True)
     {
@@ -2032,7 +2054,9 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
     if(isdir("/var/log"))
     {
         QBA logitms;
+        logitms.reserve(20000);
         QUCL logitmst;
+        logitmst.reserve(1000);
         if(! rodir(logitms, logitmst, "/var/log")) return false;
         QSL excl{"*.gz_", "*.old_"};
         lcnt = 0;
@@ -2133,12 +2157,18 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         if(! usrs.last().isNull())
         {
             homeitms.append(nullptr);
+            homeitms.last().reserve(50000);
             homeitmst.append(QUCL());
+            homeitmst.last().reserve(1000);
             if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/root", true)) return false;
         }
 
         for(schar a(usrs.count() - 2) ; a > -1 ; --a)
+        {
+            homeitms[a].reserve(5000000);
+            homeitmst[a].reserve(100000);
             if(! rodir(homeitms[a], homeitmst[a], srcdir % "/home/" % usrs.at(a), true)) return false;
+        }
 
         for(cQUCL &cucl : homeitmst) anum += cucl.count();
     }
@@ -2155,9 +2185,15 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
         {
             QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var"};
+            uint bbs[]{10000, 20000, 100000, 500000, 10000, 10000, 100000, 10000, 10000, 10000, 10000000, 1000000}, ibs[]{500, 1000, 10000, 20000, 500, 500, 5000, 1000, 500, 500, 500000, 50000};
 
             for(uchar a(0) ; a < 12 ; ++a)
-                if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+                if(isdir(dirs[a]))
+                {
+                    sysitms[a].reserve(bbs[a]);
+                    sysitmst[a].reserve(ibs[a]);
+                    if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+                }
         }
 
         for(uchar a(0) ; a < 12 ; ++a) anum += sysitmst[a].count();
@@ -2382,6 +2418,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                 }
 
                 QBA mediaitms;
+                mediaitms.reserve(10000);
                 if(! rodir(mediaitms, srcd)) return false;
                 QTS in(&mediaitms, QIODevice::ReadOnly);
 
@@ -2414,7 +2451,9 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         if(srcdir == "/.systembacklivepoint" && isdir("/.systembacklivepoint/.systemback"))
         {
             QBA sbitms;
+            sbitms.reserve(10000);
             QUCL sbitmst;
+            sbitmst.reserve(500);
             if(! rodir(sbitms, sbitmst, "/.systembacklivepoint/.systemback")) return false;
             lcnt = 0;
             QTS in(&sbitms, QIODevice::ReadOnly);
@@ -2649,9 +2688,15 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
     {
         QStr dirs[]{srcdir % "/bin", srcdir % "/boot", srcdir % "/etc", srcdir % "/lib", srcdir % "/lib32", srcdir % "/lib64", srcdir % "/opt", srcdir % "/sbin", srcdir % "/selinux", srcdir % "/srv", srcdir % "/usr", srcdir % "/var"};
+        uint bbs[]{10000, 20000, 100000, 500000, 10000, 10000, 100000, 10000, 10000, 10000, 10000000, 1000000}, ibs[]{500, 1000, 10000, 20000, 500, 500, 5000, 1000, 500, 500, 500000, 50000};
 
         for(uchar a(0) ; a < 12 ; ++a)
-            if(isdir(dirs[a]) && ! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+            if(isdir(dirs[a]))
+            {
+                sysitms[a].reserve(bbs[a]);
+                sysitmst[a].reserve(ibs[a]);
+                if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
+            }
     }
 
     QSL usrs;
@@ -2698,6 +2743,8 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
     if(mthd == 5)
     {
+        homeitms[0].reserve(10000);
+        homeitmst[0].reserve(500);
         if(! rodir(homeitms[0], homeitmst[0], srcdir % "/etc/skel")) return false;
     }
     else
@@ -2705,12 +2752,18 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         if(! usrs.last().isNull())
         {
             homeitms.append(nullptr);
+            homeitms.last().reserve(50000);
             homeitmst.append(QUCL());
+            homeitmst.last().reserve(1000);
             if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/root", like(mthd, {2, 3}))) return false;
         }
 
         for(schar a(usrs.count() - 2) ; a > -1 ; --a)
+        {
+            homeitms[a].reserve(5000000);
+            homeitmst[a].reserve(100000);
             if(! rodir(homeitms[a], homeitmst[a], srcdir % "/home/" % usrs.at(a), like(mthd, {2, 3}))) return false;
+        }
     }
 
     uint anum(0);
@@ -3266,6 +3319,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             else
             {
                 QBA mediaitms;
+                mediaitms.reserve(10000);
                 if(! rodir(mediaitms, srcd)) return false;
                 QTS in(&mediaitms, QIODevice::ReadOnly);
 
@@ -3310,7 +3364,9 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     {
         if(! QDir().mkdir("/.sbsystemcopy/var/log")) return false;
         QBA logitms;
+        logitms.reserve(20000);
         QUCL logitmst;
+        logitmst.reserve(1000);
         if(! rodir(logitms, logitmst, srcdir % "/var/log")) return false;
         QSL excl{"*.gz_", "*.old_"};
         lcnt = 0;
@@ -3371,7 +3427,9 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     if(srcdir == "/.systembacklivepoint" && isdir("/.systembacklivepoint/.systemback"))
     {
         QBA sbitms;
+        sbitms.reserve(10000);
         QUCL sbitmst;
+        sbitmst.reserve(500);
         if(! rodir(sbitms, sbitmst, "/.systembacklivepoint/.systemback")) return false;
         lcnt = 0;
         QTS in(&sbitms, QIODevice::ReadOnly);
@@ -3421,6 +3479,7 @@ bool sb::thrdlvprpr(bool iudata)
 
     {
         QUCL sitmst;
+        sitmst.reserve(1000000);
 
         for(cQStr &item : {"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"})
             if(isdir(item))
@@ -3428,6 +3487,8 @@ bool sb::thrdlvprpr(bool iudata)
                 if(! rodir(sitmst, item)) return false;
                 ++ThrdLng[0];
             }
+            else if(exist(item))
+                ++ThrdLng[0];
 
         ThrdLng[0] += sitmst.count();
     }
@@ -3527,7 +3588,9 @@ bool sb::thrdlvprpr(bool iudata)
     if(exist("/var/.sblvtmp")) stype("/var/.sblvtmp") == Isdir ? recrmdir("/var/.sblvtmp") : QFile::remove("/var/.sblvtmp");
     if(ThrdKill) return false;
     QBA varitms;
+    varitms.reserve(1000000);
     QUCL varitmst;
+    varitmst.reserve(50000);
     if(! rodir(varitms, varitmst, "/var")) return false;
     if(ThrdKill) return false;
     if(! QDir().mkdir("/var/.sblvtmp") || ! QDir().mkdir("/var/.sblvtmp/var")) return false;
@@ -3699,7 +3762,9 @@ bool sb::thrdlvprpr(bool iudata)
             ++ThrdLng[0];
             QStr srcd(usr.isEmpty() ? "/root" : QStr("/home/" % usr));
             QBA useritms;
+            useritms.reserve(usr.isEmpty() ? 50000 : 5000000);
             QUCL useritmst;
+            useritmst.reserve(usr.isEmpty() ? 1000 : 100000);
             if(! rodir(useritms, useritmst, srcd, ! iudata)) return false;
             lcnt = 0;
             QTS in(&useritms, QIODevice::ReadOnly);

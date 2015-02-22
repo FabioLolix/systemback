@@ -1887,12 +1887,12 @@ void systemback::cleave()
 
 void systemback::umntleave()
 {
-    if(! ui->unmountdelete->isEnabled() && ui->unmountdelete->text() == tr("! Delete !")) ui->unmountdelete->setEnabled(true);
+    if(! ui->unmountdelete->isEnabled() && ui->unmountdelete->text() == tr("! Delete !") && (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text().isEmpty() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "btrfs")) ui->unmountdelete->setEnabled(true);
 }
 
 void systemback::on_usersettingscopy_stateChanged(int arg1)
 {
-    ui->usersettingscopy->setText(arg1 == 1 ? tr("Transfer user configuration files") : tr("Transfer user configuration and data files"));
+    if(ppipe == 0 && ui->copypanel->isVisible()) ui->usersettingscopy->setText(arg1 == 1 ? tr("Transfer user configuration files") : tr("Transfer user configuration and data files"));
 }
 
 void systemback::pointupgrade()
@@ -2460,8 +2460,14 @@ error:
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
+            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.sbmountpoints*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
         }
+    }
+
+    if(sb::isdir("/.sbmountpoints"))
+    {
+        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) QDir().rmdir("/.sbmountpoints/" % item);
+        QDir().rmdir("/.sbmountpoints");
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -2477,8 +2483,14 @@ exit:
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
+            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.sbmountpoints*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
         }
+    }
+
+    if(sb::isdir("/.sbmountpoints"))
+    {
+        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) QDir().rmdir("/.sbmountpoints/" % item);
+        QDir().rmdir("/.sbmountpoints");
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -2495,21 +2507,26 @@ start:
         msort.reserve(ui->partitionsettings->rowCount());
 
         for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-            if(! ui->partitionsettings->item(a, 4)->text().isEmpty() && (ui->partitionsettings->item(a, 4)->text() != "/home" || ui->partitionsettings->item(a, 3)->text().isEmpty()))
-                msort.append(ui->partitionsettings->item(a, 4)->text() % (ui->partitionsettings->item(a, 6)->text() == "x" ? QStr('\n' % ui->partitionsettings->item(a, 5)->text() % '\n') : "\n-\n") % ui->partitionsettings->item(a, 0)->text());
+        {
+            QStr nmpt(ui->partitionsettings->item(a, 4)->text());
+
+            if(! nmpt.isEmpty() && (nmpt != "/home" || ui->partitionsettings->item(a, 3)->text().isEmpty()))
+                msort.append(nmpt % '\n' % (ui->partitionsettings->item(a, 6)->text() == "x" ? ui->partitionsettings->item(a, 5)->text() : ui->partitionsettings->item(a, 5)->text() == "btrfs" ? "-b" : "-") % '\n' % ui->partitionsettings->item(a, 0)->text());
+        }
 
         msort.sort();
+        QSL ckd;
 
         for(cQStr &vals : msort)
         {
             QSL cval(vals.split('\n'));
             cQStr &mpoint(cval.at(0)), &fstype(cval.at(1)), &part(cval.at(2));
-            if(sb::mcheck(part) && (! grub.isEFI || mpoint != "/boot/efi" || fstype != "-")) sb::umount(part);
+            if(! ckd.contains(part) && sb::mcheck(part) && (! grub.isEFI || mpoint != "/boot/efi" || fstype.length() > 2)) sb::umount(part);
             if(intrrpt) goto exit;
             sb::fssync();
             if(intrrpt) goto exit;
 
-            if(fstype != "-")
+            if(fstype.length() > 2)
             {
                 QStr lbl("SB@" % (mpoint.startsWith('/') ? sb::right(mpoint, -1) : mpoint));
                 ushort rv;
@@ -2526,8 +2543,11 @@ start:
                     rv = sb::setpflag(part, "boot") ? sb::exec("mkfs.vfat -F 32 -n " % lbl.toUpper() % ' ' % part) : 255;
                 else if(fstype == "btrfs")
                 {
-                    rv = sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part);
-                    if(rv > 0) rv = sb::exec("mkfs.btrfs -L " % lbl % ' ' % part);
+                    if(! ckd.contains(part))
+                    {
+                        rv = sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part);
+                        if(rv > 0) rv = sb::exec("mkfs.btrfs -L " % lbl % ' ' % part);
+                    }
                 }
                 else
                      rv = sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part);
@@ -2562,31 +2582,50 @@ start:
 
                 if(intrrpt) goto exit;
 
-                if(sb::mount(part, "/.sbsystemcopy" % mpoint))
+                if(fstype.length() == 2 || fstype == "btrfs")
                 {
-                    if(fstype == "btrfs")
-                    {
-                        sb::exec("btrfs subvolume create /.sbsystemcopy" % mpoint % "/@" % sb::right(mpoint, -1));
-                        sb::umount(part);
-                        if(intrrpt) goto exit;
+                    QStr mpt("/.sbmountpoints");
 
-                        if(! sb::mount(part, "/.sbsystemcopy" % mpoint, "noatime,subvol=@" % sb::right(mpoint, -1)))
-                        {
-                            dialogdev = part;
-                            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 31 : 51;
-                            goto error;
+                    for(uchar a(0) ; true ; ++a)
+                        switch(a) {
+                        case 0:
+                        case 1:
+                            if(! sb::isdir(mpt))
+                            {
+                                if(sb::exist(mpt)) QFile::remove(mpt);
+                                if(! QDir().mkdir(mpt)) goto error;
+                            }
+
+                            if(a == 0)
+                                mpt.append('/' % sb::right(part, - sb::rinstr(part, "/")));
+                            else if(! ckd.contains(part) && ! sb::mount(part, mpt))
+                                goto merr;
+
+                            break;
+                        case 2:
+                        case 3:
+                            sb::exec("btrfs subvolume create " % mpt % "/@" % sb::right(mpoint, -1));
+                            if(intrrpt) goto exit;
+
+                            if(sb::mount(part, "/.sbsystemcopy" % mpoint, "noatime,subvol=@" % sb::right(mpoint, -1)))
+                                goto mend;
+                            else if(a == 3 || ! QFile::rename(mpt % "/@" % sb::right(mpoint, -1), mpt % "/@" % sb::right(mpoint, -1) % '_' % sb::rndstr()))
+                                goto merr;
                         }
-                    }
+
+                mend:
+                    ckd.append(part);
                 }
-                else
-                {
-                    dialogdev = part;
-                    dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 31 : 51;
-                    goto error;
-                }
+                else if(! sb::mount(part, "/.sbsystemcopy" % mpoint))
+                    goto merr;
             }
 
             if(intrrpt) goto exit;
+            continue;
+        merr:
+            dialogdev = part;
+            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 31 : 51;
+            goto error;
         }
     }
 
@@ -2651,23 +2690,14 @@ start:
     }
     else
     {
-        if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
-            switch(ui->usersettingscopy->checkState()) {
-            case Qt::Unchecked:
-                if(! sb::scopy(5, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
-                break;
-            case Qt::PartiallyChecked:
-                if(! sb::scopy(3, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
-                break;
-            case Qt::Checked:
-                if(! sb::scopy(4, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
-            }
-        else
+        if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
         {
             if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname)) goto error;
             QBA cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
             if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) goto error;
         }
+        else if(! sb::scopy(ui->usersettingscopy->isChecked() ? 4 : 5, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname))
+            goto error;
     }
 
     if(intrrpt) goto exit;
@@ -2680,14 +2710,16 @@ start:
 
         if(guname() != "root")
         {
-            if(guname() != ui->username->text())
-            {
-                if(sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % ui->username->text()) && ! QFile::rename("/.sbsystemcopy/home/" % ui->username->text(), "/.sbsystemcopy/home/" % ui->username->text() % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % ui->username->text()))) goto error;
+            QStr nuname(ui->username->text());
 
-                if(sb::isfile("/.sbsystemcopy/home/" % ui->username->text() % "/.config/gtk-3.0/bookmarks"))
+            if(guname() != nuname)
+            {
+                if(sb::isdir("/.sbsystemcopy/home/" % guname()) && ((sb::exist("/.sbsystemcopy/home/" % nuname) && ! QFile::rename("/.sbsystemcopy/home/" % nuname, "/.sbsystemcopy/home/" % nuname % '_' % sb::rndstr())) || ! QFile::rename("/.sbsystemcopy/home/" % guname(), "/.sbsystemcopy/home/" % nuname))) goto error;
+
+                if(sb::isfile("/.sbsystemcopy/home/" % nuname % "/.config/gtk-3.0/bookmarks"))
                 {
-                    QStr cnt(sb::fload("/.sbsystemcopy/home/" % ui->username->text() % "/.config/gtk-3.0/bookmarks"));
-                    if(cnt.contains("file:///home/" % guname() % '/') && ! sb::crtfile("/.sbsystemcopy/home/" % ui->username->text() % "/.config/gtk-3.0/bookmarks", cnt.replace("file:///home/" % guname() % '/', "file:///home/" % ui->username->text() % '/'))) goto error;
+                    QStr cnt(sb::fload("/.sbsystemcopy/home/" % nuname % "/.config/gtk-3.0/bookmarks"));
+                    if(cnt.contains("file:///home/" % guname() % '/') && ! sb::crtfile("/.sbsystemcopy/home/" % nuname % "/.config/gtk-3.0/bookmarks", cnt.replace("file:///home/" % guname() % '/', "file:///home/" % nuname % '/'))) goto error;
                 }
 
                 if(sb::isfile("/.sbsystemcopy/etc/subuid") && sb::isfile("/.sbsystemcopy/etc/subgid"))
@@ -2699,7 +2731,7 @@ start:
                         while(! file.atEnd())
                         {
                             QStr nline(file.readLine().trimmed());
-                            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), nuname);
                             nfile.append(nline % '\n');
                             if(intrrpt) goto exit;
                         }
@@ -2715,7 +2747,7 @@ start:
                         while(! file.atEnd())
                         {
                             QStr nline(file.readLine().trimmed());
-                            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
+                            if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), nuname);
                             nfile.append(nline % '\n');
                             if(intrrpt) goto exit;
                         }
@@ -2736,13 +2768,13 @@ start:
                     QStr nline(file.readLine().trimmed());
 
                     if(nline.startsWith("sudo:") && ui->rootpassword1->text().isEmpty() && ! sb::right(nline, - sb::rinstr(nline, ":")).split(',').contains(guname()))
-                        nline.append((nline.endsWith(':') ? nullptr : ",") % ui->username->text());
-                    else if(guname() != ui->username->text())
+                        nline.append((nline.endsWith(':') ? nullptr : ",") % nuname);
+                    else if(guname() != nuname)
                     {
-                        if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), ui->username->text());
-                        nline.replace(':' % guname() % ',', ':' % ui->username->text() % ',');
-                        nline.replace(',' % guname() % ',', ',' % ui->username->text() % ',');
-                        if(sb::like(nline, {"*:" % guname() % '_', "*," % guname() % '_'})) nline.replace(nline.length() - guname().length(), guname().length(), ui->username->text());
+                        if(nline.startsWith(guname() % ':')) nline.replace(0, guname().length(), nuname);
+                        nline.replace(':' % guname() % ',', ':' % nuname % ',');
+                        nline.replace(',' % guname() % ',', ',' % nuname % ',');
+                        if(sb::like(nline, {"*:" % guname() % '_', "*," % guname() % '_'})) nline.replace(nline.length() - guname().length(), guname().length(), nuname);
                     }
 
                     nfile.append(nline % '\n');
@@ -2768,13 +2800,13 @@ start:
                     for(uchar a(0) ; a < uslst.count() ; ++a)
                         switch(a) {
                         case 0:
-                            nline.append(ui->username->text() % ':');
+                            nline.append(nuname % ':');
                             break;
                         case 4:
                             nline.append(ui->fullname->text() % ",,,:");
                             break;
                         case 5:
-                            nline.append("/home/" % ui->username->text() % ':');
+                            nline.append("/home/" % nuname % ':');
                             break;
                         default:
                             nline.append(uslst.at(a) % ':');
@@ -2848,20 +2880,20 @@ start:
         {
             QFile file("/.sbsystemcopy/etc/hostname");
             if(! file.open(QIODevice::ReadOnly)) goto error;
-            QStr ohname(file.readLine().trimmed());
+            QStr ohname(file.readLine().trimmed()), nhname(ui->hostname->text());
             file.close();
 
-            if(ohname != ui->hostname->text())
+            if(ohname != nhname)
             {
-                if(! sb::crtfile("/.sbsystemcopy/etc/hostname", ui->hostname->text() % '\n')) goto error;
+                if(! sb::crtfile("/.sbsystemcopy/etc/hostname", nhname % '\n')) goto error;
                 file.setFileName("/.sbsystemcopy/etc/hosts");
                 if(! file.open(QIODevice::ReadOnly)) goto error;
 
                 while(! file.atEnd())
                 {
                     QStr nline(file.readLine().trimmed());
-                    nline.replace('\t' % ohname % '\t', '\t' % ui->hostname->text() % '\t');
-                    if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), ui->hostname->text());
+                    nline.replace('\t' % ohname % '\t', '\t' % nhname % '\t');
+                    if(nline.endsWith('\t' % ohname)) nline.replace(nline.length() - ohname.length(), ohname.length(), nhname);
                     nfile.append(nline % '\n');
                     if(intrrpt) goto exit;
                 }
@@ -2979,9 +3011,11 @@ start:
 
         for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
         {
-            if(! ui->partitionsettings->item(a, 4)->text().isEmpty())
+            QStr nmpt(ui->partitionsettings->item(a, 4)->text());
+
+            if(! nmpt.isEmpty())
             {
-                if(ui->partitionsettings->item(a, 4)->text() == "/home" && ! ui->partitionsettings->item(a, 3)->text().isEmpty())
+                if(nmpt == "/home" && ! ui->partitionsettings->item(a, 3)->text().isEmpty())
                 {
                     QFile file("/etc/fstab");
                     if(! file.open(QIODevice::ReadOnly)) goto error;
@@ -2999,23 +3033,25 @@ start:
                 }
                 else
                 {
-                    QStr uuid(sb::ruuid(ui->partitionsettings->item(a, 0)->text()));
+                    QStr uuid(sb::ruuid(ui->partitionsettings->item(a, 0)->text())), nfs(ui->partitionsettings->item(a, 5)->text());
 
-                    if(ui->partitionsettings->item(a, 4)->text() == "/")
+                    if(nmpt == "/")
                     {
-                        if(sb::like(ui->partitionsettings->item(a, 5)->text(), {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}))
-                            fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   /   " % ui->partitionsettings->item(a, 5)->text() % "   noatime,errors=remount-ro   0   1\n");
-                        else if(ui->partitionsettings->item(a, 5)->text() == "reiserfs")
-                            fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   /   " % ui->partitionsettings->item(a, 5)->text() % "   noatime,notail   0   1\n");
+                        if(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}))
+                            fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   /   " % nfs % "   noatime,errors=remount-ro   0   1\n");
+                        else if(nfs == "reiserfs")
+                            fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   /   " % nfs % "   noatime,notail   0   1\n");
                         else
-                            fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   /   " % ui->partitionsettings->item(a, 5)->text() % "   noatime,subvol=@   0   1\n");
+                            fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   /   " % nfs % "   noatime,subvol=@   0   1\n");
                     }
-                    else if(ui->partitionsettings->item(a, 5)->text() == "reiserfs")
-                        fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   " % ui->partitionsettings->item(a, 4)->text() % "   reiserfs   noatime,notail   0   2\n");
-                    else if(ui->partitionsettings->item(a, 5)->text() == "btrfs")
-                        fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   " % ui->partitionsettings->item(a, 4)->text() % "   btrfs   noatime,subvol=@" % sb::right(ui->partitionsettings->item(a, 4)->text(), -1) % "   0   2\n");
+                    else if(nmpt == "SWAP")
+                        fstabtxt.append("# SWAP\nUUID=" % uuid % "   none   swap   sw   0   0\n");
+                    else if(nfs == "reiserfs")
+                        fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   " % nmpt % "   reiserfs   noatime,notail   0   2\n");
+                    else if(nfs == "btrfs")
+                        fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   " % nmpt % "   btrfs   noatime,subvol=@" % sb::right(nmpt, -1) % "   0   2\n");
                     else
-                        fstabtxt.append("# " % ui->partitionsettings->item(a, 4)->text() % "\nUUID=" % uuid % "   " % ui->partitionsettings->item(a, 4)->text() % "   " % ui->partitionsettings->item(a, 5)->text() % "   noatime   0   2\n");
+                        fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   " % nmpt % "   " % nfs % "   noatime   0   2\n");
                 }
             }
 
@@ -3100,8 +3136,14 @@ start:
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(cline.contains(" /.sbsystemcopy")) sb::umount(cline.split(' ').at(1));
+            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.sbmountpoints*"})) sb::umount(cline.split(' ').at(1));
         }
+    }
+
+    if(sb::isdir("/.sbmountpoints"))
+    {
+        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) QDir().rmdir("/.sbmountpoints/" % item);
+        QDir().rmdir("/.sbmountpoints");
     }
 
     QDir().rmdir("/.sbsystemcopy");
@@ -5896,9 +5938,12 @@ void systemback::on_unmount_clicked()
         QStr mnts[2]{sb::fload("/proc/self/mounts", true)};
 
         for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
-            if(! ui->partitionsettings->item(a, 3)->text().isEmpty())
+        {
+            QStr mpt(ui->partitionsettings->item(a, 3)->text());
+
+            if(! mpt.isEmpty())
             {
-                if(ui->partitionsettings->item(a, 3)->text() == "SWAP")
+                if(mpt == "SWAP")
                     swapoff(chr(ui->partitionsettings->item(a, 0)->text()));
                 else
                 {
@@ -5907,10 +5952,11 @@ void systemback::on_unmount_clicked()
                     while(! in.atEnd())
                     {
                         QStr cline(in.readLine());
-                        if(sb::like(cline, {"* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(a, 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(cline.split(' ').at(1));
+                        if(sb::like(cline, {"* " % mpt.replace(" ", "\\040") % " *", "* " % mpt.replace(" ", "\\040") % "/*"})) sb::umount(cline.split(' ').at(1));
                     }
                 }
             }
+        }
 
         mnts[0] = sb::fload("/proc/self/mounts");
         mnts[1] = sb::fload("/proc/swaps");
@@ -7348,8 +7394,9 @@ void systemback::on_livelist_currentItemChanged(QLWI *crrnt)
 void systemback::on_livedelete_clicked()
 {
     busy();
-    sb::remove(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive");
-    sb::remove(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso");
+    QStr path(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1));
+    sb::remove(path % ".sblive");
+    sb::remove(path % ".iso");
     on_livecreatemenu_clicked();
     busy(false);
 }
@@ -7502,6 +7549,23 @@ void systemback::on_installnext_clicked()
         }
     }
 
+    if(ppipe == 1)
+    {
+        if(ui->usersettingscopy->isTristate())
+        {
+            ui->usersettingscopy->setTristate(false);
+            if(! ui->usersettingscopy->isChecked()) ui->usersettingscopy->setChecked(true);
+            if(ui->usersettingscopy->text() == tr("Transfer user configuration and data files")) ui->usersettingscopy->setText(tr("Transfer user configuration files"));
+            ui->usersettingscopy->resize(fontMetrics().width(tr("Transfer user configuration files")) + ss(28), ui->usersettingscopy->height());
+        }
+    }
+    else if(! ui->usersettingscopy->isTristate())
+    {
+        ui->usersettingscopy->setTristate(true);
+        ui->usersettingscopy->setCheckState(Qt::PartiallyChecked);
+        ui->usersettingscopy->resize(fontMetrics().width(tr("Transfer user configuration and data files")) + ss(28), ui->usersettingscopy->height());
+    }
+
     if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
     {
         ui->userdatafilescopy->hide();
@@ -7576,33 +7640,39 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
             }
 
             bool mntd(false), mntcheck(false);
+            QStr dev(ui->partitionsettings->item(crrnt->row(), 0)->text());
 
-            for(ushort a(crrnt->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(crrnt->row(), 0)->text(), 8)) && sb::like(ui->partitionsettings->item(a, 8)->text().toInt(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(ui->partitionsettings->item(crrnt->row(), 0)->text()))) ; ++a)
+            for(ushort a(crrnt->row() + 1) ; a < ui->partitionsettings->rowCount() && ((type == sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(dev, dev.contains("mmc") ? 12 : 8)) && sb::like(ui->partitionsettings->item(a, 8)->text().toInt(), {sb::Logical, sb::Emptyspace})) || (type != sb::Extended && ui->partitionsettings->item(a, 0)->text().startsWith(dev))) ; ++a)
             {
                 ui->partitionsettings->item(a, 0)->setBackground(QPalette().highlight());
                 ui->partitionsettings->item(a, 0)->setForeground(QPalette().highlightedText());
 
-                if(! mntcheck && ! ui->partitionsettings->item(a, 3)->text().isEmpty())
+                if(! mntcheck)
                 {
-                    if(! mntd) mntd = true;
+                    QStr mpt(ui->partitionsettings->item(a, 3)->text());
 
-                    if(((ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) && sb::sdir[0].startsWith(ui->partitionsettings->item(a, 3)->text())) || sb::like(ui->partitionsettings->item(a, 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
-                        mntcheck = true;
-                    else if(sb::isfile("/etc/fstab"))
+                    if(! mpt.isEmpty())
                     {
-                        QFile file("/etc/fstab");
+                        if(! mntd) mntd = true;
 
-                        if(file.open(QIODevice::ReadOnly))
-                            while(! file.atEnd())
-                            {
-                                QBA cline(file.readLine().trimmed().replace('\t', ' '));
+                        if(((ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) && sb::sdir[0].startsWith(mpt)) || sb::like(mpt, {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                            mntcheck = true;
+                        else if(sb::isfile("/etc/fstab"))
+                        {
+                            QFile file("/etc/fstab");
 
-                                if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(a, 3)->text() % " *", "* " % ui->partitionsettings->item(a, 3)->text() % "/ *"}))
+                            if(file.open(QIODevice::ReadOnly))
+                                while(! file.atEnd())
                                 {
-                                    mntcheck = true;
-                                    break;
+                                    QBA cline(file.readLine().trimmed().replace('\t', ' '));
+
+                                    if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % mpt % " *", "* " % mpt % "/ *"}))
+                                    {
+                                        mntcheck = true;
+                                        break;
+                                    }
                                 }
-                            }
+                        }
                     }
                 }
             }
@@ -7624,8 +7694,11 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
             break;
         }
         case sb::Freespace:
+        {
+            QStr dev(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text().contains("mmc") ? 12 : 8));
+
             for(ushort a(0) ; a < ui->partitionsettings->rowCount() && pcount < 4 ; ++a)
-                if(ui->partitionsettings->item(a, 0)->text().startsWith(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), 8)))
+                if(ui->partitionsettings->item(a, 0)->text().startsWith(dev))
                     switch(ui->partitionsettings->item(a, 8)->text().toUShort()) {
                     case sb::GPT:
                         pcount = 5;
@@ -7633,6 +7706,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                     case sb::Extended:
                         ++pcount;
                     }
+        }
         case sb::Emptyspace:
             if(! ui->partitionsettingspanel3->isVisible())
             {
@@ -7662,19 +7736,41 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
             {
                 if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
 
-                if(! ui->filesystem->isEnabled())
-                {
-                    ui->filesystem->setEnabled(true);
-                    if(! ui->format->isEnabled()) ui->format->setEnabled(true);
-                }
-
                 if(ui->unmountdelete->text() == tr("Unmount"))
                 {
                     ui->unmountdelete->setText(tr("! Delete !"));
                     ui->unmountdelete->setStyleSheet("QPushButton:enabled {color: red}");
                 }
 
-                if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
+                if(! ui->partitionsettings->item(crrnt->row(), 4)->text().isEmpty() && ui->partitionsettings->item(crrnt->row(), 5)->text() == "btrfs")
+                {
+                    if(ui->format->isEnabled())
+                    {
+                        ui->format->setDisabled(true);
+                        if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
+                    }
+
+                    if(ui->filesystem->currentText() != "btrfs") ui->filesystem->setCurrentIndex(ui->filesystem->findText("btrfs"));
+                    if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
+
+                    if(ui->partitionsettings->item(crrnt->row(), 6)->text() == "-")
+                    {
+                        if(ui->format->isChecked()) ui->format->setChecked(false);
+                    }
+                    else if(! ui->format->isChecked())
+                        ui->format->setChecked(true);
+                }
+                else
+                {
+                    if(! ui->filesystem->isEnabled())
+                    {
+                        ui->filesystem->setEnabled(true);
+                        if(! ui->format->isEnabled()) ui->format->setEnabled(true);
+                    }
+
+                    if(! ui->format->isChecked()) ui->format->setChecked(true);
+                    if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
+                }
 
                 if(ui->mountpoint->currentIndex() == 0)
                 {
@@ -7697,7 +7793,9 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                     ui->unmountdelete->setStyleSheet(nullptr);
                 }
 
-                if(grub.isEFI && ui->partitionsettings->item(crrnt->row(), 3)->text() == "/boot/efi")
+                QStr mpt(ui->partitionsettings->item(crrnt->row(), 3)->text());
+
+                if(grub.isEFI && mpt == "/boot/efi")
                 {
                     if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
                     if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
@@ -7710,7 +7808,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                             ui->mountpoint->setCurrentText(nullptr);
                     }
                 }
-                else if(ui->partitionsettings->item(crrnt->row(), 3)->text() == "SWAP")
+                else if(mpt == "SWAP")
                 {
                     if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
                     if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
@@ -7729,7 +7827,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                     else if(! ui->changepartition->isEnabled())
                         ui->changepartition->setEnabled(true);
                 }
-                else if(ui->partitionsettings->item(crrnt->row(), 3)->text() == "/home" && ui->userdatafilescopy->isVisible())
+                else if(mpt == "/home" && ui->userdatafilescopy->isVisible())
                 {
                     if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
                     if(ui->unmountdelete->isEnabled()) ui->unmountdelete->setDisabled(true);
@@ -7756,7 +7854,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
 
                     bool mntcheck(false);
 
-                    if(sb::sdir[0].startsWith(ui->partitionsettings->item(crrnt->row(), 3)->text()) || sb::like(ui->partitionsettings->item(crrnt->row(), 3)->text(), {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
+                    if(sb::sdir[0].startsWith(mpt) || sb::like(mpt, {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
                         mntcheck = true;
                     else if(sb::isfile("/etc/fstab"))
                     {
@@ -7767,7 +7865,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                             {
                                 QBA cline(file.readLine().trimmed().replace('\t', ' '));
 
-                                if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % ui->partitionsettings->item(crrnt->row(), 3)->text() % " *", "* " % ui->partitionsettings->item(crrnt->row(), 3)->text() % "/ *"}))
+                                if(! cline.startsWith('#') && sb::like(cline.replace("\\040", " "), {"* " % mpt % " *", "* " % mpt % "/ *"}))
                                 {
                                     mntcheck = true;
                                     break;
@@ -7782,9 +7880,9 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                     else if(! ui->unmountdelete->isEnabled())
                         ui->unmountdelete->setEnabled(true);
                 }
-            }
 
-            if(! ui->format->isChecked()) ui->format->setChecked(true);
+                if(! ui->format->isChecked()) ui->format->setChecked(true);
+            }
         }
 
         if(pcount == 4)
@@ -7799,15 +7897,27 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
 void systemback::on_changepartition_clicked()
 {
     busy();
+    QStr ompt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text()), mpt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text());
 
-    if(! ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text().isEmpty())
+    if(! ompt.isEmpty())
     {
-        if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() == "/")
+        if(mpt.isEmpty() && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() == "btrfs")
+        {
+            ui->partitionsettings->setRowCount(ui->partitionsettings->rowCount() + 1);
+
+            for(short a(ui->partitionsettings->rowCount() - 1) ; a > ui->partitionsettings->currentRow() - 1 ; --a)
+                for(uchar b(0) ; b < 11 ; ++b)
+                {
+                    QTblWI *item(ui->partitionsettings->item(a, b));
+                    ui->partitionsettings->setItem(a + 1, b, item ? item->clone() : nullptr);
+                }
+        }
+        else if(ompt == "/")
         {
             ui->copynext->setDisabled(true);
             ui->mountpoint->addItem("/");
         }
-        else if(grub.isEFI && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() == "/boot/efi")
+        else if(grub.isEFI && ompt == "/boot/efi")
         {
             if(ui->grubinstallcopy->isVisible())
             {
@@ -7818,11 +7928,11 @@ void systemback::on_changepartition_clicked()
             ui->mountpoint->addItem("/boot/efi");
             ui->efiwarning->show();
         }
-        else if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text(), {"_/home_", "_/boot_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_"}))
-            ui->mountpoint->addItem(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
+        else if(sb::like(ompt, {"_/home_", "_/boot_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_"}))
+            ui->mountpoint->addItem(ompt);
     }
 
-    if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().isEmpty())
+    if(mpt.isEmpty())
     {
         ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText(ui->mountpoint->currentText());
 
@@ -7865,8 +7975,14 @@ void systemback::on_changepartition_clicked()
         }
         else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->text() == "x")
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 6)->setText("-");
+
+        if(ui->filesystem->isEnabled() && ui->filesystem->currentText() == "btrfs")
+        {
+            ui->filesystem->setDisabled(true);
+            ui->format->setDisabled(true);
+        }
     }
-    else if(grub.isEFI && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/boot/efi")
+    else if(grub.isEFI && mpt == "/boot/efi")
     {
         ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText("/boot/efi");
         ui->efiwarning->hide();
@@ -7885,7 +8001,7 @@ void systemback::on_changepartition_clicked()
             ui->grubinstallcopydisable->show();
         }
     }
-    else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home")
+    else if(mpt == "/home")
     {
         ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->setText("/home");
         ui->userdatafilescopy->setDisabled(true);
@@ -7945,7 +8061,7 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
                     if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
                 }
             }
-            else
+            else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text().isEmpty() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "btrfs")
             {
                 if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
                 {
@@ -7956,6 +8072,11 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
 
                 if(! ui->format->isEnabled()) ui->format->setEnabled(true);
                 if(! ui->format->isChecked()) ui->format->setChecked(true);
+            }
+            else if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
+            {
+                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                return;
             }
 
             if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456))
@@ -9391,6 +9512,7 @@ start:
 void systemback::on_liveconvert_clicked()
 {
     if(dialog > 0) dialog = 0;
+    QStr path(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1));
     goto start;
 error:
     if(intrrpt) goto exit;
@@ -9399,17 +9521,17 @@ error:
     return;
 exit:
     if(sb::isdir(sb::sdir[2] % "/.sblivesystemconvert")) sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
-    if(sb::isfile(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso")) sb::remove(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso");
+    if(sb::isfile(path % ".iso")) sb::remove(path % ".iso");
     intrrpt = false;
     return;
 start:
     statustart();
     prun = tr("Converting Live system image") % '\n' % tr("process") % " 1/2";
     if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemconvert")) goto error;
-    sb::ThrdLng[0] = sb::fsize(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive");
+    sb::ThrdLng[0] = sb::fsize(path % ".sblive");
     sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
 
-    if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions") > 0)
+    if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions") > 0)
     {
         dialog = 47;
         goto error;
@@ -9421,14 +9543,14 @@ start:
     sb::Progress = -1;
     ui->progressbar->setValue(0);
 
-    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso " % sb::sdir[2] % "/.sblivesystemconvert") > 0)
+    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % path % ".iso " % sb::sdir[2] % "/.sblivesystemconvert") > 0)
     {
-        if(sb::isfile(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso")) sb::remove(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso");
+        if(sb::isfile(path % ".iso")) sb::remove(path % ".iso");
         dialog = 46;
         goto error;
     }
 
-    if(sb::exec("isohybrid " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
+    if(sb::exec("isohybrid " % path % ".iso") > 0 || ! QFile::setPermissions(path % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(intrrpt) goto exit;
     emptycache();

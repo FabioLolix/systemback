@@ -1469,7 +1469,7 @@ void sb::run()
             {
                 QStr path(rlink("/dev/disk/by-id/" % item, 14));
 
-                if(! path.isEmpty() && like((path = "/dev/" % right(path, -6)).length(), {8, 12}) && like(path, dlst[1]))
+                if(! path.isEmpty() && like((path = "/dev" % right(path, -5)).length(), {8, 12}) && like(path, dlst[1]))
                 {
                     ullong size(devsize(path));
 
@@ -1488,7 +1488,7 @@ void sb::run()
                                     PedPartition *prt(nullptr);
 
                                     while((prt = ped_disk_next_partition(dsk, prt)))
-                                        if(prt->num > 0)
+                                        if(prt->num > 0 && prt->type != PED_PARTITION_EXTENDED)
                                         {
                                             QStr ppath(path % (path.length() == 12 ? "p" : nullptr) % QStr::number(prt->num));
 
@@ -1499,7 +1499,8 @@ void sb::run()
                                                 cchar *uuid("");
                                                 blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
                                                 blkid_free_probe(pr);
-                                                if(! QBA(uuid).isEmpty()) fchk.append("_UUID=" % QStr(uuid) % '*');
+                                                QStr id(uuid);
+                                                if(! id.isEmpty()) fchk.append("_UUID=" % id % '*');
                                             }
                                         }
 

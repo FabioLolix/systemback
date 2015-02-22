@@ -2437,6 +2437,7 @@ start:
 
 void systemback::systemcopy()
 {
+    QSL umnts;
     goto start;
 error:
     if(intrrpt) goto exit;
@@ -2452,30 +2453,9 @@ error:
         else
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 21 : 35;
     }
-
-    {
-        QStr mnts(sb::fload("/proc/self/mounts", true));
-        QTS in(&mnts, QIODevice::ReadOnly);
-
-        while(! in.atEnd())
-        {
-            QStr cline(in.readLine());
-            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.sbmountpoints*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
-        }
-    }
-
-    if(sb::isdir("/.sbmountpoints"))
-    {
-        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) QDir().rmdir("/.sbmountpoints/" % item);
-        QDir().rmdir("/.sbmountpoints");
-    }
-
-    QDir().rmdir("/.sbsystemcopy");
-    if(sb::isdir("/.systembacklivepoint")) QDir().rmdir("/.systembacklivepoint");
-    if(irblck) irblck = false;
-    dialogopen();
-    return;
 exit:
+    for(cQStr &cmpt : umnts) sb::umount(cmpt);
+
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));
         QTS in(&mnts, QIODevice::ReadOnly);
@@ -2495,7 +2475,15 @@ exit:
 
     QDir().rmdir("/.sbsystemcopy");
     if(sb::isdir("/.systembacklivepoint")) QDir().rmdir("/.systembacklivepoint");
-    intrrpt = false;
+
+    if(intrrpt)
+        intrrpt = false;
+    else
+    {
+        if(irblck) irblck = false;
+        dialogopen();
+    }
+
     return;
 start:
     statustart();
@@ -2516,6 +2504,8 @@ start:
 
         msort.sort();
         QSL ckd;
+        ckd.reserve(msort.count());
+        umnts.reserve(msort.count());
 
         for(cQStr &vals : msort)
         {
@@ -2543,14 +2533,11 @@ start:
                     rv = sb::setpflag(part, "boot") ? sb::exec("mkfs.vfat -F 32 -n " % lbl.toUpper() % ' ' % part) : 255;
                 else if(fstype == "btrfs")
                 {
-                    if(! ckd.contains(part))
-                    {
-                        rv = sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part);
-                        if(rv > 0) rv = sb::exec("mkfs.btrfs -L " % lbl % ' ' % part);
-                    }
+                    rv = ckd.contains(part) ? 0 : sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part);
+                    if(rv > 0) rv = sb::exec("mkfs.btrfs -L " % lbl % ' ' % part);
                 }
                 else
-                     rv = sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part);
+                    rv = sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part);
 
                 if(intrrpt) goto exit;
 
@@ -2586,7 +2573,7 @@ start:
                 {
                     QStr mpt("/.sbmountpoints");
 
-                    for(uchar a(0) ; true ; ++a)
+                    for(uchar a(0) ; a < 4 ; ++a)
                         switch(a) {
                         case 0:
                         case 1:
@@ -2598,8 +2585,13 @@ start:
 
                             if(a == 0)
                                 mpt.append('/' % sb::right(part, - sb::rinstr(part, "/")));
-                            else if(! ckd.contains(part) && ! sb::mount(part, mpt))
-                                goto merr;
+                            else if(! ckd.contains(part))
+                            {
+                                if(sb::mount(part, mpt))
+                                    ckd.append(part);
+                                else
+                                    goto merr;
+                            }
 
                             break;
                         case 2:
@@ -2608,16 +2600,15 @@ start:
                             if(intrrpt) goto exit;
 
                             if(sb::mount(part, "/.sbsystemcopy" % mpoint, "noatime,subvol=@" % sb::right(mpoint, -1)))
-                                goto mend;
+                                ++a;
                             else if(a == 3 || ! QFile::rename(mpt % "/@" % sb::right(mpoint, -1), mpt % "/@" % sb::right(mpoint, -1) % '_' % sb::rndstr()))
                                 goto merr;
                         }
-
-                mend:
-                    ckd.append(part);
                 }
                 else if(! sb::mount(part, "/.sbsystemcopy" % mpoint))
                     goto merr;
+
+                umnts.prepend("/.sbsystemcopy" % mpoint);
             }
 
             if(intrrpt) goto exit;
@@ -3128,6 +3119,7 @@ start:
 
     if(intrrpt) goto exit;
     prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
+    for(cQStr &cmpt : umnts) sb::umount(cmpt);
 
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));

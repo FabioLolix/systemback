@@ -112,21 +112,21 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     connect(ui->windowclose, SIGNAL(Mouse_Released()), this, SLOT(wcreleased()));
 
     if(getuid() + getgid() > 0)
-        dialog = 17;
+        dialog = 305;
     else if(qApp->arguments().count() == 2 && qApp->arguments().value(1) == "schedule")
     {
         sstart = true;
         dialog = 0;
     }
     else if(! sb::lock(sb::Sblock))
-        dialog = 1;
+        dialog = 300;
     else if(sb::lock(sb::Dpkglock))
     {
         dialog = 0;
         sstart = false;
     }
     else
-        dialog = 2;
+        dialog = 301;
 
     {
         QFont font;
@@ -156,7 +156,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 for(QWidget *wdgt : findChildren<QWidget *>()) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
                 for(QPushButton *pbtn : findChildren<QPushButton *>()) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
 
-                if(dialog == 0 && ! sstart)
+                if(! sstart && dialog == 0)
                 {
                     ui->includeusers->setMinimumSize(ss(112), ss(32));
                     ui->grubreinstallrestore->setMinimumSize(ui->includeusers->minimumSize());
@@ -2203,7 +2203,7 @@ void systemback::pointupgrade()
 
 void systemback::statustart()
 {
-    if(sstart && dialog != 16)
+    if(sstart && dialog != 304)
     {
         ui->schedulerpanel->hide();
         setwontop(false);
@@ -2301,7 +2301,7 @@ start:
 
                 if((! ui->autorestoreoptions->isChecked() && ui->grubreinstallrestore->currentText() != "Auto") || ! fcmp)
                 {
-                    if(sb::exec("grub-install --force " % (ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect() : grub.isEFI ? nullptr : ui->grubreinstallrestore->currentText())) > 0) dialog = 23;
+                    if(sb::exec("grub-install --force " % (ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect() : grub.isEFI ? nullptr : ui->grubreinstallrestore->currentText())) > 0) dialog = 308;
                     if(intrrpt) goto exit;
                 }
             }
@@ -2309,20 +2309,20 @@ start:
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(! sb::like(dialog, {23, 60}))
+        if(! sb::like(dialog, {308, 338}))
             switch(mthd) {
             case 1:
-                dialog = 20;
+                dialog = 205;
                 break;
             case 2:
-                dialog = 19;
+                dialog = 204;
                 break;
             default:
-                dialog = ui->keepfiles->isChecked() ? 10 : 9;
+                dialog = ui->keepfiles->isChecked() ? 201 : 200;
             }
     }
     else
-        dialog = 60;
+        dialog = 338;
 
     if(intrrpt) goto exit;
     dialogopen();
@@ -2359,7 +2359,7 @@ start:
         QSL mlst{"dev", "dev/pts", "proc", "sys"};
         if(sb::mcheck("/run")) mlst.append("/run");
         for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/mnt/" % bpath);
-        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (ui->grubreinstallrepair->currentText() == "Auto" ? gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % "\"") == 0 ? 32 : 37;
+        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (ui->grubreinstallrepair->currentText() == "Auto" ? gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % "\"") == 0 ? 208 : 317;
         for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
         if(intrrpt) goto exit;
     }
@@ -2391,7 +2391,7 @@ start:
 
             if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop"))
             {
-                dialog = 55;
+                dialog = 333;
                 dialogopen();
                 return;
             }
@@ -2415,21 +2415,21 @@ start:
                 for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/mnt/" % bpath);
                 sb::exec("chroot /mnt update-grub");
                 if(intrrpt) goto exit;
-                if(((! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto") || ! fcmp) && sb::exec("chroot /mnt grub-install --force " % (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText())) > 0) dialog = ui->fullrepair->isChecked() ? 24 : 11;
+                if(((! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto") || ! fcmp) && sb::exec("chroot /mnt grub-install --force " % (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText())) > 0) dialog = ui->fullrepair->isChecked() ? 309 : 303;
                 for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
                 if(intrrpt) goto exit;
             }
 
             emptycache();
 
-            if(sb::like(dialog, {5, 6, 41}))
+            if(sb::like(dialog, {101, 102, 109}))
             {
                 if(ppipe == 1 && sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
-                dialog = ui->fullrepair->isChecked() ? 12 : 13;
+                dialog = ui->fullrepair->isChecked() ? 202 : 203;
             }
         }
         else
-            dialog = 61;
+            dialog = 339;
     }
 
     dialogopen();
@@ -2437,25 +2437,22 @@ start:
 
 void systemback::systemcopy()
 {
-    QSL umnts;
     goto start;
 error:
     if(intrrpt) goto exit;
 
-    if(! sb::like(dialog, {22, 31, 34, 36, 51, 52, 53, 54}))
+    if(! sb::like(dialog, {307, 313, 314, 316, 329, 330, 331, 332}))
     {
         if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
         {
             irblck = true;
             if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
-            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 39 : 40;
+            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 319 : 320;
         }
         else
-            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 21 : 35;
+            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 306 : 315;
     }
 exit:
-    for(cQStr &cmpt : umnts) sb::umount(cmpt);
-
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));
         QTS in(&mnts, QIODevice::ReadOnly);
@@ -2505,7 +2502,6 @@ start:
         msort.sort();
         QSL ckd;
         ckd.reserve(msort.count());
-        umnts.reserve(msort.count());
 
         for(cQStr &vals : msort)
         {
@@ -2544,7 +2540,7 @@ start:
                 if(rv > 0)
                 {
                     dialogdev = part;
-                    dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 36 : 52;
+                    dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 316 : 330;
                     goto error;
                 }
             }
@@ -2607,15 +2603,13 @@ start:
                 }
                 else if(! sb::mount(part, "/.sbsystemcopy" % mpoint))
                     goto merr;
-
-                umnts.prepend("/.sbsystemcopy" % mpoint);
             }
 
             if(intrrpt) goto exit;
             continue;
         merr:
             dialogdev = part;
-            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 31 : 51;
+            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329;
             goto error;
         }
     }
@@ -2651,7 +2645,7 @@ start:
 
             if(! sb::mount(mdev, "/.systembacklivepoint", "loop"))
             {
-                dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 53 : 54;
+                dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 331 : 332;
                 goto error;
             }
 
@@ -3104,7 +3098,7 @@ start:
 
         if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % (ui->grubinstallcopy->currentText() == "Auto" ? gdetect("/.sbsystemcopy") : grub.isEFI ? nullptr : ui->grubinstallcopy->currentText()) % "\"") > 0)
         {
-            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 22 : 34;
+            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 307 : 314;
             goto error;
         }
     }
@@ -3119,7 +3113,6 @@ start:
 
     if(intrrpt) goto exit;
     prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
-    for(cQStr &cmpt : umnts) sb::umount(cmpt);
 
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));
@@ -3141,7 +3134,7 @@ start:
     QDir().rmdir("/.sbsystemcopy");
     sb::fssync();
     if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
-    dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 25 : 33;
+    dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 206 : 209;
     dialogopen();
 }
 
@@ -3169,11 +3162,11 @@ error:
     else
     {
         switch(dialog) {
-        case 30:
-            dialog = 57;
+        case 108:
+            dialog = 335;
             break;
-        case 58:
-        case 59:
+        case 336:
+        case 337:
             dialogdev = ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1';
         }
 
@@ -3187,7 +3180,7 @@ start:
 
     if(! sb::exist(ldev))
     {
-        dialog = 59;
+        dialog = 337;
         goto error;
     }
     else if(sb::mcheck(ldev))
@@ -3209,7 +3202,7 @@ start:
 
     if(! sb::mkptable(ldev))
     {
-        dialog = 59;
+        dialog = 337;
         goto error;
     }
 
@@ -3223,7 +3216,7 @@ start:
 
         if(! sb::mkpart(ldev))
         {
-            dialog = 59;
+            dialog = 337;
             goto error;
         }
     }
@@ -3233,7 +3226,7 @@ start:
 
         if(! sb::mkpart(ldev, 1048576, 104857600) || ! sb::mkpart(ldev))
         {
-            dialog = 59;
+            dialog = 337;
             goto error;
         }
 
@@ -3241,7 +3234,7 @@ start:
 
         if(sb::exec("mkfs.ext2 -FL SBROOT " % ldev % (ldev.contains("mmc") ? "p" : nullptr) % '2') > 0)
         {
-            dialog = 59;
+            dialog = 337;
             goto error;
         }
     }
@@ -3250,7 +3243,7 @@ start:
 
     if(sb::exec("mkfs.vfat -F 32 -n SBLIVE " % ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1') > 0)
     {
-        dialog = 59;
+        dialog = 337;
         goto error;
     }
 
@@ -3263,7 +3256,7 @@ start:
 
     if(! sb::mount(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "/.sblivesystemwrite/sblive"))
     {
-        dialog = 58;
+        dialog = 336;
         goto error;
     }
 
@@ -3275,7 +3268,7 @@ start:
 
         if(! sb::mount(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '2', "/.sblivesystemwrite/sbroot"))
         {
-            dialog = 58;
+            dialog = 336;
             goto error;
         }
     }
@@ -3284,7 +3277,7 @@ start:
 
     if(sb::dfree("/.sblivesystemwrite/" % lrdir) < size + 52428800)
     {
-        dialog = 42;
+        dialog = 321;
         goto error;
     }
 
@@ -3295,18 +3288,18 @@ start:
     {
         if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions") > 0)
         {
-            dialog = 43;
+            dialog = 322;
             goto error;
         }
     }
     else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-permissions --no-same-owner") > 0)
     {
-        dialog = 43;
+        dialog = 322;
         goto error;
     }
     else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions") > 0)
     {
-        dialog = 43;
+        dialog = 322;
         goto error;
     }
 
@@ -3324,345 +3317,250 @@ start:
     }
 
     QDir().rmdir("/.sblivesystemwrite");
-    dialog = 44;
+    dialog = 210;
     dialogopen();
 }
 
 void systemback::dialogopen(schar snum)
 {
-    if(ui->dialogcancel->isVisibleTo(ui->dialogpanel)) ui->dialogcancel->hide();
-    if(ui->dialogquestion->isVisibleTo(ui->dialogpanel)) ui->dialogquestion->hide();
-    if(ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->hide();
-    if(ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->hide();
     if(ui->dialognumber->isVisibleTo(ui->dialogpanel)) ui->dialognumber->hide();
 
-    switch(dialog) {
-    case 1:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Another systemback process is currently running, please wait until it finishes."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 2:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Unable to get exclusive lock!") % "<p>" % tr("First, close all package manager."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 3:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 4:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Restore the system files to the following restore point:") % "<p><b>" % pname);
+    if(dialog < 200)
+    {
+        if(ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->hide();
+        if(ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->hide();
+        if(! ui->dialogquestion->isVisibleTo(ui->dialogpanel)) ui->dialogquestion->show();
+        if(! ui->dialogcancel->isVisibleTo(ui->dialogpanel)) ui->dialogcancel->show();
         if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 5:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Repair the system files with the following restore point:") % "<p><b>" % pname);
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 6:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Repair the complete system with the following restore point:") % "<p><b>" % pname);
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 7:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Restore the complete user(s) configuration files to the following restore point:") % "<p><b>" % pname);
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 8:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Restore the user(s) configuration files to the following restore point:") % "<p><b>" % pname);
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 9:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("User(s) configuration files full restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds."));
-        if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
-        ui->dialogcancel->show();
-        ui->dialognumber->show();
-        dlgtimer->start();
-        break;
-    case 10:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("User(s) configuration files restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds."));
-        if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
-        ui->dialogcancel->show();
-        ui->dialognumber->show();
-        dlgtimer->start();
-        break;
-    case 11:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System files repair are completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 12:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("Full system repair is completed."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 13:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("System repair is completed."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 14:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Copy the system, using the following restore point:") % "<p><b>" % pname);
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 15:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Install the system, using the following restore point:") % "<p><b>" % pname);
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 16:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 17:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Root privileges are required for running Systemback!"));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 18:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Restore complete system to the following restore point:") % "<p><b>" % pname);
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 19:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("System files restoration are completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds."));
-        if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
-        ui->dialogcancel->show();
-        ui->dialognumber->show();
-        dlgtimer->start();
-        break;
-    case 20:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("Full system restoration is completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds."));
-        if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
-        ui->dialogcancel->show();
-        ui->dialognumber->show();
-        dlgtimer->start();
-        break;
-    case 21:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 22:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 23:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 24:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Full system repair is completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 25:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("System copy is completed."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 26:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating file system image."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 27:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating container file."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 28:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("Live system creation is completed.") % "<p>" % tr("The created .sblive file can be written to pendrive."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 29:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 30:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Format the %1, and write the following Live system image:").arg(" <b>" % ui->livedevices->item(ui->livedevices->currentRow(), 0)->text() % "</b>") % "<p><b>" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % "</b>");
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 31:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 32:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("GRUB 2 repair is completed."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 33:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("System install is completed."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 34:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System install is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 35:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 36:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 37:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("An error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 38:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 39:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copying is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 40:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 41:
-        ui->dialogquestion->show();
-        ui->dialogtext->setText(tr("Repair the GRUB 2 bootloader."));
-        if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
-        ui->dialogcancel->show();
-        break;
-    case 42:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 43:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("An error occurred while unpacking Live system files."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 44:
-        ui->dialoginfo->show();
-        ui->dialogtext->setText(tr("Live system image write is completed."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 45:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming essential Live files."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 46:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while creating .iso image."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 47:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while reading .sblive image."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 48:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating new initramfs image."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 49:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 50:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 51:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 52:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 53:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The Live image could not be mounted."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 54:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The Live image could not be mounted."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 55:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("The Live image could not be mounted."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 56:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 57:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 58:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 59:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 60:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("There is not enough free space."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-        break;
-    case 61:
-        ui->dialogerror->show();
-        ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("There is not enough free space."));
-        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+
+        switch(dialog) {
+        case 100:
+            ui->dialogtext->setText(tr("Restore the system files to the following restore point:") % "<p><b>" % pname);
+            break;
+        case 101:
+            ui->dialogtext->setText(tr("Repair the system files with the following restore point:") % "<p><b>" % pname);
+            break;
+        case 102:
+            ui->dialogtext->setText(tr("Repair the complete system with the following restore point:") % "<p><b>" % pname);
+            break;
+        case 103:
+            ui->dialogtext->setText(tr("Restore the complete user(s) configuration files to the following restore point:") % "<p><b>" % pname);
+            break;
+        case 104:
+            ui->dialogtext->setText(tr("Restore the user(s) configuration files to the following restore point:") % "<p><b>" % pname);
+            break;
+        case 105:
+            ui->dialogtext->setText(tr("Copy the system, using the following restore point:") % "<p><b>" % pname);
+            break;
+        case 106:
+            ui->dialogtext->setText(tr("Install the system, using the following restore point:") % "<p><b>" % pname);
+            break;
+        case 107:
+            ui->dialogtext->setText(tr("Restore complete system to the following restore point:") % "<p><b>" % pname);
+            break;
+        case 108:
+            ui->dialogtext->setText(tr("Format the %1, and write the following Live system image:").arg(" <b>" % ui->livedevices->item(ui->livedevices->currentRow(), 0)->text() % "</b>") % "<p><b>" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % "</b>");
+            break;
+        case 109:
+            ui->dialogtext->setText(tr("Repair the GRUB 2 bootloader."));
+        }
+    }
+    else
+    {
+        if(ui->dialogquestion->isVisibleTo(ui->dialogpanel)) ui->dialogquestion->hide();
+        if(ui->dialogcancel->isVisibleTo(ui->dialogpanel)) ui->dialogcancel->hide();
+
+        if(dialog < 300)
+        {
+            if(ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->hide();
+            if(! ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->show();
+
+            switch(dialog) {
+            case 200:
+                ui->dialogtext->setText(tr("User(s) configuration files full restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds."));
+                if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
+                ui->dialogcancel->show();
+                ui->dialognumber->show();
+                dlgtimer->start();
+                break;
+            case 201:
+                ui->dialogtext->setText(tr("User(s) configuration files restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds."));
+                if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
+                ui->dialogcancel->show();
+                ui->dialognumber->show();
+                dlgtimer->start();
+                break;
+            case 202:
+                ui->dialogtext->setText(tr("Full system repair is completed."));
+                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                break;
+            case 203:
+                ui->dialogtext->setText(tr("System repair is completed."));
+                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                break;
+            case 204:
+                ui->dialogtext->setText(tr("System files restoration are completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds."));
+                if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
+                ui->dialogcancel->show();
+                ui->dialognumber->show();
+                dlgtimer->start();
+                break;
+            case 205:
+                ui->dialogtext->setText(tr("Full system restoration is completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds."));
+                if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
+                ui->dialogcancel->show();
+                ui->dialognumber->show();
+                dlgtimer->start();
+                break;
+            case 206:
+                ui->dialogtext->setText(tr("System copy is completed."));
+                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                break;
+            case 207:
+                ui->dialogtext->setText(tr("Live system creation is completed.") % "<p>" % tr("The created .sblive file can be written to pendrive."));
+                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                break;
+            case 208:
+                ui->dialogtext->setText(tr("GRUB 2 repair is completed."));
+                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                break;
+            case 209:
+                ui->dialogtext->setText(tr("System install is completed."));
+                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                break;
+            case 210:
+                ui->dialogtext->setText(tr("Live system image write is completed."));
+                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+            }
+        }
+        else
+        {
+            if(ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->hide();
+            if(! ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->show();
+            if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+
+            switch(dialog) {
+            case 300:
+                ui->dialogtext->setText(tr("Another systemback process is currently running, please wait until it finishes."));
+                break;
+            case 301:
+                ui->dialogtext->setText(tr("Unable to get exclusive lock!") % "<p>" % tr("First, close all package manager."));
+                break;
+            case 302:
+                ui->dialogtext->setText(tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name."));
+                break;
+            case 303:
+                ui->dialogtext->setText(tr("System files repair are completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
+                break;
+            case 304:
+                ui->dialogtext->setText(tr("Restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process."));
+                break;
+            case 305:
+                ui->dialogtext->setText(tr("Root privileges are required for running Systemback!"));
+                break;
+            case 306:
+                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly."));
+                break;
+            case 307:
+                ui->dialogtext->setText(tr("System copy is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader."));
+                break;
+            case 308:
+                ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB."));
+                break;
+            case 309:
+                ui->dialogtext->setText(tr("Full system repair is completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
+                break;
+            case 310:
+                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating file system image."));
+                break;
+            case 311:
+                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating container file."));
+                break;
+            case 312:
+                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process."));
+                break;
+            case 313:
+                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
+                break;
+            case 314:
+                ui->dialogtext->setText(tr("System install is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader."));
+                break;
+            case 315:
+                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly."));
+                break;
+            case 316:
+                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
+                break;
+            case 317:
+                ui->dialogtext->setText(tr("An error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
+                break;
+            case 318:
+                ui->dialogtext->setText(tr("Restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
+                break;
+            case 319:
+                ui->dialogtext->setText(tr("System copying is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
+                break;
+            case 320:
+                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
+                break;
+            case 321:
+                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system."));
+                break;
+            case 322:
+                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("An error occurred while unpacking Live system files."));
+                break;
+            case 323:
+                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming essential Live files."));
+                break;
+            case 324:
+                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while creating .iso image."));
+                break;
+            case 325:
+                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while reading .sblive image."));
+                break;
+            case 326:
+                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating new initramfs image."));
+                break;
+            case 327:
+                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
+                break;
+            case 328:
+                ui->dialogtext->setText(tr("Restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process."));
+                break;
+            case 329:
+                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
+                break;
+            case 330:
+                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
+                break;
+            case 331:
+                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The Live image could not be mounted."));
+                break;
+            case 332:
+                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The Live image could not be mounted."));
+                break;
+            case 333:
+                ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("The Live image could not be mounted."));
+                break;
+            case 334:
+                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
+                break;
+            case 335:
+                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
+                break;
+            case 336:
+                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
+                break;
+            case 337:
+                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
+                break;
+            case 338:
+                ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("There is not enough free space."));
+                break;
+            case 339:
+                ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("There is not enough free space."));
+            }
+        }
     }
 
     if(ui->mainpanel->isVisible()) ui->mainpanel->hide();
@@ -3677,7 +3575,7 @@ void systemback::dialogopen(schar snum)
             windowmove(ui->dialogpanel->width(), ui->dialogpanel->height());
         else
         {
-            if(! sb::like(dialog, {1, 2, 17}) && sstart && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
+            if(sstart && ! sb::like(dialog, {300, 301, 305}) && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
             setFixedSize((wgeom[2] = ui->dialogpanel->width()), (wgeom[3] = ui->dialogpanel->height()));
             move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(253)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(100)));
         }
@@ -4220,7 +4118,7 @@ void systemback::on_schedulerstart_clicked()
 
 void systemback::on_dialogcancel_clicked()
 {
-    if(dialog != 30)
+    if(dialog != 108)
     {
         if(dlgtimer->isActive())
         {
@@ -5492,7 +5390,7 @@ void systemback::on_systemupgrade_clicked()
         else
         {
             utimer->stop();
-            dialog = 2;
+            dialog = 301;
             dialogopen();
         }
     }
@@ -5874,8 +5772,8 @@ void systemback::on_unmountdelete_clicked()
 
             while(! in.atEnd())
             {
-                QStr cline(in.readLine());
-                if(sb::like(cline, {"* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % " *", "* " % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040") % "/*"})) sb::umount(cline.split(' ').at(1));
+                QStr cline(in.readLine()), mpt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040"));
+                if(sb::like(cline, {"* " % mpt % " *", "* " % mpt % "/*"})) sb::umount(cline.split(' ').at(1));
             }
 
             mnts = sb::fload("/proc/self/mounts");
@@ -5884,7 +5782,7 @@ void systemback::on_unmountdelete_clicked()
             {
                 QStr mpt(ui->partitionsettings->item(a, 3)->text());
 
-                if(! mpt.isEmpty() && mpt != "SWAP" && ! mnts.contains(' ' % mpt.replace(" ", "\\040") % ' '))
+                if(! mpt.isEmpty() && ! sb::like(mpt, {"_SWAP_", '_' % tr("Multiple mount points") % '_'}) && ! mnts.contains(' ' % mpt.replace(" ", "\\040") % ' '))
                 {
                     ui->partitionsettings->item(a, 3)->setText(nullptr);
                     ui->partitionsettings->item(a, 3)->setToolTip(nullptr);
@@ -5944,7 +5842,7 @@ void systemback::on_unmount_clicked()
                     while(! in.atEnd())
                     {
                         QStr cline(in.readLine());
-                        if(sb::like(cline, {"* " % mpt.replace(" ", "\\040") % " *", "* " % mpt.replace(" ", "\\040") % "/*"})) sb::umount(cline.split(' ').at(1));
+                        if(sb::like(cline, {"* " % mpt.replace(" ", "\\040") % " *", "* " % mpt % "/*"})) sb::umount(cline.split(' ').at(1));
                     }
                 }
             }
@@ -6629,12 +6527,12 @@ void systemback::on_dialogok_clicked()
 {
     if(ui->dialogok->text() == "OK")
     {
-        if(dialog == 23)
+        if(dialog == 308)
         {
-            dialog = ui->fullrestore->isChecked() ? 20 : 19;
+            dialog = ui->fullrestore->isChecked() ? 205 : 204;
             dialogopen();
         }
-        else if(dialog == 16)
+        else if(dialog == 304)
         {
             statustart();
 
@@ -6669,7 +6567,7 @@ void systemback::on_dialogok_clicked()
                             intrrpt = false;
                         else
                         {
-                            dialog = 50;
+                            dialog = 328;
                             dialogopen();
                         }
                     }
@@ -6688,7 +6586,7 @@ void systemback::on_dialogok_clicked()
         }
         else if(! utimer->isActive() || sstart)
             close();
-        else if(sb::like(dialog, {3, 21, 26, 27, 28, 29, 31, 35, 36, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59}))
+        else if(sb::like(dialog, {207, 210, 302, 306, 310, 311, 312, 313, 315, 316, 319, 320, 321, 322, 323, 324, 325, 326, 327, 329, 330, 331, 332, 333, 334, 335, 336, 337}))
         {
             ui->dialogpanel->hide();
             ui->mainpanel->show();
@@ -6711,7 +6609,7 @@ void systemback::on_dialogok_clicked()
 
             setwontop(false);
         }
-        else if(dialog == 33)
+        else if(dialog == 209)
         {
             if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
                 close();
@@ -6723,22 +6621,22 @@ void systemback::on_dialogok_clicked()
     }
     else if(ui->dialogok->text() == tr("Start"))
         switch(dialog) {
-        case 4:
-        case 7:
-        case 8:
-        case 18:
+        case 100:
+        case 103:
+        case 104:
+        case 107:
             restore();
             break;
-        case 5:
-        case 6:
-        case 41:
+        case 101:
+        case 102:
+        case 109:
             repair();
             break;
-        case 14:
-        case 15:
+        case 105:
+        case 106:
             systemcopy();
             break;
-        case 30:
+        case 108:
             livewrite();
         }
     else if(ui->dialogok->text() == tr("Reboot"))
@@ -6777,131 +6675,131 @@ void systemback::on_pointhighlight_clicked()
 void systemback::on_pointrename_clicked()
 {
     busy();
-    if(dialog == 3) dialog = 0;
+    if(dialog == 302) dialog = 0;
 
     if(ui->pointpipe1->isChecked() && ui->point1->text() != sb::pnames[0])
     {
         if(QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/S01_" % ui->point1->text()))
             ui->pointpipe1->click();
         else
-            dialog = 3;
+            dialog = 302;
     }
 
     if(ui->pointpipe2->isChecked() && ui->point2->text() != sb::pnames[1])
     {
         if(QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/S02_" % ui->point2->text()))
             ui->pointpipe2->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe3->isChecked() && ui->point3->text() != sb::pnames[2])
     {
         if(QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/S03_" % ui->point3->text()))
             ui->pointpipe3->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe4->isChecked() && ui->point4->text() != sb::pnames[3])
     {
         if(QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/S04_" % ui->point4->text()))
             ui->pointpipe4->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe5->isChecked() && ui->point5->text() != sb::pnames[4])
     {
         if(QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/S05_" % ui->point5->text()))
             ui->pointpipe5->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe6->isChecked() && ui->point6->text() != sb::pnames[5])
     {
         if(QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/S06_" % ui->point6->text()))
             ui->pointpipe6->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe7->isChecked() && ui->point7->text() != sb::pnames[6])
     {
         if(QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/S07_" % ui->point7->text()))
             ui->pointpipe7->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe8->isChecked() && ui->point8->text() != sb::pnames[7])
     {
         if(QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S08_" % ui->point8->text()))
             ui->pointpipe8->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe9->isChecked() && ui->point9->text() != sb::pnames[8])
     {
         if(QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S09_" % ui->point9->text()))
             ui->pointpipe9->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe10->isChecked() && ui->point10->text() != sb::pnames[9])
     {
         if(QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/S10_" % ui->point10->text()))
             ui->pointpipe10->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe11->isChecked() && ui->point11->text() != sb::pnames[10])
     {
         if(QFile::rename(sb::sdir[1] % "/H01_" % sb::pnames[10], sb::sdir[1] % "/H01_" % ui->point11->text()))
             ui->pointpipe11->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe12->isChecked() && ui->point12->text() != sb::pnames[11])
     {
         if(QFile::rename(sb::sdir[1] % "/H02_" % sb::pnames[11], sb::sdir[1] % "/H02_" % ui->point12->text()))
             ui->pointpipe12->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe13->isChecked() && ui->point13->text() != sb::pnames[12])
     {
         if(QFile::rename(sb::sdir[1] % "/H03_" % sb::pnames[12], sb::sdir[1] % "/H03_" % ui->point13->text()))
             ui->pointpipe13->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe14->isChecked() && ui->point14->text() != sb::pnames[13])
     {
         if(QFile::rename(sb::sdir[1] % "/H04_" % sb::pnames[13], sb::sdir[1] % "/H04_" % ui->point14->text()))
             ui->pointpipe14->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     if(ui->pointpipe15->isChecked() && ui->point15->text() != sb::pnames[14])
     {
         if(QFile::rename(sb::sdir[1] % "/H05_" % sb::pnames[14], sb::sdir[1] % "/H05_" % ui->point15->text()))
             ui->pointpipe15->click();
-        else if(dialog != 3)
-            dialog = 3;
+        else if(dialog != 302)
+            dialog = 302;
     }
 
     pointupgrade();
     busy(false);
-    if(dialog == 3) dialogopen();
+    if(dialog == 302) dialogopen();
 }
 
 void systemback::on_autorestoreoptions_clicked(bool chckd)
@@ -7336,13 +7234,13 @@ void systemback::on_includeusers_currentIndexChanged(cQStr &arg1)
 void systemback::on_restorenext_clicked()
 {
     if(ui->fullrestore->isChecked())
-        dialog = 18;
+        dialog = 107;
     else if(ui->systemrestore->isChecked())
-        dialog = 4;
+        dialog = 100;
     else if(ui->keepfiles->isChecked())
-        dialog = 8;
+        dialog = 104;
     else
-        dialog = 7;
+        dialog = 103;
 
     dialogopen();
 }
@@ -7369,7 +7267,6 @@ void systemback::on_livelist_currentItemChanged(QLWI *crrnt)
             }
             else if(ui->livewritestart->isEnabled())
                 ui->livewritestart->setDisabled(true);
-
         }
         else
         {
@@ -7503,11 +7400,11 @@ void systemback::on_grubrepair_clicked()
 void systemback::on_repairnext_clicked()
 {
     if(ui->systemrepair->isChecked())
-        dialog = 5;
+        dialog = 101;
     else if(ui->fullrepair->isChecked())
-        dialog = 6;
+        dialog = 102;
     else
-      dialog = 41;
+      dialog = 109;
 
     dialogopen();
 }
@@ -8120,7 +8017,7 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
 
 void systemback::on_copynext_clicked()
 {
-    dialog = ui->function1->text() == tr("System copy") ? 14 : 15;
+    dialog = ui->function1->text() == tr("System copy") ? 105 : 106;
     dialogopen();
 }
 
@@ -8994,7 +8891,7 @@ void systemback::on_interrupt_clicked()
 
 void systemback::on_livewritestart_clicked()
 {
-    dialog = 30;
+    dialog = 108;
     dialogopen();
 }
 
@@ -9045,11 +8942,11 @@ error:
     else
     {
         if(sb::dfree(sb::sdir[1]) < 104857600)
-            dialog = 16;
+            dialog = 304;
         else
         {
             if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
-            dialog = 38;
+            dialog = 318;
         }
 
         dialogopen();
@@ -9120,7 +9017,7 @@ error:
         intrrpt = false;
     else
     {
-        dialog = 50;
+        dialog = 328;
         dialogopen();
         pointupgrade();
     }
@@ -9210,26 +9107,16 @@ void systemback::on_livecreatenew_clicked()
 error:
     if(intrrpt) goto exit;
 
-    if(dialog != 48)
+    if(dialog != 326)
     {
         if(sb::dfree(sb::sdir[2]) < 104857600 || (sb::isdir("/home/.sbuserdata") && sb::dfree("/home") < 104857600))
-            dialog = 29;
+            dialog = 312;
         else if(dialog == 0)
         {
             if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
-            dialog = 49;
+            dialog = 327;
         }
     }
-
-    if(sb::isdir("/.sblvtmp")) sb::remove("/.sblvtmp");
-    if(sb::isdir("/media/.sblvtmp")) sb::remove("/media/.sblvtmp");
-    if(sb::isdir("/var/.sblvtmp")) sb::remove("/var/.sblvtmp");
-    if(sb::isdir("/home/.sbuserdata")) sb::remove("/home/.sbuserdata");
-    if(sb::isdir("/root/.sbuserdata")) sb::remove("/root/.sbuserdata");
-    if(sb::isdir(sb::sdir[2] % "/.sblivesystemcreate")) sb::remove(sb::sdir[2] % "/.sblivesystemcreate");
-    if(sb::autoiso == sb::True) on_livecreatemenu_clicked();
-    dialogopen();
-    return;
 exit:
     if(sb::isdir("/.sblvtmp")) sb::remove("/.sblvtmp");
     if(sb::isdir("/media/.sblvtmp")) sb::remove("/media/.sblvtmp");
@@ -9237,7 +9124,15 @@ exit:
     if(sb::isdir("/home/.sbuserdata")) sb::remove("/home/.sbuserdata");
     if(sb::isdir("/root/.sbuserdata")) sb::remove("/root/.sbuserdata");
     if(sb::autoiso == sb::True) on_livecreatemenu_clicked();
-    intrrpt = false;
+
+    if(intrrpt)
+        intrrpt = false;
+    else
+    {
+        if(sb::isdir(sb::sdir[2] % "/.sblivesystemcreate")) sb::remove(sb::sdir[2] % "/.sblivesystemcreate");
+        dialogopen();
+    }
+
     return;
 start:
     statustart();
@@ -9344,7 +9239,7 @@ start:
 
     if(rv > 0)
     {
-        dialog = 48;
+        dialog = 326;
         goto error;
     }
 
@@ -9389,7 +9284,7 @@ start:
 
     if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr == sb::True ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist) > 0)
     {
-        dialog = 26;
+        dialog = 310;
         goto error;
     }
 
@@ -9464,7 +9359,7 @@ start:
     if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .") > 0)
     {
         if(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) sb::remove(sb::sdir[2] % '/' % ifname % ".sblive");
-        dialog = 27;
+        dialog = 311;
         goto error;
     }
 
@@ -9485,7 +9380,7 @@ start:
             if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate") > 0)
             {
                 if(sb::isfile(sb::sdir[2] % '/' % ifname % ".iso")) sb::remove(sb::sdir[2] % '/' % ifname % ".iso");
-                dialog = 27;
+                dialog = 311;
                 goto error;
             }
 
@@ -9495,7 +9390,7 @@ start:
 
     if(intrrpt) goto exit;
     emptycache();
-    dialog = 28;
+    dialog = 207;
     sb::remove(sb::sdir[2] % "/.sblivesystemcreate");
     on_livecreatemenu_clicked();
     dialogopen();
@@ -9507,14 +9402,17 @@ void systemback::on_liveconvert_clicked()
     QStr path(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1));
     goto start;
 error:
-    if(intrrpt) goto exit;
-    if(dialog == 0) dialog = 56;
-    dialogopen();
-    return;
-exit:
     if(sb::isdir(sb::sdir[2] % "/.sblivesystemconvert")) sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(sb::isfile(path % ".iso")) sb::remove(path % ".iso");
-    intrrpt = false;
+
+    if(intrrpt)
+        intrrpt = false;
+    else
+    {
+        if(dialog == 0) dialog = 334;
+        dialogopen();
+    }
+
     return;
 start:
     statustart();
@@ -9525,26 +9423,25 @@ start:
 
     if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions") > 0)
     {
-        dialog = 47;
+        dialog = 325;
         goto error;
     }
 
     if(! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux")) goto error;
-    if(intrrpt) goto exit;
+    if(intrrpt) goto error;
     prun = tr("Converting Live system image") % '\n' % tr("process") % " 2/2";
     sb::Progress = -1;
     ui->progressbar->setValue(0);
 
     if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % path % ".iso " % sb::sdir[2] % "/.sblivesystemconvert") > 0)
     {
-        if(sb::isfile(path % ".iso")) sb::remove(path % ".iso");
-        dialog = 46;
+        dialog = 324;
         goto error;
     }
 
     if(sb::exec("isohybrid " % path % ".iso") > 0 || ! QFile::setPermissions(path % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) goto error;
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
-    if(intrrpt) goto exit;
+    if(intrrpt) goto error;
     emptycache();
     ui->livelist->currentItem()->setText(sb::left(ui->livelist->currentItem()->text(), sb::rinstr(ui->livelist->currentItem()->text(), " ")) % "sblive+iso)");
     ui->liveconvert->setDisabled(true);

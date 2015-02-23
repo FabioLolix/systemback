@@ -62,8 +62,9 @@ private:
     GRUB grub;
     QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash;
+    ushort dialog;
     short wgeom[6], cpos;
-    uchar busycnt, dialog, ppipe, sfctr, icnt;
+    uchar busycnt, ppipe, sfctr, icnt;
     bool wismax, uchkd, nrxth, ickernel, irblck, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QStr gdetect(cQStr rdir = "/");

@@ -37,9 +37,6 @@ systemback::systemback()
 {
     yn[0] = tr("(Y/N)").at(1);
     yn[1] = tr("(Y/N)").at(3);
-    ptimer = new QTimer;
-    ptimer->setInterval(2000);
-    connect(ptimer, SIGNAL(timeout()), this, SLOT(progress()));
 }
 
 void systemback::main()
@@ -386,11 +383,10 @@ bool systemback::newrestorepoint()
 {
     goto start;
 error:
-    ptimer->stop();
+    progress(Stop);
     return false;
 start:
-    QTimer::singleShot(0, this, SLOT(progress()));
-    ptimer->start();
+    progress(Start);
 
     for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
@@ -416,7 +412,7 @@ start:
     if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
     emptycache();
-    ptimer->stop();
+    progress(Stop);
     return true;
 }
 
@@ -424,15 +420,14 @@ bool systemback::pointdelete()
 {
     goto start;
 error:
-    ptimer->stop();
+    progress(Stop);
     return false;
 start:
     prun = tr("Deleting restore point");
-    QTimer::singleShot(0, this, SLOT(progress()));
-    ptimer->start();
+    progress(Start);
     if(! QFile::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname)) goto error;
     emptycache();
-    ptimer->stop();
+    progress(Stop);
     return true;
 }
 
@@ -634,8 +629,7 @@ uchar systemback::restore()
         prun = tr("Restoring users configuration files");
     }
 
-    QTimer::singleShot(0, this, SLOT(progress()));
-    ptimer->start();
+    progress(Start);
     bool sfstab(fsave == 1);
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
 
@@ -662,12 +656,12 @@ uchar systemback::restore()
 
         if(sb::exec("grub-install --force " % gdev, nullptr, true) > 0)
         {
-            ptimer->stop();
+            progress(Stop);
             return 7;
         }
     }
 
-    ptimer->stop();
+    progress(Stop);
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
     attron(COLOR_PAIR(1));
@@ -703,43 +697,59 @@ uchar systemback::restore()
         }
 }
 
-void systemback::progress()
+void systemback::progress(uchar status)
 {
-    for(uchar a(0) ; a < 4 ; ++a)
-    {
-        if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring users configuration files") % '_'}))
+    switch(status) {
+    case Start:
+        connect((ptimer = new QTimer), SIGNAL(timeout()), this, SLOT(progress()));
+        QTimer::singleShot(0, this, SLOT(progress()));
+        ptimer->start(2000);
+        break;
+    case Inprog:
+        for(uchar a(0) ; a < 4 ; ++a)
         {
-            schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toUShort()), cperc(sb::Progress);
+            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring users configuration files") % '_'}))
+            {
+                schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toUShort()), cperc(sb::Progress);
 
-            if(cperc == -1)
-            {
-                if(pbar == " (?%)")
-                    pbar = " ( %)";
-                else if(pbar.isEmpty() || pbar == " ( %)")
-                    pbar = " (?%)";
-            }
-            else if(cperc < 100)
-            {
-                if(cbperc < cperc || (cbperc == 0 && pbar != "(0%)"))
-                    pbar = " (" % QStr::number(cperc) % "%)";
-                else if(sb::like(99, {cperc, cbperc}, true))
+                if(cperc == -1)
+                {
+                    if(pbar == " (?%)")
+                        pbar = " ( %)";
+                    else if(pbar.isEmpty() || pbar == " ( %)")
+                        pbar = " (?%)";
+                }
+                else if(cperc < 100)
+                {
+                    if(cbperc < cperc || (cbperc == 0 && pbar != "(0%)"))
+                        pbar = " (" % QStr::number(cperc) % "%)";
+                    else if(sb::like(99, {cperc, cbperc}, true))
+                        pbar = " (100%)";
+                }
+                else if(cbperc < 100)
                     pbar = " (100%)";
             }
-            else if(cbperc < 100)
-                pbar = " (100%)";
-        }
-        else if(! pbar.isEmpty())
-            pbar.clear();
+            else if(! pbar.isEmpty())
+                pbar.clear();
 
-        if(! ptimer->isActive()) return;
-        clear();
-        attron(COLOR_PAIR(2));
-        mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
-        attron(COLOR_PAIR(1));
-        mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, chr((prun % pbar % ' ' % (a == 0 ? "   " : a == 1 ? ".  " : a == 2 ? ".. " : "..."))));
-        attron(COLOR_PAIR(2));
-        mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
-        refresh();
-        if(a < 3) sb::delay(500);
+            if(! ptimer) return;
+            clear();
+            attron(COLOR_PAIR(2));
+            mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
+            attron(COLOR_PAIR(1));
+            mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, chr((prun % pbar % ' ' % (a == 0 ? "   " : a == 1 ? ".  " : a == 2 ? ".. " : "..."))));
+            attron(COLOR_PAIR(2));
+            mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+            refresh();
+            if(a < 3) sb::delay(500);
+        }
+
+        break;
+    case Stop:
+        delete ptimer;
+        ptimer = nullptr;
+        prun.clear();
+        if(! pbar.isEmpty()) pbar.clear();
+        if(sb::Progress != -1) sb::Progress = -1;
     }
 }

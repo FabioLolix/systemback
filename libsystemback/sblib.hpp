@@ -120,11 +120,11 @@ private:
     static ullong devsize(cQStr &dev);
     static uchar fcomp(cQStr &file1, cQStr &file2);
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden = false, cuchar oplen = 0);
-    static bool rodir(QUCL &ucl, cQStr &path, cuchar oplen = 0);
-    static bool rodir(QBA &ba, cQStr &path, cuchar oplen = 0);
     static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
     static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
     static bool odir(QBAL &balst, cQStr &path, bool hidden = false);
+    static bool rodir(QUCL &ucl, cQStr &path, cuchar oplen = 0);
+    static bool rodir(QBA &ba, cQStr &path, cuchar oplen = 0);
     static bool cplink(cQStr &srclink, cQStr &newlink);
     static bool cpdir(cQStr &srcdir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);

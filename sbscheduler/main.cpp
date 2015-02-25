@@ -28,18 +28,22 @@ QDateTime scheduler::cfglmd;
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QTranslator trnsltr;
+    QTranslator *trnsltr(new QTranslator);
     sb::cfgread();
     scheduler::cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
 
     if(sb::lang == "auto")
     {
-        if(! QLocale::system().name().startsWith("en")) trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
+        if(! QLocale::system().name().startsWith("en")) trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
     }
     else if(! sb::lang.startsWith("en"))
-        trnsltr.load("systemback_" % sb::lang, "/usr/share/systemback/lang");
+        trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
 
-    if(! trnsltr.isEmpty()) a.installTranslator(&trnsltr);
+    if(trnsltr->isEmpty())
+        delete trnsltr;
+    else
+        a.installTranslator(trnsltr);
+
     scheduler s;
     QTimer::singleShot(0, &s, SLOT(main()));
     return a.exec();

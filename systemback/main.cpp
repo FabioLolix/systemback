@@ -25,17 +25,20 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QTranslator trnsltr;
+    QTranslator *trnsltr(new QTranslator);
     sb::cfgread();
 
     if(sb::lang == "auto")
     {
-        if(! QLocale::system().name().startsWith("en")) trnsltr.load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
+        if(! QLocale::system().name().startsWith("en")) trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
     }
     else if(! sb::lang.startsWith("en"))
-        trnsltr.load("systemback_" % sb::lang, "/usr/share/systemback/lang");
+        trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
 
-    if(! trnsltr.isEmpty()) a.installTranslator(&trnsltr);
+    if(trnsltr->isEmpty())
+        delete trnsltr;
+    else
+        a.installTranslator(trnsltr);
 
     if(qgetenv("XAUTHORITY").startsWith("/home/") && getuid() == 0)
     {

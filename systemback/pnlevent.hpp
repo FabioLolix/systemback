@@ -30,11 +30,18 @@ public:
     inline explicit pnlevent(QWidget *prnt) : QWidget(prnt) {}
 
 protected:
+    void mouseMoveEvent(QMouseEvent *);
     void leaveEvent(QEvent *);
 
 signals:
     void Mouse_Leave();
+    void Mouse_Move();
 };
+
+inline void pnlevent::mouseMoveEvent(QMouseEvent *)
+{
+    emit Mouse_Move();
+}
 
 inline void pnlevent::leaveEvent(QEvent *)
 {

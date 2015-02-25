@@ -110,9 +110,9 @@ QStr sb::rndstr(uchar vlen)
 QStr sb::fload(cQStr &path, bool ascnt)
 {
     QBA ba;
-    {QFile file(path);
+    { QFile file(path);
     if(! file.open(QIODevice::ReadOnly)) return nullptr;
-    ba = file.readAll();}
+    ba = file.readAll(); }
 
     if(ascnt)
     {
@@ -1878,7 +1878,6 @@ bool sb::thrdcrtrpoint(cQStr &sdir, cQStr &pname)
                     }
 
                     if(! cplink(srci, nrpi)) return false;
-
                     goto nitem_2;
                 err_2:
                     ThrdDbg = '@' % srci;

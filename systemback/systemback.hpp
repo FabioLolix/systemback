@@ -60,7 +60,7 @@ private:
 
     static cuchar Strgdr{0}, Lvwrkdr{1}, Dpath{2}, Rpnts{3}, Normal{100}, High{147}, Max{200};
     GRUB grub;
-    QTimer *utimer, *bttnstimer, *shdltimer, *dlgtimer, *intrrptimer;
+    QTimer utimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash;
     ushort dialog;
     short wgeom[6], cpos;
@@ -96,7 +96,6 @@ private slots:
     void hmpg1released();
     void hmpg2released();
     void emailreleased();
-    void buttonstimer();
     void sbttnpressed();
     void wmaxreleased();
     void wminreleased();
@@ -127,7 +126,6 @@ private slots:
     void hmpg1move();
     void hmpg2move();
     void emailmove();
-    void interrupt();
     void umntleave();
     void chsenter();
     void chsleave();
@@ -160,6 +158,7 @@ private slots:
     void cleave();
     void wmove();
     void rmove();
+    void bmove();
 
     void on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *prvs);
     void on_livedevices_currentItemChanged(QTblWI *crrnt, QTblWI *prvs);

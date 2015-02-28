@@ -51,6 +51,7 @@ public:
     static QStr fload(cQStr &path, bool ascnt);
     static QStr right(cQStr &txt, short len);
     static QStr left(cQStr &txt, short len);
+    static QStr gdetect(cQStr rdir = "/");
     static QStr rndstr(cuchar vlen = 10);
     static QStr ruuid(cQStr &part);
     static QStr appver();

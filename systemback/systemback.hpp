@@ -67,7 +67,6 @@ private:
     uchar busycnt, ppipe, sfctr, icnt;
     bool wismax, uchkd, nrxth, ickernel, irblck, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
-    QStr gdetect(cQStr rdir = "/");
     QStr guname();
     QStr ckname();
     ushort ss(ushort size);

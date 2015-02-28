@@ -150,10 +150,12 @@ start:
 
 bool sbsustart::clrenv(cQStr &usrhm, cQStr &xpath)
 {
+    QSL excl{"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"};
+
     for(cQStr &cvar : QProcess::systemEnvironment())
     {
         QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
-        if(! sb::like(var, {"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"}) && ! qunsetenv(chr(var))) return false;
+        if(! sb::like(var, excl) && ! qunsetenv(chr(var))) return false;
     }
 
     if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.toUtf8()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;

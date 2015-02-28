@@ -876,12 +876,16 @@ void systemback::unitimer()
                     QFile file("/lib/modules/" % ckernel % "/modules." % fend[a]);
 
                     if(file.open(QIODevice::ReadOnly))
+                    {
+                        QSL incl{"*aufs.ko_", "*overlayfs.ko_", "*unionfs.ko_"};
+
                         while(! file.atEnd())
-                            if(sb::like(file.readLine().trimmed(), {"*aufs.ko_", "*overlayfs.ko_", "*unionfs.ko_"}))
+                            if(sb::like(file.readLine().trimmed(), incl))
                             {
                                 ickernel = true;
                                 goto next_2;
                             }
+                    }
                 }
 
             ickernel = sb::execsrch("unionfs-fuse");
@@ -1194,11 +1198,15 @@ QStr systemback::guname()
             QFile file("/etc/passwd");
 
             if(file.open(QIODevice::ReadOnly))
+            {
+                QSL incl{"*:x:1000:10*", "*:x:1001:10*", "*:x:1002:10*", "*:x:1003:10*", "*:x:1004:10*", "*:x:1005:10*", "*:x:1006:10*", "*:x:1007:10*", "*:x:1008:10*", "*:x:1009:10*", "*:x:1010:10*", "*:x:1011:10*", "*:x:1012:10*", "*:x:1013:10*", "*:x:1014:10*", "*:x:1015:10*"};
+
                 while(! file.atEnd())
                 {
                     QStr usr(file.readLine().trimmed());
-                    if(sb::like(usr, {"*:x:1000:10*", "*:x:1001:10*", "*:x:1002:10*", "*:x:1003:10*", "*:x:1004:10*", "*:x:1005:10*", "*:x:1006:10*", "*:x:1007:10*", "*:x:1008:10*", "*:x:1009:10*", "*:x:1010:10*", "*:x:1011:10*", "*:x:1012:10*", "*:x:1013:10*", "*:x:1014:10*", "*:x:1015:10*"})) usrs.append(sb::left(usr, sb::instr(usr, ":") -1));
+                    if(sb::like(usr, incl)) usrs.append(sb::left(usr, sb::instr(usr, ":") -1));
                 }
+            }
         }
 
         if(usrs.count() > 0)
@@ -1228,39 +1236,6 @@ QStr systemback::ckname()
     utsname snfo;
     uname(&snfo);
     return snfo.release;
-}
-
-QStr systemback::gdetect(cQStr rdir)
-{
-    QStr mnts(sb::fload("/proc/self/mounts", true));
-    QTS in(&mnts, QIODevice::ReadOnly);
-
-    while(! in.atEnd())
-    {
-        QStr cline(in.readLine());
-
-        if(sb::like(cline, {"* " % rdir % " *", "* " % rdir % (rdir.endsWith('/') ? nullptr : "/") % "boot *"}))
-        {
-            if(sb::like(cline, {"_/dev/sd*", "_/dev/hd*", "_/dev/vd*"}))
-                return sb::left(cline, 8);
-            else if(cline.startsWith("/dev/mmcblk"))
-                return sb::left(cline, 12);
-            else if(cline.startsWith("/dev/disk/by-uuid"))
-            {
-                QStr uid(sb::right(sb::left(cline, sb::instr(cline, " ") - 1), -18));
-
-                if(sb::islink("/dev/disk/by-uuid/" % uid))
-                {
-                    QStr dev(QFile("/dev/disk/by-uuid/" % uid).readLink());
-                    return dev.contains("mmc") ? sb::left(dev, 12) : sb::left(dev, 8);
-                }
-            }
-
-            break;
-        }
-    }
-
-    return nullptr;
 }
 
 void systemback::emptycache()
@@ -2275,7 +2250,7 @@ start:
 
                 if((! ui->autorestoreoptions->isChecked() && ui->grubreinstallrestore->currentText() != "Auto") || ! fcmp)
                 {
-                    if(sb::exec("grub-install --force " % (ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect() : grub.isEFI ? nullptr : ui->grubreinstallrestore->currentText())) > 0) dialog = 308;
+                    if(sb::exec("grub-install --force " % (ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? grub.isEFI ? nullptr : sb::gdetect() : grub.isEFI ? nullptr : ui->grubreinstallrestore->currentText())) > 0) dialog = 308;
                     if(intrrpt) goto exit;
                 }
             }
@@ -2333,7 +2308,7 @@ start:
         QSL mlst{"dev", "dev/pts", "proc", "sys"};
         if(sb::mcheck("/run")) mlst.append("/run");
         for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/mnt/" % bpath);
-        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (ui->grubreinstallrepair->currentText() == "Auto" ? gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % "\"") == 0 ? 208 : 317;
+        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText()) % '\"') == 0 ? 208 : 317;
         for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
         if(intrrpt) goto exit;
     }
@@ -2389,7 +2364,7 @@ start:
                 for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/mnt/" % bpath);
                 sb::exec("chroot /mnt update-grub");
                 if(intrrpt) goto exit;
-                if(((! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto") || ! fcmp) && sb::exec("chroot /mnt grub-install --force " % (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? grub.isEFI ? nullptr : gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText())) > 0) dialog = ui->fullrepair->isChecked() ? 309 : 303;
+                if(((! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto") || ! fcmp) && sb::exec("chroot /mnt grub-install --force " % (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? grub.isEFI ? nullptr : sb::gdetect("/mnt") : grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText())) > 0) dialog = ui->fullrepair->isChecked() ? 309 : 303;
                 for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
                 if(intrrpt) goto exit;
             }
@@ -2430,11 +2405,12 @@ exit:
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));
         QTS in(&mnts, QIODevice::ReadOnly);
+        QSL incl{"* /.sbsystemcopy*", "* /.sbmountpoints*", "* /.systembacklivepoint *"};
 
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.sbmountpoints*", "* /.systembacklivepoint *"})) sb::umount(cline.split(' ').at(1));
+            if(sb::like(cline, incl)) sb::umount(cline.split(' ').at(1));
         }
     }
 
@@ -2921,12 +2897,13 @@ start:
                 QFile file(fpath);
                 if(! file.open(QIODevice::ReadOnly)) goto error;
                 uchar mdfd(0);
+                QSL incl{"_AutomaticLogin=*", "_TimedLogin=*"};
 
                 while(! file.atEnd())
                 {
                     QStr nline(file.readLine().trimmed());
 
-                    if(sb::like(nline, {"_AutomaticLogin=*", "_TimedLogin=*"}))
+                    if(sb::like(nline, incl))
                         if(! nline.endsWith('='))
                         {
                             if(nline.endsWith('=' % guname()))
@@ -2978,12 +2955,13 @@ start:
                 {
                     QFile file("/etc/fstab");
                     if(! file.open(QIODevice::ReadOnly)) goto error;
+                    QSL incl{"* /home *", "*\t/home *", "* /home\t*", "*\t/home\t*", "* /home/ *", "*\t/home/ *", "* /home/\t*", "*\t/home/\t*"};
 
                     while(! file.atEnd())
                     {
                         QStr cline(file.readLine().trimmed());
 
-                        if(sb::like(cline, {"* /home *", "*\t/home *", "* /home\t*", "*\t/home\t*", "* /home/ *", "*\t/home/ *", "* /home/\t*", "*\t/home/\t*"}))
+                        if(sb::like(cline, incl))
                         {
                             fstabtxt.append("# /home\n" % cline % '\n');
                             break;
@@ -3021,6 +2999,7 @@ start:
         {
             QFile file("/etc/fstab");
             if(! file.open(QIODevice::ReadOnly)) goto error;
+            QSL incl{"*/dev/cdrom*", "*/dev/sr*"};
 
             while(! file.atEnd())
             {
@@ -3028,7 +3007,7 @@ start:
 
                 if(! cline.startsWith('#'))
                 {
-                    if(sb::like(cline, {"*/dev/cdrom*", "*/dev/sr*"}))
+                    if(sb::like(cline, incl))
                         fstabtxt.append("# cdrom\n" % cline % '\n');
                     else if(cline.contains("/dev/fd"))
                         fstabtxt.append("# floppy\n" % cline % '\n');
@@ -3070,7 +3049,7 @@ start:
         if(sb::mcheck("/run")) mlst.append("/run");
         for(cQStr &bpath : mlst) sb::mount('/' % bpath, "/.sbsystemcopy/" % bpath); }
 
-        if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % (ui->grubinstallcopy->currentText() == "Auto" ? gdetect("/.sbsystemcopy") : grub.isEFI ? nullptr : ui->grubinstallcopy->currentText()) % "\"") > 0)
+        if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % (ui->grubinstallcopy->currentText() == "Auto" ? sb::gdetect("/.sbsystemcopy") : grub.isEFI ? nullptr : ui->grubinstallcopy->currentText()) % '\"') > 0)
         {
             dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 307 : 314;
             goto error;
@@ -3091,11 +3070,12 @@ start:
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));
         QTS in(&mnts, QIODevice::ReadOnly);
+        QSL incl{"* /.sbsystemcopy*", "* /.sbmountpoints*"};
 
         while(! in.atEnd())
         {
             QStr cline(in.readLine());
-            if(sb::like(cline, {"* /.sbsystemcopy*", "* /.sbmountpoints*"})) sb::umount(cline.split(' ').at(1));
+            if(sb::like(cline, incl)) sb::umount(cline.split(' ').at(1));
         }
     }
 
@@ -5852,11 +5832,12 @@ void systemback::on_unmount_clicked()
                 else
                 {
                     QTS in(&mnts[0], QIODevice::ReadOnly);
+                    QSL incl{"* " % mpt.replace(" ", "\\040") % " *", "* " % mpt % "/*"};
 
                     while(! in.atEnd())
                     {
                         QStr cline(in.readLine());
-                        if(sb::like(cline, {"* " % mpt.replace(" ", "\\040") % " *", "* " % mpt % "/*"})) sb::umount(cline.split(' ').at(1));
+                        if(sb::like(cline, incl)) sb::umount(cline.split(' ').at(1));
                     }
                 }
             }
@@ -6662,12 +6643,13 @@ void systemback::on_dialogok_clicked()
     {
         DIR *dir(opendir("/proc"));
         dirent *ent;
+        QSL dd{"_._", "_.._"};
 
         while((ent = readdir(dir)))
         {
             QStr iname(ent->d_name);
 
-            if(! sb::like(iname, {"_._", "_.._"}) && ent->d_type == DT_DIR && sb::isnum(iname) && sb::islink("/proc/" % iname % "/exe") && QFile::readLink("/proc/" % iname % "/exe").endsWith("/Xorg"))
+            if(! sb::like(iname, dd) && ent->d_type == DT_DIR && sb::isnum(iname) && sb::islink("/proc/" % iname % "/exe") && QFile::readLink("/proc/" % iname % "/exe").endsWith("/Xorg"))
             {
                 closedir(dir);
                 kill(iname.toInt(), SIGTERM);
@@ -9219,9 +9201,10 @@ start:
         file.close();
         if(! sb::crtfile("/etc/casper.conf", "USERNAME=\"" % guname() % "\"\nUSERFULLNAME=\"" % fname % "\"\nHOST=\"" % hname % "\"\nBUILD_SYSTEM=\"" % did % "\"\n\nexport USERNAME USERFULLNAME HOST BUILD_SYSTEM\n")) goto error;
         if(intrrpt) goto exit;
+        QSL incl{"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"};
 
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
-            if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
+            if(! sb::like(item, incl) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) goto error;
     }
     else
     {
@@ -9242,8 +9225,10 @@ start:
 
     if(lvtype == "casper")
     {
+        QSL incl{"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"};
+
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
-            if(! sb::like(item, {"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"}) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
+            if(! sb::like(item, incl) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) goto error;
     }
     else if(! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab"))
         goto error;

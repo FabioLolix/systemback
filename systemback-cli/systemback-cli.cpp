@@ -634,32 +634,11 @@ uchar systemback::restore()
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
 
     if(greinst == 1)
-    {
-        sb::exec("update-grub", nullptr, true);
-        QStr gdev;
-
-        {
-            QStr mnts(sb::fload("/proc/self/mounts", true));
-            QTS in(&mnts, QIODevice::ReadOnly);
-
-            while(! in.atEnd())
-            {
-                QStr cline(in.readLine());
-
-                if(sb::like(cline, {"* / *", "* /boot *"}))
-                {
-                    gdev = sb::left(cline, 8);
-                    break;
-                }
-            }
-        }
-
-        if(sb::exec("grub-install --force " % gdev, nullptr, true) > 0)
+        if(sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, true) > 0)
         {
             progress(Stop);
             return 7;
         }
-    }
 
     progress(Stop);
     clear();

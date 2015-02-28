@@ -374,6 +374,40 @@ bool sb::mcheck(cQStr &item)
         return mnts.contains(' ' % itm % ' ');
 }
 
+QStr sb::gdetect(cQStr rdir)
+{
+    QStr mnts(fload("/proc/self/mounts", true));
+    QTS in(&mnts, QIODevice::ReadOnly);
+    QSL incl[]{{"* " % rdir % " *", "* " % rdir % (rdir.endsWith('/') ? nullptr : "/") % "boot *"}, {"_/dev/sd*", "_/dev/hd*", "_/dev/vd*"}};
+
+    while(! in.atEnd())
+    {
+        QStr cline(in.readLine());
+
+        if(like(cline, incl[0]))
+        {
+            if(like(cline, incl[1]))
+                return left(cline, 8);
+            else if(cline.startsWith("/dev/mmcblk"))
+                return left(cline, 12);
+            else if(cline.startsWith("/dev/disk/by-uuid"))
+            {
+                QStr uid(right(left(cline, instr(cline, " ") - 1), -18));
+
+                if(islink("/dev/disk/by-uuid/" % uid))
+                {
+                    QStr dev(QFile("/dev/disk/by-uuid/" % uid).readLink());
+                    return dev.contains("mmc") ? left(dev, 12) : left(dev, 8);
+                }
+            }
+
+            break;
+        }
+    }
+
+    return nullptr;
+}
+
 void sb::pupgrade()
 {
     bool rerun;

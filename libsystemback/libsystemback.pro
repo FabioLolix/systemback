@@ -7,11 +7,8 @@ CONFIG += c++11 \
 
 TEMPLATE = lib
 
-DEFINES += SYSTEMBACK_LIBRARY
-
-! equals(QMAKE_HOST.arch, x86_64) {
-    DEFINES += _FILE_OFFSET_BITS=64
-}
+DEFINES += SYSTEMBACK_LIBRARY \
+           _FILE_OFFSET_BITS=64
 
 system(./lcheck.sh):exists(libmount.hpp) {
     DEFINES += C_MNT_LIB

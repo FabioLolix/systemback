@@ -9,9 +9,7 @@ CONFIG += c++11 \
 
 TEMPLATE = app
 
-! equals(QMAKE_HOST.arch, x86_64) {
-    DEFINES += _FILE_OFFSET_BITS=64
-}
+DEFINES += _FILE_OFFSET_BITS=64
 
 SOURCES += main.cpp \
            systemback.cpp

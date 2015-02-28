@@ -1345,7 +1345,7 @@ void sb::run()
     case Readprttns:
     {
         ThrdSlst->reserve(25);
-        QSL dlst{"_/dev/sd*", "_/dev/hd*", "_/dev/mmcblk*"};
+        QSL dlst{"_/dev/sd*", "_/dev/hd*", "_/dev/vd*", "_/dev/mmcblk*"};
 
         for(cQStr &spath : QDir("/dev").entryList(QDir::System))
         {

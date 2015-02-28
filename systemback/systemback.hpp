@@ -63,7 +63,7 @@ private:
     QTimer utimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash;
     ushort dialog;
-    short wgeom[6], cpos;
+    short wgeom[4], cpos;
     uchar busycnt, ppipe, sfctr, icnt;
     bool wismax, uchkd, nrxth, ickernel, irblck, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
@@ -86,6 +86,7 @@ private:
     void systemcopy();
     void livewrite();
     void rmntcheck();
+    void stschange();
     void restore();
     void repair();
 

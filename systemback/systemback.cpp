@@ -1241,7 +1241,7 @@ QStr systemback::gdetect(cQStr rdir)
 
         if(sb::like(cline, {"* " % rdir % " *", "* " % rdir % (rdir.endsWith('/') ? nullptr : "/") % "boot *"}))
         {
-            if(sb::like(cline, {"_/dev/sd*", "_/dev/hd*"}))
+            if(sb::like(cline, {"_/dev/sd*", "_/dev/hd*", "_/dev/vd*"}))
                 return sb::left(cline, 8);
             else if(cline.startsWith("/dev/mmcblk"))
                 return sb::left(cline, 12);
@@ -1268,6 +1268,31 @@ void systemback::emptycache()
     prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
     sb::fssync();
     if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
+}
+
+void systemback::stschange()
+{
+    schar snum(qApp->desktop()->screenNumber(this));
+
+    if(wismax)
+    {
+        wismax = false;
+        setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
+        setMaximumSize(qApp->desktop()->availableGeometry(snum).width() - ss(60), qApp->desktop()->availableGeometry(snum).height() - ss(60));
+    }
+    else
+    {
+        wismax = true;
+        setMaximumSize(qApp->desktop()->availableGeometry(snum).size());
+        setGeometry(qApp->desktop()->availableGeometry(snum));
+
+        if(ui->copypanel->isVisible())
+        {
+            ui->partitionsettings->resizeColumnToContents(2);
+            ui->partitionsettings->resizeColumnToContents(3);
+            ui->partitionsettings->resizeColumnToContents(4);
+        }
+    }
 }
 
 void systemback::schedulertimer()
@@ -1316,38 +1341,13 @@ void systemback::wreleased()
             if(y() > scrxy + scrh - height()) wgeom[1] = scrxy + scrh - height() - ss(30);
         }
 
-        if(x() != wgeom[0] || y() != wgeom[1]) move(wgeom[0], wgeom[1]);
+        if(size() != QSize(wgeom[0], wgeom[1])) move(wgeom[0], wgeom[1]);
     }
 }
 
 void systemback::wdblclck()
 {
-    if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible())
-    {
-        schar snum(qApp->desktop()->screenNumber(this));
-
-        if(wismax)
-        {
-            wismax = false;
-            setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
-            setMaximumSize(qApp->desktop()->availableGeometry(snum).width() - ss(60), qApp->desktop()->availableGeometry(snum).height() - ss(60));
-        }
-        else
-        {
-            wgeom[4] = wgeom[0];
-            wgeom[5] = wgeom[1];
-            setMaximumSize(qApp->desktop()->availableGeometry(snum).size());
-            setGeometry(qApp->desktop()->availableGeometry(snum));
-            wismax = true;
-
-            if(ui->copypanel->isVisible())
-            {
-                ui->partitionsettings->resizeColumnToContents(2);
-                ui->partitionsettings->resizeColumnToContents(3);
-                ui->partitionsettings->resizeColumnToContents(4);
-            }
-        }
-    }
+    if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible()) stschange();
 }
 
 void systemback::benter()
@@ -1491,30 +1491,7 @@ void systemback::wmaxreleased()
 {
     if(ui->buttonspanel->isVisible() && ui->windowmaximize->foregroundRole() == QPalette::Highlight)
     {
-        schar snum(qApp->desktop()->screenNumber(this));
-
-        if(wismax)
-        {
-            wismax = false;
-            setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
-            setMaximumSize(qApp->desktop()->availableGeometry(snum).width() - ss(60), qApp->desktop()->availableGeometry(snum).height() - ss(60));
-        }
-        else
-        {
-            wgeom[4] = wgeom[0];
-            wgeom[5] = wgeom[1];
-            setMaximumSize(qApp->desktop()->availableGeometry(snum).size());
-            setGeometry(qApp->desktop()->availableGeometry(snum));
-            wismax = true;
-
-            if(ui->copypanel->isVisible())
-            {
-                ui->partitionsettings->resizeColumnToContents(2);
-                ui->partitionsettings->resizeColumnToContents(3);
-                ui->partitionsettings->resizeColumnToContents(4);
-            }
-        }
-
+        stschange();
         if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
     }
 }
@@ -3614,7 +3591,7 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
     if(wismax)
     {
         wismax = false;
-        setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
+        setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
     }
 
     if(size() != QSize((wgeom[2] = nwidth), (wgeom[3] = nheight)))
@@ -3686,15 +3663,155 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 {
     switch(ev->type()) {
     case QEvent::WindowActivate:
+        if(ui->function1->foregroundRole() == QPalette::Dark)
+        {
+            ui->function1->setForegroundRole(QPalette::Base);
+            ui->windowbutton1->setForegroundRole(QPalette::Base);
+            ui->function2->setForegroundRole(QPalette::Base);
+            ui->windowbutton2->setForegroundRole(QPalette::Base);
+            ui->function3->setForegroundRole(QPalette::Base);
+            ui->windowbutton3->setForegroundRole(QPalette::Base);
+            ui->function4->setForegroundRole(QPalette::Base);
+            ui->windowbutton4->setForegroundRole(QPalette::Base);
+            goto gcheck;
+        }
+
+        return false;
+    case QEvent::WindowDeactivate:
+        if(ui->function1->foregroundRole() == QPalette::Base)
+        {
+            ui->function1->setForegroundRole(QPalette::Dark);
+            ui->windowbutton1->setForegroundRole(QPalette::Dark);
+            ui->function2->setForegroundRole(QPalette::Dark);
+            ui->windowbutton2->setForegroundRole(QPalette::Dark);
+            ui->function3->setForegroundRole(QPalette::Dark);
+            ui->windowbutton3->setForegroundRole(QPalette::Dark);
+            ui->function4->setForegroundRole(QPalette::Dark);
+            ui->windowbutton4->setForegroundRole(QPalette::Dark);
+            if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
+
+            if(ui->copypanel->isVisible())
+            {
+                if(ui->partitionsettings->hasFocus() && ui->partitionsettings->currentRow() == -1) ui->copyback->setFocus();
+            }
+            else if(ui->livecreatepanel->isVisible())
+            {
+                if((ui->livelist->hasFocus() && ui->livelist->currentRow() == -1) || (ui->livedevices->hasFocus() && ui->livedevices->currentRow() == -1)) ui->livecreateback->setFocus();
+            }
+            else if(ui->excludepanel->isVisible())
+            {
+                if((ui->itemslist->hasFocus() && ! ui->itemslist->currentItem()) || (ui->excludedlist->hasFocus() && ui->excludedlist->currentRow() == -1)) ui->excludeback->setFocus();
+            }
+            else if(ui->choosepanel->isVisible() && ui->dirchoose->hasFocus() && ! ui->dirchoose->currentItem())
+                ui->dirchoosecancel->setFocus();
+
+            goto gcheck;
+        }
+
+        return false;
+    case QEvent::Resize:
+        if(wismax)
+        {
+            schar snum(qApp->desktop()->screenNumber(this));
+
+            if(geometry() != qApp->desktop()->availableGeometry(snum))
+            {
+                setGeometry(qApp->desktop()->availableGeometry(snum));
+                return true;
+            }
+        }
+
+        ui->mainpanel->resize(size());
+        ui->function1->resize(width(), ui->function1->height());
+        ui->border->resize(width(), ui->border->height());
+        ui->windowbutton1->move(width() - ui->windowbutton1->height(), 0);
+        ui->resizepanel->resize(width() - ss(1), height() - ss(24));
+
+        if(ui->choosepanel->isVisible())
+        {
+            ui->choosepanel->resize(width() - (sfctr == High ? 4 : ss(2)), height() - ss(25));
+            ui->dirpath->resize(ui->choosepanel->width() - ss(40), ui->dirpath->height());
+            ui->dirrefresh->move(ui->choosepanel->width() - ui->dirrefresh->width(), 0);
+            ui->dirchoose->resize(ui->choosepanel->width(), ui->choosepanel->height() - ss(80));
+            ui->dirchooseok->move(ui->choosepanel->width() - ss(120), ui->choosepanel->height() - ss(40));
+            ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - ss(40));
+            ui->filesystemwarning->move(ui->filesystemwarning->x(), ui->choosepanel->height() - ss(41));
+            ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
+        }
+        else if(ui->copypanel->isVisible())
+        {
+            ui->copypanel->resize(width() - (sfctr == High ? 4 : ss(2)), height() - ss(25));
+            ui->partitionsettingstext->resize(ui->copypanel->width(), ui->partitionsettingstext->height());
+            ui->partitionsettings->resize(ui->copypanel->width() - ss(152), ui->copypanel->height() - ss(200));
+            ui->partitionsettingspanel1->move(ui->partitionsettings->x() + ui->partitionsettings->width(), ui->partitionsettingspanel1->y());
+            ui->partitionsettingspanel2->move(ui->partitionsettingspanel1->pos());
+            ui->partitionsettingspanel3->move(ui->partitionsettingspanel1->pos());
+            ui->partitionoptionstext->setGeometry(0, ui->copypanel->height() - ss(160), ui->copypanel->width(), ui->partitionoptionstext->height());
+            ui->userdatafilescopy->move(ui->userdatafilescopy->x(), ui->copypanel->height() - ss(122) - (sfctr == High ? 1 : 2));
+            ui->usersettingscopy->move(ui->usersettingscopy->x(), ui->userdatafilescopy->y());
+            ui->grubinstalltext->move(ui->grubinstalltext->x(), ui->copypanel->height() - ss(96));
+            ui->grubinstallcopy->move(ui->grubinstallcopy->x(), ui->grubinstalltext->y());
+            ui->grubinstallcopydisable->move(ui->grubinstallcopydisable->x(), ui->grubinstalltext->y());
+            ui->efiwarning->setGeometry(ui->efiwarning->x(), ui->grubinstalltext->y() - ss(4), ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
+            ui->copyback->move(ui->copyback->x(), ui->copypanel->height() - ss(48));
+            ui->copynext->move(ui->copypanel->width() - ss(152), ui->copyback->y());
+            ui->copyresize->move(ui->copypanel->width() - ui->copyresize->width(), ui->copypanel->height() - ui->copyresize->height());
+            ui->copycover->resize(ui->copypanel->width() - ss(10), ui->copypanel->height() - ss(10));
+        }
+        else if(ui->excludepanel->isVisible())
+        {
+            ui->excludepanel->resize(width() - (sfctr == High ? 4 : ss(2)), height() - ss(25));
+            ui->itemstext->resize(ui->excludepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->itemstext->height());
+            ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedtext->y(), ui->itemstext->width(), ui->excludedtext->height());
+            ui->itemslist->resize(ui->itemstext->width(), ui->excludepanel->height() - ss(160));
+            ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedlist->y(), ui->itemslist->width(), ui->itemslist->height());
+            ui->additem->move(ui->excludepanel->width() / 2 - ss(24), ui->itemslist->height() / 2 + ss(36));
+            ui->removeitem->move(ui->additem->x(), ui->itemslist->height() / 2 + ss(108));
+            ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - ss(48));
+            ui->kendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
+            ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
+        }
+
+        if(! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor) repaint();
+
+        if(! wismax && size() != QSize(wgeom[2], wgeom[3]))
+        {
+            wgeom[2] = width();
+            wgeom[3] = height();
+        }
+
+        return false;
+    case QEvent::Move:
+        if(wismax)
+        {
+            schar snum(qApp->desktop()->screenNumber(this));
+
+            if(geometry() != qApp->desktop()->availableGeometry(snum))
+            {
+                setGeometry(qApp->desktop()->availableGeometry(snum));
+                return true;
+            }
+        }
+        else
+        {
+            wgeom[0] = x();
+            wgeom[1] = y();
+        }
+
+        return false;
+    case QEvent::WindowStateChange:
     {
-        ui->function1->setForegroundRole(QPalette::Base);
-        ui->windowbutton1->setForegroundRole(QPalette::Base);
-        ui->function2->setForegroundRole(QPalette::Base);
-        ui->windowbutton2->setForegroundRole(QPalette::Base);
-        ui->function3->setForegroundRole(QPalette::Base);
-        ui->windowbutton3->setForegroundRole(QPalette::Base);
-        ui->function4->setForegroundRole(QPalette::Base);
-        ui->windowbutton4->setForegroundRole(QPalette::Base);
+        if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
+        QEvent nev(isMinimized() ? QEvent::WindowDeactivate : QEvent::WindowActivate);
+        qApp->sendEvent(this, &nev);
+    }
+    default:
+        return false;
+    }
+
+gcheck:
+    if(! wismax)
+    {
         schar snum(qApp->desktop()->screenNumber(this));
         short scrxy(qApp->desktop()->screenGeometry(snum).x());
 
@@ -3714,117 +3831,10 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             if(y() > scrxy + scrh - height() && y() < scrxy + scrh + height()) wgeom[1] = scrxy + scrh - height() - ss(30);
         }
 
-        if(x() != wgeom[0] || y() != wgeom[1])
-        {
-            if(wismax)
-            {
-                wismax = false;
-                setGeometry(wgeom[4], wgeom[5], wgeom[2], wgeom[3]);
-                setMaximumSize(qApp->desktop()->availableGeometry(snum).width() - ss(60), qApp->desktop()->availableGeometry(snum).height() - ss(60));
-            }
-            else
-                move(wgeom[0], wgeom[1]);
-        }
-
-        return true;
+        if(size() != QSize(wgeom[0], wgeom[1])) move(wgeom[0], wgeom[1]);
     }
-    case QEvent::WindowDeactivate:
-        ui->function1->setForegroundRole(QPalette::Dark);
-        ui->windowbutton1->setForegroundRole(QPalette::Dark);
-        ui->function2->setForegroundRole(QPalette::Dark);
-        ui->windowbutton2->setForegroundRole(QPalette::Dark);
-        ui->function3->setForegroundRole(QPalette::Dark);
-        ui->windowbutton3->setForegroundRole(QPalette::Dark);
-        ui->function4->setForegroundRole(QPalette::Dark);
-        ui->windowbutton4->setForegroundRole(QPalette::Dark);
 
-        if(ui->copypanel->isVisible())
-        {
-            if(ui->partitionsettings->hasFocus() && ui->partitionsettings->currentRow() == -1) ui->copyback->setFocus();
-        }
-        else if(ui->livecreatepanel->isVisible())
-        {
-            if((ui->livelist->hasFocus() && ui->livelist->currentRow() == -1) || (ui->livedevices->hasFocus() && ui->livedevices->currentRow() == -1)) ui->livecreateback->setFocus();
-        }
-        else if(ui->excludepanel->isVisible())
-        {
-            if((ui->itemslist->hasFocus() && ! ui->itemslist->currentItem()) || (ui->excludedlist->hasFocus() && ui->excludedlist->currentRow() == -1)) ui->excludeback->setFocus();
-        }
-        else if(ui->choosepanel->isVisible() && ui->dirchoose->hasFocus() && ! ui->dirchoose->currentItem())
-            ui->dirchoosecancel->setFocus();
-
-        return true;
-    case QEvent::Resize:
-        ui->mainpanel->resize(size());
-        ui->function1->resize(width(), ui->function1->height());
-        ui->border->resize(width(), ui->border->height());
-        ui->windowbutton1->move(width() - ui->windowbutton1->height(), 0);
-        ui->resizepanel->resize(width() - ss(1), height() - ss(24));
-
-        if(! wismax)
-        {
-            if(ui->choosepanel->isVisible())
-            {
-                ui->choosepanel->resize(width() - (sfctr == High ? 4 : ss(2)), height() - ss(25));
-                ui->dirpath->resize(ui->choosepanel->width() - ss(40), ui->dirpath->height());
-                ui->dirrefresh->move(ui->choosepanel->width() - ui->dirrefresh->width(), 0);
-                ui->dirchoose->resize(ui->choosepanel->width(), ui->choosepanel->height() - ss(80));
-                ui->dirchooseok->move(ui->choosepanel->width() - ss(120), ui->choosepanel->height() - ss(40));
-                ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - ss(40));
-                ui->filesystemwarning->move(ui->filesystemwarning->x(), ui->choosepanel->height() - ss(41));
-                ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
-            }
-            else if(ui->copypanel->isVisible())
-            {
-                ui->copypanel->resize(width() - (sfctr == High ? 4 : ss(2)), height() - ss(25));
-                ui->partitionsettingstext->resize(ui->copypanel->width(), ui->partitionsettingstext->height());
-                ui->partitionsettings->resize(ui->copypanel->width() - ss(152), ui->copypanel->height() - ss(200));
-                ui->partitionsettingspanel1->move(ui->partitionsettings->x() + ui->partitionsettings->width(), ui->partitionsettingspanel1->y());
-                ui->partitionsettingspanel2->move(ui->partitionsettingspanel1->pos());
-                ui->partitionsettingspanel3->move(ui->partitionsettingspanel1->pos());
-                ui->partitionoptionstext->setGeometry(0, ui->copypanel->height() - ss(160), ui->copypanel->width(), ui->partitionoptionstext->height());
-                ui->userdatafilescopy->move(ui->userdatafilescopy->x(), ui->copypanel->height() - ss(122) - (sfctr == High ? 1 : 2));
-                ui->usersettingscopy->move(ui->usersettingscopy->x(), ui->userdatafilescopy->y());
-                ui->grubinstalltext->move(ui->grubinstalltext->x(), ui->copypanel->height() - ss(96));
-                ui->grubinstallcopy->move(ui->grubinstallcopy->x(), ui->grubinstalltext->y());
-                ui->grubinstallcopydisable->move(ui->grubinstallcopydisable->x(), ui->grubinstalltext->y());
-                ui->efiwarning->setGeometry(ui->efiwarning->x(), ui->grubinstalltext->y() - ss(4), ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
-                ui->copyback->move(ui->copyback->x(), ui->copypanel->height() - ss(48));
-                ui->copynext->move(ui->copypanel->width() - ss(152), ui->copyback->y());
-                ui->copyresize->move(ui->copypanel->width() - ui->copyresize->width(), ui->copypanel->height() - ui->copyresize->height());
-                ui->copycover->resize(ui->copypanel->width() - ss(10), ui->copypanel->height() - ss(10));
-            }
-            else if(ui->excludepanel->isVisible())
-            {
-                ui->excludepanel->resize(width() - (sfctr == High ? 4 : ss(2)), height() - ss(25));
-                ui->itemstext->resize(ui->excludepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->itemstext->height());
-                ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedtext->y(), ui->itemstext->width(), ui->excludedtext->height());
-                ui->itemslist->resize(ui->itemstext->width(), ui->excludepanel->height() - ss(160));
-                ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedlist->y(), ui->itemslist->width(), ui->itemslist->height());
-                ui->additem->move(ui->excludepanel->width() / 2 - ss(24), ui->itemslist->height() / 2 + ss(36));
-                ui->removeitem->move(ui->additem->x(), ui->itemslist->height() / 2 + ss(108));
-                ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - ss(48));
-                ui->kendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
-                ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
-            }
-
-            repaint();
-        }
-        else if(geometry() != qApp->desktop()->screenGeometry(this))
-            setGeometry(qApp->desktop()->screenGeometry(this));
-
-        return true;
-    case QEvent::Move:
-        wgeom[0] = x();
-        wgeom[1] = y();
-        if(wismax && geometry() != qApp->desktop()->screenGeometry(this)) setGeometry(qApp->desktop()->screenGeometry(this));
-        return true;
-    case QEvent::WindowStateChange:
-        if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
-        return true;
-    default:
-        return false;
-    }
+    return false;
 }
 
 void systemback::keyPressEvent(QKeyEvent *ev)

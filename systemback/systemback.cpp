@@ -1334,7 +1334,7 @@ void systemback::wreleased()
         }
 
         if(y() < (scrxy = qApp->desktop()->screenGeometry(snum).y()))
-            wgeom[0] = scrxy + ss(30);
+            wgeom[1] = scrxy + ss(30);
         else
         {
             short scrh(qApp->desktop()->screenGeometry(snum).height());

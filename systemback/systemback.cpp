@@ -1059,6 +1059,7 @@ void systemback::unitimer()
             if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
         }
 
+        if(ui->buttonspanel->isVisible() && ! minside(ui->buttonspanel->pos(), ui->buttonspanel->size())) ui->buttonspanel->hide();
         utblock = false;
     }
 }
@@ -1316,7 +1317,7 @@ void systemback::wreleased()
             if(y() > scrxy + scrh - height()) wgeom[1] = scrxy + scrh - height() - ss(30);
         }
 
-        if(size() != QSize(wgeom[0], wgeom[1])) move(wgeom[0], wgeom[1]);
+        if(pos() != QPoint(wgeom[0], wgeom[1])) move(wgeom[0], wgeom[1]);
     }
 }
 
@@ -3668,7 +3669,6 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->windowbutton3->setForegroundRole(QPalette::Dark);
             ui->function4->setForegroundRole(QPalette::Dark);
             ui->windowbutton4->setForegroundRole(QPalette::Dark);
-            if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
 
             if(ui->copypanel->isVisible())
             {
@@ -3754,10 +3754,11 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 
         if(! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor) repaint();
 
-        if(! wismax && size() != QSize(wgeom[2], wgeom[3]))
+        if(! wismax)
         {
-            wgeom[2] = width();
-            wgeom[3] = height();
+            if(wgeom[2] != width()) wgeom[2] = width();
+            if(wgeom[3] != height()) wgeom[3] = height();
+            goto bcheck;
         }
 
         return false;
@@ -3774,14 +3775,14 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         }
         else
         {
-            wgeom[0] = x();
-            wgeom[1] = y();
+            if(wgeom[0] != x()) wgeom[0] = x();
+            if(wgeom[1] != y()) wgeom[1] = y();
+            goto bcheck;
         }
 
         return false;
     case QEvent::WindowStateChange:
     {
-        if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
         QEvent nev(isMinimized() ? QEvent::WindowDeactivate : QEvent::WindowActivate);
         qApp->sendEvent(this, &nev);
     }
@@ -3811,9 +3812,15 @@ gcheck:
             if(y() > scrxy + scrh - height() && y() < scrxy + scrh + height()) wgeom[1] = scrxy + scrh - height() - ss(30);
         }
 
-        if(size() != QSize(wgeom[0], wgeom[1])) move(wgeom[0], wgeom[1]);
+        if(pos() != QPoint(wgeom[0], wgeom[1]))
+        {
+            move(wgeom[0], wgeom[1]);
+            return false;
+        }
     }
 
+bcheck:
+    if(ui->buttonspanel->isVisible()) ui->buttonspanel->hide();
     return false;
 }
 

@@ -397,7 +397,7 @@ QStr sb::gdetect(cQStr rdir)
                 if(islink("/dev/disk/by-uuid/" % uid))
                 {
                     QStr dev(QFile("/dev/disk/by-uuid/" % uid).readLink());
-                    return dev.contains("mmc") ? left(dev, 12) : left(dev, 8);
+                    return left(dev, dev.contains("mmc") ? 12 : 8);
                 }
             }
 

@@ -1390,9 +1390,6 @@
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
       </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QComboBox::AdjustToContents</enum>
-      </property>
      </widget>
      <widget class="QRadioButton" name="grubrepair">
       <property name="geometry">
@@ -2095,9 +2092,6 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QComboBox::AdjustToContents</enum>
       </property>
      </widget>
      <widget class="QPushButton" name="schedulerback">
@@ -5120,9 +5114,6 @@
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
       </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QComboBox::AdjustToContents</enum>
-      </property>
      </widget>
      <widget class="QPushButton" name="restoreback">
       <property name="geometry">
@@ -5340,9 +5331,6 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QComboBox::AdjustToContents</enum>
       </property>
      </widget>
      <widget class="QLabel" name="grubinstalltext">
@@ -6234,9 +6222,6 @@
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
       </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QComboBox::AdjustToContents</enum>
-      </property>
      </widget>
      <widget class="QComboBox" name="styles">
       <property name="enabled">
@@ -6261,9 +6246,6 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QComboBox::AdjustToContents</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="alwaysontop">

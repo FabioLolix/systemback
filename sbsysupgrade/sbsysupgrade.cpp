@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
 
     if(sb::lang == "auto")
     {
-        if(! QLocale::system().name().startsWith("en")) trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
+        if(QLocale::system().name() != "en_EN") trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
     }
-    else if(! sb::lang.startsWith("en"))
+    else if(sb::lang != "en_EN")
         trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
 
     if(trnsltr->isEmpty())

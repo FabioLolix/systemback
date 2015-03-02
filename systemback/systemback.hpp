@@ -162,6 +162,9 @@ private slots:
 
     void on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *prvs);
     void on_livedevices_currentItemChanged(QTblWI *crrnt, QTblWI *prvs);
+    void on_grubreinstallrestore_currentIndexChanged(const QStr &arg1);
+    void on_grubreinstallrepair_currentIndexChanged(const QStr &arg1);
+    void on_grubinstallcopy_currentIndexChanged(const QStr &arg1);
     void on_repairpartition_currentIndexChanged(const QStr &arg1);
     void on_repairmountpoint_currentTextChanged(const QStr &arg1);
     void on_windowposition_currentIndexChanged(const QStr &arg1);

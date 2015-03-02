@@ -195,6 +195,10 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         ui->statuspanel->move(0, 0);
         ui->statuspanel->setBackgroundRole(QPalette::Foreground);
         ui->substatuspanel->setBackgroundRole(QPalette::Background);
+        ui->function2->setForegroundRole(QPalette::Base);
+        ui->function4->setForegroundRole(QPalette::Base);
+        ui->windowbutton2->setForegroundRole(QPalette::Base);
+        ui->windowbutton4->setForegroundRole(QPalette::Base);
         ui->interrupt->setStyleSheet("QPushButton:enabled {color: red}");
         connect(ui->function2, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
         connect(ui->function2, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
@@ -240,8 +244,6 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             ui->sbpanel->setBackgroundRole(QPalette::Background);
             ui->installpanel->setBackgroundRole(QPalette::Background);
             ui->function1->setForegroundRole(QPalette::Base);
-            ui->function2->setForegroundRole(QPalette::Base);
-            ui->function4->setForegroundRole(QPalette::Base);
             ui->scalingbutton->setForegroundRole(QPalette::Base);
             ui->scalingbuttonspanel->move(0, 0);
             ui->scalingbuttonspanel->setBackgroundRole(QPalette::Highlight);
@@ -259,8 +261,6 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
             ui->scalingfactor->setBackgroundRole(QPalette::Base);
             ui->windowbutton1->setForegroundRole(QPalette::Base);
-            ui->windowbutton2->setForegroundRole(QPalette::Base);
-            ui->windowbutton4->setForegroundRole(QPalette::Base);
             ui->storagedirarea->setBackgroundRole(QPalette::Base);
             connect(ui->windowmaximize, SIGNAL(Mouse_Enter()), this, SLOT(wmaxenter()));
             connect(ui->windowmaximize, SIGNAL(Mouse_Leave()), this, SLOT(wmaxleave()));
@@ -577,7 +577,7 @@ void systemback::unitimer()
                 if(sb::isdir("/usr/share/systemback/lang"))
                 {
                     {
-                        QSL lst("English");
+                        QSL lst("English (common)");
                         lst.reserve(13);
 
                         for(cQStr &item : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
@@ -590,6 +590,8 @@ void systemback::unitimer()
                                 lst.append("Català");
                             else if(lcode == "cs")
                                 lst.append("Čeština");
+                            else if(lcode == "en_GB")
+                                lst.append("English (United Kingdom)");
                             else if(lcode == "es")
                                 lst.append("Español");
                             else if(lcode == "fi")
@@ -625,7 +627,9 @@ void systemback::unitimer()
                         else if(sb::lang == "cs_CS")
                             ui->languages->setCurrentIndex(ui->languages->findText("Čeština"));
                         else if(sb::lang == "en_EN")
-                            ui->languages->setCurrentIndex(ui->languages->findText("English"));
+                            ui->languages->setCurrentIndex(ui->languages->findText("English (common)"));
+                        else if(sb::lang == "en_GB")
+                            ui->languages->setCurrentIndex(ui->languages->findText("English (United Kingdom)"));
                         else if(sb::lang == "es_ES")
                             ui->languages->setCurrentIndex(ui->languages->findText("Español"));
                         else if(sb::lang == "fi_FI")
@@ -822,8 +826,8 @@ void systemback::unitimer()
                 ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
                 ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
                 ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
-                ui->grubinstallcopy->adjustSize();
-                ui->efiwarning->move(ui->grubinstallcopy->x() + ui->grubinstallcopy->width() + ss(5), ui->grubinstallcopy->y() - ss(4));
+                ui->grubinstallcopydisable->adjustSize();
+                ui->efiwarning->move(ui->grubinstallcopydisable->x() + ui->grubinstallcopydisable->width() + ss(5), ui->grubinstallcopydisable->y() - ss(4));
                 ui->efiwarning->resize(ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
                 ui->efiwarning->setForegroundRole(QPalette::Highlight);
                 goto next_1;
@@ -1339,7 +1343,7 @@ void systemback::benter()
             }
 
             if(ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->hide();
-            if(ui->buttonspanel->width() != ss(48)) ui->buttonspanel->resize(ss(48), ss(48));
+            if(ui->buttonspanel->width() != ss(48)) ui->buttonspanel->resize(ui->buttonspanel->height(), ui->buttonspanel->height());
         }
         else if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible())
         {
@@ -1359,7 +1363,7 @@ void systemback::benter()
             wmaxleave();
             if(ui->windowclose->x() != ss(92)) ui->windowclose->move(ss(92), ss(2));
             if(! ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->show();
-            if(ui->buttonspanel->width() != ss(138)) ui->buttonspanel->resize(ss(138), ss(48));
+            if(ui->buttonspanel->width() != ss(138)) ui->buttonspanel->resize(ss(138), ui->buttonspanel->height());
         }
         else
         {
@@ -1371,7 +1375,7 @@ void systemback::benter()
 
             if(ui->windowclose->x() != ss(47)) ui->windowclose->move(ss(47), ss(2));
             if(! ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->show();
-            if(ui->buttonspanel->width() != ss(93)) ui->buttonspanel->resize(ss(93), ss(48));
+            if(ui->buttonspanel->width() != ss(93)) ui->buttonspanel->resize(ss(93), ui->buttonspanel->height());
         }
 
         wminleave();
@@ -3644,7 +3648,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 {
     switch(ev->type()) {
     case QEvent::WindowActivate:
-        if(ui->function1->foregroundRole() == QPalette::Dark)
+        if(ui->function3->foregroundRole() == QPalette::Dark)
         {
             ui->function1->setForegroundRole(QPalette::Base);
             ui->windowbutton1->setForegroundRole(QPalette::Base);
@@ -3659,7 +3663,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 
         return false;
     case QEvent::WindowDeactivate:
-        if(ui->function1->foregroundRole() == QPalette::Base)
+        if(ui->function3->foregroundRole() == QPalette::Base)
         {
             ui->function1->setForegroundRole(QPalette::Dark);
             ui->windowbutton1->setForegroundRole(QPalette::Dark);
@@ -4033,7 +4037,7 @@ void systemback::keyReleaseEvent(QKeyEvent *ev)
 
 void systemback::on_admins_currentIndexChanged(cQStr &arg1)
 {
-    ui->admins->resize(fontMetrics().width(arg1) + ss(30), ss(32));
+    ui->admins->resize(fontMetrics().width(arg1) + ss(30), ui->admins->height());
     if(! hash.isEmpty()) hash.clear();
 
     {
@@ -5448,7 +5452,7 @@ void systemback::on_partitionrefresh_clicked()
         ui->mountpoint->addItem("/boot/efi");
         if(! ui->efiwarning->isVisibleTo(ui->copypanel)) ui->efiwarning->show();
 
-        if(! ui->grubinstallcopy->isVisibleTo(ui->copypanel))
+        if(ui->grubinstallcopy->isVisibleTo(ui->copypanel))
         {
             ui->grubinstallcopy->hide();
             ui->grubinstallcopydisable->show();
@@ -6215,7 +6219,7 @@ void systemback::on_pointpipe1_clicked()
 
         if(ui->storagedirbutton->isHidden())
         {
-            ui->storagedir->resize(ss(210), ss(28));
+            ui->storagedir->resize(ss(210), ui->storagedir->height());
             ui->storagedirbutton->show();
             ui->pointrename->setDisabled(true);
             ui->pointdelete->setDisabled(true);
@@ -6254,7 +6258,7 @@ void systemback::on_pointpipe1_clicked()
             if(ui->storagedirbutton->isVisible())
             {
                 ui->storagedirbutton->hide();
-                ui->storagedir->resize(ss(236), ss(28));
+                ui->storagedir->resize(ss(236), ui->storagedir->height());
                 ui->pointdelete->setEnabled(true);
             }
 
@@ -8048,11 +8052,8 @@ void systemback::on_repairpartitionrefresh_clicked()
 
 void systemback::on_repairpartition_currentIndexChanged(cQStr &arg1)
 {
-    if(! arg1.isEmpty())
-    {
-        ui->repairpartition->resize(fontMetrics().width(arg1) + ss(30), ui->repairpartition->height());
-        ui->repairpartition->move(ui->repairmountpoint->x() - ui->repairpartition->width() - ss(8), ui->repairpartition->y());
-    }
+    ui->repairpartition->resize(fontMetrics().width(arg1) + ss(30), ui->repairpartition->height());
+    ui->repairpartition->move(ui->repairmountpoint->x() - ui->repairpartition->width() - ss(8), ui->repairpartition->y());
 }
 
 void systemback::on_repairmountpoint_currentTextChanged(cQStr &arg1)
@@ -8765,6 +8766,8 @@ void systemback::on_seconddown_clicked()
 
 void systemback::on_windowposition_currentIndexChanged(cQStr &arg1)
 {
+    ui->windowposition->resize(fontMetrics().width(arg1) + ss(30), ui->windowposition->height());
+
     if(ui->schedulepanel->isVisible())
     {
         if(arg1 == tr("Top left") && sb::schdlr[0] != "topleft")
@@ -9537,8 +9540,10 @@ void systemback::on_languageoverride_clicked(bool chckd)
             sb::lang = "ca_ES";
         else if(ui->languages->currentText() == "Čeština")
             sb::lang = "cs_CS";
-        else if(ui->languages->currentText() == "English")
+        else if(ui->languages->currentText() == "English (common)")
             sb::lang = "en_EN";
+        else if(ui->languages->currentText() == "English (United Kingdom)")
+            sb::lang = "en_GB";
         else if(ui->languages->currentText() == "Español")
             sb::lang = "es_ES";
         else if(ui->languages->currentText() == "Suomi")
@@ -9573,6 +9578,8 @@ void systemback::on_languageoverride_clicked(bool chckd)
 
 void systemback::on_languages_currentIndexChanged(cQStr &arg1)
 {
+    ui->languages->resize(fontMetrics().width(arg1) + ss(30), ui->languages->height());
+
     if(ui->languages->isEnabled())
     {
         if(arg1 == "المصرية العربية")
@@ -9581,8 +9588,10 @@ void systemback::on_languages_currentIndexChanged(cQStr &arg1)
             sb::lang = "ca_ES";
         else if(arg1 == "Čeština")
             sb::lang = "cs_CS";
-        else if(arg1 == "English")
+        else if(arg1 == "English (common)")
             sb::lang = "en_EN";
+        else if(arg1 == "English (United Kingdom)")
+            sb::lang = "en_GB";
         else if(arg1 == "Español")
             sb::lang = "es_ES";
         else if(arg1 == "Suomi")
@@ -9617,6 +9626,8 @@ void systemback::on_styleoverride_clicked(bool chckd)
 
 void systemback::on_styles_currentIndexChanged(cQStr &arg1)
 {
+    ui->styles->resize(fontMetrics().width(arg1) + ss(30), ui->styles->height());
+
     if(ui->styles->isEnabled())
     {
         sb::style = arg1;
@@ -9734,4 +9745,19 @@ void systemback::on_schedulerrefresh_clicked()
         }
 
     busy(false);
+}
+
+void systemback::on_grubreinstallrestore_currentIndexChanged(cQStr &arg1)
+{
+    if(! arg1.isEmpty()) ui->grubreinstallrestore->resize(fontMetrics().width(arg1) + ss(30), ui->grubreinstallrestore->height());
+}
+
+void systemback::on_grubinstallcopy_currentIndexChanged(cQStr &arg1)
+{
+    if(! arg1.isEmpty()) ui->grubinstallcopy->resize(fontMetrics().width(arg1) + ss(30), ui->grubinstallcopy->height());
+}
+
+void systemback::on_grubreinstallrepair_currentIndexChanged(cQStr &arg1)
+{
+    if(! arg1.isEmpty()) ui->grubreinstallrepair->resize(fontMetrics().width(arg1) + ss(30), ui->grubreinstallrepair->height());
 }

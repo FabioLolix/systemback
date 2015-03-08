@@ -2263,17 +2263,16 @@ start:
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(! sb::like(dialog, {308, 338}))
-            switch(mthd) {
-            case 1:
-                dialog = 205;
-                break;
-            case 2:
-                dialog = 204;
-                break;
-            default:
-                dialog = ui->keepfiles->isChecked() ? 201 : 200;
-            }
+        if(! sb::like(dialog, {308, 338})) dialog = [mthd, this]{
+                switch(mthd) {
+                case 1:
+                    return 205;
+                case 2:
+                    return 204;
+                default:
+                    return ui->keepfiles->isChecked() ? 201 : 200;
+                }
+            }();
     }
     else
         dialog = 338;
@@ -2574,16 +2573,18 @@ start:
         if(pname == tr("Currently running system"))
         {
             if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
-                switch(ui->usersettingscopy->checkState()) {
-                case Qt::Unchecked:
-                    if(! sb::scopy(5, guname(), nullptr)) goto error;
-                    break;
-                case Qt::PartiallyChecked:
-                    if(! sb::scopy(3, guname(), nullptr)) goto error;
-                    break;
-                case Qt::Checked:
-                    if(! sb::scopy(4, guname(), nullptr)) goto error;
-                }
+            {
+                if(! sb::scopy([this]{
+                        switch(ui->usersettingscopy->checkState()) {
+                        case Qt::Unchecked:
+                            return 5;
+                        case Qt::PartiallyChecked:
+                            return 3;
+                        default:
+                            return 4;
+                        }
+                    }(), guname(), nullptr)) goto error;
+            }
             else if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) || (sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy/etc/systemback.conf")))
                 goto error;
         }
@@ -2607,16 +2608,18 @@ start:
             if(intrrpt) goto exit;
 
             if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
-                switch(ui->usersettingscopy->checkState()) {
-                case Qt::Unchecked:
-                    if(! sb::scopy(5, guname(), "/.systembacklivepoint")) goto error;
-                    break;
-                case Qt::PartiallyChecked:
-                    if(! sb::scopy(3, guname(), "/.systembacklivepoint")) goto error;
-                    break;
-                case Qt::Checked:
-                    if(! sb::scopy(4, guname(), "/.systembacklivepoint")) goto error;
-                }
+            {
+                if(! sb::scopy([this]{
+                        switch(ui->usersettingscopy->checkState()) {
+                        case Qt::Unchecked:
+                            return 5;
+                        case Qt::PartiallyChecked:
+                            return 3;
+                        default:
+                            return 4;
+                        }
+                    }(), guname(), "/.systembacklivepoint")) goto error;
+            }
             else
             {
                 if(! sb::scopy(nohmcpy ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint")) goto error;
@@ -2723,6 +2726,7 @@ start:
 
                 if(! sb::crtfile(cfname , nfile)) goto error;
                 nfile.clear();
+                qApp->processEvents();
             }
 
             QFile file("/.sbsystemcopy/etc/passwd");
@@ -2738,19 +2742,18 @@ start:
                     QStr nline;
 
                     for(uchar a(0) ; a < uslst.count() ; ++a)
-                        switch(a) {
-                        case 0:
-                            nline.append(nuname % ':');
-                            break;
-                        case 4:
-                            nline.append(ui->fullname->text() % ",,,:");
-                            break;
-                        case 5:
-                            nline.append("/home/" % nuname % ':');
-                            break;
-                        default:
-                            nline.append(uslst.at(a) % ':');
-                        }
+                        nline.append([&, a]() -> QStr{
+                                switch(a) {
+                                case 0:
+                                    return nuname;
+                                case 4:
+                                    return ui->fullname->text() % ",,,";
+                                case 5:
+                                    return "/home/" % nuname;
+                                default:
+                                    return uslst.at(a);
+                                }
+                            }() % ':');
 
                     nfile.append(sb::left(nline, -1) % '\n');
                 }
@@ -2778,16 +2781,16 @@ start:
                     QStr nline;
 
                     for(uchar a(0) ; a < uslst.count() ; ++a)
-                        switch(a) {
-                        case 0:
-                            nline.append((guname() == "root" ? "root" : ui->username->text()) % ':');
-                            break;
-                        case 1:
-                            nline.append(QStr(crypt(chr(ui->password1->text()), chr(("$6$" % sb::rndstr(16))))) % ':');
-                            break;
-                        default:
-                            nline.append(uslst.at(a) % ':');
-                        }
+                        nline.append([&, a]() -> QStr{
+                                switch(a) {
+                                case 0:
+                                    return guname() == "root" ? "root" : ui->username->text();
+                                case 1:
+                                    return QStr(crypt(chr(ui->password1->text()), chr(("$6$" % sb::rndstr(16)))));
+                                default:
+                                    return uslst.at(a);
+                                }
+                            }() % ':');
 
                     nfile.append(sb::left(nline, -1) % '\n');
                 }
@@ -2797,13 +2800,14 @@ start:
                     QStr nline;
 
                     for(uchar a(0) ; a < uslst.count() ; ++a)
-                        switch(a) {
-                        case 1:
-                            nline.append((ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(chr(ui->rootpassword1->text()), chr(("$6$" % sb::rndstr(16)))))) % ':');
-                            break;
-                        default:
-                            nline.append(uslst.at(a) % ':');
-                        }
+                        nline.append([&, a]() -> QStr{
+                                switch(a) {
+                                case 1:
+                                    return ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(chr(ui->rootpassword1->text()), chr(("$6$" % sb::rndstr(16)))));
+                                default:
+                                    return uslst.at(a);
+                                }
+                            }() % ':');
 
                     nfile.append(sb::left(nline, -1) % '\n');
                 }
@@ -2843,66 +2847,41 @@ start:
             }
         }
 
-        QBA ddm(sb::isfile("/.sbsystemcopy/etc/X11/default-display-manager") ? sb::fload("/.sbsystemcopy/etc/X11/default-display-manager").trimmed() : nullptr);
-
-        if(sb::like(ddm, {"*lightdm_", "*kdm_"}))
+        for(uchar a(0) ; a < 5 ; ++a)
         {
-            QStr fpath("/.sbsystemcopy/etc/"), vrbl;
-
-            if(ddm.endsWith("lightdm"))
-            {
-                fpath.append("lightdm/lightdm.conf");
-                vrbl = "autologin-user=";
-            }
-            else
-            {
-                fpath.append("kde4/kdm/kdmrc");
-                vrbl = "AutoLoginUser=";
-            }
-
-            if(sb::isfile(fpath))
-            {
-                QFile file(fpath);
-                if(! file.open(QIODevice::ReadOnly)) goto error;
-                uchar mdfd(0);
-
-                while(! file.atEnd())
-                {
-                    QStr nline(file.readLine().trimmed());
-
-                    if(mdfd == 0 && nline.startsWith(vrbl))
-                    {
-                        if(nline.endsWith('='))
-                            break;
-                        else if(nline.endsWith('=' % guname()))
-                        {
-                            nline = vrbl % ui->username->text();
-                            ++mdfd;
-                        }
-                        else
-                        {
-                            nline = vrbl;
-                            mdfd = vrbl.at(0).isUpper() ? 2 : 1;
-                        }
+            QStr fpath("/.sbsystemcopy/etc/" % [a]() -> QStr{
+                    switch(a) {
+                    case 0:
+                        return "lightdm/lightdm.conf";
+                    case 1:
+                        return "kde4/kdm/kdmrc";
+                    case 2:
+                        return "sddm.conf";
+                    case 3:
+                        return "gdm3/daemon.conf";
+                    default:
+                        return "mdm/mdm.conf";
                     }
-
-                    nfile.append(nline % '\n');
-                    if(intrrpt) goto exit;
-                }
-
-                if(mdfd > 0 && ! sb::crtfile(fpath, mdfd == 1 ? nfile : nfile.replace("AutoLoginEnabled=true", "AutoLoginEnabled=false"))) goto error;
-            }
-        }
-        else if(sb::like(ddm, {"*gdm3_", "*mdm_"}))
-        {
-            QStr fpath(ddm.endsWith("gdm3") ? "/.sbsystemcopy/etc/gdm3/daemon.conf" : "/.sbsystemcopy/etc/mdm/mdm.conf");
+                }());
 
             if(sb::isfile(fpath))
             {
                 QFile file(fpath);
                 if(! file.open(QIODevice::ReadOnly)) goto error;
                 uchar mdfd(0);
-                QSL incl{"_AutomaticLogin=*", "_TimedLogin=*"};
+
+                QSL incl([a]() -> QSL{
+                        switch(a) {
+                        case 0:
+                            return {"_autologin-user=*"};
+                        case 1:
+                            return {"_AutoLoginUser=*"};
+                        case 2:
+                            return {"_User=*", "_HideUsers=*"};
+                        default:
+                            return {"_AutomaticLogin=*", "_TimedLogin=*"};
+                        }
+                    }());
 
                 while(! file.atEnd())
                 {
@@ -2911,16 +2890,26 @@ start:
                     if(sb::like(nline, incl))
                         if(! nline.endsWith('='))
                         {
-                            if(nline.endsWith('=' % guname()))
+                            bool algn(nline.endsWith('=' % guname()) && (a != 2 || ! nline.startsWith("HideUsers=")));
+                            nline = sb::left(nline, sb::instr(nline, "="));
+
+                            if(algn)
                             {
-                                nline = sb::left(nline, sb::instr(nline, "=")) % ui->username->text();
+                                nline.append(ui->username->text());
                                 if(mdfd == 0) ++mdfd;
                             }
                             else
-                            {
-                                nline = sb::left(nline, sb::instr(nline, "="));
-                                mdfd = nline.at(0) == 'A' ? mdfd == 3 ? 4 : 2 : mdfd == 2 ? 4 : 3;
-                            }
+                                switch(a) {
+                                case 1:
+                                    if(mdfd < 2) mdfd = 2;
+                                    break;
+                                case 3:
+                                case 4:
+                                    if(mdfd < 4) mdfd = nline.at(0) == 'A' ? mdfd == 3 ? 4 : 2 : mdfd == 2 ? 4 : 3;
+                                    break;
+                                default:
+                                    if(mdfd == 0) ++mdfd;
+                                }
                         }
 
                     nfile.append(nline % '\n');
@@ -2929,14 +2918,24 @@ start:
 
                 if(mdfd > 0)
                 {
-                    if(mdfd > 1)
-                    {
-                        if(sb::like(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
-                        if(sb::like(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
+                    switch(a) {
+                    case 1:
+                        if(mdfd == 2) nfile.replace("AutoLoginEnabled=true", "AutoLoginEnabled=false");
+                        break;
+                    case 3:
+                    case 4:
+                        if(mdfd > 1)
+                        {
+                            if(sb::like(mdfd, {2, 4})) nfile.replace("AutomaticLoginEnable=true", "AutomaticLoginEnable=false");
+                            if(sb::like(mdfd, {3, 4})) nfile.replace("TimedLoginEnable=true", "TimedLoginEnable=false");
+                        }
                     }
 
                     if(! sb::crtfile(fpath, nfile)) goto error;
                 }
+
+                nfile.clear();
+                qApp->processEvents();
             }
         }
 
@@ -3292,37 +3291,30 @@ void systemback::dialogopen(schar snum)
         if(! ui->dialogcancel->isVisibleTo(ui->dialogpanel)) ui->dialogcancel->show();
         if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
 
-        switch(dialog) {
-        case 100:
-            ui->dialogtext->setText(tr("Restore the system files to the following restore point:") % "<p><b>" % pname);
-            break;
-        case 101:
-            ui->dialogtext->setText(tr("Repair the system files with the following restore point:") % "<p><b>" % pname);
-            break;
-        case 102:
-            ui->dialogtext->setText(tr("Repair the complete system with the following restore point:") % "<p><b>" % pname);
-            break;
-        case 103:
-            ui->dialogtext->setText(tr("Restore the complete user(s) configuration files to the following restore point:") % "<p><b>" % pname);
-            break;
-        case 104:
-            ui->dialogtext->setText(tr("Restore the user(s) configuration files to the following restore point:") % "<p><b>" % pname);
-            break;
-        case 105:
-            ui->dialogtext->setText(tr("Copy the system, using the following restore point:") % "<p><b>" % pname);
-            break;
-        case 106:
-            ui->dialogtext->setText(tr("Install the system, using the following restore point:") % "<p><b>" % pname);
-            break;
-        case 107:
-            ui->dialogtext->setText(tr("Restore complete system to the following restore point:") % "<p><b>" % pname);
-            break;
-        case 108:
-            ui->dialogtext->setText(tr("Format the %1, and write the following Live system image:").arg(" <b>" % ui->livedevices->item(ui->livedevices->currentRow(), 0)->text() % "</b>") % "<p><b>" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % "</b>");
-            break;
-        case 109:
-            ui->dialogtext->setText(tr("Repair the GRUB 2 bootloader."));
-        }
+        ui->dialogtext->setText([this]() -> QStr{
+                switch(dialog) {
+                case 100:
+                    return tr("Restore the system files to the following restore point:") % "<p><b>" % pname;
+                case 101:
+                    return tr("Repair the system files with the following restore point:") % "<p><b>" % pname;
+                case 102:
+                    return tr("Repair the complete system with the following restore point:") % "<p><b>" % pname;
+                case 103:
+                    return tr("Restore the complete user(s) configuration files to the following restore point:") % "<p><b>" % pname;
+                case 104:
+                    return tr("Restore the user(s) configuration files to the following restore point:") % "<p><b>" % pname;
+                case 105:
+                    return tr("Copy the system, using the following restore point:") % "<p><b>" % pname;
+                case 106:
+                    return tr("Install the system, using the following restore point:") % "<p><b>" % pname;
+                case 107:
+                    return tr("Restore complete system to the following restore point:") % "<p><b>" % pname;
+                case 108:
+                    return tr("Format the %1, and write the following Live system image:").arg(" <b>" % ui->livedevices->item(ui->livedevices->currentRow(), 0)->text() % "</b>") % "<p><b>" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % "</b>";
+                default:
+                    return tr("Repair the GRUB 2 bootloader.");
+                }
+            }());
     }
     else
     {
@@ -3335,63 +3327,55 @@ void systemback::dialogopen(schar snum)
             if(ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->hide();
             if(! ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->show();
 
-            switch(dialog) {
-            case 200:
-                ui->dialogtext->setText(tr("User(s) configuration files full restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds."));
-                if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
-                ui->dialogcancel->show();
-                ui->dialognumber->show();
-                cntd = true;
-                break;
-            case 201:
-                ui->dialogtext->setText(tr("User(s) configuration files restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds."));
-                if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
-                ui->dialogcancel->show();
-                ui->dialognumber->show();
-                cntd = true;
-                break;
-            case 202:
-                ui->dialogtext->setText(tr("Full system repair is completed."));
-                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                break;
-            case 203:
-                ui->dialogtext->setText(tr("System repair is completed."));
-                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                break;
-            case 204:
-                ui->dialogtext->setText(tr("System files restoration are completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds."));
-                if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
-                ui->dialogcancel->show();
-                ui->dialognumber->show();
-                cntd = true;
-                break;
-            case 205:
-                ui->dialogtext->setText(tr("Full system restoration is completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds."));
-                if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
-                ui->dialogcancel->show();
-                ui->dialognumber->show();
-                cntd = true;
-                break;
-            case 206:
-                ui->dialogtext->setText(tr("System copy is completed."));
-                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                break;
-            case 207:
-                ui->dialogtext->setText(tr("Live system creation is completed.") % "<p>" % tr("The created .sblive file can be written to pendrive."));
-                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                break;
-            case 208:
-                ui->dialogtext->setText(tr("GRUB 2 repair is completed."));
-                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                break;
-            case 209:
-                ui->dialogtext->setText(tr("System install is completed."));
-                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                break;
-            case 210:
-                ui->dialogtext->setText(tr("Live system image write is completed."));
-                if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-            }
+            ui->dialogtext->setText([&]() -> QStr{
+                    switch(dialog) {
+                    case 200:
+                        if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
+                        ui->dialogcancel->show();
+                        ui->dialognumber->show();
+                        cntd = true;
+                        return tr("User(s) configuration files full restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
+                    case 201:
+                        if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
+                        ui->dialogcancel->show();
+                        ui->dialognumber->show();
+                        cntd = true;
+                        return tr("User(s) configuration files restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
+                    case 202:
+                        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                        return tr("Full system repair is completed.");
+                    case 203:
+                        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                        return tr("System repair is completed.");
+                    case 204:
+                        if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
+                        ui->dialogcancel->show();
+                        ui->dialognumber->show();
+                        cntd = true;
+                        return tr("System files restoration are completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
+                    case 205:
+                        if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
+                        ui->dialogcancel->show();
+                        ui->dialognumber->show();
+                        cntd = true;
+                        return tr("Full system restoration is completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
+                    case 206:
+                        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                        return tr("System copy is completed.");
+                    case 207:
+                        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                        return tr("Live system creation is completed.") % "<p>" % tr("The created .sblive file can be written to pendrive.");
+                    case 208:
+                        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                        return tr("GRUB 2 repair is completed.");
+                    case 209:
+                        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                        return tr("System install is completed.");
+                    default:
+                        if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
+                        return tr("Live system image write is completed.");
+                    }
+                }());
 
             if(cntd)
             {
@@ -3405,127 +3389,90 @@ void systemback::dialogopen(schar snum)
             if(! ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->show();
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
 
-            switch(dialog) {
-            case 300:
-                ui->dialogtext->setText(tr("Another systemback process is currently running, please wait until it finishes."));
-                break;
-            case 301:
-                ui->dialogtext->setText(tr("Unable to get exclusive lock!") % "<p>" % tr("First, close all package manager."));
-                break;
-            case 302:
-                ui->dialogtext->setText(tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name."));
-                break;
-            case 303:
-                ui->dialogtext->setText(tr("System files repair are completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
-                break;
-            case 304:
-                ui->dialogtext->setText(tr("Restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process."));
-                break;
-            case 305:
-                ui->dialogtext->setText(tr("Root privileges are required for running Systemback!"));
-                break;
-            case 306:
-                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly."));
-                break;
-            case 307:
-                ui->dialogtext->setText(tr("System copy is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader."));
-                break;
-            case 308:
-                ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB."));
-                break;
-            case 309:
-                ui->dialogtext->setText(tr("Full system repair is completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
-                break;
-            case 310:
-                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating file system image."));
-                break;
-            case 311:
-                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating container file."));
-                break;
-            case 312:
-                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process."));
-                break;
-            case 313:
-                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
-                break;
-            case 314:
-                ui->dialogtext->setText(tr("System install is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader."));
-                break;
-            case 315:
-                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly."));
-                break;
-            case 316:
-                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
-                break;
-            case 317:
-                ui->dialogtext->setText(tr("An error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)"));
-                break;
-            case 318:
-                ui->dialogtext->setText(tr("Restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-                break;
-            case 319:
-                ui->dialogtext->setText(tr("System copying is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-                break;
-            case 320:
-                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-                break;
-            case 321:
-                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system."));
-                break;
-            case 322:
-                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("An error occurred while unpacking Live system files."));
-                break;
-            case 323:
-                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming essential Live files."));
-                break;
-            case 324:
-                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while creating .iso image."));
-                break;
-            case 325:
-                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while reading .sblive image."));
-                break;
-            case 326:
-                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating new initramfs image."));
-                break;
-            case 327:
-                ui->dialogtext->setText(tr("Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-                break;
-            case 328:
-                ui->dialogtext->setText(tr("Restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process."));
-                break;
-            case 329:
-                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
-                break;
-            case 330:
-                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
-                break;
-            case 331:
-                ui->dialogtext->setText(tr("System copy is aborted!") % "<p>" % tr("The Live image could not be mounted."));
-                break;
-            case 332:
-                ui->dialogtext->setText(tr("System installation is aborted!") % "<p>" % tr("The Live image could not be mounted."));
-                break;
-            case 333:
-                ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("The Live image could not be mounted."));
-                break;
-            case 334:
-                ui->dialogtext->setText(tr("Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-                break;
-            case 335:
-                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation."));
-                break;
-            case 336:
-                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev);
-                break;
-            case 337:
-                ui->dialogtext->setText(tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev);
-                break;
-            case 338:
-                ui->dialogtext->setText(tr("System restoration is aborted!") % "<p>" % tr("There is not enough free space."));
-                break;
-            case 339:
-                ui->dialogtext->setText(tr("System repair is aborted!") % "<p>" % tr("There is not enough free space."));
-            }
+            ui->dialogtext->setText([this]() -> QStr{
+                    switch(dialog) {
+                    case 300:
+                        return tr("Another systemback process is currently running, please wait until it finishes.");
+                    case 301:
+                        return tr("Unable to get exclusive lock!") % "<p>" % tr("First, close all package manager.");
+                    case 302:
+                        return tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name.");
+                    case 303:
+                        return tr("System files repair are completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)");
+                    case 304:
+                        return tr("Restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
+                    case 305:
+                        return tr("Root privileges are required for running Systemback!");
+                    case 306:
+                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.");
+                    case 307:
+                        return tr("System copy is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader.");
+                    case 308:
+                        return tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB.");
+                    case 309:
+                        return tr("Full system repair is completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)");
+                    case 310:
+                        return tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating file system image.");
+                    case 311:
+                        return tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating container file.");
+                    case 312:
+                        return tr("Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
+                    case 313:
+                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev;
+                    case 314:
+                        return tr("System install is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader.");
+                    case 315:
+                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.");
+                    case 316:
+                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev;
+                    case 317:
+                        return tr("An error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)");
+                    case 318:
+                        return tr("Restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                    case 319:
+                        return tr("System copying is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                    case 320:
+                        return tr("System installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                    case 321:
+                        return tr("Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system.");
+                    case 322:
+                        return tr("Live write is aborted!") % "<p>" % tr("An error occurred while unpacking Live system files.");
+                    case 323:
+                        return tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming essential Live files.");
+                    case 324:
+                        return tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while creating .iso image.");
+                    case 325:
+                        return tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while reading .sblive image.");
+                    case 326:
+                        return tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating new initramfs image.");
+                    case 327:
+                        return tr("Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                    case 328:
+                        return tr("Restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process.");
+                    case 329:
+                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev;
+                    case 330:
+                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev;
+                    case 331:
+                        return tr("System copy is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                    case 332:
+                        return tr("System installation is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                    case 333:
+                        return tr("System repair is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                    case 334:
+                        return tr("Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                    case 335:
+                        return tr("Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                    case 336:
+                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dialogdev;
+                    case 337:
+                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dialogdev;
+                    case 338:
+                        return tr("System restoration is aborted!") % "<p>" % tr("There is not enough free space.");
+                    default:
+                        return tr("System repair is aborted!") % "<p>" % tr("There is not enough free space.");
+                    }
+                }());
         }
     }
 

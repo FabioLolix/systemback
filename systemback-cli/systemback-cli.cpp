@@ -41,63 +41,53 @@ systemback::systemback()
 
 void systemback::main()
 {
-    QStr help("\n " % tr("Usage: systemback-cli [option]\n\n"
+    QStr help(tr("Usage: systemback-cli [option]\n\n"
                          " Options:\n\n"
                          "  -n, --newbackup          create a new restore point\n\n"
                          "  -s, --storagedir <path>  get or set restore points storage directory path\n\n"
                          "  -u, --upgrade            upgrade current system\n"
                          "                           remove unnecessary files and packages\n\n"
                          "  -v, --version            output Systemback version number\n\n"
-                         "  -h, --help               show this help") % "\n\n");
+                         "  -h, --help               show this help"));
     uchar rv(0);
     goto start;
 error:
-    switch(rv) {
-    case 1:
-        sb::error(help);
-        break;
-    case 2:
-        sb::error("\n " % tr("Root privileges are required for running Systemback!") % "\n\n");
-        break;
-    case 3:
-        sb::error("\n " % tr("Another Systemback process is currently running, please wait until it\n finishes.") % "\n\n");
-        break;
-    case 4:
-        sb::error("\n " % tr("Unable to get exclusive lock!") % "\n\n " % tr("First, close all package manager.") % "\n\n");
-        break;
-    case 5:
-        sb::error("\n " % tr("The specified storage directory path has not been set!") % "\n\n");
-        break;
-    case 6:
-        sb::error("\n " % tr("Restoration is aborted!") % "\n\n");
-        break;
-    case 7:
-        sb::error("\n " % tr("Restoration is completed, but an error occurred while reinstalling GRUB!") % "\n\n");
-        break;
-    case 8:
-        sb::error("\n " % tr("Restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process.") % "\n\n");
-        break;
-    case 9:
-        sb::error("\n " % tr("Restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation.") % "\n\n");
-        break;
-    case 10:
-        sb::error("\n " % tr("Restore points storage directory is not available or not writable!") % "\n\n");
-        break;
-    case 11:
-        sb::error("\n " % tr("This stupid terminal does not support color!") % "\n\n");
-        break;
-    case 12:
-        sb::error("\n " % tr("This terminal is too small!") % " (< 80x24)\n\n");
-        break;
-    case 13:
-        sb::error("\n " % tr("Restore point deletion is aborted!") % "\n\n " % tr("An error occurred while during the process.") % "\n\n");
-    }
+    sb::error("\n " % [rv, &help]() -> QStr{
+            switch(rv) {
+            case 1:
+                return help;
+            case 2:
+                return tr("Root privileges are required for running Systemback!");
+            case 3:
+                return tr("Another Systemback process is currently running, please wait until it\n finishes.");
+            case 4:
+                return tr("Unable to get exclusive lock!") % "\n\n " % tr("First, close all package manager.");
+            case 5:
+                return tr("The specified storage directory path has not been set!");
+            case 6:
+                return tr("Restoration is aborted!");
+            case 7:
+                return tr("Restoration is completed, but an error occurred while reinstalling GRUB!");
+            case 8:
+                return tr("Restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process.");
+            case 9:
+                return tr("Restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation.");
+            case 10:
+                return tr("Restore points storage directory is not available or not writable!");
+            case 11:
+                return tr("This stupid terminal does not support color!");
+            case 12:
+                return tr("This terminal is too small!") % " (< 80x24)";
+            default:
+                return tr("Restore point deletion is aborted!") % "\n\n " % tr("An error occurred while during the process.");
+            }
+        }() % "\n\n");
 
     qApp->exit(rv);
     return;
 start:
     if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
-        sb::print(help);
+        sb::print("\n " % help % "\n\n");
     else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
         sb::print("\n " % sb::appver() % "\n\n");
     else if(getuid() + getgid() > 0)
@@ -481,19 +471,18 @@ uchar systemback::restore()
     printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
     attron(COLOR_PAIR(4));
 
-    switch(rmode) {
-    case 1:
-        printw(chr(("\n\n  " % tr("Full restore"))));
-        break;
-    case 2:
-        printw(chr(("\n\n  " % tr("System files restore"))));
-        break;
-    case 3:
-        printw(chr(("\n\n  " % tr("Complete configuration files restore"))));
-        break;
-    case 4:
-        printw(chr(("\n\n  " % tr("Configuration files restore"))));
-    }
+    printw(chr(("\n\n  " % [rmode]{
+            switch(rmode) {
+            case 1:
+                return tr("Full restore");
+            case 2:
+                return tr("System files restore");
+            case 3:
+                return tr("Complete configuration files restore");
+            default:
+                return tr("Configuration files restore");
+            }
+        }())));
 
     attron(COLOR_PAIR(3));
     uchar fsave(0), greinst(0);
@@ -525,9 +514,7 @@ uchar systemback::restore()
             attron(COLOR_PAIR(1));
             printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
             attron(COLOR_PAIR(4));
-            printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")))));
-            printw(chr(("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)"))));
-            printw(chr((' ' % yn[fsave == 1 ? 0 : 1])));
+            printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1])));
             attron(COLOR_PAIR(3));
 
             if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
@@ -555,11 +542,7 @@ uchar systemback::restore()
                 attron(COLOR_PAIR(1));
                 printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
                 attron(COLOR_PAIR(4));
-                printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")))));
-                printw(chr(("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)"))));
-                printw(chr((' ' % yn[fsave == 1 ? 0 : 1])));
-                printw(chr(("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)"))));
-                printw(chr((' ' % yn[greinst == 1 ? 0 : 1])));
+                printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1] % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1])));
             }
         }
         else if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
@@ -587,9 +570,7 @@ uchar systemback::restore()
             attron(COLOR_PAIR(1));
             printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
             attron(COLOR_PAIR(4));
-            printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")))));
-            printw(chr(("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)"))));
-            printw(chr((' ' % yn[greinst == 1 ? 0 : 1])));
+            printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1])));
         }
     }
 
@@ -645,19 +626,18 @@ uchar systemback::restore()
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
     attron(COLOR_PAIR(1));
 
-    switch(rmode) {
-    case 1:
-        printw(chr(("\n\n " % tr("Full system restoration is completed."))));
-        break;
-    case 2:
-        printw(chr(("\n\n " % tr("System files restoration are completed."))));
-        break;
-    case 3:
-        printw(chr(("\n\n " % tr("Users configuration files full restoration are completed."))));
-        break;
-    case 4:
-        printw(chr(("\n\n " % tr("Users configuration files restoration are completed."))));
-    }
+    printw(chr(("\n\n " % [rmode]{
+            switch(rmode) {
+            case 1:
+                return tr("Full system restoration is completed.");
+            case 2:
+                return tr("System files restoration are completed.");
+            case 3:
+                return tr("Users configuration files full restoration are completed.");
+            default:
+                return tr("Users configuration files restoration are completed.");
+            }
+        }())));
 
     attron(COLOR_PAIR(3));
     printw(chr(("\n\n " % (rmode < 3 ? tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit.")))));

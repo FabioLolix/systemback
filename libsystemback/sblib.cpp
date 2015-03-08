@@ -76,15 +76,17 @@ QStr sb::appver()
 {
     QFile file(":version");
     file.open(QIODevice::ReadOnly);
-    QStr vrsn(qVersion()), vstr(file.readLine().trimmed() % "_Qt" % (vrsn == QT_VERSION_STR ? vrsn : vrsn % '(' % QT_VERSION_STR % ')') % '_');
+    QStr vrsn(qVersion());
+
+    return file.readLine().trimmed() % "_Qt" % (vrsn == QT_VERSION_STR ? vrsn : vrsn % '(' % QT_VERSION_STR % ')') % '_' %
 #ifdef __clang__
-    vstr.append("Clang" % QStr::number(__clang_major__) % '.' % QStr::number(__clang_minor__) % '.' % QStr::number(__clang_patchlevel__));
+            "Clang" % QStr::number(__clang_major__) % '.' % QStr::number(__clang_minor__) % '.' % QStr::number(__clang_patchlevel__)
 #elif defined(__INTEL_COMPILER) || ! defined(__GNUC__)
-    vstr.append("compiler?");
+            "compiler?"
 #elif defined(__GNUC__)
-    vstr.append("GCC" % QStr::number(__GNUC__) % '.' % QStr::number(__GNUC_MINOR__) % '.' % QStr::number(__GNUC_PATCHLEVEL__));
+            "GCC" % QStr::number(__GNUC__) % '.' % QStr::number(__GNUC_MINOR__) % '.' % QStr::number(__GNUC_PATCHLEVEL__)
 #endif
-    return vstr % '_' %
+            % '_' %
 #ifdef __amd64__
             "amd64";
 #elif defined(__i386__)
@@ -155,23 +157,16 @@ bool sb::crtfile(cQStr &path, cQStr &txt)
 
 bool sb::lock(uchar type)
 {
-    cchar *lfile;
-
-    switch(type) {
-    case Sblock:
-        lfile = isdir("/run") ? "/run/systemback.lock" : "/var/run/systemback.lock";
-        break;
-    case Dpkglock:
-        lfile = "/var/lib/dpkg/lock";
-        break;
-    case Schdlrlock:
-        lfile = isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock";
-        break;
-    default:
-        return false;
-    }
-
-    return (sblock[type] = open(lfile, O_RDWR | O_CREAT, 0644)) != -1 && lockf(sblock[type], F_TLOCK, 0) == 0;
+    return (sblock[type] = open([type]{
+            switch(type) {
+            case Sblock:
+                return isdir("/run") ? "/run/systemback.lock" : "/var/run/systemback.lock";
+            case Dpkglock:
+                return "/var/lib/dpkg/lock";
+            default:
+                return isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock";
+            }
+        }(), O_RDWR | O_CREAT, 0644)) != -1 && lockf(sblock[type], F_TLOCK, 0) == 0;
 }
 
 void sb::unlock(uchar type)
@@ -1338,13 +1333,14 @@ void sb::run()
 
     switch(ThrdType) {
     case Remove:
-        switch(stype(ThrdStr[0])) {
-        case Isdir:
-            ThrdRslt = recrmdir(ThrdStr[0]);
-            break;
-        default:
-            ThrdRslt = QFile::remove(ThrdStr[0]);
-        }
+        ThrdRslt = [this]{
+            switch(stype(ThrdStr[0])) {
+            case Isdir:
+                return recrmdir(ThrdStr[0]);
+            default:
+                return QFile::remove(ThrdStr[0]);
+            }
+        }();
 
         break;
     case Copy:
@@ -2522,7 +2518,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
     else
         Progress = 0;
 
-    if(mthd != 2)
+    if(mthd != 2 && anum > 0)
     {
         QSL elist{".cache/gvfs", ".gvfs", ".local/share/Trash/files/", ".local/share/Trash/info/", ".Xauthority", ".ICEauthority"};
 

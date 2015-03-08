@@ -27,27 +27,22 @@ void scheduler::main()
     uchar rv(255);
     goto start;
 error:
-    sb::error("\n " % tr("Cannot start Systemback scheduler daemon!"));
-
-    switch(rv) {
-    case 1:
-        sb::error("\n\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
-        break;
-    case 2:
-        sb::error("\n\n " % tr("The process is disabled for this user.") % "\n\n");
-        break;
-    case 3:
-        sb::error("\n\n " % tr("Root privileges are required.") % "\n\n");
-        break;
-    case 4:
-        sb::error("\n\n " % tr("This system is a Live.") % "\n\n");
-        break;
-    case 5:
-        sb::error("\n\n " % tr("Already running.") % "\n\n");
-        break;
-    case 6:
-        sb::error("\n\n " % tr("Unable to daemonize.") % "\n\n");
-    }
+    if(rv < 255) sb::error("\n " % tr("Cannot start Systemback scheduler daemon!") % "\n\n " % [rv]{
+            switch(rv) {
+            case 1:
+                return tr("Missing, wrong or too much argument(s).");
+            case 2:
+                return tr("The process is disabled for this user.");
+            case 3:
+                return tr("Root privileges are required.");
+            case 4:
+                return tr("This system is a Live.");
+            case 5:
+                return tr("Already running.");
+            default:
+                return tr("Unable to daemonize.");
+            }
+        }() % "\n\n");
 
     qApp->exit(rv);
     return;

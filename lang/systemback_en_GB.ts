@@ -274,7 +274,7 @@
     </message>
     <message>
         <source>License</source>
-        <translation type="unfinished"></translation>
+        <translation>Licence</translation>
     </message>
     <message>
         <source>Re-read directories</source>
@@ -582,7 +582,7 @@
     </message>
     <message>
         <source>Center</source>
-        <translation type="unfinished"></translation>
+        <translation>Centre</translation>
     </message>
     <message>
         <source>Bottom left</source>
@@ -1052,7 +1052,7 @@
     </message>
     <message>
         <source>This stupid terminal does not support color!</source>
-        <translation type="unfinished"></translation>
+        <translation>This stupid terminal does not support colour!</translation>
     </message>
     <message>
         <source>This terminal is too small!</source>

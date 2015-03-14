@@ -19,29 +19,15 @@
 
 #include "systemback-cli.hpp"
 #include <QCoreApplication>
-#include <QTranslator>
-#include <QLocale>
-#include <QTimer>
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QTranslator *trnsltr(new QTranslator);
-    sb::cfgread();
-
-    if(sb::lang == "auto")
-    {
-        if(QLocale::system().name() != "en_EN") trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
-    }
-    else if(sb::lang != "en_EN")
-        trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
-
-    if(trnsltr->isEmpty())
-        delete trnsltr;
-    else
-        a.installTranslator(trnsltr);
-
+    QTrn *tltr(sb::ldtltr());
+    if(tltr) a.installTranslator(tltr);
     systemback c;
     QTimer::singleShot(0, &c, SLOT(main()));
-    return a.exec();
+    uchar rv(a.exec());
+    if(tltr) delete tltr;
+    return rv;
 }

@@ -20,9 +20,17 @@
 #ifndef SBTYPEDEF_HPP
 #define SBTYPEDEF_HPP
 
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QCheckBox>
+#include <QTranslator>
 #include <QTextStream>
 #include <QStringList>
 
+typedef QTranslator QTrn;
+typedef QPushButton QPB;
+typedef QLineEdit QLE;
+typedef QCheckBox QCB;
 typedef QTextStream QTS;
 typedef const QStringList cQSL;
 typedef QStringList QSL;
@@ -41,7 +49,6 @@ typedef const QSize cQSize;
 typedef const QPoint cQPoint;
 typedef unsigned long long ullong;
 typedef long long llong;
-typedef const unsigned char cuchar;
 typedef const char cchar;
 typedef signed char schar;
 

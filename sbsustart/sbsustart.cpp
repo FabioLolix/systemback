@@ -28,29 +28,18 @@ void sbsustart::main()
     goto start;
 error:
 {
-    QStr emsg;
-
-    switch(rv) {
-    case 2:
+    if(rv == 2)
         sb::error("\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
-        break;
-    case 3:
-        emsg = tr("Unable to get root permissions.");
-        break;
-    case 4:
-        emsg = tr("Unable to connect to X server.");
-    }
-
-    if(! emsg.isEmpty())
+    else
     {
-        emsg.prepend((qApp->arguments().value(1) == "systemback" ? tr("Cannot start Systemback graphical user interface!") : tr("Cannot start Systemback scheduler daemon!")) % "\n\n");
+        QStr emsg((qApp->arguments().value(1) == "systemback" ? tr("Cannot start Systemback graphical user interface!") : tr("Cannot start Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? tr("Unable to get root permissions.") : tr("Unable to connect to X server.")));
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
         if(uid != geteuid() && seteuid(uid) == -1)
             sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
         else
 #endif
-        sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, false, true);
+        sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
     }
 
     qApp->exit(rv);
@@ -69,10 +58,7 @@ start:
         QStr uname, usrhm;
 
         if(uid == 0)
-        {
-            uname = "root";
-            usrhm = "/root";
-        }
+            uname = "root", usrhm = "/root";
         else
         {
             QFile file("/etc/passwd");
@@ -85,8 +71,7 @@ start:
                     if(line.contains("x:" % QStr::number(uid) % ':'))
                     {
                         QSL uslst(line.split(':'));
-                        uname = uslst.at(0);
-                        usrhm = uslst.at(5);
+                        uname = uslst.at(0), usrhm = uslst.at(5);
                         break;
                     }
                 }
@@ -107,6 +92,19 @@ start:
                 rv = 3;
                 goto error;
             }
+
+            auto clrenv([](cQStr &usrhm, cQStr &xpath = nullptr) {
+                    QSL excl{"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"};
+
+                    for(cQStr &cvar : QProcess::systemEnvironment())
+                    {
+                        QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
+                        if(! sb::like(var, excl) && ! qunsetenv(chr(var))) return false;
+                    }
+
+                    if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.toUtf8()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;
+                    return true;
+                });
 
             if(qApp->arguments().value(1) == "systemback")
             {
@@ -146,18 +144,4 @@ start:
 
     if(qApp->arguments().value(2) == "gtk+") qputenv("QT_STYLE_OVERRIDE", "gtk+");
     qApp->exit(sb::exec(cmd));
-}
-
-bool sbsustart::clrenv(cQStr &usrhm, cQStr &xpath)
-{
-    QSL excl{"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"};
-
-    for(cQStr &cvar : QProcess::systemEnvironment())
-    {
-        QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
-        if(! sb::like(var, excl) && ! qunsetenv(chr(var))) return false;
-    }
-
-    if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.toUtf8()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;
-    return true;
 }

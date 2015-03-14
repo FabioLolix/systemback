@@ -19,26 +19,13 @@
 
 #include "../libsystemback/sblib.hpp"
 #include <QCoreApplication>
-#include <QTranslator>
-#include <QLocale>
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QTranslator *trnsltr(new QTranslator);
-    sb::cfgread();
-
-    if(sb::lang == "auto")
-    {
-        if(QLocale::system().name() != "en_EN") trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
-    }
-    else if(sb::lang != "en_EN")
-        trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
-
-    if(trnsltr->isEmpty())
-        delete trnsltr;
-    else
-        a.installTranslator(trnsltr);
-
-    sb::supgrade({QTranslator::tr("An error occurred while upgrading the system!"), QTranslator::tr("Restart upgrade ...")});
+    QTrn *tltr(sb::ldtltr());
+    if(tltr) a.installTranslator(tltr);
+    sb::supgrade({QTrn::tr("An error occurred while upgrading the system!"), QTrn::tr("Restart upgrade ...")});
+    if(tltr) delete tltr;
+    return 0;
 }

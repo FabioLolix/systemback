@@ -20,7 +20,7 @@
 #ifndef SBLIB_GLOBAL_HPP
 #define SBLIB_GLOBAL_HPP
 
-#include <QtCore/qglobal.h>
+#include <QtGlobal>
 
 #ifdef SYSTEMBACK_LIBRARY
 #define SHARED_EXPORT_IMPORT Q_DECL_EXPORT

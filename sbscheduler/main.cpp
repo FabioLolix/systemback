@@ -19,8 +19,6 @@
 
 #include "sbscheduler.hpp"
 #include <QCoreApplication>
-#include <QTranslator>
-#include <QLocale>
 #include <QTimer>
 
 QDateTime scheduler::cfglmd;
@@ -28,23 +26,11 @@ QDateTime scheduler::cfglmd;
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QTranslator *trnsltr(new QTranslator);
-    sb::cfgread();
-    scheduler::cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
-
-    if(sb::lang == "auto")
-    {
-        if(QLocale::system().name() != "en_EN") trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
-    }
-    else if(sb::lang != "en_EN")
-        trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
-
-    if(trnsltr->isEmpty())
-        delete trnsltr;
-    else
-        a.installTranslator(trnsltr);
-
+    QTrn *tltr(sb::ldtltr());
+    if(tltr) a.installTranslator(tltr);
     scheduler s;
     QTimer::singleShot(0, &s, SLOT(main()));
-    return a.exec();
+    uchar rv(a.exec());
+    if(tltr) delete tltr;
+    return rv;
 }

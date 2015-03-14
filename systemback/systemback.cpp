@@ -52,18 +52,20 @@ ushort lblevent::MouseX, lblevent::MouseY;
 
 systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
-    if(sb::style == "auto")
-        cfgupdt = false;
-    else if(QStyleFactory::keys().contains(sb::style))
-    {
-        qApp->setStyle(QStyleFactory::create(sb::style));
-        cfgupdt = false;
-    }
-    else
-    {
-        sb::style = "auto";
-        cfgupdt = true;
-    }
+    cfgupdt = [this] {
+            if(sb::style != "auto")
+            {
+                if(QStyleFactory::keys().contains(sb::style))
+                    qApp->setStyle(QStyleFactory::create(sb::style));
+                else
+                {
+                    sb::style = "auto";
+                    return true;
+                }
+            }
+
+            return false;
+        }();
 
     schar snum(qApp->desktop()->screenNumber(this));
     wismax = nrxth = false;
@@ -103,22 +105,20 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     connect(ui->windowclose, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
     connect(ui->windowclose, SIGNAL(Mouse_Released()), this, SLOT(wcreleased()));
 
-    if(getuid() + getgid() > 0)
-        dialog = 305;
-    else if(qApp->arguments().count() == 2 && qApp->arguments().value(1) == "schedule")
-    {
-        sstart = true;
-        dialog = 0;
-    }
-    else if(! sb::lock(sb::Sblock))
-        dialog = 300;
-    else if(sb::lock(sb::Dpkglock))
-    {
-        dialog = 0;
-        sstart = false;
-    }
-    else
-        dialog = 301;
+    dialog = [this] {
+            if(getuid() + getgid() > 0)
+                return 305;
+            else if(qApp->arguments().count() == 2 && qApp->arguments().value(1) == "schedule")
+                sstart = true;
+            else if(! sb::lock(sb::Sblock))
+                return 300;
+            else if(sb::lock(sb::Dpkglock))
+                sstart = false;
+            else
+                return 301;
+
+            return 0;
+        }();
 
     {
         QFont font;
@@ -146,29 +146,26 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             if(sfctr > Normal)
             {
                 for(QWidget *wdgt : findChildren<QWidget *>()) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
-                for(QPushButton *pbtn : findChildren<QPushButton *>()) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
+                for(QPB *pbtn : findChildren<QPB *>()) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
 
                 if(! sstart && dialog == 0)
                 {
-                    ui->includeusers->setMinimumSize(ss(112), ss(32));
-                    ui->grubreinstallrestore->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->grubreinstallrestoredisable->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->grubinstallcopy->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->grubinstallcopydisable->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->repairpartition->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->grubreinstallrepair->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->grubreinstallrepairdisable->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->windowposition->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->languages->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->styles->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->users->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->admins->setMinimumSize(ui->includeusers->minimumSize());
-                    ui->partitionsettings->verticalHeader()->setDefaultSectionSize(ss(20));
-                    ui->livedevices->verticalHeader()->setDefaultSectionSize(ui->partitionsettings->verticalHeader()->defaultSectionSize());
+                    {
+                        ushort nsize[2]{ss(10), ss(20)};
+
+                        for(QTableWidget *tblw : findChildren<QTableWidget *>())
+                        {
+                            tblw->horizontalHeader()->setMinimumSectionSize(nsize[0]);
+                            tblw->verticalHeader()->setDefaultSectionSize(nsize[1]);
+                        }
+                    }
+
+                    { QSize nsize(ss(112), ss(32));
+                    for(QComboBox *cmbx : findChildren<QComboBox *>()) cmbx->setMinimumSize(nsize); }
                     QStyleOption optn;
                     optn.init(ui->pointpipe1);
                     QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
-                    for(QCheckBox *ckbx : findChildren<QCheckBox *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+                    for(QCB *ckbx : findChildren<QCB *>()) ckbx->setStyleSheet("QCB::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
                     optn.init(ui->pnumber3);
                     nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
                     for(QRadioButton *rbtn : findChildren<QRadioButton *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
@@ -188,9 +185,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     }
     else
     {
-        dlgtimer = intrrptimer = nullptr;
-        intrrpt = irblck = utblock = false;
-        ppipe = busycnt = 0;
+        intrrpt = irblck = utblock = false, ppipe = busycnt = 0;
         ui->dialogpanel->hide();
         ui->statuspanel->move(0, 0);
         ui->statuspanel->setBackgroundRole(QPalette::Foreground);
@@ -213,9 +208,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
         if(! sstart)
         {
-            icnt = 0;
-            cpos = -1;
-            nohmcpy = uchkd = false;
+            icnt = 0, cpos = -1, nohmcpy = uchkd = false;
             ui->restorepanel->hide();
             ui->copypanel->hide();
             ui->installpanel->hide();
@@ -383,30 +376,15 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 ui->function4->setText("Systemback " % tr("scheduler"));
 
                 if(sb::schdlr[0] == "topleft")
-                {
-                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + ss(30);
-                    wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + ss(30);
-                }
+                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + ss(30), wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + ss(30);
                 else if(sb::schdlr[0] == "center")
-                {
-                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(201);
-                    wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(80);
-                }
+                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(201), wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(80);
                 else if(sb::schdlr[0] == "bottomleft")
-                {
-                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + ss(30);
-                    wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() - ss(191);
-                }
+                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + ss(30), wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() - ss(191);
                 else if(sb::schdlr[0] == "bottomright")
-                {
-                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() - ss(432);
-                    wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() - ss(191);
-                }
+                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() - ss(432), wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() - ss(191);
                 else
-                {
-                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() - ss(432);
-                    wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + ss(30);
-                }
+                    wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() - ss(432), wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + ss(30);
 
                 setFixedSize((wgeom[2] = ss(402)), (wgeom[3] = ss(161)));
                 move(wgeom[0], wgeom[1]);
@@ -416,6 +394,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             }
             else
             {
+                shdltimer = nullptr;
                 ui->schedulerpanel->hide();
                 setFixedSize((wgeom[2] = ss(698)), (wgeom[3] = ss(465)));
                 move((wgeom[0] = qApp->desktop()->screenGeometry(snum).x() + qApp->desktop()->screenGeometry(snum).width() / 2 - ss(349)), (wgeom[1] = qApp->desktop()->screenGeometry(snum).y() + qApp->desktop()->screenGeometry(snum).height() / 2 - ss(232)));
@@ -423,6 +402,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         }
     }
 
+    dlgtimer = intrrptimer = nullptr;
     if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     Display *dsply(XOpenDisplay(nullptr));
     Atom atm(XInternAtom(dsply, "_MOTIF_WM_HINTS", 0));
@@ -443,6 +423,9 @@ systemback::~systemback()
         if(xauth.startsWith("/tmp/sbXauthority-")) QFile::remove(xauth);
     }
 
+    if(shdltimer) delete shdltimer;
+    if(dlgtimer) delete dlgtimer;
+    if(intrrptimer) delete intrrptimer;
     delete ui;
 }
 
@@ -560,14 +543,11 @@ void systemback::unitimer()
                 if(sb::schdle[5] == sb::True) ui->silentmode->setChecked(true);
                 ui->windowposition->addItems({tr("Top left"), tr("Top right"), tr("Center"), tr("Bottom left"), tr("Bottom right")});
 
-                if(sb::schdlr[0] == "topright")
-                    ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Top right")));
-                if(sb::schdlr[0] == "center")
-                    ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Center")));
-                else if(sb::schdlr[0] == "bottomleft")
-                    ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Bottom left")));
-                else if(sb::schdlr[0] == "bottomright")
-                    ui->windowposition->setCurrentIndex(ui->windowposition->findText(tr("Bottom right")));
+                if(sb::schdlr[0] != "topleft") ui->windowposition->setCurrentIndex(ui->windowposition->findText([this] {
+                        return sb::schdlr[0] == "topright" ? tr("Top right")
+                            : sb::schdlr[0] == "center" ? tr("Center")
+                            : sb::schdlr[0] == "bottomleft" ? tr("Bottom left") : tr("Bottom right");
+                    }()));
 
                 ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
                 ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
@@ -582,85 +562,65 @@ void systemback::unitimer()
 
                         for(cQStr &item : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
                         {
-                            QStr lcode(sb::left(sb::right(item, -11), -3));
+                            cchar *lname([&] {
+                                    QStr lcode(sb::left(sb::right(item, -11), -3));
 
-                            if(lcode == "ar_EG")
-                                lst.append("المصرية العربية");
-                            else if(lcode == "ca_ES")
-                                lst.append("Català");
-                            else if(lcode == "cs")
-                                lst.append("Čeština");
-                            else if(lcode == "en_GB")
-                                lst.append("English (United Kingdom)");
-                            else if(lcode == "es")
-                                lst.append("Español");
-                            else if(lcode == "fi")
-                                lst.append("Suomi");
-                            else if(lcode == "fr")
-                                lst.append("Français");
-                            else if(lcode == "gl_ES")
-                                lst.append("Galego");
-                            else if(lcode == "hu")
-                                lst.append("Magyar");
-                            else if(lcode == "id")
-                                lst.append("Bahasa Indonesia");
-                            else if(lcode == "pt_BR")
-                                lst.append("Português (Brasil)");
-                            else if(lcode == "ro")
-                                lst.append("Română");
-                            else if(lcode == "tr")
-                                lst.append("Türkçe");
-                            else if(lcode == "zh_CN")
-                                lst.append("中文（简体）");
+                                    return lcode == "ar_EG" ? "المصرية العربية"
+                                        : lcode == "ca_ES" ? "Català"
+                                        : lcode == "cs" ? "Čeština"
+                                        : lcode == "en_GB" ? "English (United Kingdom)"
+                                        : lcode == "es" ? "Español"
+                                        : lcode == "fi" ? "Suomi"
+                                        : lcode == "fr" ? "Français"
+                                        : lcode == "gl_ES" ? "Galego"
+                                        : lcode == "hu" ? "Magyar"
+                                        : lcode == "id" ? "Bahasa Indonesia"
+                                        : lcode == "pt_BR" ? "Português (Brasil)"
+                                        : lcode == "ro" ? "Română"
+                                        : lcode == "tr" ? "Türkçe"
+                                        : lcode == "zh_CN" ? "中文（简体）" : nullptr;
+                                }());
+
+                            if(lname) lst.append(lname);
                         }
 
                         lst.sort();
-                        ui->languages->addItems(lst);
-                    }
 
-                    if(sb::lang != "auto")
-                    {
-                        if(sb::lang == "ar_EG")
-                            ui->languages->setCurrentIndex(ui->languages->findText("المصرية العربية"));
-                        else if(sb::lang == "ca_ES")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Català"));
-                        else if(sb::lang == "cs_CS")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Čeština"));
-                        else if(sb::lang == "en_EN")
-                            ui->languages->setCurrentIndex(ui->languages->findText("English (common)"));
-                        else if(sb::lang == "en_GB")
-                            ui->languages->setCurrentIndex(ui->languages->findText("English (United Kingdom)"));
-                        else if(sb::lang == "es_ES")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Español"));
-                        else if(sb::lang == "fi_FI")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Suomi"));
-                        else if(sb::lang == "fr_FR")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Français"));
-                        else if(sb::lang == "gl_ES")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Galego"));
-                        else if(sb::lang == "hu_HU")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Magyar"));
-                        else if(sb::lang == "pt_BR")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Português (Brasil)"));
-                        else if(sb::lang == "ro_RO")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Română"));
-                        else if(sb::lang == "tr_TR")
-                            ui->languages->setCurrentIndex(ui->languages->findText("Türkçe"));
-                        else if(sb::lang == "zh_CN")
-                            ui->languages->setCurrentIndex(ui->languages->findText("中文（简体）"));
-                        else if(sb::lang != "id_ID")
-                            ui->languages->setCurrentIndex(-1);
-
-                        if(ui->languages->currentIndex() == -1)
-                        {
-                            sb::lang = "auto";
-                            ui->languageoverride->setDisabled(true);
-                            if(! cfgupdt) cfgupdt = true;
-                        }
+                        if(sb::lang == "auto")
+                            ui->languages->addItems(lst);
                         else
                         {
-                            ui->languageoverride->setChecked(true);
-                            ui->languages->setEnabled(true);
+                            schar indx([&] {
+                                    return sb::lang == "id_ID" ? 0
+                                        : sb::lang == "ar_EG" ? lst.indexOf("المصرية العربية")
+                                        : sb::lang == "ca_ES" ? lst.indexOf("Català")
+                                        : sb::lang == "cs_CS" ? lst.indexOf("Čeština")
+                                        : sb::lang == "en_EN" ? lst.indexOf("English (common)")
+                                        : sb::lang == "en_GB" ? lst.indexOf("English (United Kingdom)")
+                                        : sb::lang == "es_ES" ? lst.indexOf("Español")
+                                        : sb::lang == "fi_FI" ? lst.indexOf("Suomi")
+                                        : sb::lang == "fr_FR" ? lst.indexOf("Français")
+                                        : sb::lang == "gl_ES" ? lst.indexOf("Galego")
+                                        : sb::lang == "hu_HU" ? lst.indexOf("Magyar")
+                                        : sb::lang == "pt_BR" ? lst.indexOf("Português (Brasil)")
+                                        : sb::lang == "ro_RO" ? lst.indexOf("Română")
+                                        : sb::lang == "tr_TR" ? lst.indexOf("Türkçe")
+                                        : sb::lang == "zh_CN" ? lst.indexOf("中文（简体）") : -1;
+                                }());
+
+                            if(indx == -1)
+                            {
+                                sb::lang = "auto";
+                                ui->languageoverride->setDisabled(true);
+                                if(! cfgupdt) cfgupdt = true;
+                            }
+                            else
+                            {
+                                ui->languageoverride->setChecked(true);
+                                ui->languages->setEnabled(true);
+                                ui->languages->addItems(lst);
+                                if(indx > 0) ui->languages->setCurrentIndex(indx);
+                            }
                         }
                     }
 
@@ -678,7 +638,9 @@ void systemback::unitimer()
                     }
                 }
 
-                ui->styles->addItems(QStyleFactory::keys());
+                { QSL kys(QStyleFactory::keys());
+                kys.sort();
+                ui->styles->addItems(kys); }
 
                 if(sb::style != "auto")
                 {
@@ -812,15 +774,14 @@ void systemback::unitimer()
                             while(! file.atEnd())
                             {
                                 QBA cline(file.readLine().trimmed());
-                                if(cline.endsWith("efivars.ko") && sb::isfile("/lib/modules/" % ckernel % '/' % cline) && sb::exec("modprobe efivars", nullptr, true) == 0 && sb::isdir("/sys/firmware/efi")) goto isefi;
+                                if(cline.endsWith("efivars.ko") && sb::isfile("/lib/modules/" % ckernel % '/' % cline) && sb::exec("modprobe efivars", nullptr, sb::Silent) == 0 && sb::isdir("/sys/firmware/efi")) goto isefi;
                             }
                     }
                 }
 
                 goto noefi;
             isefi:
-                grub.name = "efi-amd64-bin";
-                grub.isEFI = true;
+                grub.name = "efi-amd64-bin", grub.isEFI = true;
                 ui->repairmountpoint->addItem("/mnt/boot/efi");
                 ui->grubinstallcopy->hide();
                 ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
@@ -833,8 +794,7 @@ void systemback::unitimer()
                 goto next_1;
             noefi:
 #endif
-                grub.name = "pc-bin";
-                grub.isEFI = false;
+                grub.name = "pc-bin", grub.isEFI = false;
                 ui->grubinstallcopydisable->hide();
                 ui->efiwarning->hide();
 #ifdef __amd64__
@@ -899,65 +859,86 @@ void systemback::unitimer()
         }
         else if(ui->statuspanel->isVisible())
         {
-            if(! prun.isEmpty()) ui->processrun->setText(prun % (points.contains('.') ? points.endsWith('.') ? points = "    " : points.replace(". ", "..") : points = " .  "));
-
-            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/3+1_", '_' % tr("Writing Live image to target device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
+            if(! prun.isEmpty())
             {
-                if(irblck)
+                ui->processrun->setText(prun % (points.contains('.') ? points.endsWith('.') ? points = "    " : points.replace(". ", "..") : points = " .  "));
+
+                if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring user(s) configuration files") % '_', '_' % tr("Repairing the system files") % '_', '_' % tr("Repairing the full system") % '_', '_' % tr("Copying the system") % '_', '_' % tr("Installing the system") % '_', '_' % tr("Creating Live system") % '\n' % tr("process") % " 3/3*", '_' % tr("Creating Live system") % '\n' % tr("process") % " 4/3+1_", '_' % tr("Writing Live image to target device") % '_', '_' % tr("Converting Live system image") % "\n*"}))
+                {
+                    if(irblck)
+                    {
+                        if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+                    }
+                    else if(! ui->interrupt->isEnabled())
+                        ui->interrupt->setEnabled(true);
+
+                    schar cperc(sb::Progress);
+
+                    if(cperc != -1)
+                    {
+                        if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
+
+                        if(cperc < 100)
+                        {
+                            if(ui->progressbar->value() < cperc)
+                                ui->progressbar->setValue(cperc);
+                            else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
+                                ui->progressbar->setValue(100);
+                        }
+                        else if(ui->progressbar->value() < 100)
+                            ui->progressbar->setValue(100);
+                    }
+                    else if(ui->progressbar->maximum() == 100)
+                        ui->progressbar->setMaximum(0);
+                }
+                else if(prun.startsWith(tr("Creating Live system") % '\n' % tr("process") % " 2"))
+                {
+                    if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
+                    schar cperc(sb::Progress);
+
+                    if(cperc != -1)
+                    {
+                        if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
+                        if(cperc < 101 && ui->progressbar->value() < cperc) ui->progressbar->setValue(cperc);
+                    }
+                    else if(ui->progressbar->maximum() == 100)
+                        ui->progressbar->setMaximum(0);
+                }
+                else if(! sb::like(prun, {'_' % tr("Deleting restore point") % "*", '_' % tr("Deleting old restore point") % "*", '_' % tr("Deleting incomplete restore point") % '_', '_' % tr("Creating Live system") % "\n*"}))
+                {
+                    if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+                    if(ui->progressbar->maximum() == 100) ui->progressbar->setMaximum(0);
+                }
+                else if(irblck)
                 {
                     if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
                 }
                 else if(! ui->interrupt->isEnabled())
                     ui->interrupt->setEnabled(true);
-
-                schar cperc(sb::Progress);
-
-                if(cperc != -1)
-                {
-                    if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
-
-                    if(cperc < 100)
-                    {
-                        if(ui->progressbar->value() < cperc)
-                            ui->progressbar->setValue(cperc);
-                        else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
-                            ui->progressbar->setValue(100);
-                    }
-                    else if(ui->progressbar->value() < 100)
-                        ui->progressbar->setValue(100);
-                }
-                else if(ui->progressbar->maximum() == 100)
-                    ui->progressbar->setMaximum(0);
-            }
-            else if(prun.startsWith(tr("Creating Live system") % '\n' % tr("process") % " 2"))
-            {
-                if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
-                schar cperc(sb::Progress);
-
-                if(cperc != -1)
-                {
-                    if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
-                    if(cperc < 101 && ui->progressbar->value() < cperc) ui->progressbar->setValue(cperc);
-                }
-                else if(ui->progressbar->maximum() == 100)
-                    ui->progressbar->setMaximum(0);
-            }
-            else
-            {
-                if(! irblck && sb::like(prun, {'_' % tr("Deleting restore point") % "*", '_' % tr("Deleting old restore point") % "*", '_' % tr("Deleting incomplete restore point") % '_', '_' % tr("Creating Live system") % "\n*"}))
-                {
-                    if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
-                }
-                else if(ui->interrupt->isEnabled())
-                    ui->interrupt->setDisabled(true);
-
-                if(ui->progressbar->maximum() == 100) ui->progressbar->setMaximum(0);
             }
         }
         else
         {
             if(! sstart)
             {
+                auto acserr([this] {
+                        pointupgrade();
+
+                        if(ui->dialogquestion->isVisible())
+                            on_dialogcancel_clicked();
+                        else if(ui->restorepanel->isVisible())
+                            on_restoreback_clicked();
+                        else if(ui->copypanel->isVisible())
+                        {
+                            on_copyback_clicked();
+                            if(ui->function1->text() != "Systemback") on_installback_clicked();
+                        }
+                        else if(ui->installpanel->isVisible())
+                            on_installback_clicked();
+                        else if(ui->repairpanel->isVisible())
+                            on_repairback_clicked();
+                    });
+
                 if(sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write))
                 {
                     if(! ui->storagedirarea->styleSheet().isEmpty())
@@ -969,26 +950,35 @@ void systemback::unitimer()
                     }
 
                     if(ppipe == 0 && pname == tr("Currently running system") && ! ui->newrestorepoint->isEnabled()) ui->newrestorepoint->setEnabled(true);
+                    schar num(-1);
 
-                    if((ui->point1->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S01_" % sb::pnames[0])) ||
-                        (ui->point2->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S02_" % sb::pnames[1])) ||
-                        (ui->point3->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S03_" % sb::pnames[2])) ||
-                        (ui->point4->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S04_" % sb::pnames[3])) ||
-                        (ui->point5->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S05_" % sb::pnames[4])) ||
-                        (ui->point6->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S06_" % sb::pnames[5])) ||
-                        (ui->point7->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S07_" % sb::pnames[6])) ||
-                        (ui->point8->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S08_" % sb::pnames[7])) ||
-                        (ui->point9->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S09_" % sb::pnames[8])) ||
-                        (ui->point10->isEnabled() && ! sb::isdir(sb::sdir[1] % "/S10_" % sb::pnames[9])) ||
-                        (ui->point11->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H01_" % sb::pnames[10])) ||
-                        (ui->point12->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H02_" % sb::pnames[11])) ||
-                        (ui->point13->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H03_" % sb::pnames[12])) ||
-                        (ui->point14->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H04_" % sb::pnames[13])) ||
-                        (ui->point15->isEnabled() && ! sb::isdir(sb::sdir[1] % "/H05_" % sb::pnames[14]))) accesserror();
+                    for(QLE *ldt : ui->points->findChildren<QLE *>())
+                    {
+                        ++num;
+
+                        if(ldt->isEnabled() && ! sb::isdir(sb::sdir[1] % '/' % [num]() -> QStr {
+                                switch(num) {
+                                case 9:
+                                    return "S10";
+                                case 10:
+                                case 11:
+                                case 12:
+                                case 13:
+                                case 14:
+                                    return "H0" % QStr::number(num - 9);
+                                default:
+                                    return "S0" % QStr::number(num + 1);
+                                }
+                            }() % '_' % sb::pnames[num]))
+                        {
+                            acserr();
+                            break;
+                        }
+                    }
                 }
                 else
                 {
-                    if(ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) accesserror();
+                    if(ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) acserr();
                     if(ui->newrestorepoint->isEnabled()) ui->newrestorepoint->setDisabled(true);
 
                     if(ui->storagedirarea->styleSheet().isEmpty())
@@ -1098,6 +1088,26 @@ inline ushort systemback::ss(ushort size)
     }
 }
 
+inline QLE *systemback::getpoint(uchar num)
+{
+    schar cnum(-1);
+
+    for(QLE *ldt : ui->points->findChildren<QLE *>())
+        if(++cnum == num) return ldt;
+
+    return nullptr;
+}
+
+inline QCB *systemback::getppipe(uchar num)
+{
+    schar cnum(-1);
+
+    for(QCB *ckbx : ui->sbpanel->findChildren<QCB *>())
+        if(++cnum == num) return ckbx;
+
+    return nullptr;
+}
+
 void systemback::fontcheck(uchar wdgt)
 {
     switch(wdgt) {
@@ -1129,8 +1139,8 @@ void systemback::fontcheck(uchar wdgt)
         if(ui->dirpath->font().pixelSize() != ss(15)) ui->dirpath->setFont(font());
         break;
     case Rpnts:
-        for(QWidget *lndt : ui->sbpanel->findChildren<QLineEdit *>())
-            if(lndt->font().pixelSize() != ss(15)) lndt->setFont(font());
+        for(QLE *ldt : ui->points->findChildren<QLE *>())
+            if(ldt->font().pixelSize() != ss(15)) ldt->setFont(font());
     }
 }
 
@@ -1156,15 +1166,12 @@ inline bool systemback::minside(cQPoint &wpos, cQSize &wsize)
     {
         schar snum(qApp->desktop()->screenNumber(this));
         short scrxy(qApp->desktop()->availableGeometry(snum).x());
-        wxy[0] = scrxy > 0 && x() == 0 ? scrxy : x();
-        wxy[1] = (scrxy = qApp->desktop()->availableGeometry(snum).y()) > 0 && y() == 0 ? scrxy : y();
+        wxy[0] = scrxy > 0 && x() == 0 ? scrxy : x(), wxy[1] = (scrxy = qApp->desktop()->availableGeometry(snum).y()) > 0 && y() == 0 ? scrxy : y();
     }
     else
-    {
-        wxy[0] = x();
-        wxy[1] = y();
-    }
+        wxy[0] = x(), wxy[1] = y();
 #endif
+
     return QCursor::pos().x() >
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
             wxy[0]
@@ -1628,12 +1635,11 @@ void systemback::sbttnleave()
     }
     else
     {
-        sb::wsclng = nsclng;
+        sb::wsclng = nsclng, nrxth = true;
         sb::cfgwrite();
         if(cfgupdt) cfgupdt = false;
-        nrxth = true;
         sb::unlock(sb::Sblock);
-        sb::exec("systemback", nullptr, false, true);
+        sb::exec("systemback", nullptr, sb::Bckgrnd);
         close();
     }
 }
@@ -1648,7 +1654,7 @@ void systemback::hmpg1released()
     if(ui->homepage1->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage1->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), nullptr, false, true);
+        sb::exec("su -c \"xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), nullptr, sb::Bckgrnd);
     }
 }
 
@@ -1672,7 +1678,7 @@ void systemback::hmpg2released()
     if(ui->homepage2->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage2->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open https://launchpad.net/systemback &\" " % guname(), nullptr, false, true);
+        sb::exec("su -c \"xdg-open https://launchpad.net/systemback &\" " % guname(), nullptr, sb::Bckgrnd);
     }
 }
 
@@ -1696,7 +1702,7 @@ void systemback::emailreleased()
     if(ui->email->foregroundRole() == QPalette::Highlight)
     {
         ui->email->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-email nemh@freemail.hu &\" " % guname(), nullptr, false, true);
+        sb::exec("su -c \"xdg-email nemh@freemail.hu &\" " % guname(), nullptr, sb::Bckgrnd);
     }
 }
 
@@ -1720,7 +1726,7 @@ void systemback::dntreleased()
     if(ui->donate->foregroundRole() == QPalette::Highlight)
     {
         ui->donate->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), nullptr, false, true);
+        sb::exec("su -c \"xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), nullptr, sb::Bckgrnd);
     }
 }
 
@@ -1852,304 +1858,61 @@ void systemback::on_usersettingscopy_stateChanged(int arg1)
 void systemback::pointupgrade()
 {
     sb::pupgrade();
+    schar num(-1);
 
-    if(! sb::pnames[0].isEmpty())
-    {
-        if(! ui->point1->isEnabled())
+    for(QLE *ldt : ui->points->findChildren<QLE *>())
+        if(! sb::pnames[++num].isEmpty())
         {
-            ui->point1->setEnabled(true);
-            ui->point1->setText(sb::pnames[0]);
-        }
-        else if(ui->point1->text() != sb::pnames[0])
-            ui->point1->setText(sb::pnames[0]);
-    }
-    else if(ui->point1->isEnabled())
-    {
-        ui->point1->setDisabled(true);
-        if(ui->point1->text() != tr("empty")) ui->point1->setText(tr("empty"));
-    }
+            if(! ldt->isEnabled())
+            {
+                ldt->setEnabled(true);
 
-    if(! sb::pnames[1].isEmpty())
-    {
-        if(! ui->point2->isEnabled())
-        {
-            ui->point2->setEnabled(true);
-            ui->point2->setText(sb::pnames[1]);
-        }
-        else if(ui->point2->text() != sb::pnames[1])
-            ui->point2->setText(sb::pnames[1]);
-    }
-    else if(ui->point2->isEnabled())
-    {
-        ui->point2->setDisabled(true);
-        if(ui->point2->text() != tr("empty")) ui->point2->setText(tr("empty"));
-    }
+                switch(num) {
+                case 2:
+                    if(sb::pnumber == 3 && ldt->styleSheet().isEmpty()) ldt->setStyleSheet("background-color: rgb(255, 103, 103)");
+                    break;
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                    if(sb::pnumber < num + 2 && ldt->styleSheet().isEmpty()) ldt->setStyleSheet("background-color: rgb(255, 103, 103)");
+                    break;
+                case 9:
+                    if(ldt->styleSheet().isEmpty()) ldt->setStyleSheet("background-color: rgb(255, 103, 103)");
+                }
 
-    if(! sb::pnames[2].isEmpty())
-    {
-        if(! ui->point3->isEnabled())
-        {
-            ui->point3->setEnabled(true);
-            if(sb::pnumber == 3 && ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point3->setText(sb::pnames[2]);
+                ldt->setText(sb::pnames[num]);
+            }
+            else if(ldt->text() != sb::pnames[num])
+                ldt->setText(sb::pnames[num]);
         }
-        else if(ui->point3->text() != sb::pnames[2])
-            ui->point3->setText(sb::pnames[2]);
-    }
-    else if(ui->point3->isEnabled())
-    {
-        ui->point3->setDisabled(true);
-        if(! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-        if(ui->point3->text() != tr("empty")) ui->point3->setText(tr("empty"));
-    }
+        else if(ldt->isEnabled())
+        {
+            ldt->setDisabled(true);
+            if(! ldt->styleSheet().isEmpty()) ldt->setStyleSheet(nullptr);
 
-    if(! sb::pnames[3].isEmpty())
-    {
-        if(! ui->point4->isEnabled())
-        {
-            ui->point4->setEnabled(true);
-            if(sb::pnumber < 5 && ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point4->setText(sb::pnames[3]);
-        }
-        else if(ui->point4->text() != sb::pnames[3])
-            ui->point4->setText(sb::pnames[3]);
-    }
-    else if(ui->point4->isEnabled())
-    {
-        ui->point4->setDisabled(true);
-        if(! ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet(nullptr);
+            switch(num) {
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                if(sb::pnumber < num + 1)
+                {
+                    if(ldt->text() != tr("not used")) ldt->setText(tr("not used"));
+                }
+                else if(ldt->text() != tr("empty"))
+                    ldt->setText(tr("empty"));
 
-        if(sb::pnumber == 3)
-        {
-            if(ui->point4->text() != tr("not used")) ui->point4->setText(tr("not used"));
+                break;
+            default:
+                if(ldt->text() != tr("empty")) ldt->setText(tr("empty"));
+            }
         }
-        else if(ui->point4->text() != tr("empty"))
-            ui->point4->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[4].isEmpty())
-    {
-        if(! ui->point5->isEnabled())
-        {
-            ui->point5->setEnabled(true);
-            if(sb::pnumber < 6 && ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point5->setText(sb::pnames[4]);
-        }
-        else if(ui->point5->text() != sb::pnames[4])
-            ui->point5->setText(sb::pnames[4]);
-    }
-    else if(ui->point5->isEnabled())
-    {
-        ui->point5->setDisabled(true);
-        if(! ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet(nullptr);
-
-        if(sb::pnumber < 5)
-        {
-            if(ui->point5->text() != tr("not used")) ui->point5->setText(tr("not used"));
-        }
-        else if(ui->point5->text() != tr("empty"))
-            ui->point5->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[5].isEmpty())
-    {
-        if(! ui->point6->isEnabled())
-        {
-            ui->point6->setEnabled(true);
-            if(sb::pnumber < 7 && ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point6->setText(sb::pnames[5]);
-        }
-        else if(ui->point6->text() != sb::pnames[5])
-            ui->point6->setText(sb::pnames[5]);
-    }
-    else if(ui->point6->isEnabled())
-    {
-        ui->point6->setDisabled(true);
-        if(! ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet(nullptr);
-
-        if(sb::pnumber < 6)
-        {
-            if(ui->point6->text() != tr("not used")) ui->point6->setText(tr("not used"));
-        }
-        else if(ui->point6->text() != tr("empty"))
-            ui->point6->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[6].isEmpty())
-    {
-        if(! ui->point7->isEnabled())
-        {
-            ui->point7->setEnabled(true);
-            if(sb::pnumber < 8 && ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point7->setText(sb::pnames[6]);
-        }
-        else if(ui->point7->text() != sb::pnames[6])
-            ui->point7->setText(sb::pnames[6]);
-    }
-    else if(ui->point7->isEnabled())
-    {
-        ui->point7->setDisabled(true);
-        if(! ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet(nullptr);
-
-        if(sb::pnumber < 7)
-        {
-            if(ui->point7->text() != tr("not used")) ui->point7->setText(tr("not used"));
-        }
-        else if(ui->point7->text() != tr("empty"))
-            ui->point7->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[7].isEmpty())
-    {
-        if(! ui->point8->isEnabled())
-        {
-            ui->point8->setEnabled(true);
-            if(sb::pnumber < 9 && ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point8->setText(sb::pnames[7]);
-        }
-        else if(ui->point8->text() != sb::pnames[7])
-            ui->point8->setText(sb::pnames[7]);
-    }
-    else if(ui->point8->isEnabled())
-    {
-        ui->point8->setDisabled(true);
-        if(! ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet(nullptr);
-
-        if(sb::pnumber < 8)
-        {
-            if(ui->point8->text() != tr("not used")) ui->point8->setText(tr("not used"));
-        }
-        else if(ui->point8->text() != tr("empty"))
-            ui->point8->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[8].isEmpty())
-    {
-        if(! ui->point9->isEnabled())
-        {
-            ui->point9->setEnabled(true);
-            if(sb::pnumber < 10 && ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point9->setText(sb::pnames[8]);
-        }
-        else if(ui->point9->text() != sb::pnames[8])
-            ui->point9->setText(sb::pnames[8]);
-    }
-    else if(ui->point9->isEnabled())
-    {
-        ui->point9->setDisabled(true);
-        if(! ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet(nullptr);
-
-        if(sb::pnumber < 9)
-        {
-            if(ui->point9->text() != tr("not used")) ui->point9->setText(tr("not used"));
-        }
-        else if(ui->point9->text() != tr("empty"))
-            ui->point9->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[9].isEmpty())
-    {
-        if(! ui->point10->isEnabled())
-        {
-            ui->point10->setEnabled(true);
-            if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-            ui->point10->setText(sb::pnames[9]);
-        }
-        else if(ui->point10->text() != sb::pnames[9])
-            ui->point10->setText(sb::pnames[9]);
-    }
-    else if(ui->point10->isEnabled())
-    {
-        ui->point10->setDisabled(true);
-        if(! ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet(nullptr);
-
-        if(sb::pnumber < 10)
-        {
-            if(ui->point10->text() != tr("not used")) ui->point10->setText(tr("not used"));
-        }
-        else if(ui->point10->text() != tr("empty"))
-            ui->point10->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[10].isEmpty())
-    {
-        if(! ui->point11->isEnabled())
-        {
-            ui->point11->setEnabled(true);
-            ui->point11->setText(sb::pnames[10]);
-        }
-        else if(ui->point11->text() != sb::pnames[10])
-            ui->point11->setText(sb::pnames[10]);
-    }
-    else if(ui->point11->isEnabled())
-    {
-        ui->point11->setDisabled(true);
-        if(ui->point11->text() != tr("empty")) ui->point11->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[11].isEmpty())
-    {
-        if(! ui->point12->isEnabled())
-        {
-            ui->point12->setEnabled(true);
-            ui->point12->setText(sb::pnames[11]);
-        }
-        else if(ui->point12->text() != sb::pnames[11])
-            ui->point12->setText(sb::pnames[11]);
-    }
-    else if(ui->point12->isEnabled())
-    {
-        ui->point12->setDisabled(true);
-        if(ui->point12->text() != tr("empty")) ui->point12->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[12].isEmpty())
-    {
-        if(! ui->point13->isEnabled())
-        {
-            ui->point13->setEnabled(true);
-            ui->point13->setText(sb::pnames[12]);
-        }
-        else if(ui->point13->text() != sb::pnames[12])
-            ui->point13->setText(sb::pnames[12]);
-    }
-    else if(ui->point13->isEnabled())
-    {
-        ui->point13->setDisabled(true);
-        if(ui->point13->text() != tr("empty")) ui->point13->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[13].isEmpty())
-    {
-        if(! ui->point14->isEnabled())
-        {
-            ui->point14->setEnabled(true);
-            ui->point14->setText(sb::pnames[13]);
-        }
-        else if(ui->point14->text() != sb::pnames[13])
-            ui->point14->setText(sb::pnames[13]);
-    }
-    else if(ui->point14->isEnabled())
-    {
-        ui->point14->setDisabled(true);
-        if(ui->point14->text() != tr("empty")) ui->point14->setText(tr("empty"));
-    }
-
-    if(! sb::pnames[14].isEmpty())
-    {
-        if(! ui->point15->isEnabled())
-        {
-            ui->point15->setEnabled(true);
-            ui->point15->setText(sb::pnames[14]);
-        }
-        else if(ui->point15->text() != sb::pnames[14])
-            ui->point15->setText(sb::pnames[14]);
-    }
-    else if(ui->point15->isEnabled())
-    {
-        ui->point15->setDisabled(true);
-        if(ui->point15->text() != tr("empty")) ui->point15->setText(tr("empty"));
-    }
 
     on_pointpipe1_clicked();
     fontcheck(Rpnts);
@@ -2181,25 +1944,6 @@ void systemback::statustart()
     repaint();
 }
 
-void systemback::accesserror()
-{
-    pointupgrade();
-
-    if(ui->dialogquestion->isVisible())
-        on_dialogcancel_clicked();
-    else if(ui->restorepanel->isVisible())
-        on_restoreback_clicked();
-    else if(ui->copypanel->isVisible())
-    {
-        on_copyback_clicked();
-        if(ui->function1->text() != "Systemback") on_installback_clicked();
-    }
-    else if(ui->installpanel->isVisible())
-        on_installback_clicked();
-    else if(ui->repairpanel->isVisible())
-        on_repairback_clicked();
-}
-
 void systemback::restore()
 {
     goto start;
@@ -2208,23 +1952,22 @@ exit:
     return;
 start:
     statustart();
-    uchar mthd;
 
-    if(ui->fullrestore->isChecked())
-    {
-        mthd = 1;
-        prun = tr("Restoring the full system");
-    }
-    else if(ui->systemrestore->isChecked())
-    {
-        mthd = 2;
-        prun = tr("Restoring the system files");
-    }
-    else
-    {
-        mthd = ui->keepfiles->isChecked() ? ui->includeusers->currentIndex() == 0 ? 3 : 4 : ui->includeusers->currentIndex() == 0 ? 5 : 6;
-        prun = tr("Restoring user(s) configuration files");
-    }
+    uchar mthd([this] {
+            if(ui->fullrestore->isChecked())
+            {
+                prun = tr("Restoring the full system");
+                return 1;
+            }
+            else if(ui->systemrestore->isChecked())
+            {
+                prun = tr("Restoring the system files");
+                return 2;
+            }
+
+            prun = tr("Restoring user(s) configuration files");
+            return ui->keepfiles->isChecked() ? ui->includeusers->currentIndex() == 0 ? 3 : 4 : ui->includeusers->currentIndex() == 0 ? 5 : 6;
+        }());
 
     bool fcmp(false), sfstab(false);
 
@@ -2263,7 +2006,7 @@ start:
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(! sb::like(dialog, {308, 338})) dialog = [mthd, this]{
+        if(! sb::like(dialog, {308, 338})) dialog = [mthd, this] {
                 switch(mthd) {
                 case 1:
                     return 205;
@@ -2289,23 +2032,22 @@ exit:
     return;
 start:
     statustart();
-    uchar mthd;
 
-    if(ui->systemrepair->isChecked())
-    {
-        mthd = 2;
-        prun = tr("Repairing the system files");
-    }
-    else if(ui->fullrepair->isChecked())
-    {
-        mthd = 1;
-        prun = tr("Repairing the full system");
-    }
-    else
-    {
-        mthd = 0;
-        prun = tr("Repairing the GRUB 2");
-    }
+    uchar mthd([this] {
+            if(ui->systemrepair->isChecked())
+            {
+                prun = tr("Repairing the system files");
+                return 2;
+            }
+            else if(ui->fullrepair->isChecked())
+            {
+                prun = tr("Repairing the full system");
+                return 1;
+            }
+
+            prun = tr("Repairing the GRUB 2");
+            return 0;
+        }());
 
     if(mthd == 0)
     {
@@ -2394,17 +2136,16 @@ void systemback::systemcopy()
 error:
     if(intrrpt) goto exit;
 
-    if(! sb::like(dialog, {307, 313, 314, 316, 329, 330, 331, 332}))
-    {
-        if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
-        {
-            irblck = true;
-            if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
-            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 319 : 320;
-        }
-        else
-            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 306 : 315;
-    }
+    if(! sb::like(dialog, {307, 313, 314, 316, 329, 330, 331, 332})) dialog = [this] {
+            if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
+            {
+                irblck = true;
+                if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
+                return ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 319 : 320;
+            }
+            else
+                return ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 306 : 315;
+        }();
 exit:
     {
         QStr mnts(sb::fload("/proc/self/mounts", true));
@@ -2469,32 +2210,20 @@ start:
             if(fstype.length() > 2)
             {
                 QStr lbl("SB@" % (mpoint.startsWith('/') ? sb::right(mpoint, -1) : mpoint));
-                ushort rv;
 
-                if(fstype == "swap")
-                    rv = sb::exec("mkswap -L " % lbl % ' ' % part);
-                else if(fstype == "jfs")
-                    rv = sb::exec("mkfs.jfs -qL " % lbl % ' ' % part);
-                else if(fstype == "reiserfs")
-                    rv = sb::exec("mkfs.reiserfs -ql " % lbl % ' ' % part);
-                else if(fstype == "xfs")
-                    rv = sb::exec("mkfs.xfs -fL " % lbl % ' ' % part);
-                else if(fstype == "vfat")
-                    rv = sb::setpflag(part, "boot") ? sb::exec("mkfs.vfat -F 32 -n " % lbl.toUpper() % ' ' % part) : 255;
-                else if(fstype == "btrfs")
-                {
-                    rv = ckd.contains(part) ? 0 : sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part);
-                    if(rv > 0) rv = sb::exec("mkfs.btrfs -L " % lbl % ' ' % part);
-                }
-                else
-                    rv = sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part);
+                uchar rv(fstype == "swap" ? sb::exec("mkswap -L " % lbl % ' ' % part)
+                    : fstype == "jfs" ? sb::exec("mkfs.jfs -qL " % lbl % ' ' % part)
+                    : fstype == "reiserfs" ? sb::exec("mkfs.reiserfs -ql " % lbl % ' ' % part)
+                    : fstype == "xfs" ? sb::exec("mkfs.xfs -fL " % lbl % ' ' % part)
+                    : fstype == "vfat" ? sb::setpflag(part, "boot") ? sb::exec("mkfs.vfat -F 32 -n " % lbl.toUpper() % ' ' % part) : 255
+                    : fstype == "btrfs" ? (ckd.contains(part) ? 0 : sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part)) == 0 ? 0 : sb::exec("mkfs.btrfs -L " % lbl % ' ' % part)
+                    : sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part));
 
                 if(intrrpt) goto exit;
 
                 if(rv > 0)
                 {
-                    dialogdev = part;
-                    dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 316 : 330;
+                    dialogdev = part, dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 316 : 330;
                     goto error;
                 }
             }
@@ -2562,8 +2291,7 @@ start:
             if(intrrpt) goto exit;
             continue;
         merr:
-            dialogdev = part;
-            dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329;
+            dialogdev = part, dialog = ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329;
             goto error;
         }
     }
@@ -2574,7 +2302,7 @@ start:
         {
             if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
             {
-                if(! sb::scopy([this]{
+                if(! sb::scopy([this] {
                         switch(ui->usersettingscopy->checkState()) {
                         case Qt::Unchecked:
                             return 5;
@@ -2609,7 +2337,7 @@ start:
 
             if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
             {
-                if(! sb::scopy([this]{
+                if(! sb::scopy([this] {
                         switch(ui->usersettingscopy->checkState()) {
                         case Qt::Unchecked:
                             return 5;
@@ -2742,7 +2470,7 @@ start:
                     QStr nline;
 
                     for(uchar a(0) ; a < uslst.count() ; ++a)
-                        nline.append([&, a]() -> QStr{
+                        nline.append([&, a]() -> QStr {
                                 switch(a) {
                                 case 0:
                                     return nuname;
@@ -2781,7 +2509,7 @@ start:
                     QStr nline;
 
                     for(uchar a(0) ; a < uslst.count() ; ++a)
-                        nline.append([&, a]() -> QStr{
+                        nline.append([&, a]() -> QStr {
                                 switch(a) {
                                 case 0:
                                     return guname() == "root" ? "root" : ui->username->text();
@@ -2800,7 +2528,7 @@ start:
                     QStr nline;
 
                     for(uchar a(0) ; a < uslst.count() ; ++a)
-                        nline.append([&, a]() -> QStr{
+                        nline.append([&, a]() -> QStr {
                                 switch(a) {
                                 case 1:
                                     return ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(chr(ui->rootpassword1->text()), chr(("$6$" % sb::rndstr(16)))));
@@ -2849,7 +2577,7 @@ start:
 
         for(uchar a(0) ; a < 5 ; ++a)
         {
-            QStr fpath("/.sbsystemcopy/etc/" % [a]() -> QStr{
+            QStr fpath("/.sbsystemcopy/etc/" % [a]() -> QStr {
                     switch(a) {
                     case 0:
                         return "lightdm/lightdm.conf";
@@ -2870,7 +2598,7 @@ start:
                 if(! file.open(QIODevice::ReadOnly)) goto error;
                 uchar mdfd(0);
 
-                QSL incl([a]() -> QSL{
+                QSL incl([a]() -> QSL {
                         switch(a) {
                         case 0:
                             return {"_autologin-user=*"};
@@ -2965,7 +2693,7 @@ start:
                     {
                         QStr cline(file.readLine().trimmed());
 
-                        if(sb::like(cline, incl))
+                        if(! cline.startsWith('#') && sb::like(cline, incl))
                         {
                             fstabtxt.append("# /home\n" % cline % '\n');
                             break;
@@ -3205,12 +2933,9 @@ start:
         goto error;
     }
 
-    if(intrrpt ||
-        sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "lba") ||
-        intrrpt ||
-        (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite"))) ||
-        intrrpt ||
-        ! QDir().mkdir("/.sblivesystemwrite") || ! QDir().mkdir("/.sblivesystemwrite/sblive")) goto error;
+    if(intrrpt || sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "lba")
+        || intrrpt || (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite")))
+        ||intrrpt || ! QDir().mkdir("/.sblivesystemwrite") || ! QDir().mkdir("/.sblivesystemwrite/sblive")) goto error;
 
     if(! sb::mount(ldev % (ldev.contains("mmc") ? "p" : nullptr) % '1', "/.sblivesystemwrite/sblive"))
     {
@@ -3239,23 +2964,22 @@ start:
         goto error;
     }
 
-    sb::ThrdStr[0] = "/.sblivesystemwrite";
-    sb::ThrdLng[0] = size;
+    sb::ThrdStr[0] = "/.sblivesystemwrite", sb::ThrdLng[0] = size;
 
     if(lrdir == "sblive")
     {
-        if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions") > 0)
+        if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions", nullptr, sb::Prgrss) > 0)
         {
             dialog = 322;
             goto error;
         }
     }
-    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-permissions --no-same-owner") > 0)
+    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-owner --no-same-permissions") > 0)
     {
         dialog = 322;
         goto error;
     }
-    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions") > 0)
+    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions", nullptr, sb::Prgrss) > 0)
     {
         dialog = 322;
         goto error;
@@ -3291,7 +3015,7 @@ void systemback::dialogopen(schar snum)
         if(! ui->dialogcancel->isVisibleTo(ui->dialogpanel)) ui->dialogcancel->show();
         if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
 
-        ui->dialogtext->setText([this]() -> QStr{
+        ui->dialogtext->setText([this]() -> QStr {
                 switch(dialog) {
                 case 100:
                     return tr("Restore the system files to the following restore point:") % "<p><b>" % pname;
@@ -3327,7 +3051,7 @@ void systemback::dialogopen(schar snum)
             if(ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->hide();
             if(! ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->show();
 
-            ui->dialogtext->setText([&]() -> QStr{
+            ui->dialogtext->setText([&]() -> QStr {
                     switch(dialog) {
                     case 200:
                         if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
@@ -3389,7 +3113,7 @@ void systemback::dialogopen(schar snum)
             if(! ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->show();
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
 
-            ui->dialogtext->setText([this]() -> QStr{
+            ui->dialogtext->setText([this]() -> QStr {
                     switch(dialog) {
                     case 300:
                         return tr("Another systemback process is currently running, please wait until it finishes.");
@@ -3504,15 +3228,15 @@ void systemback::setwontop(bool state)
     {
         Display *dsply(XOpenDisplay(nullptr));
         XEvent ev;
-        ev.xclient.type = ClientMessage;
-        ev.xclient.message_type = XInternAtom(dsply, "_NET_WM_STATE", 0);
-        ev.xclient.display = dsply;
-        ev.xclient.window = winId();
-        ev.xclient.format = 32;
-        ev.xclient.data.l[0] = state ? 1 : 0;
-        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_ABOVE", 0);
-        XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
-        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_STAYS_ON_TOP", 0);
+        ev.xclient.type = ClientMessage,
+        ev.xclient.message_type = XInternAtom(dsply, "_NET_WM_STATE", 0),
+        ev.xclient.display = dsply,
+        ev.xclient.window = winId(),
+        ev.xclient.format = 32,
+        ev.xclient.data.l[0] = state ? 1 : 0,
+        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_ABOVE", 0),
+        XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev),
+        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_STAYS_ON_TOP", 0),
         XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
         XCloseDisplay(dsply);
     }
@@ -3790,21 +3514,21 @@ void systemback::keyPressEvent(QKeyEvent *ev)
 
             if(ui->sbpanel->isVisible())
             {
-                if(ui->pointrename->isEnabled() && ((ui->point1->hasFocus() && ui->pointpipe1->isChecked()) ||
-                                                    (ui->point2->hasFocus() && ui->pointpipe2->isChecked()) ||
-                                                    (ui->point3->hasFocus() && ui->pointpipe3->isChecked()) ||
-                                                    (ui->point4->hasFocus() && ui->pointpipe4->isChecked()) ||
-                                                    (ui->point5->hasFocus() && ui->pointpipe5->isChecked()) ||
-                                                    (ui->point6->hasFocus() && ui->pointpipe6->isChecked()) ||
-                                                    (ui->point7->hasFocus() && ui->pointpipe7->isChecked()) ||
-                                                    (ui->point8->hasFocus() && ui->pointpipe8->isChecked()) ||
-                                                    (ui->point9->hasFocus() && ui->pointpipe9->isChecked()) ||
-                                                    (ui->point10->hasFocus() && ui->pointpipe10->isChecked()) ||
-                                                    (ui->point11->hasFocus() && ui->pointpipe11->isChecked()) ||
-                                                    (ui->point12->hasFocus() && ui->pointpipe12->isChecked()) ||
-                                                    (ui->point13->hasFocus() && ui->pointpipe13->isChecked()) ||
-                                                    (ui->point14->hasFocus() && ui->pointpipe14->isChecked()) ||
-                                                    (ui->point15->hasFocus() && ui->pointpipe15->isChecked()))) on_pointrename_clicked();
+                if(ui->pointrename->isEnabled())
+                {
+                    schar num(-1);
+
+                    for(QLE *ldt : ui->points->findChildren<QLE *>())
+                    {
+                        ++num;
+
+                        if(ldt->hasFocus() && getppipe(num)->isChecked())
+                        {
+                            on_pointrename_clicked();
+                            break;
+                        }
+                    }
+                }
             }
             else if(ui->dirchoose->hasFocus())
                 ui->dirchoose->currentItem()->setExpanded(! ui->dirchoose->currentItem()->isExpanded());
@@ -3872,64 +3596,18 @@ void systemback::keyPressEvent(QKeyEvent *ev)
         case Qt::Key_F5:
             if(ui->sbpanel->isVisible())
             {
-                if(ui->point1->hasFocus())
+                schar num(-1);
+
+                for(QLE *ldt : ui->points->findChildren<QLE *>())
                 {
-                    if(ui->point1->text() != sb::pnames[0]) ui->point1->setText(sb::pnames[0]);
+                    ++num;
+
+                    if(ldt->hasFocus())
+                    {
+                        if(ldt->text() != sb::pnames[num]) ldt->setText(sb::pnames[num]);
+                        break;
+                    }
                 }
-                else if(ui->point2->hasFocus())
-                {
-                    if(ui->point2->text() != sb::pnames[1]) ui->point2->setText(sb::pnames[1]);
-                }
-                else if(ui->point3->hasFocus())
-                {
-                    if(ui->point3->text() != sb::pnames[2]) ui->point3->setText(sb::pnames[2]);
-                }
-                else if(ui->point4->hasFocus())
-                {
-                    if(ui->point4->text() != sb::pnames[3]) ui->point4->setText(sb::pnames[3]);
-                }
-                else if(ui->point5->hasFocus())
-                {
-                    if(ui->point5->text() != sb::pnames[4]) ui->point5->setText(sb::pnames[4]);
-                }
-                else if(ui->point6->hasFocus())
-                {
-                    if(ui->point6->text() != sb::pnames[5]) ui->point6->setText(sb::pnames[5]);
-                }
-                else if(ui->point7->hasFocus())
-                {
-                    if(ui->point7->text() != sb::pnames[6]) ui->point7->setText(sb::pnames[6]);
-                }
-                else if(ui->point8->hasFocus())
-                {
-                    if(ui->point8->text() != sb::pnames[7]) ui->point8->setText(sb::pnames[7]);
-                }
-                else if(ui->point9->hasFocus())
-                {
-                    if(ui->point9->text() != sb::pnames[8]) ui->point9->setText(sb::pnames[8]);
-                }
-                else if(ui->point10->hasFocus())
-                {
-                    if(ui->point10->text() != sb::pnames[9]) ui->point10->setText(sb::pnames[9]);
-                }
-                else if(ui->point11->hasFocus())
-                {
-                    if(ui->point11->text() != sb::pnames[10]) ui->point11->setText(sb::pnames[10]);
-                }
-                else if(ui->point12->hasFocus())
-                {
-                    if(ui->point12->text() != sb::pnames[11]) ui->point12->setText(sb::pnames[11]);
-                }
-                else if(ui->point13->hasFocus())
-                {
-                    if(ui->point13->text() != sb::pnames[12]) ui->point13->setText(sb::pnames[12]);
-                }
-                else if(ui->point14->hasFocus())
-                {
-                    if(ui->point14->text() != sb::pnames[13]) ui->point14->setText(sb::pnames[13]);
-                }
-                else if(ui->point15->hasFocus() && ui->point15->text() != sb::pnames[14])
-                    ui->point15->setText(sb::pnames[14]);
             }
             else if(ui->partitionsettings->hasFocus() || ui->mountpoint->hasFocus() || ui->partitionsize->hasFocus())
                 on_partitionrefresh2_clicked();
@@ -4063,6 +3741,7 @@ void systemback::on_passwordinputok_clicked()
 void systemback::on_schedulerstart_clicked()
 {
     delete shdltimer;
+    shdltimer = nullptr;
     ui->function2->setText("Systemback " % tr("scheduler"));
     on_newrestorepoint_clicked();
 }
@@ -4093,36 +3772,12 @@ void systemback::on_dialogcancel_clicked()
             ui->function1->setText("Systemback");
         }
 
-        if(ui->pointpipe1->isChecked())
-            ui->pointpipe1->click();
-        else if(ui->pointpipe2->isChecked())
-            ui->pointpipe2->click();
-        else if(ui->pointpipe3->isChecked())
-            ui->pointpipe3->click();
-        else if(ui->pointpipe4->isChecked())
-            ui->pointpipe4->click();
-        else if(ui->pointpipe5->isChecked())
-            ui->pointpipe5->click();
-        else if(ui->pointpipe6->isChecked())
-            ui->pointpipe6->click();
-        else if(ui->pointpipe7->isChecked())
-            ui->pointpipe7->click();
-        else if(ui->pointpipe8->isChecked())
-            ui->pointpipe8->click();
-        else if(ui->pointpipe9->isChecked())
-            ui->pointpipe9->click();
-        else if(ui->pointpipe10->isChecked())
-            ui->pointpipe10->click();
-        else if(ui->pointpipe11->isChecked())
-            ui->pointpipe11->click();
-        else if(ui->pointpipe12->isChecked())
-            ui->pointpipe12->click();
-        else if(ui->pointpipe13->isChecked())
-            ui->pointpipe13->click();
-        else if(ui->pointpipe14->isChecked())
-            ui->pointpipe14->click();
-        else if(ui->pointpipe15->isChecked())
-            ui->pointpipe15->click();
+        for(QCB *ckbx : ui->sbpanel->findChildren<QCB *>())
+            if(ckbx->isChecked())
+            {
+                ckbx->click();
+                break;
+            }
     }
 
     ui->dialogpanel->hide();
@@ -4132,1040 +3787,208 @@ void systemback::on_dialogcancel_clicked()
     setwontop(false);
 }
 
-void systemback::on_pnumber3_clicked()
+void systemback::pnmchange(uchar num)
 {
-    if(sb::pnumber > 3)
+    if(sb::pnumber != num)
     {
-        sb::pnumber = 3;
+        sb::pnumber = num;
         if(! cfgupdt) cfgupdt = true;
     }
 
-    if(ui->point3->isEnabled() && ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet("background-color: rgb(255, 103, 103)");
+    uchar cnum(0);
 
-    if(ui->point4->isEnabled())
-    {
-        if(ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point4->text() == tr("empty"))
-        ui->point4->setText(tr("not used"));
+    for(QLE *ldt : ui->points->findChildren<QLE *>())
+        switch(++cnum) {
+        case 1:
+        case 2:
+            break;
+        case 3:
+            if(ldt->isEnabled())
+                switch(num) {
+                case 3:
+                    if(ldt->styleSheet().isEmpty()) ldt->setStyleSheet("background-color: rgb(255, 103, 103)");
+                    break;
+                default:
+                    if(! ldt->styleSheet().isEmpty()) ldt->setStyleSheet(nullptr);
+                }
 
-    if(ui->point5->isEnabled())
-    {
-        if(ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point5->text() == tr("empty"))
-        ui->point5->setText(tr("not used"));
+            break;
+        case 11:
+            goto end;
+        default:
+            if(ldt->isEnabled())
+            {
+                if(cnum < num)
+                {
+                    if(! ldt->styleSheet().isEmpty()) ldt->setStyleSheet(nullptr);
+                }
+                else if(ldt->styleSheet().isEmpty())
+                    ldt->setStyleSheet("background-color: rgb(255, 103, 103)");
+            }
+            else if(cnum <= num)
+            {
+                if(ldt->text() == tr("not used")) ldt->setText(tr("empty"));
+            }
+            else if(ldt->text() == tr("empty"))
+                ldt->setText(tr("not used"));
+        }
 
-    if(ui->point6->isEnabled())
-    {
-        if(ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point6->text() == tr("empty"))
-        ui->point6->setText(tr("not used"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point7->text() == tr("empty"))
-        ui->point7->setText(tr("not used"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point8->text() == tr("empty"))
-        ui->point8->setText(tr("not used"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point9->text() == tr("empty"))
-        ui->point9->setText(tr("not used"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("empty"))
-        ui->point10->setText(tr("not used"));
-
+end:
     fontcheck(Rpnts);
+}
+
+void systemback::on_pnumber3_clicked()
+{
+    pnmchange(3);
 }
 
 void systemback::on_pnumber4_clicked()
 {
-    if(sb::pnumber != 4)
-    {
-        sb::pnumber = 4;
-        if(! cfgupdt) cfgupdt = true;
-    }
-
-    if(ui->point3->isEnabled() && ! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-
-    if(ui->point4->isEnabled())
-    {
-        if(ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point4->text() == tr("not used"))
-        ui->point4->setText(tr("empty"));
-
-    if(ui->point5->isEnabled())
-    {
-        if(ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point5->text() == tr("empty"))
-        ui->point5->setText(tr("not used"));
-
-    if(ui->point6->isEnabled())
-    {
-        if(ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point6->text() == tr("empty"))
-        ui->point6->setText(tr("not used"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point7->text() == tr("empty"))
-        ui->point7->setText(tr("not used"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point8->text() == tr("empty"))
-        ui->point8->setText(tr("not used"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point9->text() == tr("empty"))
-        ui->point9->setText(tr("not used"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("empty"))
-        ui->point10->setText(tr("not used"));
-
-    fontcheck(Rpnts);
+    pnmchange(4);
 }
 
 void systemback::on_pnumber5_clicked()
 {
-    if(sb::pnumber != 5)
-    {
-        sb::pnumber = 5;
-        if(! cfgupdt) cfgupdt = true;
-    }
-
-    if(ui->point3->isEnabled() && ! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-
-    if(ui->point4->isEnabled())
-    {
-        if(! ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet(nullptr);
-    }
-    else if(ui->point4->text() == tr("not used"))
-        ui->point4->setText(tr("empty"));
-
-    if(ui->point5->isEnabled())
-    {
-        if(ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point5->text() == tr("not used"))
-        ui->point5->setText(tr("empty"));
-
-    if(ui->point6->isEnabled())
-    {
-        if(ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point6->text() == tr("empty"))
-        ui->point6->setText(tr("not used"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point7->text() == tr("empty"))
-        ui->point7->setText(tr("not used"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point8->text() == tr("empty"))
-        ui->point8->setText(tr("not used"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point9->text() == tr("empty"))
-        ui->point9->setText(tr("not used"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("empty"))
-        ui->point10->setText(tr("not used"));
-
-    fontcheck(Rpnts);
+    pnmchange(5);
 }
 
 void systemback::on_pnumber6_clicked()
 {
-    if(sb::pnumber != 6)
-    {
-        sb::pnumber = 6;
-        if(! cfgupdt) cfgupdt = true;
-    }
-
-    if(ui->point3->isEnabled() && ! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-
-    if(ui->point4->isEnabled())
-    {
-        if(! ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet(nullptr);
-    }
-    else if(ui->point4->text() == tr("not used"))
-        ui->point4->setText(tr("empty"));
-
-    if(ui->point5->isEnabled())
-    {
-        if(! ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet(nullptr);
-    }
-    else if(ui->point5->text() == tr("not used"))
-        ui->point5->setText(tr("empty"));
-
-    if(ui->point6->isEnabled())
-    {
-        if(ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point6->text() == tr("not used"))
-        ui->point6->setText(tr("empty"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point7->text() == tr("empty"))
-        ui->point7->setText(tr("not used"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point8->text() == tr("empty"))
-        ui->point8->setText(tr("not used"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point9->text() == tr("empty"))
-        ui->point9->setText(tr("not used"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("empty"))
-        ui->point10->setText(tr("not used"));
-
-    fontcheck(Rpnts);
+    pnmchange(6);
 }
 
 void systemback::on_pnumber7_clicked()
 {
-    if(sb::pnumber != 7)
-    {
-        sb::pnumber = 7;
-        if(! cfgupdt) cfgupdt = true;
-    }
-
-    if(ui->point3->isEnabled() && ! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-
-    if(ui->point4->isEnabled())
-    {
-        if(! ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet(nullptr);
-    }
-    else if(ui->point4->text() == tr("not used"))
-        ui->point4->setText(tr("empty"));
-
-    if(ui->point5->isEnabled())
-    {
-        if(! ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet(nullptr);
-    }
-    else if(ui->point5->text() == tr("not used"))
-        ui->point5->setText(tr("empty"));
-
-    if(ui->point6->isEnabled())
-    {
-        if(! ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet(nullptr);
-    }
-    else if(ui->point6->text() == tr("not used"))
-        ui->point6->setText(tr("empty"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point7->text() == tr("not used"))
-        ui->point7->setText(tr("empty"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point8->text() == tr("empty"))
-        ui->point8->setText(tr("not used"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point9->text() == tr("empty"))
-        ui->point9->setText(tr("not used"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("empty"))
-        ui->point10->setText(tr("not used"));
-
-    fontcheck(Rpnts);
+    pnmchange(7);
 }
 
 void systemback::on_pnumber8_clicked()
 {
-    if(sb::pnumber != 8)
-    {
-        sb::pnumber = 8;
-        if(! cfgupdt) cfgupdt = true;
-    }
-
-    if(ui->point3->isEnabled() && ! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-
-    if(ui->point4->isEnabled())
-    {
-        if(! ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet(nullptr);
-    }
-    else if(ui->point4->text() == tr("not used"))
-        ui->point4->setText(tr("empty"));
-
-    if(ui->point5->isEnabled())
-    {
-        if(! ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet(nullptr);
-    }
-    else if(ui->point5->text() == tr("not used"))
-        ui->point5->setText(tr("empty"));
-
-    if(ui->point6->isEnabled())
-    {
-        if(! ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet(nullptr);
-    }
-    else if(ui->point6->text() == tr("not used"))
-        ui->point6->setText(tr("empty"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(! ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet(nullptr);
-    }
-    else if(ui->point7->text() == tr("not used"))
-        ui->point7->setText(tr("empty"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point8->text() == tr("not used"))
-        ui->point8->setText(tr("empty"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point9->text() == tr("empty"))
-        ui->point9->setText(tr("not used"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("empty"))
-        ui->point10->setText(tr("not used"));
-
-    fontcheck(Rpnts);
+    pnmchange(8);
 }
 
 void systemback::on_pnumber9_clicked()
 {
-    if(sb::pnumber < 9)
-    {
-        sb::pnumber = 9;
-        if(! cfgupdt) cfgupdt = true;
-    }
-
-    if(ui->point3->isEnabled() && ! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-
-    if(ui->point4->isEnabled())
-    {
-        if(! ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet(nullptr);
-    }
-    else if(ui->point4->text() == tr("not used"))
-        ui->point4->setText(tr("empty"));
-
-    if(ui->point5->isEnabled())
-    {
-        if(! ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet(nullptr);
-    }
-    else if(ui->point5->text() == tr("not used"))
-        ui->point5->setText(tr("empty"));
-
-    if(ui->point6->isEnabled())
-    {
-        if(! ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet(nullptr);
-    }
-    else if(ui->point6->text() == tr("not used"))
-        ui->point6->setText(tr("empty"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(! ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet(nullptr);
-    }
-    else if(ui->point7->text() == tr("not used"))
-        ui->point7->setText(tr("empty"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(! ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet(nullptr);
-    }
-    else if(ui->point8->text() == tr("not used"))
-        ui->point8->setText(tr("empty"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point9->text() == tr("not used"))
-        ui->point9->setText(tr("empty"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("empty"))
-        ui->point10->setText(tr("not used"));
-
-    fontcheck(Rpnts);
+    pnmchange(9);
 }
 
 void systemback::on_pnumber10_clicked()
 {
-    if(sb::pnumber != 10)
+    pnmchange(10);
+}
+
+inline void systemback::ptxtchange(uchar num, cQStr &txt)
+{
+    QLE *ldt(getpoint(num));
+    QCB *ckbx(getppipe(num));
+
+    if(ldt->isEnabled())
     {
-        sb::pnumber = 10;
-        if(! cfgupdt) cfgupdt = true;
+        if(txt.isEmpty())
+        {
+            if(ckbx->isChecked()) ckbx->click();
+            ckbx->setDisabled(true);
+        }
+        else if(sb::like(txt, {"* *", "*/*"}))
+        {
+            uchar cpos(ldt->cursorPosition() - 1);
+            ldt->setText(QStr(txt).replace(cpos, 1, nullptr));
+            ldt->setCursorPosition(cpos);
+        }
+        else
+        {
+            if(! ckbx->isEnabled()) ckbx->setEnabled(true);
+            if(! ldt->hasFocus()) ldt->setCursorPosition(0);
+
+            if(txt != sb::pnames[num])
+            {
+                if(! ckbx->isChecked()) ckbx->click();
+                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
+            }
+            else if(ckbx->isChecked())
+                ckbx->click();
+        }
     }
-
-    if(ui->point3->isEnabled() && ! ui->point3->styleSheet().isEmpty()) ui->point3->setStyleSheet(nullptr);
-
-    if(ui->point4->isEnabled())
+    else if(ckbx->isEnabled())
     {
-        if(! ui->point4->styleSheet().isEmpty()) ui->point4->setStyleSheet(nullptr);
+        if(ckbx->isChecked()) ckbx->click();
+        ckbx->setDisabled(true);
     }
-    else if(ui->point4->text() == tr("not used"))
-        ui->point4->setText(tr("empty"));
-
-    if(ui->point5->isEnabled())
-    {
-        if(! ui->point5->styleSheet().isEmpty()) ui->point5->setStyleSheet(nullptr);
-    }
-    else if(ui->point5->text() == tr("not used"))
-        ui->point5->setText(tr("empty"));
-
-    if(ui->point6->isEnabled())
-    {
-        if(! ui->point6->styleSheet().isEmpty()) ui->point6->setStyleSheet(nullptr);
-    }
-    else if(ui->point6->text() == tr("not used"))
-        ui->point6->setText(tr("empty"));
-
-    if(ui->point7->isEnabled())
-    {
-        if(! ui->point7->styleSheet().isEmpty()) ui->point7->setStyleSheet(nullptr);
-    }
-    else if(ui->point7->text() == tr("not used"))
-        ui->point7->setText(tr("empty"));
-
-    if(ui->point8->isEnabled())
-    {
-        if(! ui->point8->styleSheet().isEmpty()) ui->point8->setStyleSheet(nullptr);
-    }
-    else if(ui->point8->text() == tr("not used"))
-        ui->point8->setText(tr("empty"));
-
-    if(ui->point9->isEnabled())
-    {
-        if(! ui->point9->styleSheet().isEmpty()) ui->point9->setStyleSheet(nullptr);
-    }
-    else if(ui->point9->text() == tr("not used"))
-        ui->point9->setText(tr("empty"));
-
-    if(ui->point10->isEnabled())
-    {
-        if(ui->point10->styleSheet().isEmpty()) ui->point10->setStyleSheet("background-color: rgb(255, 103, 103)");
-    }
-    else if(ui->point10->text() == tr("not used"))
-        ui->point10->setText(tr("empty"));
-
-    fontcheck(Rpnts);
 }
 
 void systemback::on_point1_textChanged(cQStr &arg1)
 {
-    if(ui->point1->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe1->isChecked()) ui->pointpipe1->click();
-            ui->pointpipe1->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point1->cursorPosition() - 1);
-            ui->point1->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point1->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[0])
-            {
-                if(! ui->pointpipe1->isChecked()) ui->pointpipe1->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe1->isChecked())
-                ui->pointpipe1->click();
-
-            if(! ui->pointpipe1->isEnabled()) ui->pointpipe1->setEnabled(true);
-            if(! ui->point1->hasFocus()) ui->point1->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe1->isEnabled())
-    {
-        if(ui->pointpipe1->isChecked()) ui->pointpipe1->click();
-        ui->pointpipe1->setDisabled(true);
-    }
+    ptxtchange(0, arg1);
 }
 
 void systemback::on_point2_textChanged(cQStr &arg1)
 {
-    if(ui->point2->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe2->isChecked()) ui->pointpipe2->click();
-            ui->pointpipe2->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point2->cursorPosition() - 1);
-            ui->point2->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point2->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[1])
-            {
-                if(! ui->pointpipe2->isChecked()) ui->pointpipe2->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe2->isChecked())
-                ui->pointpipe2->click();
-
-            if(! ui->pointpipe2->isEnabled()) ui->pointpipe2->setEnabled(true);
-            if(! ui->point2->hasFocus()) ui->point2->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe2->isEnabled())
-    {
-        if(ui->pointpipe2->isChecked()) ui->pointpipe2->click();
-        ui->pointpipe2->setDisabled(true);
-    }
+    ptxtchange(1, arg1);
 }
 
 void systemback::on_point3_textChanged(cQStr &arg1)
 {
-    if(ui->point3->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe3->isChecked()) ui->pointpipe3->click();
-            ui->pointpipe3->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point3->cursorPosition() - 1);
-            ui->point3->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point3->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[2])
-            {
-                if(! ui->pointpipe3->isChecked()) ui->pointpipe3->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe3->isChecked())
-                ui->pointpipe3->click();
-
-            if(! ui->pointpipe3->isEnabled()) ui->pointpipe3->setEnabled(true);
-            if(! ui->point3->hasFocus()) ui->point3->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe3->isEnabled())
-    {
-        if(ui->pointpipe3->isChecked()) ui->pointpipe3->click();
-        ui->pointpipe3->setDisabled(true);
-    }
+    ptxtchange(2, arg1);
 }
 
 void systemback::on_point4_textChanged(cQStr &arg1)
 {
-    if(ui->point4->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe4->isChecked()) ui->pointpipe4->click();
-            ui->pointpipe4->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point4->cursorPosition() - 1);
-            ui->point4->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point4->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[3])
-            {
-                if(! ui->pointpipe4->isChecked()) ui->pointpipe4->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe4->isChecked())
-                ui->pointpipe4->click();
-
-            if(! ui->pointpipe4->isEnabled()) ui->pointpipe4->setEnabled(true);
-            if(! ui->point4->hasFocus()) ui->point4->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe4->isEnabled())
-    {
-        if(ui->pointpipe4->isChecked()) ui->pointpipe4->click();
-        ui->pointpipe4->setDisabled(true);
-    }
+    ptxtchange(3, arg1);
 }
 
 void systemback::on_point5_textChanged(cQStr &arg1)
 {
-    if(ui->point5->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe5->isChecked()) ui->pointpipe5->click();
-            ui->pointpipe5->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point5->cursorPosition() - 1);
-            ui->point5->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point5->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[4])
-            {
-                if(! ui->pointpipe5->isChecked()) ui->pointpipe5->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe5->isChecked())
-                ui->pointpipe5->click();
-
-            if(! ui->pointpipe5->isEnabled()) ui->pointpipe5->setEnabled(true);
-            if(! ui->point5->hasFocus()) ui->point5->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe5->isEnabled())
-    {
-        if(ui->pointpipe5->isChecked()) ui->pointpipe5->click();
-        ui->pointpipe5->setDisabled(true);
-    }
+    ptxtchange(4, arg1);
 }
 
 void systemback::on_point6_textChanged(cQStr &arg1)
 {
-    if(ui->point6->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe6->isChecked()) ui->pointpipe6->click();
-            ui->pointpipe6->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point6->cursorPosition() - 1);
-            ui->point6->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point6->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[5])
-            {
-                if(! ui->pointpipe6->isChecked()) ui->pointpipe6->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe6->isChecked())
-                ui->pointpipe6->click();
-
-            if(! ui->pointpipe6->isEnabled()) ui->pointpipe6->setEnabled(true);
-            if(! ui->point6->hasFocus()) ui->point6->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe6->isEnabled())
-    {
-        if(ui->pointpipe6->isChecked()) ui->pointpipe6->click();
-        ui->pointpipe6->setDisabled(true);
-    }
+    ptxtchange(5, arg1);
 }
 
 void systemback::on_point7_textChanged(cQStr &arg1)
 {
-    if(ui->point7->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe7->isChecked()) ui->pointpipe7->click();
-            ui->pointpipe7->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point7->cursorPosition() - 1);
-            ui->point7->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point7->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[6])
-            {
-                if(! ui->pointpipe7->isChecked()) ui->pointpipe7->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe7->isChecked())
-                ui->pointpipe7->click();
-
-            if(! ui->pointpipe7->isEnabled()) ui->pointpipe7->setEnabled(true);
-            if(! ui->point7->hasFocus()) ui->point7->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe7->isEnabled())
-    {
-        if(ui->pointpipe7->isChecked()) ui->pointpipe7->click();
-        ui->pointpipe7->setDisabled(true);
-    }
+    ptxtchange(6, arg1);
 }
 
 void systemback::on_point8_textChanged(cQStr &arg1)
 {
-    if(ui->point8->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe8->isChecked()) ui->pointpipe8->click();
-            ui->pointpipe8->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point8->cursorPosition() - 1);
-            ui->point8->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point8->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[7])
-            {
-                if(! ui->pointpipe8->isChecked()) ui->pointpipe8->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe8->isChecked())
-                ui->pointpipe8->click();
-
-            if(! ui->pointpipe8->isEnabled()) ui->pointpipe8->setEnabled(true);
-            if(! ui->point8->hasFocus()) ui->point8->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe8->isEnabled())
-    {
-        if(ui->pointpipe8->isChecked()) ui->pointpipe8->click();
-        ui->pointpipe8->setDisabled(true);
-    }
+    ptxtchange(7, arg1);
 }
 
 void systemback::on_point9_textChanged(cQStr &arg1)
 {
-    if(ui->point9->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe9->isChecked()) ui->pointpipe9->click();
-            ui->pointpipe9->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point9->cursorPosition() - 1);
-            ui->point9->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point9->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[8])
-            {
-                if(! ui->pointpipe9->isChecked()) ui->pointpipe9->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe9->isChecked())
-                ui->pointpipe9->click();
-
-            if(! ui->pointpipe9->isEnabled()) ui->pointpipe9->setEnabled(true);
-            if(! ui->point9->hasFocus()) ui->point9->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe9->isEnabled())
-    {
-        if(ui->pointpipe9->isChecked()) ui->pointpipe9->click();
-        ui->pointpipe9->setDisabled(true);
-    }
+    ptxtchange(8, arg1);
 }
 
 void systemback::on_point10_textChanged(cQStr &arg1)
 {
-    if(ui->point10->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe10->isChecked()) ui->pointpipe10->click();
-            ui->pointpipe10->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point10->cursorPosition() - 1);
-            ui->point10->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point10->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[9])
-            {
-                if(! ui->pointpipe10->isChecked()) ui->pointpipe10->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe10->isChecked())
-                ui->pointpipe10->click();
-
-            if(! ui->pointpipe10->isEnabled()) ui->pointpipe10->setEnabled(true);
-            if(! ui->point10->hasFocus()) ui->point10->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe10->isEnabled())
-    {
-        if(ui->pointpipe10->isChecked()) ui->pointpipe10->click();
-        ui->pointpipe10->setDisabled(true);
-    }
+    ptxtchange(9, arg1);
 }
 
 void systemback::on_point11_textChanged(cQStr &arg1)
 {
-    if(ui->point11->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe11->isChecked()) ui->pointpipe11->click();
-            ui->pointpipe11->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point11->cursorPosition() - 1);
-            ui->point11->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point11->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[10])
-            {
-                if(! ui->pointpipe11->isChecked()) ui->pointpipe11->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe11->isChecked())
-                ui->pointpipe11->click();
-
-            if(! ui->pointpipe11->isEnabled()) ui->pointpipe11->setEnabled(true);
-            if(! ui->point11->hasFocus()) ui->point11->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe11->isEnabled())
-    {
-        if(ui->pointpipe11->isChecked()) ui->pointpipe11->click();
-        ui->pointpipe11->setDisabled(true);
-    }
+    ptxtchange(10, arg1);
 }
 
 void systemback::on_point12_textChanged(cQStr &arg1)
 {
-    if(ui->point12->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe12->isChecked()) ui->pointpipe12->click();
-            ui->pointpipe12->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point12->cursorPosition() - 1);
-            ui->point12->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point12->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[11])
-            {
-                if(! ui->pointpipe12->isChecked()) ui->pointpipe12->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe12->isChecked())
-                ui->pointpipe12->click();
-
-            if(! ui->pointpipe12->isEnabled()) ui->pointpipe12->setEnabled(true);
-            if(! ui->point12->hasFocus()) ui->point12->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe12->isEnabled())
-    {
-        if(ui->pointpipe12->isChecked()) ui->pointpipe12->click();
-        ui->pointpipe12->setDisabled(true);
-    }
+    ptxtchange(11, arg1);
 }
 
 void systemback::on_point13_textChanged(cQStr &arg1)
 {
-    if(ui->point13->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe13->isChecked()) ui->pointpipe13->click();
-            ui->pointpipe13->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point13->cursorPosition() - 1);
-            ui->point13->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point13->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[12])
-            {
-                if(! ui->pointpipe13->isChecked()) ui->pointpipe13->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe13->isChecked())
-                ui->pointpipe13->click();
-
-            if(! ui->pointpipe13->isEnabled()) ui->pointpipe13->setEnabled(true);
-            if(! ui->point13->hasFocus()) ui->point13->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe13->isEnabled())
-    {
-        if(ui->pointpipe13->isChecked()) ui->pointpipe13->click();
-        ui->pointpipe13->setDisabled(true);
-    }
+    ptxtchange(12, arg1);
 }
 
 void systemback::on_point14_textChanged(cQStr &arg1)
 {
-    if(ui->point14->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe14->isChecked()) ui->pointpipe14->click();
-            ui->pointpipe14->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point14->cursorPosition() - 1);
-            ui->point14->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point14->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[13])
-            {
-                if(! ui->pointpipe14->isChecked()) ui->pointpipe14->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe14->isChecked())
-                ui->pointpipe14->click();
-
-            if(! ui->pointpipe14->isEnabled()) ui->pointpipe14->setEnabled(true);
-            if(! ui->point14->hasFocus()) ui->point14->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe14->isEnabled())
-    {
-        if(ui->pointpipe14->isChecked()) ui->pointpipe14->click();
-        ui->pointpipe14->setDisabled(true);
-    }
+    ptxtchange(13, arg1);
 }
 
 void systemback::on_point15_textChanged(cQStr &arg1)
 {
-    if(ui->point15->isEnabled())
-    {
-        if(arg1.isEmpty())
-        {
-            if(ui->pointpipe15->isChecked()) ui->pointpipe15->click();
-            ui->pointpipe15->setDisabled(true);
-        }
-        else if(sb::like(arg1, {"* *", "*/*"}))
-        {
-            uchar cpos(ui->point15->cursorPosition() - 1);
-            ui->point15->setText(QStr(arg1).replace(cpos, 1, nullptr));
-            ui->point15->setCursorPosition(cpos);
-        }
-        else
-        {
-            if(arg1 != sb::pnames[14])
-            {
-                if(! ui->pointpipe15->isChecked()) ui->pointpipe15->click();
-                if(! ui->pointrename->isEnabled()) ui->pointrename->setEnabled(true);
-            }
-            else if(ui->pointpipe15->isChecked())
-                ui->pointpipe15->click();
-
-            if(! ui->pointpipe15->isEnabled()) ui->pointpipe15->setEnabled(true);
-            if(! ui->point15->hasFocus()) ui->point15->setCursorPosition(0);
-        }
-    }
-    else if(ui->pointpipe15->isEnabled())
-    {
-        if(ui->pointpipe15->isChecked()) ui->pointpipe15->click();
-        ui->pointpipe15->setDisabled(true);
-    }
+    ptxtchange(14, arg1);
 }
 
 void systemback::on_restoremenu_clicked()
@@ -5329,7 +4152,7 @@ void systemback::on_systemupgrade_clicked()
         {
             nrxth = true;
             sb::unlock(sb::Sblock);
-            sb::exec("systemback", nullptr, false, true);
+            sb::exec("systemback", nullptr, sb::Bckgrnd);
             close();
         }
         else if(sb::lock(sb::Dpkglock))
@@ -5438,11 +4261,7 @@ void systemback::on_partitionrefresh_clicked()
     if(ui->repairpartition->count() > 0) ui->repairpartition->clear();
 
     if(! wismax)
-    {
-        ui->partitionsettings->resizeColumnToContents(2);
-        ui->partitionsettings->resizeColumnToContents(3);
-        ui->partitionsettings->resizeColumnToContents(4);
-    }
+        for(uchar a(2) ; a < 5 ; ++a) ui->partitionsettings->resizeColumnToContents(a);
 
     QSL plst;
     sb::readprttns(plst);
@@ -5494,23 +4313,13 @@ void systemback::on_partitionrefresh_clicked()
             dev->setFont(font);
             ui->partitionsettings->setItem(sn, 0, dev);
             QTblWI *size(new QTblWI);
-
-            if(bsize < 1073741824)
-                size->setText(QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB");
-            else if(bsize < 1073741824000)
-                size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB");
-            else
-                size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-
+            size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
             size->setTextAlignment(Qt::AlignRight | Qt::AlignBottom);
             size->setFont(font);
             ui->partitionsettings->setItem(sn, 1, size);
             QTblWI *empty(new QTblWI);
             ui->partitionsettings->setItem(sn, 2, empty);
-            ui->partitionsettings->setItem(sn, 3, empty->clone());
-            ui->partitionsettings->setItem(sn, 4, empty->clone());
-            ui->partitionsettings->setItem(sn, 5, empty->clone());
-            ui->partitionsettings->setItem(sn, 6, empty->clone());
+            for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
             QTblWI *tp(new QTblWI(type));
             ui->partitionsettings->setItem(sn, 8, tp);
             QTblWI *lngth(new QTblWI(QStr::number(bsize)));
@@ -5530,23 +4339,13 @@ void systemback::on_partitionrefresh_clicked()
                 dev->setFont(font);
                 ui->partitionsettings->setItem(sn, 0, dev);
                 QTblWI *size(new QTblWI);
-
-                if(bsize < 1073741824)
-                    size->setText(QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB");
-                else if(bsize < 1073741824000)
-                    size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB");
-                else
-                    size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-
+                size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
                 size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 size->setFont(font);
                 ui->partitionsettings->setItem(sn, 1, size);
                 QTblWI *empty(new QTblWI);
                 ui->partitionsettings->setItem(sn, 2, empty);
-                ui->partitionsettings->setItem(sn, 3, empty->clone());
-                ui->partitionsettings->setItem(sn, 4, empty->clone());
-                ui->partitionsettings->setItem(sn, 5, empty->clone());
-                ui->partitionsettings->setItem(sn, 6, empty->clone());
+                for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
                 break;
             }
             case sb::Primary:
@@ -5566,14 +4365,7 @@ void systemback::on_partitionrefresh_clicked()
                 QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
                 QTblWI *size(new QTblWI);
-
-                if(bsize < 1073741824)
-                    size->setText(QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB");
-                else if(bsize < 1073741824000)
-                    size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB");
-                else
-                    size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-
+                size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
                 size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 ui->partitionsettings->setItem(sn, 1, size);
                 QTblWI *lbl(new QTblWI(dts.at(5)));
@@ -5644,23 +4436,13 @@ void systemback::on_partitionrefresh_clicked()
                 dev->setFont(font);
                 ui->partitionsettings->setItem(sn, 0, dev);
                 QTblWI *size(new QTblWI);
-
-                if(bsize < 1073741824)
-                    size->setText(QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB");
-                else if(bsize < 1073741824000)
-                    size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB");
-                else
-                    size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-
+                size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
                 size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 size->setFont(font);
                 ui->partitionsettings->setItem(sn, 1, size);
                 QTblWI *empty(new QTblWI);
                 ui->partitionsettings->setItem(sn, 2, empty);
-                ui->partitionsettings->setItem(sn, 3, empty->clone());
-                ui->partitionsettings->setItem(sn, 4, empty->clone());
-                ui->partitionsettings->setItem(sn, 5, empty->clone());
-                ui->partitionsettings->setItem(sn, 6, empty->clone());
+                for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
                 break;
             }
 
@@ -5673,18 +4455,9 @@ void systemback::on_partitionrefresh_clicked()
         }
     }
 
-    ui->partitionsettings->resizeColumnToContents(0);
-    ui->partitionsettings->resizeColumnToContents(1);
+    for(uchar a(0) ; a < 7 ; ++a)
+        if(wismax || a < 2 || a > 4) ui->partitionsettings->resizeColumnToContents(a);
 
-    if(wismax)
-    {
-        ui->partitionsettings->resizeColumnToContents(2);
-        ui->partitionsettings->resizeColumnToContents(3);
-        ui->partitionsettings->resizeColumnToContents(4);
-    }
-
-    ui->partitionsettings->resizeColumnToContents(5);
-    ui->partitionsettings->resizeColumnToContents(6);
     if(ui->copypanel->isVisible() && ! ui->copyback->hasFocus()) ui->copyback->setFocus();
     ui->copycover->hide();
     busy(false);
@@ -5801,8 +4574,7 @@ void systemback::on_unmount_clicked()
             }
         }
 
-        mnts[0] = sb::fload("/proc/self/mounts");
-        mnts[1] = sb::fload("/proc/swaps");
+        mnts[0] = sb::fload("/proc/self/mounts"), mnts[1] = sb::fload("/proc/swaps");
 
         for(ushort a(ui->partitionsettings->currentRow() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
         {
@@ -5967,198 +4739,37 @@ void systemback::on_pointpipe1_clicked()
 {
     bool rnmenbl(false);
     if(ppipe > 0) ppipe = 0;
+    schar num(-1);
 
-    if(ui->pointpipe1->isChecked())
+    for(QCB *ckbx : ui->sbpanel->findChildren<QCB *>())
     {
-        ++ppipe;
-        cpoint = "S01";
-        pname = sb::pnames[0];
-        if(ui->point1->text() != sb::pnames[0]) rnmenbl = true;
-    }
-    else if(ui->point1->isEnabled() && ui->point1->text() != sb::pnames[0] && ! ui->point1->text().isEmpty())
-        ui->point1->setText(sb::pnames[0]);
+        ++num;
 
-    if(ui->pointpipe2->isChecked())
-    {
-        if(++ppipe == 1)
+        if(ckbx->isChecked())
         {
-            cpoint = "S02";
-            pname = sb::pnames[1];
+            if(++ppipe == 1) cpoint = [num]() -> QStr {
+                    switch(num) {
+                    case 9:
+                        return "S10";
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                    case 14:
+                        return "H0" % QStr::number(num - 9);
+                    default:
+                        return "S0" % QStr::number(num + 1);
+                    }
+                }(), pname = sb::pnames[num];
+
+            if(! rnmenbl && getpoint(num)->text() != sb::pnames[num]) rnmenbl = true;
         }
-
-        if(ui->point2->text() != sb::pnames[1] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point2->isEnabled() && ui->point2->text() != sb::pnames[1] && ! ui->point2->text().isEmpty())
-        ui->point2->setText(sb::pnames[1]);
-
-    if(ui->pointpipe3->isChecked())
-    {
-        if(++ppipe == 1)
+        else
         {
-            cpoint = "S03";
-            pname = sb::pnames[2];
+            QLE *ldt(getpoint(num));
+            if(ldt->isEnabled() && ldt->text() != sb::pnames[num] && ! ldt->text().isEmpty()) ldt->setText(sb::pnames[num]);
         }
-
-        if(ui->point3->text() != sb::pnames[2] && ! rnmenbl) rnmenbl = true;
     }
-    else if(ui->point3->isEnabled() && ui->point3->text() != sb::pnames[2] && ! ui->point3->text().isEmpty())
-        ui->point3->setText(sb::pnames[2]);
-
-    if(ui->pointpipe4->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S04";
-            pname = sb::pnames[3];
-        }
-
-        if(ui->point4->text() != sb::pnames[3] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point4->isEnabled() && ui->point4->text() != sb::pnames[3] && ! ui->point4->text().isEmpty())
-        ui->point4->setText(sb::pnames[3]);
-
-    if(ui->pointpipe5->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S05";
-            pname = sb::pnames[4];
-        }
-
-        if(ui->point5->text() != sb::pnames[4] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point5->isEnabled() && ui->point5->text() != sb::pnames[4] && ! ui->point5->text().isEmpty())
-        ui->point5->setText(sb::pnames[4]);
-
-    if(ui->pointpipe6->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S06";
-            pname = sb::pnames[5];
-        }
-
-        if(ui->point6->text() != sb::pnames[5] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point6->isEnabled() && ui->point6->text() != sb::pnames[5] && ! ui->point6->text().isEmpty())
-        ui->point6->setText(sb::pnames[5]);
-
-    if(ui->pointpipe7->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S07";
-            pname = sb::pnames[6];
-        }
-
-        if(ui->point7->text() != sb::pnames[6] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point7->isEnabled() && ui->point7->text() != sb::pnames[6] && ! ui->point7->text().isEmpty())
-        ui->point7->setText(sb::pnames[6]);
-
-    if(ui->pointpipe8->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S08";
-            pname = sb::pnames[7];
-        }
-
-        if(ui->point8->text() != sb::pnames[7] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point8->isEnabled() && ui->point8->text() != sb::pnames[7] && ! ui->point8->text().isEmpty())
-        ui->point8->setText(sb::pnames[7]);
-
-    if(ui->pointpipe9->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S09";
-            pname = sb::pnames[8];
-        }
-
-        if(ui->point9->text() != sb::pnames[8] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point9->isEnabled() && ui->point9->text() != sb::pnames[8] && ! ui->point9->text().isEmpty())
-        ui->point9->setText(sb::pnames[8]);
-
-    if(ui->pointpipe10->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S10";
-            pname = sb::pnames[9];
-        }
-
-        if(ui->point10->text() != sb::pnames[9] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point10->isEnabled() && ui->point10->text() != sb::pnames[9] && ! ui->point10->text().isEmpty())
-        ui->point10->setText(sb::pnames[9]);
-
-    if(ui->pointpipe11->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "H01";
-            pname = sb::pnames[10];
-        }
-
-        if(ui->point11->text() != sb::pnames[10] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point11->isEnabled() && ui->point11->text() != sb::pnames[10] && ! ui->point11->text().isEmpty())
-        ui->point11->setText(sb::pnames[10]);
-
-    if(ui->pointpipe12->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "H02";
-            pname = sb::pnames[11];
-        }
-
-        if(ui->point12->text() != sb::pnames[11] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point12->isEnabled() && ui->point12->text() != sb::pnames[11] && ! ui->point12->text().isEmpty())
-        ui->point12->setText(sb::pnames[11]);
-
-    if(ui->pointpipe13->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "H03";
-            pname = sb::pnames[12];
-        }
-
-        if(ui->point13->text() != sb::pnames[12] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point13->isEnabled() && ui->point13->text() != sb::pnames[12] && ! ui->point13->text().isEmpty())
-        ui->point13->setText(sb::pnames[12]);
-
-    if(ui->pointpipe14->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "H04";
-            pname = sb::pnames[13];
-        }
-
-        if(ui->point14->text() != sb::pnames[13] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point14->isEnabled() && ui->point14->text() != sb::pnames[13] && ! ui->point14->text().isEmpty())
-        ui->point14->setText(sb::pnames[13]);
-
-    if(ui->pointpipe15->isChecked())
-    {
-        if(++ppipe == 1)
-        {
-            cpoint = "S05";
-            pname = sb::pnames[14];
-        }
-
-        if(ui->point15->text() != sb::pnames[14] && ! rnmenbl) rnmenbl = true;
-    }
-    else if(ui->point15->isEnabled() && ui->point15->text() != sb::pnames[14] && ! ui->point15->text().isEmpty())
-        ui->point15->setText(sb::pnames[14]);
 
     if(ppipe == 0)
     {
@@ -6326,14 +4937,7 @@ void systemback::on_livedevicesrefresh_clicked()
         ui->livedevices->setItem(sn, 0, dev);
         QTblWI *size(new QTblWI);
         ullong bsize(dts.at(2).toULongLong());
-
-        if(bsize < 1073741824)
-            size->setText(QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB");
-        else if(bsize < 1073741824000)
-            size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB");
-        else
-            size->setText(QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-
+        size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
         size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         ui->livedevices->setItem(sn, 1, size);
         QTblWI *name(new QTblWI(dts.at(1)));
@@ -6345,10 +4949,7 @@ void systemback::on_livedevicesrefresh_clicked()
         ui->livedevices->setItem(sn, 3, format);
     }
 
-    ui->livedevices->resizeColumnToContents(0);
-    ui->livedevices->resizeColumnToContents(1);
-    ui->livedevices->resizeColumnToContents(2);
-    ui->livedevices->resizeColumnToContents(3);
+    for(uchar a(0) ; a < 4 ; ++a) ui->livedevices->resizeColumnToContents(a);
     if(ui->livedevices->columnWidth(0) + ui->livedevices->columnWidth(1) + ui->livedevices->columnWidth(2) + ui->livedevices->columnWidth(3) > ui->livedevices->contentsRect().width()) ui->livedevices->setColumnWidth(2, ui->livedevices->contentsRect().width() - ui->livedevices->columnWidth(0) - ui->livedevices->columnWidth(1) - ui->livedevices->columnWidth(3));
     if(ui->livewritestart->isEnabled()) ui->livewritestart->setDisabled(true);
     if(ui->livecreatepanel->isVisible() && ! ui->livecreateback->hasFocus()) ui->livecreateback->setFocus();
@@ -6594,7 +5195,7 @@ void systemback::on_dialogok_clicked()
         }
     else if(ui->dialogok->text() == tr("Reboot"))
     {
-        sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, false, true);
+        sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, sb::Bckgrnd);
         close();
     }
     else if(ui->dialogok->text() == tr("X restart"))
@@ -6630,125 +5231,39 @@ void systemback::on_pointrename_clicked()
 {
     busy();
     if(dialog == 302) dialog = 0;
+    schar num(-1);
 
-    if(ui->pointpipe1->isChecked() && ui->point1->text() != sb::pnames[0])
+    for(QCB *ckbx : ui->sbpanel->findChildren<QCB *>())
     {
-        if(QFile::rename(sb::sdir[1] % "/S01_" % sb::pnames[0], sb::sdir[1] % "/S01_" % ui->point1->text()))
-            ui->pointpipe1->click();
-        else
-            dialog = 302;
-    }
+        ++num;
 
-    if(ui->pointpipe2->isChecked() && ui->point2->text() != sb::pnames[1])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S02_" % sb::pnames[1], sb::sdir[1] % "/S02_" % ui->point2->text()))
-            ui->pointpipe2->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
+        if(ckbx->isChecked())
+        {
+            QLE *ldt(getpoint(num));
 
-    if(ui->pointpipe3->isChecked() && ui->point3->text() != sb::pnames[2])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S03_" % sb::pnames[2], sb::sdir[1] % "/S03_" % ui->point3->text()))
-            ui->pointpipe3->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
+            if(ldt->text() != sb::pnames[num])
+            {
+                QStr ppath([num]() -> QStr {
+                        switch(num) {
+                        case 9:
+                            return "/S10_";
+                        case 10:
+                        case 11:
+                        case 12:
+                        case 13:
+                        case 14:
+                            return "/H0" % QStr::number(num - 9) % '_';
+                        default:
+                            return "/S0" % QStr::number(num + 1) % '_';
+                        }
+                    }());
 
-    if(ui->pointpipe4->isChecked() && ui->point4->text() != sb::pnames[3])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S04_" % sb::pnames[3], sb::sdir[1] % "/S04_" % ui->point4->text()))
-            ui->pointpipe4->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe5->isChecked() && ui->point5->text() != sb::pnames[4])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S05_" % sb::pnames[4], sb::sdir[1] % "/S05_" % ui->point5->text()))
-            ui->pointpipe5->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe6->isChecked() && ui->point6->text() != sb::pnames[5])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S06_" % sb::pnames[5], sb::sdir[1] % "/S06_" % ui->point6->text()))
-            ui->pointpipe6->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe7->isChecked() && ui->point7->text() != sb::pnames[6])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S07_" % sb::pnames[6], sb::sdir[1] % "/S07_" % ui->point7->text()))
-            ui->pointpipe7->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe8->isChecked() && ui->point8->text() != sb::pnames[7])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S08_" % sb::pnames[7], sb::sdir[1] % "/S08_" % ui->point8->text()))
-            ui->pointpipe8->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe9->isChecked() && ui->point9->text() != sb::pnames[8])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S09_" % sb::pnames[8], sb::sdir[1] % "/S09_" % ui->point9->text()))
-            ui->pointpipe9->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe10->isChecked() && ui->point10->text() != sb::pnames[9])
-    {
-        if(QFile::rename(sb::sdir[1] % "/S10_" % sb::pnames[9], sb::sdir[1] % "/S10_" % ui->point10->text()))
-            ui->pointpipe10->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe11->isChecked() && ui->point11->text() != sb::pnames[10])
-    {
-        if(QFile::rename(sb::sdir[1] % "/H01_" % sb::pnames[10], sb::sdir[1] % "/H01_" % ui->point11->text()))
-            ui->pointpipe11->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe12->isChecked() && ui->point12->text() != sb::pnames[11])
-    {
-        if(QFile::rename(sb::sdir[1] % "/H02_" % sb::pnames[11], sb::sdir[1] % "/H02_" % ui->point12->text()))
-            ui->pointpipe12->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe13->isChecked() && ui->point13->text() != sb::pnames[12])
-    {
-        if(QFile::rename(sb::sdir[1] % "/H03_" % sb::pnames[12], sb::sdir[1] % "/H03_" % ui->point13->text()))
-            ui->pointpipe13->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe14->isChecked() && ui->point14->text() != sb::pnames[13])
-    {
-        if(QFile::rename(sb::sdir[1] % "/H04_" % sb::pnames[13], sb::sdir[1] % "/H04_" % ui->point14->text()))
-            ui->pointpipe14->click();
-        else if(dialog != 302)
-            dialog = 302;
-    }
-
-    if(ui->pointpipe15->isChecked() && ui->point15->text() != sb::pnames[14])
-    {
-        if(QFile::rename(sb::sdir[1] % "/H05_" % sb::pnames[14], sb::sdir[1] % "/H05_" % ui->point15->text()))
-            ui->pointpipe15->click();
-        else if(dialog != 302)
-            dialog = 302;
+                if(QFile::rename(sb::sdir[1] % ppath % sb::pnames[num], sb::sdir[1] % ppath % ldt->text()))
+                    ckbx->click();
+                else if(dialog != 302)
+                    dialog = 302;
+            }
+        }
     }
 
     pointupgrade();
@@ -7070,9 +5585,8 @@ void systemback::on_dirchooseok_clicked()
                 else if(dlst.count() == 1 && sb::isfile(sb::sdir[1] % "/.sbschedule"))
                     sb::remove(sb::sdir[1]);
 
-                sb::sdir[0] = ui->dirpath->text();
+                sb::sdir[0] = ui->dirpath->text(), sb::sdir[1] = sb::sdir[0] % "/Systemback";
                 if(! cfgupdt) cfgupdt = true;
-                sb::sdir[1] = sb::sdir[0] % "/Systemback";
                 ui->storagedir->setText(sb::sdir[0]);
                 ui->storagedir->setToolTip(sb::sdir[0]);
                 ui->storagedir->setCursorPosition(0);
@@ -7187,15 +5701,7 @@ void systemback::on_includeusers_currentIndexChanged(cQStr &arg1)
 
 void systemback::on_restorenext_clicked()
 {
-    if(ui->fullrestore->isChecked())
-        dialog = 107;
-    else if(ui->systemrestore->isChecked())
-        dialog = 100;
-    else if(ui->keepfiles->isChecked())
-        dialog = 104;
-    else
-        dialog = 103;
-
+    dialog = ui->fullrestore->isChecked() ? 107 : ui->systemrestore->isChecked() ? 100 : ui->keepfiles->isChecked() ? 104 : 103;
     dialogopen();
 }
 
@@ -7353,13 +5859,7 @@ void systemback::on_grubrepair_clicked()
 
 void systemback::on_repairnext_clicked()
 {
-    if(ui->systemrepair->isChecked())
-        dialog = 101;
-    else if(ui->fullrepair->isChecked())
-        dialog = 102;
-    else
-      dialog = 109;
-
+    dialog = ui->systemrepair->isChecked() ? 101 : ui->fullrepair->isChecked() ? 102 : 109;
     dialogopen();
 }
 
@@ -8152,44 +6652,6 @@ void systemback::on_livename_textChanged(cQStr &arg1)
     }
 }
 
-void systemback::itmxpnd(cQSL &path, QTrWI *item)
-{
-    for(ushort a(0) ; a < item->childCount() ; ++a)
-    {
-        QTrWI *ctwi(item->child(a));
-        QStr iname(ctwi->text(0));
-
-        if(sb::stype(path.at(0) % path.at(1) % '/' % iname) == sb::Isdir)
-        {
-            if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-            QSL itmlst;
-            itmlst.reserve(ctwi->childCount());
-            for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
-
-            for(cQStr &siname : QDir(path.at(0) % path.at(1) % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-            {
-                if(ui->excludedlist->findItems(sb::right(path.at(1), -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
-                {
-                    for(ushort b(0) ; b < itmlst.count() ; ++b)
-                        if(itmlst.at(b) == siname)
-                        {
-                            itmlst.removeAt(b);
-                            goto next;
-                        }
-
-                    QTrWI *sctwi(new QTrWI);
-                    sctwi->setText(0, siname);
-                    ctwi->addChild(sctwi);
-                }
-
-            next:;
-            }
-        }
-
-        ctwi->sortChildren(0, Qt::AscendingOrder);
-    }
-}
-
 void systemback::on_itemslist_itemExpanded(QTrWI *item)
 {
     if(item->backgroundColor(0) != Qt::transparent)
@@ -8199,14 +6661,52 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
         cQTrWI *twi(item);
         QStr path('/' % twi->text(0));
         while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
-        if(sb::stype("/root" % path) == sb::Isdir) itmxpnd({"/root", path}, item);
+
+        auto itmxpnd([&](cQSL &path) {
+                for(ushort a(0) ; a < item->childCount() ; ++a)
+                {
+                    QTrWI *ctwi(item->child(a));
+                    QStr iname(ctwi->text(0));
+
+                    if(sb::stype(path.at(0) % path.at(1) % '/' % iname) == sb::Isdir)
+                    {
+                        if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                        QSL itmlst;
+                        itmlst.reserve(ctwi->childCount());
+                        for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
+
+                        for(cQStr &siname : QDir(path.at(0) % path.at(1) % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
+                        {
+                            if(ui->excludedlist->findItems(sb::right(path.at(1), -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
+                            {
+                                for(ushort b(0) ; b < itmlst.count() ; ++b)
+                                    if(itmlst.at(b) == siname)
+                                    {
+                                        itmlst.removeAt(b);
+                                        goto next;
+                                    }
+
+                                QTrWI *sctwi(new QTrWI);
+                                sctwi->setText(0, siname);
+                                ctwi->addChild(sctwi);
+                            }
+
+                        next:;
+                        }
+                    }
+
+                    ctwi->sortChildren(0, Qt::AscendingOrder);
+                }
+            });
+
+        if(sb::stype("/root" % path) == sb::Isdir) itmxpnd({"/root", path});
         QFile file("/etc/passwd");
 
         if(file.open(QIODevice::ReadOnly))
             while(! file.atEnd())
             {
                 QStr usr(file.readLine().trimmed());
-                if(usr.contains(":/home/") && sb::stype("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)) % path) == sb::Isdir) itmxpnd({"/home/" % usr, path}, item);
+                if(usr.contains(":/home/") && sb::stype("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)) % path) == sb::Isdir) itmxpnd({"/home/" % usr, path});
             }
 
         busy(false);
@@ -8574,12 +7074,10 @@ void systemback::on_schedulerstate_clicked()
         sb::schdle[0] = sb::False;
         if(! cfgupdt) cfgupdt = true;
         ui->schedulerstate->setText(tr("Disabled"));
-        if(ui->dayup->isEnabled()) ui->dayup->setDisabled(true);
-        if(ui->daydown->isEnabled()) ui->daydown->setDisabled(true);
-        if(ui->hourup->isEnabled()) ui->hourup->setDisabled(true);
-        if(ui->hourdown->isEnabled()) ui->hourdown->setDisabled(true);
-        if(ui->minuteup->isEnabled()) ui->minuteup->setDisabled(true);
-        if(ui->minutedown->isEnabled()) ui->minutedown->setDisabled(true);
+
+        for(QPB *pbtn : ui->schedulerdayhrminpanel->findChildren<QPB *>())
+            if(pbtn->isEnabled()) pbtn->setDisabled(true);
+
         if(ui->secondup->isEnabled()) ui->secondup->setDisabled(true);
         if(ui->seconddown->isEnabled()) ui->seconddown->setDisabled(true);
         ui->silentmode->setDisabled(true);
@@ -8717,29 +7215,16 @@ void systemback::on_windowposition_currentIndexChanged(cQStr &arg1)
 
     if(ui->schedulepanel->isVisible())
     {
-        if(arg1 == tr("Top left") && sb::schdlr[0] != "topleft")
+        cchar *cval([&arg1] {
+                return arg1 == tr("Top left") ? "topleft"
+                    : arg1 == tr("Top right") ? "topright"
+                    : arg1 == tr("Center") ? "center"
+                    : arg1 == tr("Bottom left") ? "bottomleft" : "bottomright";
+            }());
+
+        if(sb::schdlr[0] != cval)
         {
-            sb::schdlr[0] = "topleft";
-            if(! cfgupdt) cfgupdt = true;
-        }
-        else if(arg1 == tr("Top right") && sb::schdlr[0] != "topright")
-        {
-            sb::schdlr[0] = "topright";
-            if(! cfgupdt) cfgupdt = true;
-        }
-        else if(arg1 == tr("Center") && sb::schdlr[0] != "center")
-        {
-            sb::schdlr[0] = "center";
-            if(! cfgupdt) cfgupdt = true;
-        }
-        else if(arg1 == tr("Bottom left") && sb::schdlr[0] != "bottomleft")
-        {
-            sb::schdlr[0] = "bottomleft";
-            if(! cfgupdt) cfgupdt = true;
-        }
-        else if(arg1 == tr("Bottom right") && sb::schdlr[0] != "bottomright")
-        {
-            sb::schdlr[0] = "bottomright";
+            sb::schdlr[0] = cval;
             if(! cfgupdt) cfgupdt = true;
         }
     }
@@ -8774,9 +7259,8 @@ void systemback::on_interrupt_clicked()
     {
         if(! intrrptimer)
         {
-            prun = tr("Interrupting the current process");
+            prun = tr("Interrupting the current process"), intrrpt = true;
             ui->interrupt->setDisabled(true);
-            intrrpt = true;
             if(! sb::ExecKill) sb::ExecKill = true;
 
             if(sb::SBThrd.isRunning())
@@ -8798,21 +7282,10 @@ void systemback::on_interrupt_clicked()
         {
             delete intrrptimer;
             intrrptimer = nullptr;
-            if(ui->pointpipe1->isChecked()) ui->pointpipe1->setChecked(false);
-            if(ui->pointpipe2->isChecked()) ui->pointpipe2->setChecked(false);
-            if(ui->pointpipe3->isChecked()) ui->pointpipe3->setChecked(false);
-            if(ui->pointpipe4->isChecked()) ui->pointpipe4->setChecked(false);
-            if(ui->pointpipe5->isChecked()) ui->pointpipe5->setChecked(false);
-            if(ui->pointpipe6->isChecked()) ui->pointpipe6->setChecked(false);
-            if(ui->pointpipe7->isChecked()) ui->pointpipe7->setChecked(false);
-            if(ui->pointpipe8->isChecked()) ui->pointpipe8->setChecked(false);
-            if(ui->pointpipe9->isChecked()) ui->pointpipe9->setChecked(false);
-            if(ui->pointpipe10->isChecked()) ui->pointpipe10->setChecked(false);
-            if(ui->pointpipe11->isChecked()) ui->pointpipe11->setChecked(false);
-            if(ui->pointpipe12->isChecked()) ui->pointpipe12->setChecked(false);
-            if(ui->pointpipe13->isChecked()) ui->pointpipe13->setChecked(false);
-            if(ui->pointpipe14->isChecked()) ui->pointpipe14->setChecked(false);
-            if(ui->pointpipe15->isChecked()) ui->pointpipe15->setChecked(false);
+
+            for(QCB *ckbx : ui->sbpanel->findChildren<QCB *>())
+                if(ckbx->isChecked()) ckbx->setChecked(false);
+
             on_pointpipe1_clicked();
             ui->statuspanel->hide();
 
@@ -8853,34 +7326,34 @@ void systemback::on_schedulerlater_clicked()
 
 void systemback::on_scalingup_clicked()
 {
-    if(ui->scalingfactor->text() == "auto")
-    {
-        ui->scalingfactor->setText("x1");
-        ui->scalingdown->setEnabled(true);
-    }
-    else if(ui->scalingfactor->text() == "x1")
-        ui->scalingfactor->setText("x1.5");
-    else
-    {
-        ui->scalingfactor->setText("x2");
-        ui->scalingup->setDisabled(true);
-    }
+    ui->scalingfactor->setText([this] {
+            if(ui->scalingfactor->text() == "auto")
+            {
+                ui->scalingdown->setEnabled(true);
+                return "x1";
+            }
+            else if(ui->scalingfactor->text() == "x1")
+                return "x1.5";
+
+            ui->scalingup->setDisabled(true);
+            return "x2";
+        }());
 }
 
 void systemback::on_scalingdown_clicked()
 {
-    if(ui->scalingfactor->text() == "x2")
-    {
-        ui->scalingfactor->setText("x1.5");
-        ui->scalingup->setEnabled(true);
-    }
-    else if(ui->scalingfactor->text() == "x1.5")
-        ui->scalingfactor->setText("x1");
-    else
-    {
-        ui->scalingfactor->setText("auto");
-        ui->scalingdown->setDisabled(true);
-    }
+    ui->scalingfactor->setText([this] {
+            if(ui->scalingfactor->text() == "x2")
+            {
+                ui->scalingup->setEnabled(true);
+                return "x1.5";
+            }
+            else if(ui->scalingfactor->text() == "x1.5")
+                return "x1";
+
+            ui->scalingdown->setDisabled(true);
+            return "auto";
+        }());
 }
 
 void systemback::on_newrestorepoint_clicked()
@@ -8891,13 +7364,15 @@ error:
         intrrpt = false;
     else
     {
-        if(sb::dfree(sb::sdir[1]) < 104857600)
-            dialog = 304;
-        else
-        {
-            if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
-            dialog = 318;
-        }
+        dialog = [this] {
+            if(sb::dfree(sb::sdir[1]) < 104857600)
+                return 304;
+            else
+            {
+                if(! sb::ThrdDbg.isEmpty()) printdbgmsg();
+                return 318;
+            }
+        }();
 
         dialogopen();
         if(! sstart) pointupgrade();
@@ -8977,69 +7452,30 @@ start:
     statustart();
     uchar dnum(0);
 
-    for(schar a(9) ; a > -1 ; --a)
+    for(schar a(9) ; a > -1 && a < 15 ; a == 0 ? a = 10 : a > 0 && a < 10 ? --a : ++a)
     {
-        switch(a) {
-        case 9:
-            if(! ui->pointpipe10->isChecked()) continue;
-            break;
-        case 8:
-            if(! ui->pointpipe9->isChecked()) continue;
-            break;
-        case 7:
-            if(! ui->pointpipe8->isChecked()) continue;
-            break;
-        case 6:
-            if(! ui->pointpipe7->isChecked()) continue;
-            break;
-        case 5:
-            if(! ui->pointpipe6->isChecked()) continue;
-            break;
-        case 4:
-            if(! ui->pointpipe5->isChecked()) continue;
-            break;
-        case 3:
-            if(! ui->pointpipe4->isChecked()) continue;
-            break;
-        case 2:
-            if(! ui->pointpipe3->isChecked()) continue;
-            break;
-        case 1:
-            if(! ui->pointpipe2->isChecked()) continue;
-            break;
-        case 0:
-            if(! ui->pointpipe1->isChecked()) continue;
+        if(getppipe(a)->isChecked())
+        {
+            ++dnum;
+            prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
+
+            if(! QFile::rename(sb::sdir[1] % [a]() -> QStr {
+                    switch(a) {
+                    case 9:
+                        return "/S10";
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                    case 14:
+                        return "/H0" % QStr::number(a - 9) % '_';
+                    default:
+                        return "/S0" % QStr::number(a + 1) % '_';
+                    }
+                }() % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+
+            if(intrrpt) goto error;
         }
-
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
-        if(intrrpt) goto error;
-    }
-
-    for(uchar a(10) ; a < 15 ; ++a)
-    {
-        switch(a) {
-        case 10:
-            if(! ui->pointpipe11->isChecked()) continue;
-            break;
-        case 11:
-            if(! ui->pointpipe12->isChecked()) continue;
-            break;
-        case 12:
-            if(! ui->pointpipe13->isChecked()) continue;
-            break;
-        case 13:
-            if(! ui->pointpipe14->isChecked()) continue;
-            break;
-        case 14:
-            if(! ui->pointpipe15->isChecked()) continue;
-        }
-
-        ++dnum;
-        prun = tr("Deleting restore point") % ' ' % QStr::number(dnum) % '/' % QStr::number(ppipe);
-        if(! QFile::rename(sb::sdir[1] % "/H0" % QStr::number(a - 9) % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
-        if(intrrpt) goto error;
     }
 
     pointupgrade();
@@ -9068,11 +7504,9 @@ error:
         }
     }
 exit:
-    if(sb::isdir("/.sblvtmp")) sb::remove("/.sblvtmp");
-    if(sb::isdir("/media/.sblvtmp")) sb::remove("/media/.sblvtmp");
-    if(sb::isdir("/var/.sblvtmp")) sb::remove("/var/.sblvtmp");
-    if(sb::isdir("/home/.sbuserdata")) sb::remove("/home/.sbuserdata");
-    if(sb::isdir("/root/.sbuserdata")) sb::remove("/root/.sbuserdata");
+    for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/var/.sblvtmp", "/home/.sbuserdata", "/root/.sbuserdata"})
+        if(sb::isdir(dir)) sb::remove(dir);
+
     if(sb::autoiso == sb::True) on_livecreatemenu_clicked();
 
     if(intrrpt)
@@ -9235,20 +7669,18 @@ start:
             for(cQStr &item : QDir(cdir).entryList(QDir::Files))
                 if(item.contains("cryptdisks")) elist.append(" -e " % cdir % '/' % item);
 
-    if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr == sb::True ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist) > 0)
+    if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr == sb::True ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, nullptr, sb::Prgrss) > 0)
     {
         dialog = 310;
         goto error;
     }
 
-    sb::Progress = -1;
-    ui->progressbar->setValue(0);
-    prun = tr("Creating Live system") % '\n' % tr("process") % " 3/3" % (sb::autoiso == sb::True ? "+1" : nullptr);
-    sb::remove("/.sblvtmp");
-    sb::remove("/media/.sblvtmp");
-    sb::remove("/var/.sblvtmp");
-    if(sb::isdir("/home/.sbuserdata")) sb::remove("/home/.sbuserdata");
-    if(sb::isdir("/root/.sbuserdata")) sb::remove("/root/.sbuserdata");
+    prun = tr("Creating Live system") % '\n' % tr("process") % " 3/3" % (sb::autoiso == sb::True ? "+1" : nullptr), sb::Progress = -1;
+    for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/var/.sblvtmp"}) sb::remove(dir);
+
+    for(cQStr &dir : {"/home/.sbuserdata", "/root/.sbuserdata"})
+        if(sb::isdir(dir)) sb::remove(dir);
+
     if(intrrpt) goto exit;
     QStr rpart, grxorg, srxorg, prmtrs;
     if(QFile(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs").size() > 4294967295) rpart = "root=LABEL=SBROOT ";
@@ -9289,11 +7721,7 @@ start:
             }
     }
 
-    if(xmntry)
-    {
-        grxorg = "menuentry \"" % tr("Boot Live without xorg.conf file") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " noxconf quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n";
-        srxorg = "label noxconf\n  menu label " % tr("Boot Live without xorg.conf file") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz noxconf quiet splash" % prmtrs % "\n\n";
-    }
+    if(xmntry) grxorg = "menuentry \"" % tr("Boot Live without xorg.conf file") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " noxconf quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n", srxorg = "label noxconf\n  menu label " % tr("Boot Live without xorg.conf file") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz noxconf quiet splash" % prmtrs % "\n\n";
 #ifdef __amd64__
     if(sb::isfile("/usr/share/systemback/efi-amd64.bootfiles") && (sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") > 0 || ! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png") ||
         ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n") ||
@@ -9308,8 +7736,9 @@ start:
     if(intrrpt) goto exit;
     if(sb::ThrdLng[0] > 0) sb::ThrdLng[0] = 0;
     sb::ThrdStr[0] = sb::sdir[2] % '/' % ifname % ".sblive";
+    ui->progressbar->setValue(0);
 
-    if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .") > 0)
+    if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .", nullptr, sb::Prgrss) > 0)
     {
         if(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) sb::remove(sb::sdir[2] % '/' % ifname % ".sblive");
         dialog = 311;
@@ -9324,13 +7753,12 @@ start:
 
         if(isize < 4294967295 && isize + 52428800 < sb::dfree(sb::sdir[2]))
         {
-            sb::Progress = -1;
-            ui->progressbar->setValue(0);
-            prun = tr("Creating Live system") % '\n' % tr("process") % " 4/3+1";
+            prun = tr("Creating Live system") % '\n' % tr("process") % " 4/3+1", sb::Progress = -1;
             if(! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux")) goto error;
             if(intrrpt) goto exit;
+            ui->progressbar->setValue(0);
 
-            if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate") > 0)
+            if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate", nullptr, sb::Prgrss) > 0)
             {
                 if(sb::isfile(sb::sdir[2] % '/' % ifname % ".iso")) sb::remove(sb::sdir[2] % '/' % ifname % ".iso");
                 dialog = 311;
@@ -9371,10 +7799,9 @@ start:
     statustart();
     prun = tr("Converting Live system image") % '\n' % tr("process") % " 1/2";
     if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemconvert")) goto error;
-    sb::ThrdLng[0] = sb::fsize(path % ".sblive");
-    sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
+    sb::ThrdLng[0] = sb::fsize(path % ".sblive"), sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
 
-    if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions") > 0)
+    if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions", nullptr, sb::Prgrss) > 0)
     {
         dialog = 325;
         goto error;
@@ -9382,11 +7809,10 @@ start:
 
     if(! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux")) goto error;
     if(intrrpt) goto error;
-    prun = tr("Converting Live system image") % '\n' % tr("process") % " 2/2";
-    sb::Progress = -1;
+    prun = tr("Converting Live system image") % '\n' % tr("process") % " 2/2", sb::Progress = -1;
     ui->progressbar->setValue(0);
 
-    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % path % ".iso " % sb::sdir[2] % "/.sblivesystemconvert") > 0)
+    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % path % ".iso " % sb::sdir[2] % "/.sblivesystemconvert", nullptr, sb::Prgrss) > 0)
     {
         dialog = 324;
         goto error;
@@ -9458,8 +7884,7 @@ void systemback::on_newpartition_clicked()
         if(pcount > 2 && (fcount > 1 || ui->partitionsize->value() < ui->partitionsize->maximum()))
         {
             if(! sb::mkpart(dev, start, ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong(), sb::Extended)) goto end;
-            type = sb::Logical;
-            start += 1048576;
+            type = sb::Logical, start += 1048576;
         }
         else
             type = sb::Primary;
@@ -9481,36 +7906,24 @@ void systemback::on_languageoverride_clicked(bool chckd)
 {
     if(chckd)
     {
-        if(ui->languages->currentText() == "المصرية العربية")
-            sb::lang = "ar_EG";
-        else if(ui->languages->currentText() == "Català")
-            sb::lang = "ca_ES";
-        else if(ui->languages->currentText() == "Čeština")
-            sb::lang = "cs_CS";
-        else if(ui->languages->currentText() == "English (common)")
-            sb::lang = "en_EN";
-        else if(ui->languages->currentText() == "English (United Kingdom)")
-            sb::lang = "en_GB";
-        else if(ui->languages->currentText() == "Español")
-            sb::lang = "es_ES";
-        else if(ui->languages->currentText() == "Suomi")
-            sb::lang = "fi_FI";
-        else if(ui->languages->currentText() == "Français")
-            sb::lang = "fr_FR";
-        else if(ui->languages->currentText() == "Galego")
-            sb::lang = "gl_ES";
-        else if(ui->languages->currentText() == "Magyar")
-            sb::lang = "hu_HU";
-        else if(ui->languages->currentText() == "Bahasa Indonesia")
-            sb::lang = "id_ID";
-        else if(ui->languages->currentText() == "Português (Brasil)")
-            sb::lang = "pt_BR";
-        else if(ui->languages->currentText() == "Română")
-            sb::lang = "ro_RO";
-        else if(ui->languages->currentText() == "Türkçe")
-            sb::lang = "tr_TR";
-        else
-            sb::lang = "zh_CN";
+        sb::lang = [this] {
+                QStr lname(ui->languages->currentText());
+
+                return lname == "المصرية العربية" ? "ar_EG"
+                    : lname == "Català" ? "ca_ES"
+                    : lname == "Čeština" ? "cs_CS"
+                    : lname == "English (common)" ? "en_EN"
+                    : lname == "English (United Kingdom)" ? "en_GB"
+                    : lname == "Español" ? "es_ES"
+                    : lname == "Suomi" ? "fi_FI"
+                    : lname == "Français" ? "fr_FR"
+                    : lname == "Galego" ? "gl_ES"
+                    : lname == "Magyar" ? "hu_HU"
+                    : lname == "Bahasa Indonesia" ? "id_ID"
+                    : lname == "Português (Brasil)" ? "pt_BR"
+                    : lname == "Română" ? "ro_RO"
+                    : lname == "Türkçe" ? "tr_TR" : "zh_CN";
+            }();
 
         ui->languages->setEnabled(true);
     }
@@ -9529,36 +7942,22 @@ void systemback::on_languages_currentIndexChanged(cQStr &arg1)
 
     if(ui->languages->isEnabled())
     {
-        if(arg1 == "المصرية العربية")
-            sb::lang = "ar_EG";
-        else if(arg1 == "Català")
-            sb::lang = "ca_ES";
-        else if(arg1 == "Čeština")
-            sb::lang = "cs_CS";
-        else if(arg1 == "English (common)")
-            sb::lang = "en_EN";
-        else if(arg1 == "English (United Kingdom)")
-            sb::lang = "en_GB";
-        else if(arg1 == "Español")
-            sb::lang = "es_ES";
-        else if(arg1 == "Suomi")
-            sb::lang = "fi_FI";
-        else if(arg1 == "Français")
-            sb::lang = "fr_FR";
-        else if(arg1 == "Galego")
-            sb::lang = "gl_ES";
-        else if(arg1 == "Magyar")
-            sb::lang = "hu_HU";
-        else if(arg1 == "Bahasa Indonesia")
-            sb::lang = "id_ID";
-        else if(arg1 == "Português (Brasil)")
-            sb::lang = "pt_BR";
-        else if(arg1 == "Română")
-            sb::lang = "ro_RO";
-        else if(arg1 == "Türkçe")
-            sb::lang = "tr_TR";
-        else
-            sb::lang = "zh_CN";
+        sb::lang = [&arg1] {
+                return arg1 == "المصرية العربية" ? "ar_EG"
+                    : arg1 == "Català" ? "ca_ES"
+                    : arg1 == "Čeština" ? "cs_CS"
+                    : arg1 == "English (common)" ? "en_EN"
+                    : arg1 == "English (United Kingdom)" ? "en_GB"
+                    : arg1 == "Español" ? "es_ES"
+                    : arg1 == "Suomi" ? "fi_FI"
+                    : arg1 == "Français" ? "fr_FR"
+                    : arg1 == "Galego" ? "gl_ES"
+                    : arg1 == "Magyar" ? "hu_HU"
+                    : arg1 == "Bahasa Indonesia" ? "id_ID"
+                    : arg1 == "Português (Brasil)" ? "pt_BR"
+                    : arg1 == "Română" ? "ro_RO"
+                    : arg1 == "Türkçe" ? "tr_TR" : "zh_CN";
+            }();
 
         if(! cfgupdt) cfgupdt = true;
     }

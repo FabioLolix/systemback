@@ -2,7 +2,11 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_GB">
 <context>
-    <name>QTranslator</name>
+    <name>QTrn</name>
+    <message>
+        <source>Unsafe X Window authorization!</source>
+        <translation>Unsafe X Window authorisation!</translation>
+    </message>
     <message>
         <source>An error occurred while upgrading the system!</source>
         <translation type="unfinished"></translation>
@@ -10,10 +14,6 @@
     <message>
         <source>Restart upgrade ...</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unsafe X Window authorization!</source>
-        <translation>Unsafe X Window authorisation!</translation>
     </message>
     <message>
         <source>Please do not use &apos;sudo&apos; command.</source>

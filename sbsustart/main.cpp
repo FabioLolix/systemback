@@ -19,8 +19,6 @@
 
 #include "sbsustart.hpp"
 #include <QCoreApplication>
-#include <QTranslator>
-#include <QLocale>
 #include <QTimer>
 #include <unistd.h>
 
@@ -45,7 +43,7 @@ int main(int argc, char *argv[])
             if(seteuid(sbsustart::uid) == -1)
                 sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
             else
-                sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, false, true);
+                sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
 
             return 1;
         }
@@ -53,22 +51,11 @@ int main(int argc, char *argv[])
 #endif
 
     QCoreApplication a(argc, argv);
-    QTranslator *trnsltr(new QTranslator);
-    sb::cfgread();
-
-    if(sb::lang == "auto")
-    {
-        if(QLocale::system().name() != "en_EN") trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
-    }
-    else if(sb::lang != "en_EN")
-        trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
-
-    if(trnsltr->isEmpty())
-        delete trnsltr;
-    else
-        a.installTranslator(trnsltr);
-
+    QTrn *tltr(sb::ldtltr());
+    if(tltr) a.installTranslator(tltr);
     sbsustart s;
     QTimer::singleShot(0, &s, SLOT(main()));
-    return a.exec();
+    uchar rv(a.exec());
+    if(tltr) delete tltr;
+    return rv;
 }

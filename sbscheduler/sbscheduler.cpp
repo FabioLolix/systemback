@@ -24,10 +24,10 @@
 
 void scheduler::main()
 {
-    uchar rv(255);
+    uchar rv;
     goto start;
 error:
-    if(rv < 255) sb::error("\n " % tr("Cannot start Systemback scheduler daemon!") % "\n\n " % [rv]{
+    if(rv < 255) sb::error("\n " % tr("Cannot start Systemback scheduler daemon!") % "\n\n " % [rv] {
             switch(rv) {
             case 1:
                 return tr("Missing, wrong or too much argument(s).");
@@ -48,106 +48,99 @@ error:
     return;
 start:
     if(qApp->arguments().count() != 2)
-    {
         rv = 1;
-        goto error;
-    }
     else if(sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(qApp->arguments().value(1))))
-    {
         rv = 2;
-        goto error;
-    }
-
-    if(getuid() + getgid() > 0)
-    {
+    else if(getuid() + getgid() > 0)
         rv = 3;
-        goto error;
-    }
-
-    if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
-    {
+    else if(sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
         rv = 4;
-        goto error;
-    }
-
-    if(! sb::lock(sb::Schdlrlock))
-    {
+    else if(! sb::lock(sb::Schdlrlock))
         rv = 5;
-        goto error;
-    }
-
-    if(daemon(0, 0) == -1)
-    {
+    else if(daemon(0, 0) == -1)
         rv = 6;
-        goto error;
-    }
-
-    sb::delay(100);
-    if(! sb::lock(sb::Schdlrlock)) goto error;
-    QStr pfile(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
-    if(! sb::crtfile(pfile, QStr::number(qApp->applicationPid()))) goto error;
-    QDateTime pflmd(QFileInfo(pfile).lastModified());
-    sleep(300);
-
-    forever
+    else
     {
-        if(! sb::isfile(pfile) || (pflmd != QFileInfo(pfile).lastModified() && sb::fload(pfile) != QBA::number(qApp->applicationPid())))
+        sb::delay(100);
+
+        if(! sb::lock(sb::Schdlrlock))
+            rv = 255;
+        else
         {
-            sb::unlock(sb::Schdlrlock);
-            sb::exec("sbscheduler " % qApp->arguments().value(1), nullptr, true, true);
-            break;
-        }
+            QStr pfile(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
 
-        if(! sb::isfile("/etc/systemback.conf") || cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
-        {
-            sb::cfgread();
-            cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
-        }
-
-        if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write)) goto next;
-
-        if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))
-        {
-            sb::crtfile(sb::sdir[1] % "/.sbschedule");
-            goto next;
-        }
-
-        if(sb::schdle[0] == sb::True)
-        {
-            if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1] * 1440 + sb::schdle[2] * 60 + sb::schdle[3]) goto next;
-            if(! sb::lock(sb::Sblock)) goto next;
-
-            if(! sb::lock(sb::Dpkglock))
-            {
-                sb::unlock(sb::Sblock);
-                goto next;
-            }
-
-            if(sb::schdle[5] == sb::True || ! sb::execsrch("systemback"))
-                newrestorepoint();
+            if(! sb::crtfile(pfile, QStr::number(qApp->applicationPid())))
+                rv = 255;
             else
             {
-                QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
+                QDateTime pflmd(QFileInfo(pfile).lastModified());
+                sleep(300);
 
-                if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                forever
                 {
-                    sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
-                    QFile::remove(xauth);
+                    if(! sb::isfile(pfile) || (pflmd != QFileInfo(pfile).lastModified() && sb::fload(pfile) != QBA::number(qApp->applicationPid())))
+                    {
+                        sb::unlock(sb::Schdlrlock);
+                        sb::exec("sbscheduler " % qApp->arguments().value(1), nullptr, sb::Silent | sb::Bckgrnd);
+                        break;
+                    }
+
+                    if(! sb::isfile("/etc/systemback.conf") || cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
+                    {
+                        sb::cfgread();
+                        cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
+                    }
+
+                    if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write)) goto next;
+
+                    if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))
+                    {
+                        sb::crtfile(sb::sdir[1] % "/.sbschedule");
+                        goto next;
+                    }
+
+                    if(sb::schdle[0] == sb::True)
+                    {
+                        if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1] * 1440 + sb::schdle[2] * 60 + sb::schdle[3]) goto next;
+                        if(! sb::lock(sb::Sblock)) goto next;
+
+                        if(! sb::lock(sb::Dpkglock))
+                        {
+                            sb::unlock(sb::Sblock);
+                            goto next;
+                        }
+
+                        if(sb::schdle[5] == sb::True || ! sb::execsrch("systemback"))
+                            newrestorepoint();
+                        else
+                        {
+                            QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
+
+                            if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                            {
+                                sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
+                                QFile::remove(xauth);
+                            }
+                        }
+
+                        sb::unlock(sb::Sblock);
+                        sb::unlock(sb::Dpkglock);
+                        sleep(50);
+                    }
+                    else
+                        sleep(1790);
+
+                next:
+                    sleep(10);
                 }
+
+                qApp->quit();
+                return;
             }
-
-            sb::unlock(sb::Sblock);
-            sb::unlock(sb::Dpkglock);
-            sleep(50);
         }
-        else
-            sleep(1790);
-
-    next:
-        sleep(10);
     }
 
-    qApp->quit();
+    goto error;
 }
 
 void scheduler::newrestorepoint()

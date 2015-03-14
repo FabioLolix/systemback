@@ -50,6 +50,9 @@ protected:
     void closeEvent(QCloseEvent *ev);
 
 private:
+    enum { Strgdr = 0, Lvwrkdr = 1, Dpath = 2, Rpnts = 3,
+           Normal = 100, High = 147, Max = 200 };
+
     Ui::systemback *ui;
 
     struct GRUB
@@ -58,7 +61,6 @@ private:
         bool isEFI;
     };
 
-    static cuchar Strgdr{0}, Lvwrkdr{1}, Dpath{2}, Rpnts{3}, Normal{100}, High{147}, Max{200};
     GRUB grub;
     QTimer utimer, *shdltimer, *dlgtimer, *intrrptimer;
     QStr cpoint, points, pname, prun, dialogdev, hash;
@@ -67,19 +69,21 @@ private:
     uchar busycnt, ppipe, sfctr, icnt;
     bool wismax, uchkd, nrxth, ickernel, irblck, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
 
+    QLE *getpoint(uchar num);
+    QCB *getppipe(uchar num);
     QStr guname();
     QStr ckname();
     ushort ss(ushort size);
     bool minside(cQPoint &wpos, cQSize &wsize);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
-    void itmxpnd(cQSL &path, QTrWI *item);
+    void ptxtchange(uchar num, cQStr &txt);
     void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);
     void dialogopen(schar snum = -1);
     void busy(bool state = true);
     void fontcheck(uchar wdgt);
+    void pnmchange(uchar num);
     void pointupgrade();
-    void accesserror();
     void emptycache();
     void statustart();
     void systemcopy();

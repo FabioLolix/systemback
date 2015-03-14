@@ -29,13 +29,14 @@ class systemback : public QObject
 
 public:
     systemback();
+    ~systemback();
 
 public slots:
     void progress(uchar status = Inprog);
     void main();
 
 private:
-    static cuchar Inprog{0}, Start{1}, Stop{2};
+    enum { Inprog = 0, Start = 1, Stop = 2 };
     QTimer *ptimer;
     QStr pname, cpoint, prun, pbar;
     QChar yn[2];
@@ -43,9 +44,7 @@ private:
     uchar storagedir();
     uchar clistart();
     uchar restore();
-    uchar uinit();
     bool newrestorepoint();
-    bool pointdelete();
     void emptycache();
 };
 

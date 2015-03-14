@@ -19,34 +19,28 @@
 
 #include "systemback.hpp"
 #include <QApplication>
-#include <QTranslator>
 #include <unistd.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QTranslator *trnsltr(new QTranslator);
-    sb::cfgread();
+    QTrn *tltr(sb::ldtltr());
+    if(tltr) a.installTranslator(tltr);
 
-    if(sb::lang == "auto")
-    {
-        if(QLocale::system().name() != "en_EN") trnsltr->load(QLocale::system(), "systemback", "_", "/usr/share/systemback/lang");
-    }
-    else if(sb::lang != "en_EN")
-        trnsltr->load("systemback_" % sb::lang, "/usr/share/systemback/lang");
+    uchar rv([&a] {
+            if(qgetenv("XAUTHORITY").startsWith("/home/") && getuid() == 0)
+            {
+                sb::error("\n " % QTrn::tr("Unsafe X Window authorization!") % "\n\n " % QTrn::tr("Please do not use 'sudo' command.") % "\n\n");
+                return 1;
+            }
+            else
+            {
+                systemback w;
+                w.show();
+                return a.exec();
+            }
+        }());
 
-    if(trnsltr->isEmpty())
-        delete trnsltr;
-    else
-        a.installTranslator(trnsltr);
-
-    if(qgetenv("XAUTHORITY").startsWith("/home/") && getuid() == 0)
-    {
-        sb::error("\n " % QTranslator::tr("Unsafe X Window authorization!") % "\n\n " % QTranslator::tr("Please do not use 'sudo' command.") % "\n\n");
-        return 1;
-    }
-
-    systemback w;
-    w.show();
-    return a.exec();
+    if(tltr) delete tltr;
+    return rv;
 }

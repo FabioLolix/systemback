@@ -35,27 +35,37 @@
 
 systemback::systemback()
 {
-    yn[0] = tr("(Y/N)").at(1);
-    yn[1] = tr("(Y/N)").at(3);
+    ptimer = nullptr;
+    QStr yns(tr("(Y/N)"));
+    yn[0] = yns.at(1);
+    yn[1] = yns.at(3);
+}
+
+systemback::~systemback()
+{
+    if(ptimer) delete ptimer;
 }
 
 void systemback::main()
 {
-    QStr help(tr("Usage: systemback-cli [option]\n\n"
-                         " Options:\n\n"
-                         "  -n, --newbackup          create a new restore point\n\n"
-                         "  -s, --storagedir <path>  get or set restore points storage directory path\n\n"
-                         "  -u, --upgrade            upgrade current system\n"
-                         "                           remove unnecessary files and packages\n\n"
-                         "  -v, --version            output Systemback version number\n\n"
-                         "  -h, --help               show this help"));
-    uchar rv(0);
+    auto help([] {
+            return tr("Usage: systemback-cli [option]\n\n"
+            " Options:\n\n"
+            "  -n, --newbackup          create a new restore point\n\n"
+            "  -s, --storagedir <path>  get or set restore points storage directory path\n\n"
+            "  -u, --upgrade            upgrade current system\n"
+            "                           remove unnecessary files and packages\n\n"
+            "  -v, --version            output Systemback version number\n\n"
+            "  -h, --help               show this help");
+        });
+
+    uchar rv;
     goto start;
 error:
-    sb::error("\n " % [rv, &help]() -> QStr{
+    sb::error("\n " % [=]() -> QStr {
             switch(rv) {
             case 1:
-                return help;
+                return help();
             case 2:
                 return tr("Root privileges are required for running Systemback!");
             case 3:
@@ -87,92 +97,82 @@ error:
     return;
 start:
     if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
-        sb::print("\n " % help % "\n\n");
+        sb::print("\n " % help() % "\n\n");
     else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
         sb::print("\n " % sb::appver() % "\n\n");
-    else if(getuid() + getgid() > 0)
+    else if(sb::like(qApp->arguments().value(1), {"_-u_", "_--upgrade_"}))
     {
-        rv = 2;
-        goto error;
+        sb::unlock(sb::Dpkglock);
+        sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
     }
     else
     {
-        if(! sb::lock(sb::Sblock))
-        {
+        if(getuid() + getgid() > 0)
+            rv = 2;
+        else if(! sb::lock(sb::Sblock))
             rv = 3;
-            goto error;
-        }
-
-        if(! sb::lock(sb::Dpkglock))
-        {
+        else if(! sb::lock(sb::Dpkglock))
             rv = 4;
-            goto error;
-        }
-
-        if(qApp->arguments().count() == 1)
-        {
-            if((rv = uinit()) > 0) goto error;
-            rv = clistart();
-            endwin();
-        }
-        else if(sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}))
-        {
-            if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
-            {
-                rv = 10;
-                goto error;
-            }
-
-            if((rv = uinit()) > 0) goto error;
-            sb::pupgrade();
-            if(! newrestorepoint()) rv = sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
-            endwin();
-        }
-        else if(sb::like(qApp->arguments().value(1), {"_-s_", "_--storagedir_"}))
-            rv = storagedir();
-        else if(sb::like(qApp->arguments().value(1), {"_-u_", "_--upgrade_"}))
-        {
-            sb::unlock(sb::Dpkglock);
-            sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
-        }
         else
         {
-            rv = 1;
-            goto error;
+            auto uinit([&rv]() -> bool {
+                    int pgid(getpgrp());
+                    if(pgid == -1 || ! sb::like(pgid, {tcgetpgrp(STDIN_FILENO), tcgetpgrp(STDOUT_FILENO)}, true)) return 255;
+                    initscr();
+
+                    if(! has_colors())
+                        rv = 11;
+                    else if(LINES < 24 || COLS < 80)
+                        rv = 12;
+                    else
+                    {
+                        noecho();
+                        raw();
+                        curs_set(0);
+                        attron(A_BOLD);
+                        start_color();
+                        assume_default_colors(COLOR_BLUE, COLOR_BLACK);
+                        init_pair(1, COLOR_WHITE, COLOR_BLACK);
+                        init_pair(2, COLOR_BLUE, COLOR_BLACK);
+                        init_pair(3, COLOR_GREEN, COLOR_BLACK);
+                        init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+                        init_pair(5, COLOR_RED, COLOR_BLACK);
+                        return true;
+                    }
+
+                    return false;
+                });
+
+            if(qApp->arguments().count() == 1)
+            {
+                if(uinit()) rv = clistart();
+                endwin();
+            }
+            else if(sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}))
+            {
+                if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
+                    rv = 10;
+                else
+                {
+                    if(uinit())
+                    {
+                        sb::pupgrade();
+                        rv = newrestorepoint() ? 0 : sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
+                    }
+
+                    endwin();
+                }
+            }
+            else if(sb::like(qApp->arguments().value(1), {"_-s_", "_--storagedir_"}))
+                rv = storagedir();
+            else
+                rv = 1;
         }
+
+        if(rv > 0) goto error;
     }
 
-    if(rv == 0)
-        qApp->quit();
-    else
-        goto error;
-}
-
-uchar systemback::uinit()
-{
-    int pgid(getpgrp());
-    if(pgid == -1 || ! sb::like(pgid, {tcgetpgrp(STDIN_FILENO), tcgetpgrp(STDOUT_FILENO)}, true)) return 255;
-    initscr();
-    uchar rv(has_colors() ? LINES < 24 || COLS < 80 ? 12 : 0 : 11);
-
-    if(rv > 0)
-    {
-        endwin();
-        return rv;
-    }
-
-    noecho();
-    raw();
-    curs_set(0);
-    attron(A_BOLD);
-    start_color();
-    assume_default_colors(COLOR_BLUE, COLOR_BLACK);
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-    init_pair(2, COLOR_BLUE, COLOR_BLACK);
-    init_pair(3, COLOR_GREEN, COLOR_BLACK);
-    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(5, COLOR_RED, COLOR_BLACK);
-    return 0;
+    qApp->quit();
 }
 
 uchar systemback::clistart()
@@ -213,44 +213,26 @@ uchar systemback::clistart()
     if(! pname.isEmpty()) pname.clear();
     if(sb::Progress != -1) sb::Progress = -1;
 
-    do
-        switch(getch()) {
+    do {
+        int gtch(getch());
+
+        switch(gtch) {
         case '1':
-            cpoint = "S01";
-            if(! sb::pnames[0].isEmpty()) pname = sb::pnames[0];
-            break;
         case '2':
-            cpoint = "S02";
-            if(! sb::pnames[1].isEmpty()) pname = sb::pnames[1];
-            break;
         case '3':
-            cpoint = "S03";
-            if(! sb::pnames[2].isEmpty()) pname = sb::pnames[2];
-            break;
         case '4':
-            cpoint = "S04";
-            if(! sb::pnames[3].isEmpty()) pname = sb::pnames[3];
-            break;
         case '5':
-            cpoint = "S05";
-            if(! sb::pnames[4].isEmpty()) pname = sb::pnames[4];
-            break;
         case '6':
-            cpoint = "S06";
-            if(! sb::pnames[5].isEmpty()) pname = sb::pnames[5];
-            break;
         case '7':
-            cpoint = "S07";
-            if(! sb::pnames[6].isEmpty()) pname = sb::pnames[6];
-            break;
         case '8':
-            cpoint = "S08";
-            if(! sb::pnames[7].isEmpty()) pname = sb::pnames[7];
-            break;
         case '9':
-            cpoint = "S09";
-            if(! sb::pnames[8].isEmpty()) pname = sb::pnames[8];
+        {
+            QStr cstr(gtch);
+            cpoint = "S0" % cstr;
+            uchar num(cstr.toUShort() - 1);
+            if(! sb::pnames[num].isEmpty()) pname = sb::pnames[num];
             break;
+        }
         case 'A':
             cpoint = "S10";
             if(! sb::pnames[9].isEmpty()) pname = sb::pnames[9];
@@ -284,7 +266,7 @@ uchar systemback::clistart()
         case 'Q':
             return 0;
         }
-    while(pname.isEmpty());
+    } while(pname.isEmpty());
 
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
@@ -301,9 +283,21 @@ uchar systemback::clistart()
     forever
         switch(getch()) {
         case '1':
-            if(! pointdelete()) return 13;
+        {
+            prun = tr("Deleting restore point");
+            progress(Start);
+
+            if(! QFile::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname))
+            {
+                progress(Stop);
+                return 13;
+            }
+
+            emptycache();
+            progress(Stop);
             clear();
             return clistart();
+        }
         case '2':
             clear();
             return restore();
@@ -344,9 +338,8 @@ uchar systemback::storagedir()
                     sb::remove(sb::sdir[1]);
             }
 
-            sb::sdir[0] = ndir;
+            sb::sdir[0] = ndir, sb::sdir[1] = sb::sdir[0] % "/Systemback";
             sb::cfgwrite();
-            sb::sdir[1] = sb::sdir[0] % "/Systemback";
         }
 
         if(! sb::isdir(sb::sdir[1]) && ! QDir().mkdir(sb::sdir[1]))
@@ -406,21 +399,6 @@ start:
     return true;
 }
 
-bool systemback::pointdelete()
-{
-    goto start;
-error:
-    progress(Stop);
-    return false;
-start:
-    prun = tr("Deleting restore point");
-    progress(Start);
-    if(! QFile::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname)) goto error;
-    emptycache();
-    progress(Stop);
-    return true;
-}
-
 uchar systemback::restore()
 {
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
@@ -441,25 +419,21 @@ uchar systemback::restore()
     refresh();
     uchar rmode(0);
 
-    do
-        switch(getch()) {
+    do {
+        int gtch(getch());
+
+        switch(gtch) {
         case 'c':
         case 'C':
             clear();
             return clistart();
         case '1':
-            rmode = 1;
-            break;
         case '2':
-            rmode = 2;
-            break;
         case '3':
-            rmode = 3;
-            break;
         case '4':
-            rmode = 4;
+            rmode = QStr(gtch).toUShort();
         }
-    while(rmode == 0);
+    } while(rmode == 0);
 
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
@@ -471,7 +445,7 @@ uchar systemback::restore()
     printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
     attron(COLOR_PAIR(4));
 
-    printw(chr(("\n\n  " % [rmode]{
+    printw(chr(("\n\n  " % [rmode] {
             switch(rmode) {
             case 1:
                 return tr("Full restore");
@@ -590,32 +564,29 @@ uchar systemback::restore()
             return 6;
     } while(! rstart);
 
-    uchar mthd;
-
-    switch(rmode) {
-    case 1:
-        mthd = 1;
-        prun = tr("Restoring the full system");
-        break;
-    case 2:
-        mthd = 2;
-        prun = tr("Restoring the system files");
-        break;
-    case 3:
-        mthd = 3;
-        prun = tr("Restoring users configuration files");
-        break;
-    case 4:
-        mthd = 5;
-        prun = tr("Restoring users configuration files");
-    }
+    uchar mthd([rmode, this] {
+            switch(rmode) {
+            case 1:
+                prun = tr("Restoring the full system");
+                return 1;
+            case 2:
+                prun = tr("Restoring the system files");
+                return 2;
+            case 3:
+                prun = tr("Restoring users configuration files");
+                return 3;
+            default:
+                prun = tr("Restoring users configuration files");
+                return 4;
+            }
+        }());
 
     progress(Start);
     bool sfstab(fsave == 1);
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
 
     if(greinst == 1)
-        if(sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, true) > 0)
+        if(sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, sb::Silent) > 0)
         {
             progress(Stop);
             return 7;
@@ -626,7 +597,7 @@ uchar systemback::restore()
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
     attron(COLOR_PAIR(1));
 
-    printw(chr(("\n\n " % [rmode]{
+    printw(chr(("\n\n " % [rmode] {
             switch(rmode) {
             case 1:
                 return tr("Full system restoration is completed.");
@@ -648,7 +619,7 @@ uchar systemback::restore()
     forever
         switch(getch()) {
         case '\n':
-            if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, false, true);
+            if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, sb::Bckgrnd);
             return 0;
         case 'q':
         case 'Q':

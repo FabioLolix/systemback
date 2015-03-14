@@ -32,9 +32,6 @@ public:
 
 public slots:
     void main();
-
-private:
-    bool clrenv(cQStr &usrhm, cQStr &xpath = nullptr);
 };
 
 #endif

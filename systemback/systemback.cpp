@@ -5552,44 +5552,8 @@ void systemback::on_livedevices_currentItemChanged(QTblWI *crrnt, QTblWI *prvs)
 
 void systemback::rmntcheck()
 {
-    if(sb::issmfs("/", "/mnt"))
-    {
-        if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
-        {
-            ui->grubreinstallrepair->hide();
-            ui->grubreinstallrepairdisable->show();
-        }
-
-        if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
-    }
-    else
-    {
-        if(ui->grubrepair->isChecked())
-        {
-            if(! (grub.isEFI && sb::issmfs("/mnt/boot", "/mnt/boot/efi")) && sb::execsrch("update-grub2", "/mnt") && sb::isfile("/mnt/var/lib/dpkg/info/grub-" % grub.name % ".list"))
-            {
-                if(ui->grubreinstallrepairdisable->isVisibleTo(ui->repairpanel))
-                {
-                    ui->grubreinstallrepairdisable->hide();
-                    ui->grubreinstallrepair->show();
-                }
-
-                if(! ui->repairnext->isEnabled()) ui->repairnext->setEnabled(true);
-            }
-            else
-            {
-                if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel))
-                {
-                    ui->grubreinstallrepair->hide();
-                    ui->grubreinstallrepairdisable->show();
-                }
-
-                if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
-            }
-        }
-        else
-        {
-            if(! (grub.isEFI && sb::issmfs("/mnt/boot", "/mnt/boot/efi")) && ((ppipe == 1 && sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list")) || (ppipe > 1 && sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list"))))
+    auto grnst([this](bool enable = true) {
+            if(enable)
             {
                 if(ui->grubreinstallrepairdisable->isVisibleTo(ui->repairpanel))
                 {
@@ -5602,9 +5566,41 @@ void systemback::rmntcheck()
                 ui->grubreinstallrepair->hide();
                 ui->grubreinstallrepairdisable->show();
             }
+        });
 
+    if(sb::issmfs("/", "/mnt"))
+    {
+        grnst(false);
+        if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
+    }
+    else if(ui->grubrepair->isChecked())
+    {
+        if(! (grub.isEFI && sb::issmfs("/mnt/boot", "/mnt/boot/efi")) && sb::execsrch("update-grub2", "/mnt") && sb::isfile("/mnt/var/lib/dpkg/info/grub-" % grub.name % ".list"))
+        {
+            grnst();
             if(! ui->repairnext->isEnabled()) ui->repairnext->setEnabled(true);
         }
+        else
+        {
+            grnst(false);
+            if(ui->repairnext->isEnabled()) ui->repairnext->setDisabled(true);
+        }
+    }
+    else
+    {
+        grnst(! (grub.isEFI && sb::issmfs("/mnt/boot", "/mnt/boot/efi")) && [this] {
+                switch(ppipe) {
+                case 0:
+                    if(sb::execsrch("update-grub2") && sb::isfile("/var/lib/dpkg/info/grub-" % grub.name % ".list")) return true;
+                    break;
+                case 1:
+                    if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname) && sb::isfile(sb::sdir[1] % '/' % cpoint % '_' % pname % "/var/lib/dpkg/info/grub-" % grub.name % ".list")) return true;
+                }
+
+                return false;
+            }());
+
+        if(! ui->repairnext->isEnabled()) ui->repairnext->setEnabled(true);
     }
 }
 
@@ -6257,8 +6253,16 @@ void systemback::on_repairpartitionrefresh_clicked()
     busy();
     ui->repaircover->show();
 
-    for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-        if(ui->partitionsettings->item(a, 3)->text().startsWith("/mnt")) sb::umount(ui->partitionsettings->item(a, 0)->text());
+    {
+        QStr mnts(sb::fload("/proc/self/mounts", true));
+        QTS in(&mnts, QIODevice::ReadOnly);
+
+        while(! in.atEnd())
+        {
+            QStr cline(in.readLine());
+            if(cline.contains(" /mnt")) sb::umount(cline.split(' ').at(1));
+        }
+    }
 
     sb::fssync();
     ui->repairmountpoint->clear();

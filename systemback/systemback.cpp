@@ -70,22 +70,12 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     schar snum(qApp->desktop()->screenNumber(this));
     wismax = nrxth = false;
     ui->setupUi(this);
-    ui->statuspanel->hide();
-    ui->scalingbuttonspanel->hide();
-    ui->buttonspanel->hide();
-    ui->resizepanel->hide();
+    for(QWdt *wdgt : QWL{ui->statuspanel, ui->scalingbuttonspanel, ui->buttonspanel, ui->resizepanel}) wdgt->hide();
     ui->dialogpanel->move(0, 0);
-    ui->dialogpanel->setBackgroundRole(QPalette::Foreground);
+    for(QWdt *wdgt : QWL{ui->dialogpanel, ui->windowmaximize, ui->windowminimize, ui->windowclose}) wdgt->setBackgroundRole(QPalette::Foreground);
+    for(QWdt *wdgt : QWL{ui->function3, ui->windowbutton3, ui->windowmaximize, ui->windowminimize, ui->windowclose}) wdgt->setForegroundRole(QPalette::Base);
     ui->subdialogpanel->setBackgroundRole(QPalette::Background);
     ui->buttonspanel->setBackgroundRole(QPalette::Highlight);
-    ui->function3->setForegroundRole(QPalette::Base);
-    ui->windowbutton3->setForegroundRole(QPalette::Base);
-    ui->windowmaximize->setBackgroundRole(QPalette::Foreground);
-    ui->windowmaximize->setForegroundRole(QPalette::Base);
-    ui->windowminimize->setBackgroundRole(QPalette::Foreground);
-    ui->windowminimize->setForegroundRole(QPalette::Base);
-    ui->windowclose->setBackgroundRole(QPalette::Foreground);
-    ui->windowclose->setForegroundRole(QPalette::Base);
     connect(&utimer, SIGNAL(timeout()), this, SLOT(unitimer()));
     connect(ui->function3, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
     connect(ui->function3, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
@@ -145,7 +135,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
             if(sfctr > Normal)
             {
-                for(QWidget *wdgt : findChildren<QWidget *>()) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
+                for(QWdt *wdgt : findChildren<QWdt *>()) wdgt->setGeometry(ss(wdgt->x()), ss(wdgt->y()), ss(wdgt->width()), ss(wdgt->height()));
                 for(QPB *pbtn : findChildren<QPB *>()) pbtn->setIconSize(QSize(ss(pbtn->iconSize().width()), ss(pbtn->iconSize().height())));
 
                 if(! sstart && dialog == 0)
@@ -161,7 +151,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                     }
 
                     { QSize nsize(ss(112), ss(32));
-                    for(QComboBox *cmbx : findChildren<QComboBox *>()) cmbx->setMinimumSize(nsize); }
+                    for(QCbB *cmbx : findChildren<QCbB *>()) cmbx->setMinimumSize(nsize); }
                     QStyleOption optn;
                     optn.init(ui->pointpipe1);
                     QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
@@ -178,9 +168,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
     if(dialog > 0)
     {
-        ui->mainpanel->hide();
-        ui->passwordpanel->hide();
-        ui->schedulerpanel->hide();
+        for(QWdt *wdgt : QWL{ui->mainpanel, ui->passwordpanel, ui->schedulerpanel}) wdgt->hide();
         dialogopen(snum);
     }
     else
@@ -190,10 +178,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         ui->statuspanel->move(0, 0);
         ui->statuspanel->setBackgroundRole(QPalette::Foreground);
         ui->substatuspanel->setBackgroundRole(QPalette::Background);
-        ui->function2->setForegroundRole(QPalette::Base);
-        ui->function4->setForegroundRole(QPalette::Base);
-        ui->windowbutton2->setForegroundRole(QPalette::Base);
-        ui->windowbutton4->setForegroundRole(QPalette::Base);
+        for(QWdt *wdgt : QWL{ui->function2, ui->function4, ui->windowbutton2, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Base);
         ui->interrupt->setStyleSheet("QPushButton:enabled {color: red}");
         connect(ui->function2, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
         connect(ui->function2, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
@@ -209,38 +194,14 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         if(! sstart)
         {
             icnt = 0, cpos = -1, nohmcpy = uchkd = false;
-            ui->restorepanel->hide();
-            ui->copypanel->hide();
-            ui->installpanel->hide();
-            ui->livecreatepanel->hide();
-            ui->repairpanel->hide();
-            ui->excludepanel->hide();
-            ui->schedulepanel->hide();
-            ui->aboutpanel->hide();
-            ui->licensepanel->hide();
-            ui->settingspanel->hide();
-            ui->choosepanel->hide();
-            ui->functionmenu2->hide();
-            ui->storagedirbutton->hide();
+            for(QWdt *wdgt : QWL{ui->restorepanel, ui->copypanel, ui->installpanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel, ui->functionmenu2, ui->storagedirbutton, ui->fullnamepipe, ui->usernamepipe, ui->usernameerror, ui->passwordpipe, ui->passworderror, ui->rootpasswordpipe, ui->rootpassworderror, ui->hostnamepipe, ui->hostnameerror}) wdgt->hide();
             ui->storagedir->resize(ss(236), ss(28));
             ui->installpanel->move(ui->sbpanel->pos());
-            ui->fullnamepipe->hide();
-            ui->usernamepipe->hide();
-            ui->usernameerror->hide();
-            ui->passwordpipe->hide();
-            ui->passworderror->hide();
-            ui->rootpasswordpipe->hide();
-            ui->rootpassworderror->hide();
-            ui->hostnamepipe->hide();
-            ui->hostnameerror->hide();
             ui->mainpanel->setBackgroundRole(QPalette::Foreground);
-            ui->sbpanel->setBackgroundRole(QPalette::Background);
-            ui->installpanel->setBackgroundRole(QPalette::Background);
-            ui->function1->setForegroundRole(QPalette::Base);
-            ui->scalingbutton->setForegroundRole(QPalette::Base);
-            ui->scalingbuttonspanel->move(0, 0);
+            for(QWdt *wdgt : QWL{ui->sbpanel, ui->installpanel, ui->subscalingbuttonspanel}) wdgt->setBackgroundRole(QPalette::Background);
+            for(QWdt *wdgt : QWL{ui->function1, ui->scalingbutton}) wdgt->setForegroundRole(QPalette::Base);
             ui->scalingbuttonspanel->setBackgroundRole(QPalette::Highlight);
-            ui->subscalingbuttonspanel->setBackgroundRole(QPalette::Background);
+            ui->scalingbuttonspanel->move(0, 0);
 
             if(sb::wsclng == "auto")
                 ui->scalingdown->setDisabled(true);
@@ -252,9 +213,8 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             else
                 ui->scalingfactor->setText('x' % sb::wsclng);
 
-            ui->scalingfactor->setBackgroundRole(QPalette::Base);
+            for(QWdt *wdgt : QWL{ui->scalingfactor, ui->storagedirarea}) wdgt->setBackgroundRole(QPalette::Base);
             ui->windowbutton1->setForegroundRole(QPalette::Base);
-            ui->storagedirarea->setBackgroundRole(QPalette::Base);
             connect(ui->windowmaximize, SIGNAL(Mouse_Enter()), this, SLOT(wmaxenter()));
             connect(ui->windowmaximize, SIGNAL(Mouse_Leave()), this, SLOT(wmaxleave()));
             connect(ui->windowmaximize, SIGNAL(Mouse_Pressed()), this, SLOT(wmaxpressed()));
@@ -326,11 +286,8 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
         if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
         {
-            ui->mainpanel->hide();
-            ui->schedulerpanel->hide();
+            for(QWdt *wdgt : QWL{ui->mainpanel, ui->schedulerpanel, ui->adminpasswordpipe, ui->adminpassworderror}) wdgt->hide();
             ui->passwordpanel->move(0, 0);
-            ui->adminpasswordpipe->hide();
-            ui->adminpassworderror->hide();
             ui->adminstext->resize(fontMetrics().width(ui->adminstext->text()) + ss(7), ui->adminstext->height());
             ui->admins->move(ui->adminstext->x() + ui->adminstext->width(), ui->admins->y());
             ui->admins->setMaximumWidth(ui->passwordpanel->width() - ui->admins->x() - ss(8));
@@ -423,9 +380,9 @@ systemback::~systemback()
         if(xauth.startsWith("/tmp/sbXauthority-")) QFile::remove(xauth);
     }
 
-    if(shdltimer) delete shdltimer;
-    if(dlgtimer) delete dlgtimer;
-    if(intrrptimer) delete intrrptimer;
+    for(QTimer *tmr : {shdltimer, dlgtimer, intrrptimer})
+        if(tmr) delete tmr;
+
     delete ui;
 }
 
@@ -478,77 +435,36 @@ void systemback::unitimer()
             {
                 ui->storagedir->setText(sb::sdir[0]);
                 ui->storagedir->setToolTip(sb::sdir[0]);
-                ui->storagedir->setCursorPosition(0);
                 ui->liveworkdir->setText(sb::sdir[2]);
                 ui->liveworkdir->setToolTip(sb::sdir[2]);
-                ui->liveworkdir->setCursorPosition(0);
-                ui->restorepanel->move(ui->sbpanel->pos());
-                ui->copypanel->move(ui->sbpanel->pos());
-                ui->livecreatepanel->move(ui->sbpanel->pos());
-                ui->repairpanel->move(ui->sbpanel->pos());
-                ui->excludepanel->move(ui->sbpanel->pos());
-                ui->schedulepanel->move(ui->sbpanel->pos());
-                ui->aboutpanel->move(ui->sbpanel->pos());
-                ui->licensepanel->move(ui->sbpanel->pos());
-                ui->settingspanel->move(ui->sbpanel->pos());
-                ui->choosepanel->move(ui->sbpanel->pos());
-                ui->restorepanel->setBackgroundRole(QPalette::Background);
-                ui->copypanel->setBackgroundRole(QPalette::Background);
-                ui->livecreatepanel->setBackgroundRole(QPalette::Background);
-                ui->repairpanel->setBackgroundRole(QPalette::Background);
-                ui->excludepanel->setBackgroundRole(QPalette::Background);
-                ui->schedulepanel->setBackgroundRole(QPalette::Background);
-                ui->aboutpanel->setBackgroundRole(QPalette::Background);
-                ui->licensepanel->setBackgroundRole(QPalette::Background);
-                ui->settingspanel->setBackgroundRole(QPalette::Background);
-                ui->choosepanel->setBackgroundRole(QPalette::Background);
-                ui->liveworkdirarea->setBackgroundRole(QPalette::Base);
-                ui->schedulerday->setBackgroundRole(QPalette::Base);
-                ui->schedulerhour->setBackgroundRole(QPalette::Base);
-                ui->schedulerminute->setBackgroundRole(QPalette::Base);
-                ui->schedulersecond->setBackgroundRole(QPalette::Base);
+                for(QLE *ldt : QList<QLE *>{ui->storagedir, ui->liveworkdir}) ldt->setCursorPosition(0);
+
+                for(QWdt *wdgt : QWL{ui->restorepanel, ui->copypanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel})
+                {
+                    wdgt->move(ui->sbpanel->pos());
+                    wdgt->setBackgroundRole(QPalette::Background);
+                }
+
+                for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->schedulerday, ui->schedulerhour, ui->schedulerminute, ui->schedulersecond}) wdgt->setBackgroundRole(QPalette::Base);
                 ui->partitiondelete->setStyleSheet("QPushButton:enabled {color: red}");
                 { QPalette pal(ui->license->palette());
                 pal.setBrush(QPalette::Base, pal.background());
                 ui->license->setPalette(pal); }
                 ui->partitionsettings->setHorizontalHeaderLabels({tr("Partition"), tr("Size"), tr("Label"), tr("Current mount point"), tr("New mount point"), tr("Filesystem"), tr("Format")});
-                ui->partitionsettings->setColumnHidden(7, true);
-                ui->partitionsettings->setColumnHidden(8, true);
-                ui->partitionsettings->setColumnHidden(9, true);
-                ui->partitionsettings->setColumnHidden(10, true);
+                for(uchar a(7) ; a < 11 ; ++a) ui->partitionsettings->setColumnHidden(a, true);
                 { QFont font;
                 font.setPixelSize(ss(14));
                 ui->partitionsettings->horizontalHeader()->setFont(font);
                 ui->livedevices->horizontalHeader()->setFont(font); }
-                ui->partitionsettings->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-                ui->partitionsettings->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
-                ui->partitionsettings->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Fixed);
-                ui->partitionsettings->horizontalHeader()->setSectionResizeMode(6, QHeaderView::Fixed);
+                for(uchar a : {0, 1, 5, 6}) ui->partitionsettings->horizontalHeader()->setSectionResizeMode(a, QHeaderView::Fixed);
                 ui->livedevices->setHorizontalHeaderLabels({tr("Partition"), tr("Size"), tr("Device"), tr("Format")});
-                ui->livedevices->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-                ui->livedevices->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
-                ui->livedevices->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Fixed);
-                ui->livenamepipe->hide();
-                ui->livenameerror->hide();
-                ui->partitionsettingspanel2->hide();
-                ui->partitionsettingspanel3->hide();
-                ui->grubreinstallrestoredisable->hide();
-                ui->grubreinstallrestoredisable->addItem(tr("Disabled"));
-                ui->grubinstallcopydisable->addItem(tr("Disabled"));
-                ui->grubreinstallrepairdisable->hide();
-                ui->grubreinstallrepairdisable->addItem(tr("Disabled"));
-                ui->usersettingscopy->hide();
-                ui->repaircover->hide();
+                for(uchar a : {0, 1, 3}) ui->livedevices->horizontalHeader()->setSectionResizeMode(a, QHeaderView::Fixed);
+                for(QWdt *wdgt : QWL{ui->livenamepipe, ui->livenameerror, ui->partitionsettingspanel2, ui->partitionsettingspanel3, ui->grubreinstallrestoredisable, ui->grubreinstallrepairdisable, ui->usersettingscopy, ui->repaircover}) wdgt->hide();
+                for(QCbB *cmbx : QCbBL{ui->grubreinstallrestoredisable, ui->grubinstallcopydisable, ui->grubreinstallrepairdisable}) cmbx->addItem(tr("Disabled"));
                 if(sb::schdle[0] == sb::True) ui->schedulerstate->click();
                 if(sb::schdle[5] == sb::True) ui->silentmode->setChecked(true);
                 ui->windowposition->addItems({tr("Top left"), tr("Top right"), tr("Center"), tr("Bottom left"), tr("Bottom right")});
-
-                if(sb::schdlr[0] != "topleft") ui->windowposition->setCurrentIndex(ui->windowposition->findText([this] {
-                        return sb::schdlr[0] == "topright" ? tr("Top right")
-                            : sb::schdlr[0] == "center" ? tr("Center")
-                            : sb::schdlr[0] == "bottomleft" ? tr("Bottom left") : tr("Bottom right");
-                    }()));
-
+                if(sb::schdlr[0] != "topleft") ui->windowposition->setCurrentIndex(ui->windowposition->findText(sb::schdlr[0] == "topright" ? tr("Top right") : sb::schdlr[0] == "center" ? tr("Center") : sb::schdlr[0] == "bottomleft" ? tr("Bottom left") : tr("Bottom right")));
                 ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
                 ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
                 ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
@@ -562,24 +478,22 @@ void systemback::unitimer()
 
                         for(cQStr &item : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
                         {
-                            cchar *lname([&] {
-                                    QStr lcode(sb::left(sb::right(item, -11), -3));
+                            QStr lcode(sb::left(sb::right(item, -11), -3));
 
-                                    return lcode == "ar_EG" ? "المصرية العربية"
-                                        : lcode == "ca_ES" ? "Català"
-                                        : lcode == "cs" ? "Čeština"
-                                        : lcode == "en_GB" ? "English (United Kingdom)"
-                                        : lcode == "es" ? "Español"
-                                        : lcode == "fi" ? "Suomi"
-                                        : lcode == "fr" ? "Français"
-                                        : lcode == "gl_ES" ? "Galego"
-                                        : lcode == "hu" ? "Magyar"
-                                        : lcode == "id" ? "Bahasa Indonesia"
-                                        : lcode == "pt_BR" ? "Português (Brasil)"
-                                        : lcode == "ro" ? "Română"
-                                        : lcode == "tr" ? "Türkçe"
-                                        : lcode == "zh_CN" ? "中文（简体）" : nullptr;
-                                }());
+                            cchar *lname(lcode == "ar_EG" ? "المصرية العربية"
+                                       : lcode == "ca_ES" ? "Català"
+                                       : lcode == "cs" ? "Čeština"
+                                       : lcode == "en_GB" ? "English (United Kingdom)"
+                                       : lcode == "es" ? "Español"
+                                       : lcode == "fi" ? "Suomi"
+                                       : lcode == "fr" ? "Français"
+                                       : lcode == "gl_ES" ? "Galego"
+                                       : lcode == "hu" ? "Magyar"
+                                       : lcode == "id" ? "Bahasa Indonesia"
+                                       : lcode == "pt_BR" ? "Português (Brasil)"
+                                       : lcode == "ro" ? "Română"
+                                       : lcode == "tr" ? "Türkçe"
+                                       : lcode == "zh_CN" ? "中文（简体）" : nullptr);
 
                             if(lname) lst.append(lname);
                         }
@@ -590,23 +504,21 @@ void systemback::unitimer()
                             ui->languages->addItems(lst);
                         else
                         {
-                            schar indx([&] {
-                                    return sb::lang == "id_ID" ? 0
-                                        : sb::lang == "ar_EG" ? lst.indexOf("المصرية العربية")
-                                        : sb::lang == "ca_ES" ? lst.indexOf("Català")
-                                        : sb::lang == "cs_CS" ? lst.indexOf("Čeština")
-                                        : sb::lang == "en_EN" ? lst.indexOf("English (common)")
-                                        : sb::lang == "en_GB" ? lst.indexOf("English (United Kingdom)")
-                                        : sb::lang == "es_ES" ? lst.indexOf("Español")
-                                        : sb::lang == "fi_FI" ? lst.indexOf("Suomi")
-                                        : sb::lang == "fr_FR" ? lst.indexOf("Français")
-                                        : sb::lang == "gl_ES" ? lst.indexOf("Galego")
-                                        : sb::lang == "hu_HU" ? lst.indexOf("Magyar")
-                                        : sb::lang == "pt_BR" ? lst.indexOf("Português (Brasil)")
-                                        : sb::lang == "ro_RO" ? lst.indexOf("Română")
-                                        : sb::lang == "tr_TR" ? lst.indexOf("Türkçe")
-                                        : sb::lang == "zh_CN" ? lst.indexOf("中文（简体）") : -1;
-                                }());
+                            schar indx(sb::lang == "id_ID" ? 0
+                                     : sb::lang == "ar_EG" ? lst.indexOf("المصرية العربية")
+                                     : sb::lang == "ca_ES" ? lst.indexOf("Català")
+                                     : sb::lang == "cs_CS" ? lst.indexOf("Čeština")
+                                     : sb::lang == "en_EN" ? lst.indexOf("English (common)")
+                                     : sb::lang == "en_GB" ? lst.indexOf("English (United Kingdom)")
+                                     : sb::lang == "es_ES" ? lst.indexOf("Español")
+                                     : sb::lang == "fi_FI" ? lst.indexOf("Suomi")
+                                     : sb::lang == "fr_FR" ? lst.indexOf("Français")
+                                     : sb::lang == "gl_ES" ? lst.indexOf("Galego")
+                                     : sb::lang == "hu_HU" ? lst.indexOf("Magyar")
+                                     : sb::lang == "pt_BR" ? lst.indexOf("Português (Brasil)")
+                                     : sb::lang == "ro_RO" ? lst.indexOf("Română")
+                                     : sb::lang == "tr_TR" ? lst.indexOf("Türkçe")
+                                     : sb::lang == "zh_CN" ? lst.indexOf("中文（简体）") : -1);
 
                             if(indx == -1)
                             {
@@ -677,10 +589,7 @@ void systemback::unitimer()
                             }
 
                         if(ui->users->count() > 0)
-                        {
-                            ui->users->setEnabled(true);
-                            ui->adduser->setEnabled(true);
-                        }
+                            for(QWdt *wdgt : QWL{ui->users, ui->adduser}) wdgt->setEnabled(true);
 
                         ui->schedulerusers->setText(sb::right(sb::schdlr[1], -1));
                         ui->schedulerrefresh->setEnabled(true);
@@ -694,13 +603,13 @@ void systemback::unitimer()
                 ui->includeusers->setMaximumWidth(width() - ui->includeusers->x() - ss(8));
                 ui->grubreinstallrestoretext->resize(fontMetrics().width(ui->grubreinstallrestoretext->text()) + ss(7), ui->grubreinstallrestoretext->height());
                 ui->grubreinstallrestore->move(ui->grubreinstallrestoretext->x() + ui->grubreinstallrestoretext->width(), ui->grubreinstallrestore->y());
-                ui->grubreinstallrestoredisable->move(ui->grubreinstallrestore->x(), ui->grubreinstallrestore->y());
+                ui->grubreinstallrestoredisable->move(ui->grubreinstallrestore->pos());
                 ui->grubinstalltext->resize(fontMetrics().width(ui->grubinstalltext->text()) + ss(7), ui->grubinstalltext->height());
                 ui->grubinstallcopy->move(ui->grubinstalltext->x() + ui->grubinstalltext->width(), ui->grubinstallcopy->y());
-                ui->grubinstallcopydisable->move(ui->grubinstallcopy->x(), ui->grubinstallcopy->y());
+                ui->grubinstallcopydisable->move(ui->grubinstallcopy->pos());
                 ui->grubreinstallrepairtext->resize(fontMetrics().width(ui->grubreinstallrepairtext->text()) + ss(7), ui->grubreinstallrepairtext->height());
                 ui->grubreinstallrepair->move(ui->grubreinstallrepairtext->x() + ui->grubreinstallrepairtext->width(), ui->grubreinstallrepair->y());
-                ui->grubreinstallrepairdisable->move(ui->grubreinstallrepair->x(), ui->grubreinstallrepair->y());
+                ui->grubreinstallrepairdisable->move(ui->grubreinstallrepair->pos());
                 ui->schedulerstatetext->resize(fontMetrics().width(ui->schedulerstatetext->text()) + ss(7), ui->schedulerstatetext->height());
                 ui->schedulerstate->move(ui->schedulerstatetext->x() + ui->schedulerstatetext->width(), ui->schedulerstate->y());
                 ui->schedulersecondtext->resize(fontMetrics().width(ui->schedulersecondtext->text()) + ss(7), ui->schedulersecondtext->height());
@@ -784,9 +693,7 @@ void systemback::unitimer()
                 grub.name = "efi-amd64-bin", grub.isEFI = true;
                 ui->repairmountpoint->addItem("/mnt/boot/efi");
                 ui->grubinstallcopy->hide();
-                ui->grubinstallcopy->addItems({"EFI", tr("Disabled")});
-                ui->grubreinstallrestore->addItems({"EFI", tr("Disabled")});
-                ui->grubreinstallrepair->addItems({"EFI", tr("Disabled")});
+                for(QCbB *cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->addItems({"EFI", tr("Disabled")});
                 ui->grubinstallcopydisable->adjustSize();
                 ui->efiwarning->move(ui->grubinstallcopydisable->x() + ui->grubinstallcopydisable->width() + ss(5), ui->grubinstallcopydisable->y() - ss(4));
                 ui->efiwarning->resize(ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
@@ -795,8 +702,7 @@ void systemback::unitimer()
             noefi:
 #endif
                 grub.name = "pc-bin", grub.isEFI = false;
-                ui->grubinstallcopydisable->hide();
-                ui->efiwarning->hide();
+                for(QWdt *wdgt : QWL{ui->grubinstallcopydisable, ui->efiwarning}) wdgt->hide();
 #ifdef __amd64__
             next_1:
 #endif
@@ -807,25 +713,11 @@ void systemback::unitimer()
                 on_pointexclude_clicked();
                 ui->storagedir->resize(ss(210), ss(28));
                 ui->storagedirbutton->show();
-                ui->repairmenu->setEnabled(true);
-                ui->aboutmenu->setEnabled(true);
-                ui->settingsmenu->setEnabled(true);
-                ui->pnumber3->setEnabled(true);
-                ui->pnumber4->setEnabled(true);
-                ui->pnumber5->setEnabled(true);
-                ui->pnumber6->setEnabled(true);
-                ui->pnumber7->setEnabled(true);
-                ui->pnumber8->setEnabled(true);
-                ui->pnumber9->setEnabled(true);
-                ui->pnumber10->setEnabled(true);
+                for(QWdt *wdgt : QWL{ui->repairmenu, ui->aboutmenu, ui->settingsmenu, ui->pnumber3, ui->pnumber4, ui->pnumber5, ui->pnumber6, ui->pnumber7, ui->pnumber8, ui->pnumber9, ui->pnumber10}) wdgt->setEnabled(true);
 
                 if(ui->installpanel->isHidden())
                 {
-                    ui->copymenu->setEnabled(true);
-                    ui->installmenu->setEnabled(true);
-                    ui->systemupgrade->setEnabled(true);
-                    ui->excludemenu->setEnabled(true);
-                    ui->schedulemenu->setEnabled(true);
+                    for(QWdt *wdgt : QWL{ui->copymenu, ui->installmenu, ui->systemupgrade, ui->excludemenu, ui->schedulemenu}) wdgt->setEnabled(true);
                     pname = tr("Currently running system");
                 }
             }
@@ -943,8 +835,7 @@ void systemback::unitimer()
                 {
                     if(! ui->storagedirarea->styleSheet().isEmpty())
                     {
-                        ui->storagedirarea->setStyleSheet(nullptr);
-                        ui->storagedir->setStyleSheet(nullptr);
+                        for(QWdt *wdgt : QWL{ui->storagedirarea, ui->storagedir}) wdgt->setStyleSheet(nullptr);
                         fontcheck(Strgdr);
                         pointupgrade();
                     }
@@ -983,8 +874,7 @@ void systemback::unitimer()
 
                     if(ui->storagedirarea->styleSheet().isEmpty())
                     {
-                        ui->storagedirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
-                        ui->storagedir->setStyleSheet("background-color: rgb(255, 103, 103)");
+                        for(QWdt *wdgt : QWL{ui->storagedirarea, ui->storagedir}) wdgt->setStyleSheet("background-color: rgb(255, 103, 103)");
                         fontcheck(Strgdr);
                     }
                 }
@@ -1005,8 +895,7 @@ void systemback::unitimer()
                         {
                             if(! ui->liveworkdirarea->styleSheet().isEmpty())
                             {
-                                ui->liveworkdirarea->setStyleSheet(nullptr);
-                                ui->liveworkdir->setStyleSheet(nullptr);
+                                for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) wdgt->setStyleSheet(nullptr);
                                 fontcheck(Lvwrkdr);
                             }
 
@@ -1022,15 +911,12 @@ void systemback::unitimer()
                         {
                             if(ui->liveworkdirarea->styleSheet().isEmpty())
                             {
-                                ui->liveworkdirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
-                                ui->liveworkdir->setStyleSheet("background-color: rgb(255, 103, 103)");
+                                for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) wdgt->setStyleSheet("background-color: rgb(255, 103, 103)");
                                 fontcheck(Lvwrkdr);
                             }
 
-                            if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
-                            if(ui->livedelete->isEnabled()) ui->livedelete->setDisabled(true);
-                            if(ui->liveconvert->isEnabled()) ui->liveconvert->setDisabled(true);
-                            if(ui->livewritestart->isEnabled()) ui->livewritestart->setDisabled(true);
+                            for(QWdt *wdgt : QWL{ui->livecreatenew, ui->livedelete, ui->liveconvert, ui->livewritestart})
+                                if(wdgt->isEnabled()) wdgt->setDisabled(true);
 
                             if(ui->livelist->isEnabled())
                             {
@@ -1114,8 +1000,7 @@ void systemback::fontcheck(uchar wdgt)
     case Strgdr:
         if(ui->storagedir->font().pixelSize() != ss(15))
         {
-            ui->storagedirarea->setFont(font());
-            ui->storagedir->setFont(font());
+            for(QWdt *wdgt : QWL{ui->storagedirarea, ui->storagedir}) wdgt->setFont(font());
             QFont font;
             font.setPixelSize(ss(15));
             font.setBold(true);
@@ -1126,8 +1011,7 @@ void systemback::fontcheck(uchar wdgt)
     case Lvwrkdr:
         if(ui->liveworkdir->font().pixelSize() != ss(15))
         {
-            ui->liveworkdirarea->setFont(font());
-            ui->liveworkdir->setFont(font());
+            for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) wdgt->setFont(font());
             QFont font;
             font.setPixelSize(ss(15));
             font.setBold(true);
@@ -1274,11 +1158,7 @@ void systemback::stschange()
         setGeometry(qApp->desktop()->availableGeometry(snum));
 
         if(ui->copypanel->isVisible())
-        {
-            ui->partitionsettings->resizeColumnToContents(2);
-            ui->partitionsettings->resizeColumnToContents(3);
-            ui->partitionsettings->resizeColumnToContents(4);
-        }
+            for(uchar a(2) ; a < 5 ; ++a) ui->partitionsettings->resizeColumnToContents(a);
     }
 }
 
@@ -2212,12 +2092,12 @@ start:
                 QStr lbl("SB@" % (mpoint.startsWith('/') ? sb::right(mpoint, -1) : mpoint));
 
                 uchar rv(fstype == "swap" ? sb::exec("mkswap -L " % lbl % ' ' % part)
-                    : fstype == "jfs" ? sb::exec("mkfs.jfs -qL " % lbl % ' ' % part)
-                    : fstype == "reiserfs" ? sb::exec("mkfs.reiserfs -ql " % lbl % ' ' % part)
-                    : fstype == "xfs" ? sb::exec("mkfs.xfs -fL " % lbl % ' ' % part)
-                    : fstype == "vfat" ? sb::setpflag(part, "boot") ? sb::exec("mkfs.vfat -F 32 -n " % lbl.toUpper() % ' ' % part) : 255
-                    : fstype == "btrfs" ? (ckd.contains(part) ? 0 : sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part)) == 0 ? 0 : sb::exec("mkfs.btrfs -L " % lbl % ' ' % part)
-                    : sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part));
+                       : fstype == "jfs" ? sb::exec("mkfs.jfs -qL " % lbl % ' ' % part)
+                       : fstype == "reiserfs" ? sb::exec("mkfs.reiserfs -ql " % lbl % ' ' % part)
+                       : fstype == "xfs" ? sb::exec("mkfs.xfs -fL " % lbl % ' ' % part)
+                       : fstype == "vfat" ? sb::setpflag(part, "boot") ? sb::exec("mkfs.vfat -F 32 -n " % lbl.toUpper() % ' ' % part) : 255
+                       : fstype == "btrfs" ? (ckd.contains(part) ? 0 : sb::exec("mkfs.btrfs -fL " % lbl % ' ' % part)) == 0 ? 0 : sb::exec("mkfs.btrfs -L " % lbl % ' ' % part)
+                       : sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part));
 
                 if(intrrpt) goto exit;
 
@@ -2704,23 +2584,10 @@ start:
                 {
                     QStr uuid(sb::ruuid(ui->partitionsettings->item(a, 0)->text())), nfs(ui->partitionsettings->item(a, 5)->text());
 
-                    if(nmpt == "/")
-                    {
-                        if(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}))
-                            fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   /   " % nfs % "   noatime,errors=remount-ro   0   1\n");
-                        else if(nfs == "reiserfs")
-                            fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   /   " % nfs % "   noatime,notail   0   1\n");
-                        else
-                            fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   /   " % nfs % "   noatime,subvol=@   0   1\n");
-                    }
-                    else if(nmpt == "SWAP")
-                        fstabtxt.append("# SWAP\nUUID=" % uuid % "   none   swap   sw   0   0\n");
-                    else if(nfs == "reiserfs")
-                        fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   " % nmpt % "   reiserfs   noatime,notail   0   2\n");
-                    else if(nfs == "btrfs")
-                        fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   " % nmpt % "   btrfs   noatime,subvol=@" % sb::right(nmpt, -1) % "   0   2\n");
-                    else
-                        fstabtxt.append("# " % nmpt % "\nUUID=" % uuid % "   " % nmpt % "   " % nfs % "   noatime   0   2\n");
+                    fstabtxt.append("# " % (nmpt == "SWAP" ? QStr("SWAP\nUUID=" % uuid % "   none   swap   sw   0   0")
+                                : nmpt % "\nUUID=" % uuid % "   " % nmpt % "   " % nfs % "   noatime"
+                                    % nmpt == "/" ? QStr(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}) ? ",errors=remount-ro" : nfs == "reiserfs" ? ",notail" : ",subvol=@") % "   0   1"
+                                        : (nfs == "reiserfs" ? ",notail" : nfs == "btrfs" ? QStr(",subvol=@" % sb::right(nmpt, -1)) : nullptr) % "   0   2") % '\n');
                 }
             }
 
@@ -3009,10 +2876,12 @@ void systemback::dialogopen(schar snum)
 
     if(dialog < 200)
     {
-        if(ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->hide();
-        if(ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->hide();
-        if(! ui->dialogquestion->isVisibleTo(ui->dialogpanel)) ui->dialogquestion->show();
-        if(! ui->dialogcancel->isVisibleTo(ui->dialogpanel)) ui->dialogcancel->show();
+        for(QWdt *wdgt : QWL{ui->dialoginfo, ui->dialogerror})
+            if(wdgt->isVisibleTo(ui->dialogpanel)) wdgt->hide();
+
+        for(QWdt *wdgt : QWL{ui->dialogquestion, ui->dialogcancel})
+            if(! wdgt->isVisibleTo(ui->dialogpanel)) wdgt->show();
+
         if(ui->dialogok->text() != tr("Start")) ui->dialogok->setText(tr("Start"));
 
         ui->dialogtext->setText([this]() -> QStr {
@@ -3042,8 +2911,9 @@ void systemback::dialogopen(schar snum)
     }
     else
     {
-        if(ui->dialogquestion->isVisibleTo(ui->dialogpanel)) ui->dialogquestion->hide();
-        if(ui->dialogcancel->isVisibleTo(ui->dialogpanel)) ui->dialogcancel->hide();
+        for(QWdt *wdgt : QWL{ui->dialogquestion, ui->dialogcancel})
+            if(wdgt->isVisibleTo(ui->dialogpanel)) wdgt->hide();
+
         bool cntd(false);
 
         if(dialog < 300)
@@ -3055,14 +2925,12 @@ void systemback::dialogopen(schar snum)
                     switch(dialog) {
                     case 200:
                         if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
-                        ui->dialogcancel->show();
-                        ui->dialognumber->show();
+                        for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
                         return tr("User(s) configuration files full restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
                     case 201:
                         if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
-                        ui->dialogcancel->show();
-                        ui->dialognumber->show();
+                        for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
                         return tr("User(s) configuration files restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
                     case 202:
@@ -3073,14 +2941,12 @@ void systemback::dialogopen(schar snum)
                         return tr("System repair is completed.");
                     case 204:
                         if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
-                        ui->dialogcancel->show();
-                        ui->dialognumber->show();
+                        for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
                         return tr("System files restoration are completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
                     case 205:
                         if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
-                        ui->dialogcancel->show();
-                        ui->dialognumber->show();
+                        for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
                         return tr("Full system restoration is completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
                     case 206:
@@ -3200,9 +3066,9 @@ void systemback::dialogopen(schar snum)
         }
     }
 
-    if(ui->mainpanel->isVisible()) ui->mainpanel->hide();
-    if(ui->statuspanel->isVisible()) ui->statuspanel->hide();
-    if(ui->schedulerpanel->isVisible()) ui->schedulerpanel->hide();
+    for(QWdt *wdgt : QWL{ui->mainpanel, ui->statuspanel, ui->schedulerpanel})
+        if(wdgt->isVisible()) wdgt->hide();
+
     if(ui->dialogpanel->isHidden()) ui->dialogpanel->show();
     ui->dialogok->setFocus();
 
@@ -3321,14 +3187,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
     case QEvent::WindowActivate:
         if(ui->function3->foregroundRole() == QPalette::Dark)
         {
-            ui->function1->setForegroundRole(QPalette::Base);
-            ui->windowbutton1->setForegroundRole(QPalette::Base);
-            ui->function2->setForegroundRole(QPalette::Base);
-            ui->windowbutton2->setForegroundRole(QPalette::Base);
-            ui->function3->setForegroundRole(QPalette::Base);
-            ui->windowbutton3->setForegroundRole(QPalette::Base);
-            ui->function4->setForegroundRole(QPalette::Base);
-            ui->windowbutton4->setForegroundRole(QPalette::Base);
+            for(QWdt *wdgt : QWL{ui->scalingbutton, ui->function1, ui->windowbutton1, ui->function2, ui->windowbutton2, ui->function3, ui->windowbutton3, ui->function4, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Base);
             goto gcheck;
         }
 
@@ -3336,14 +3195,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
     case QEvent::WindowDeactivate:
         if(ui->function3->foregroundRole() == QPalette::Base)
         {
-            ui->function1->setForegroundRole(QPalette::Dark);
-            ui->windowbutton1->setForegroundRole(QPalette::Dark);
-            ui->function2->setForegroundRole(QPalette::Dark);
-            ui->windowbutton2->setForegroundRole(QPalette::Dark);
-            ui->function3->setForegroundRole(QPalette::Dark);
-            ui->windowbutton3->setForegroundRole(QPalette::Dark);
-            ui->function4->setForegroundRole(QPalette::Dark);
-            ui->windowbutton4->setForegroundRole(QPalette::Dark);
+            for(QWdt *wdgt : QWL{ui->scalingbutton, ui->function1, ui->windowbutton1, ui->function2, ui->windowbutton2, ui->function3, ui->windowbutton3, ui->function4, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Dark);
 
             if(ui->copypanel->isVisible())
             {
@@ -3399,8 +3251,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->partitionsettingstext->resize(ui->copypanel->width(), ui->partitionsettingstext->height());
             ui->partitionsettings->resize(ui->copypanel->width() - ss(152), ui->copypanel->height() - ss(200));
             ui->partitionsettingspanel1->move(ui->partitionsettings->x() + ui->partitionsettings->width(), ui->partitionsettingspanel1->y());
-            ui->partitionsettingspanel2->move(ui->partitionsettingspanel1->pos());
-            ui->partitionsettingspanel3->move(ui->partitionsettingspanel1->pos());
+            for(QWdt *wdgt : QWL{ui->partitionsettingspanel2, ui->partitionsettingspanel3}) wdgt->move(ui->partitionsettingspanel1->pos());
             ui->partitionoptionstext->setGeometry(0, ui->copypanel->height() - ss(160), ui->copypanel->width(), ui->partitionoptionstext->height());
             ui->userdatafilescopy->move(ui->userdatafilescopy->x(), ui->copypanel->height() - ss(122) - (sfctr == High ? 1 : 2));
             ui->usersettingscopy->move(ui->usersettingscopy->x(), ui->userdatafilescopy->y());
@@ -3686,8 +3537,7 @@ void systemback::on_admins_currentIndexChanged(cQStr &arg1)
     if(! hash.isEmpty() && QStr(crypt("", chr(hash))) == hash)
     {
         ui->adminpasswordpipe->show();
-        ui->adminpassword->setDisabled(true);
-        ui->admins->setDisabled(true);
+        for(QWdt *wdgt : QWL{ui->adminpassword, ui->admins}) wdgt->setDisabled(true);
         ui->passwordinputok->setEnabled(true);
     }
 }
@@ -3712,8 +3562,7 @@ void systemback::on_adminpassword_textChanged(cQStr &arg1)
         {
             if(ui->adminpassworderror->isVisible()) ui->adminpassworderror->hide();
             ui->adminpasswordpipe->show();
-            ui->adminpassword->setDisabled(true);
-            ui->admins->setDisabled(true);
+            for(QWdt *wdgt : QWL{ui->adminpassword, ui->admins}) wdgt->setDisabled(true);
             ui->passwordinputok->setEnabled(true);
             ui->passwordinputok->setFocus();
         }
@@ -4089,9 +3938,9 @@ void systemback::on_installmenu_clicked()
 void systemback::on_livecreatemenu_clicked()
 {
     if(ui->livelist->count() > 0) ui->livelist->clear();
-    if(ui->livedelete->isEnabled()) ui->livedelete->setDisabled(true);
-    if(ui->liveconvert->isEnabled()) ui->liveconvert->setDisabled(true);
-    if(ui->livewritestart->isEnabled()) ui->livewritestart->setDisabled(true);
+
+    for(QWdt *wdgt : QWL{ui->livedelete, ui->liveconvert, ui->livewritestart})
+        if(wdgt->isEnabled()) wdgt->setDisabled(true);
 
     if(ui->sbpanel->isVisible())
     {
@@ -4116,17 +3965,13 @@ void systemback::on_repairmenu_clicked()
     if(ppipe == 1 || pname == tr("Live image"))
     {
         if(! ui->systemrepair->isEnabled())
-        {
-            ui->systemrepair->setEnabled(true);
-            ui->fullrepair->setEnabled(true);
-        }
+            for(QWdt *wdgt : QWL{ui->systemrepair, ui->fullrepair}) wdgt->setEnabled(true);
 
         rmntcheck();
     }
     else if(ui->systemrepair->isEnabled())
     {
-        ui->systemrepair->setDisabled(true);
-        ui->fullrepair->setDisabled(true);
+        for(QWdt *wdgt : QWL{ui->systemrepair, ui->fullrepair}) wdgt->setDisabled(true);
         if(! ui->grubrepair->isChecked()) ui->grubrepair->click();
     }
 
@@ -4269,26 +4114,16 @@ void systemback::on_partitionrefresh_clicked()
     if(! grub.isEFI)
     {
         if(ui->grubinstallcopy->count() > 0)
-        {
-            ui->grubinstallcopy->clear();
-            ui->grubreinstallrestore->clear();
-            ui->grubreinstallrepair->clear();
-        }
+            for(QCbB *cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->clear();
 
-        ui->grubinstallcopy->addItems({"Auto", tr("Disabled")});
-        ui->grubreinstallrestore->addItems({"Auto", tr("Disabled")});
-        ui->grubreinstallrepair->addItems({"Auto", tr("Disabled")});
+        for(QCbB *cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->addItems({"Auto", tr("Disabled")});
 
         for(cQStr &dts : plst)
         {
             QStr path(dts.split('\n').at(0));
 
             if(sb::like(path.length(), {8, 12}))
-            {
-                ui->grubinstallcopy->addItem(path);
-                ui->grubreinstallrestore->addItem(path);
-                ui->grubreinstallrepair->addItem(path);
-            }
+                for(QCbB *cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->addItem(path);
         }
     }
 
@@ -4354,11 +4189,7 @@ void systemback::on_partitionrefresh_clicked()
                 cQStr &uuid(dts.at(6));
 
                 if(! grub.isEFI)
-                {
-                    ui->grubinstallcopy->addItem(path);
-                    ui->grubreinstallrestore->addItem(path);
-                    ui->grubreinstallrepair->addItem(path);
-                }
+                    for(QCbB *cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->addItem(path);
 
                 ++sn;
                 ui->partitionsettings->setRowCount(sn + 1);
@@ -4383,45 +4214,29 @@ void systemback::on_partitionrefresh_clicked()
                         mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
                     }
                 }
-                else
-                {
-                    if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
-                    {
-                        if(QStr('\n' % mnts[0]).count('\n' % path % ' ') > 1 || QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
-                            mpt->setText(tr("Multiple mount points"));
-                        else
-                        {
+                else if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
+                    mpt->setText(QStr('\n' % mnts[0]).count('\n' % path % ' ') > 1 || QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' ') ? tr("Multiple mount points") : [&] {
                             QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], path % ' ')));
                             short spc(sb::instr(mnt, " "));
-                            mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
-                        }
-                    }
-                    else if(QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
-                    {
-                        if(QStr('\n' % mnts[0]).count("\n/dev/disk/by-uuid/" % uuid % ' ') > 1)
-                            mpt->setText(tr("Multiple mount points"));
-                        else
-                        {
+                            return sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " ");
+                        }());
+                else if(QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
+                    mpt->setText(QStr('\n' % mnts[0]).count("\n/dev/disk/by-uuid/" % uuid % ' ') > 1 ? tr("Multiple mount points") : [&] {
                             QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], "/dev/disk/by-uuid/" % uuid % ' ')));
                             short spc(sb::instr(mnt, " "));
-                            mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
-                        }
-                    }
-                    else if(QStr('\n' % mnts[1]).contains('\n' % path % ' '))
-                        mpt->setText("SWAP");
-                }
+                            return sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " ");
+                        }());
+                else if(QStr('\n' % mnts[1]).contains('\n' % path % ' '))
+                    mpt->setText("SWAP");
 
-                mpt->setTextAlignment(Qt::AlignCenter);
                 mpt->text().isEmpty() ? ui->repairpartition->addItem(path) : mpt->setToolTip(mpt->text());
                 ui->partitionsettings->setItem(sn, 3, mpt);
                 QTblWI *empty(new QTblWI);
-                empty->setTextAlignment(Qt::AlignCenter);
                 ui->partitionsettings->setItem(sn, 4, empty);
                 QTblWI *fs(new QTblWI(dts.at(4)));
-                fs->setTextAlignment(Qt::AlignCenter);
                 ui->partitionsettings->setItem(sn, 5, fs);
                 QTblWI *frmt(new QTblWI("-"));
-                frmt->setTextAlignment(Qt::AlignCenter);
+                for(QTblWI *wdi : QList<QTblWI *>{mpt, empty, fs, frmt}) wdi->setTextAlignment(Qt::AlignCenter);
                 ui->partitionsettings->setItem(sn, 6, frmt);
                 ui->partitionsettings->setItem(sn, 7, fs->clone());
                 break;
@@ -4469,11 +4284,7 @@ void systemback::on_partitionrefresh2_clicked()
 
     if(! ui->partitionsettingspanel1->isVisibleTo(ui->copypanel))
     {
-        if(ui->partitionsettingspanel2->isVisibleTo(ui->copypanel))
-            ui->partitionsettingspanel2->hide();
-        else
-            ui->partitionsettingspanel3->hide();
-
+        ui->partitionsettingspanel2->isVisibleTo(ui->copypanel) ? ui->partitionsettingspanel2->hide() : ui->partitionsettingspanel3->hide();
         ui->partitionsettingspanel1->show();
     }
 }
@@ -4528,8 +4339,7 @@ void systemback::on_unmountdelete_clicked()
             ui->unmountdelete->setStyleSheet("QPushButton:enabled {color: red}");
             if(minside(ui->copypanel->pos() + ui->partitionsettingspanel1->pos() + ui->unmountdelete->pos(), ui->unmountdelete->size())) ui->unmountdelete->setDisabled(true);
             if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
-            ui->filesystem->setEnabled(true);
-            ui->format->setEnabled(true);
+            for(QWdt *wdgt : QWL{ui->filesystem, ui->format}) wdgt->setEnabled(true);
         }
 
         ui->copycover->hide();
@@ -4718,10 +4528,11 @@ void systemback::on_licensemenu_clicked()
     ui->licenseback->setFocus();
     repaint();
 
-    if(ui->license->toPlainText().isEmpty())
+    if(! ui->license->isEnabled())
     {
         busy();
         ui->license->setText(sb::fload("/usr/share/common-licenses/GPL-3"));
+        ui->license->setEnabled(true);
         busy(false);
     }
 }
@@ -4779,8 +4590,7 @@ void systemback::on_pointpipe1_clicked()
         {
             ui->storagedir->resize(ss(210), ui->storagedir->height());
             ui->storagedirbutton->show();
-            ui->pointrename->setDisabled(true);
-            ui->pointdelete->setDisabled(true);
+            for(QWdt *wdgt : QWL{ui->pointrename, ui->pointdelete}) wdgt->setDisabled(true);
         }
 
         if(ui->pointhighlight->isEnabled()) ui->pointhighlight->setDisabled(true);
@@ -4788,17 +4598,15 @@ void systemback::on_pointpipe1_clicked()
 
         if(! sb::isfile("/cdrom/casper/filesystem.squashfs") && ! sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs"))
         {
-            if(! ui->newrestorepoint->isEnabled()) ui->newrestorepoint->setEnabled(true);
-            if(! ui->livecreatemenu->isEnabled()) ui->livecreatemenu->setEnabled(true);
+            for(QWdt *wdgt : QWL{ui->newrestorepoint, ui->livecreatemenu})
+                if(! wdgt->isEnabled()) wdgt->setEnabled(true);
+
             pname = tr("Currently running system");
         }
         else if(sb::isdir("/.systemback"))
         {
             if(! ui->copymenu->isEnabled())
-            {
-                ui->copymenu->setEnabled(true);
-                ui->installmenu->setEnabled(true);
-            }
+                for(QWdt *wdgt : QWL{ui->copymenu, ui->installmenu}) wdgt->setEnabled(true);
 
             pname = tr("Live image");
         }
@@ -4830,10 +4638,7 @@ void systemback::on_pointpipe1_clicked()
             if(! ui->restoremenu->isEnabled() && ! sb::isfile("/cdrom/casper/filesystem.squashfs") && ! sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")) ui->restoremenu->setEnabled(true);
 
             if(! ui->copymenu->isEnabled())
-            {
-                ui->copymenu->setEnabled(true);
-                ui->installmenu->setEnabled(true);
-            }
+                for(QWdt *wdgt : QWL{ui->copymenu, ui->installmenu}) wdgt->setEnabled(true);
 
             if(ui->livecreatemenu->isEnabled()) ui->livecreatemenu->setDisabled(true);
             if(! ui->repairmenu->isEnabled()) ui->repairmenu->setEnabled(true);
@@ -4841,9 +4646,7 @@ void systemback::on_pointpipe1_clicked()
         else
         {
             if(ui->restoremenu->isEnabled()) ui->restoremenu->setDisabled(true);
-            ui->copymenu->setDisabled(true);
-            ui->installmenu->setDisabled(true);
-            ui->repairmenu->setDisabled(true);
+            for(QWdt *wdgt : QWL{ui->copymenu, ui->installmenu, ui->repairmenu}) wdgt->setDisabled(true);
             if(ui->pointhighlight->isEnabled()) ui->pointhighlight->setDisabled(true);
         }
     }
@@ -4941,11 +4744,10 @@ void systemback::on_livedevicesrefresh_clicked()
         size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         ui->livedevices->setItem(sn, 1, size);
         QTblWI *name(new QTblWI(dts.at(1)));
-        name->setTextAlignment(Qt::AlignCenter);
         name->setToolTip(dts.at(1));
         ui->livedevices->setItem(sn, 2, name);
         QTblWI *format(new QTblWI("-"));
-        format->setTextAlignment(Qt::AlignCenter);
+        for(QTblWI *wdi : QList<QTblWI *>{name, format}) wdi->setTextAlignment(Qt::AlignCenter);
         ui->livedevices->setItem(sn, 3, format);
     }
 
@@ -5273,18 +5075,7 @@ void systemback::on_pointrename_clicked()
 
 void systemback::on_autorestoreoptions_clicked(bool chckd)
 {
-    if(chckd)
-    {
-        ui->skipfstabrestore->setDisabled(true);
-        ui->grubreinstallrestore->setDisabled(true);
-        ui->grubreinstallrestoredisable->setDisabled(true);
-    }
-    else
-    {
-        ui->skipfstabrestore->setEnabled(true);
-        ui->grubreinstallrestore->setEnabled(true);
-        ui->grubreinstallrestoredisable->setEnabled(true);
-    }
+    for(QWdt *wdgt : QWL{ui->skipfstabrestore, ui->grubreinstallrestore, ui->grubreinstallrestoredisable}) wdgt->setDisabled(chckd);
 }
 
 void systemback::on_autorepairoptions_clicked(bool chckd)
@@ -5294,28 +5085,21 @@ void systemback::on_autorepairoptions_clicked(bool chckd)
         if(ui->skipfstabrepair->isEnabled()) ui->skipfstabrepair->setDisabled(true);
 
         if(ui->grubreinstallrepair->isEnabled())
-        {
-            ui->grubreinstallrepair->setDisabled(true);
-            ui->grubreinstallrepairdisable->setDisabled(true);
-        }
+            for(QWdt *wdgt : QWL{ui->grubreinstallrepair, ui->grubreinstallrepairdisable}) wdgt->setDisabled(true);
     }
     else
     {
         if(! ui->skipfstabrepair->isEnabled()) ui->skipfstabrepair->setEnabled(true);
 
         if(! ui->grubreinstallrepair->isEnabled())
-        {
-            ui->grubreinstallrepair->setEnabled(true);
-            ui->grubreinstallrepairdisable->setEnabled(true);
-        }
+            for(QWdt *wdgt : QWL{ui->grubreinstallrepair, ui->grubreinstallrepairdisable}) wdgt->setEnabled(true);
     }
 }
 
 void systemback::on_storagedirbutton_clicked()
 {
-    ui->sbpanel->hide();
+    for(QWdt *wdgt : QWL{ui->sbpanel, ui->scalingbutton}) wdgt->hide();
     ui->choosepanel->show();
-    ui->scalingbutton->hide();
     ui->function1->setText(tr("Storage directory"));
     ui->dirchooseok->setFocus();
     windowmove(ss(642), ss(481), false);
@@ -5327,9 +5111,8 @@ void systemback::on_storagedirbutton_clicked()
 
 void systemback::on_liveworkdirbutton_clicked()
 {
-    ui->livecreatepanel->hide();
+    for(QWdt *wdgt : QWL{ui->livecreatepanel, ui->scalingbutton}) wdgt->hide();
     ui->choosepanel->show();
-    ui->scalingbutton->hide();
     ui->function1->setText(tr("Working directory"));
     ui->dirchooseok->setFocus();
     windowmove(ss(642), ss(481), false);
@@ -5645,16 +5428,11 @@ void systemback::on_fullrestore_clicked()
 {
     if(ui->keepfiles->isEnabled())
     {
-        ui->keepfiles->setDisabled(true);
-        ui->includeusers->setDisabled(true);
+        for(QWdt *wdgt : QWL{ui->keepfiles, ui->includeusers}) wdgt->setDisabled(true);
         ui->autorestoreoptions->setEnabled(true);
 
         if(! ui->autorestoreoptions->isChecked())
-        {
-            ui->skipfstabrestore->setEnabled(true);
-            ui->grubreinstallrestore->setEnabled(true);
-            ui->grubreinstallrestoredisable->setEnabled(true);
-        }
+            for(QWdt *wdgt : QWL{ui->skipfstabrestore, ui->grubreinstallrestore, ui->grubreinstallrestoredisable}) wdgt->setEnabled(true);
     }
 
     if(! ui->restorenext->isEnabled()) ui->restorenext->setEnabled(true);
@@ -5669,16 +5447,11 @@ void systemback::on_configurationfilesrestore_clicked()
 {
     if(! ui->keepfiles->isEnabled())
     {
-        ui->keepfiles->setEnabled(true);
-        ui->includeusers->setEnabled(true);
+        for(QWdt *wdgt : QWL{ui->keepfiles, ui->includeusers}) wdgt->setEnabled(true);
         ui->autorestoreoptions->setDisabled(true);
 
         if(! ui->autorestoreoptions->isChecked())
-        {
-            ui->skipfstabrestore->setDisabled(true);
-            ui->grubreinstallrestore->setDisabled(true);
-            ui->grubreinstallrestoredisable->setDisabled(true);
-        }
+            for(QWdt *wdgt : QWL{ui->skipfstabrestore, ui->grubreinstallrestore, ui->grubreinstallrestoredisable}) wdgt->setDisabled(true);
     }
 
     on_includeusers_currentIndexChanged(ui->includeusers->currentText());
@@ -5732,9 +5505,10 @@ void systemback::on_livelist_currentItemChanged(QLWI *crrnt)
         {
             delete crrnt;
             ui->livelist->setCurrentItem(nullptr);
-            if(ui->livedelete->isEnabled()) ui->livedelete->setDisabled(true);
-            if(ui->liveconvert->isEnabled()) ui->liveconvert->setDisabled(true);
-            if(ui->livewritestart->isEnabled()) ui->livewritestart->setDisabled(true);
+
+            for(QWdt *wdgt : QWL{ui->livedelete, ui->liveconvert, ui->livewritestart})
+                if(wdgt->isEnabled()) wdgt->setDisabled(true);
+
             ui->livecreateback->setFocus();
         }
     }
@@ -5827,8 +5601,7 @@ void systemback::on_systemrepair_clicked()
         if(ui->autorepairoptions->isEnabled())
         {
             ui->autorepairoptions->setDisabled(true);
-            ui->grubreinstallrepair->setEnabled(true);
-            ui->grubreinstallrepairdisable->setEnabled(true);
+            for(QWdt *wdgt : QWL{ui->grubreinstallrepair, ui->grubreinstallrepairdisable}) wdgt->setEnabled(true);
         }
     }
     else
@@ -5974,11 +5747,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
         {
             if(ui->partitionsettingspanel2->isHidden())
             {
-                if(ui->partitionsettingspanel1->isVisible())
-                    ui->partitionsettingspanel1->hide();
-                else
-                    ui->partitionsettingspanel3->hide();
-
+                ui->partitionsettingspanel1->isVisible() ? ui->partitionsettingspanel1->hide() : ui->partitionsettingspanel3->hide();
                 ui->partitionsettingspanel2->show();
             }
 
@@ -6053,11 +5822,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
         case sb::Emptyspace:
             if(ui->partitionsettingspanel3->isHidden())
             {
-                if(ui->partitionsettingspanel1->isVisible())
-                    ui->partitionsettingspanel1->hide();
-                else
-                    ui->partitionsettingspanel2->hide();
-
+                ui->partitionsettingspanel1->isVisible() ? ui->partitionsettingspanel1->hide() : ui->partitionsettingspanel2->hide();
                 ui->partitionsettingspanel3->show();
             }
 
@@ -6067,11 +5832,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
         default:
             if(ui->partitionsettingspanel1->isHidden())
             {
-                if(ui->partitionsettingspanel2->isVisible())
-                    ui->partitionsettingspanel2->hide();
-                else
-                    ui->partitionsettingspanel3->hide();
-
+                ui->partitionsettingspanel2->isVisible() ? ui->partitionsettingspanel2->hide() : ui->partitionsettingspanel3->hide();
                 ui->partitionsettingspanel1->show();
             }
 
@@ -6153,8 +5914,8 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                 }
                 else if(mpt == "SWAP")
                 {
-                    if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
-                    if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
+                    for(QWdt *wdgt : QWL{ui->mountpoint, ui->unmountdelete})
+                        if(! wdgt->isEnabled()) wdgt->setEnabled(true);
 
                     if(ui->mountpoint->currentText() != "SWAP")
                     {
@@ -7074,14 +6835,14 @@ void systemback::on_schedulerstate_clicked()
         sb::schdle[0] = sb::False;
         if(! cfgupdt) cfgupdt = true;
         ui->schedulerstate->setText(tr("Disabled"));
+        ui->silentmode->setDisabled(true);
+        if(ui->windowposition->isEnabled()) ui->windowposition->setDisabled(true);
 
         for(QPB *pbtn : ui->schedulerdayhrminpanel->findChildren<QPB *>())
             if(pbtn->isEnabled()) pbtn->setDisabled(true);
 
-        if(ui->secondup->isEnabled()) ui->secondup->setDisabled(true);
-        if(ui->seconddown->isEnabled()) ui->seconddown->setDisabled(true);
-        ui->silentmode->setDisabled(true);
-        if(ui->windowposition->isEnabled()) ui->windowposition->setDisabled(true);
+        for(QWdt *wdgt : QWL{ui->secondup, ui->seconddown})
+            if(wdgt->isEnabled()) wdgt->setDisabled(true);
     }
 }
 
@@ -7099,9 +6860,10 @@ void systemback::on_silentmode_clicked(bool chckd)
     {
         sb::schdle[5] = sb::True;
         if(! cfgupdt) cfgupdt = true;
-        if(ui->secondup->isEnabled()) ui->secondup->setDisabled(true);
-        if(ui->seconddown->isEnabled()) ui->seconddown->setDisabled(true);
         ui->windowposition->setDisabled(true);
+
+        for(QWdt *wdgt : QWL{ui->secondup, ui->seconddown})
+            if(wdgt->isEnabled()) wdgt->setDisabled(true);
     }
 }
 
@@ -7215,12 +6977,10 @@ void systemback::on_windowposition_currentIndexChanged(cQStr &arg1)
 
     if(ui->schedulepanel->isVisible())
     {
-        cchar *cval([&arg1] {
-                return arg1 == tr("Top left") ? "topleft"
-                    : arg1 == tr("Top right") ? "topright"
-                    : arg1 == tr("Center") ? "center"
-                    : arg1 == tr("Bottom left") ? "bottomleft" : "bottomright";
-            }());
+        cchar *cval(arg1 == tr("Top left") ? "topleft"
+                  : arg1 == tr("Top right") ? "topright"
+                  : arg1 == tr("Center") ? "center"
+                  : arg1 == tr("Bottom left") ? "bottomleft" : "bottomright");
 
         if(sb::schdlr[0] != cval)
         {
@@ -7452,7 +7212,7 @@ start:
     statustart();
     uchar dnum(0);
 
-    for(schar a(9) ; a > -1 && a < 15 ; a == 0 ? a = 10 : a > 0 && a < 10 ? --a : ++a)
+    for(uchar a : {9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11, 12, 13, 14})
     {
         if(getppipe(a)->isChecked())
         {
@@ -7906,24 +7666,22 @@ void systemback::on_languageoverride_clicked(bool chckd)
 {
     if(chckd)
     {
-        sb::lang = [this] {
-                QStr lname(ui->languages->currentText());
+        QStr lname(ui->languages->currentText());
 
-                return lname == "المصرية العربية" ? "ar_EG"
-                    : lname == "Català" ? "ca_ES"
-                    : lname == "Čeština" ? "cs_CS"
-                    : lname == "English (common)" ? "en_EN"
-                    : lname == "English (United Kingdom)" ? "en_GB"
-                    : lname == "Español" ? "es_ES"
-                    : lname == "Suomi" ? "fi_FI"
-                    : lname == "Français" ? "fr_FR"
-                    : lname == "Galego" ? "gl_ES"
-                    : lname == "Magyar" ? "hu_HU"
-                    : lname == "Bahasa Indonesia" ? "id_ID"
-                    : lname == "Português (Brasil)" ? "pt_BR"
-                    : lname == "Română" ? "ro_RO"
-                    : lname == "Türkçe" ? "tr_TR" : "zh_CN";
-            }();
+        sb::lang = lname == "المصرية العربية" ? "ar_EG"
+                 : lname == "Català" ? "ca_ES"
+                 : lname == "Čeština" ? "cs_CS"
+                 : lname == "English (common)" ? "en_EN"
+                 : lname == "English (United Kingdom)" ? "en_GB"
+                 : lname == "Español" ? "es_ES"
+                 : lname == "Suomi" ? "fi_FI"
+                 : lname == "Français" ? "fr_FR"
+                 : lname == "Galego" ? "gl_ES"
+                 : lname == "Magyar" ? "hu_HU"
+                 : lname == "Bahasa Indonesia" ? "id_ID"
+                 : lname == "Português (Brasil)" ? "pt_BR"
+                 : lname == "Română" ? "ro_RO"
+                 : lname == "Türkçe" ? "tr_TR" : "zh_CN";
 
         ui->languages->setEnabled(true);
     }
@@ -7942,22 +7700,20 @@ void systemback::on_languages_currentIndexChanged(cQStr &arg1)
 
     if(ui->languages->isEnabled())
     {
-        sb::lang = [&arg1] {
-                return arg1 == "المصرية العربية" ? "ar_EG"
-                    : arg1 == "Català" ? "ca_ES"
-                    : arg1 == "Čeština" ? "cs_CS"
-                    : arg1 == "English (common)" ? "en_EN"
-                    : arg1 == "English (United Kingdom)" ? "en_GB"
-                    : arg1 == "Español" ? "es_ES"
-                    : arg1 == "Suomi" ? "fi_FI"
-                    : arg1 == "Français" ? "fr_FR"
-                    : arg1 == "Galego" ? "gl_ES"
-                    : arg1 == "Magyar" ? "hu_HU"
-                    : arg1 == "Bahasa Indonesia" ? "id_ID"
-                    : arg1 == "Português (Brasil)" ? "pt_BR"
-                    : arg1 == "Română" ? "ro_RO"
-                    : arg1 == "Türkçe" ? "tr_TR" : "zh_CN";
-            }();
+        sb::lang = arg1 == "المصرية العربية" ? "ar_EG"
+                 : arg1 == "Català" ? "ca_ES"
+                 : arg1 == "Čeština" ? "cs_CS"
+                 : arg1 == "English (common)" ? "en_EN"
+                 : arg1 == "English (United Kingdom)" ? "en_GB"
+                 : arg1 == "Español" ? "es_ES"
+                 : arg1 == "Suomi" ? "fi_FI"
+                 : arg1 == "Français" ? "fr_FR"
+                 : arg1 == "Galego" ? "gl_ES"
+                 : arg1 == "Magyar" ? "hu_HU"
+                 : arg1 == "Bahasa Indonesia" ? "id_ID"
+                 : arg1 == "Português (Brasil)" ? "pt_BR"
+                 : arg1 == "Română" ? "ro_RO"
+                 : arg1 == "Türkçe" ? "tr_TR" : "zh_CN";
 
         if(! cfgupdt) cfgupdt = true;
     }

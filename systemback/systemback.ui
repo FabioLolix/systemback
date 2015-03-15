@@ -2874,6 +2874,9 @@
       <bool>true</bool>
      </property>
      <widget class="QTextBrowser" name="license">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>8</x>

@@ -966,6 +966,7 @@ inline QStr sb::rlink(cQStr &path, ushort blen)
 inline uchar sb::fcomp(cQStr &file1, cQStr &file2)
 {
     struct stat fstat[2];
+
     return like(-1, {stat(chr(file1), &fstat[0]), stat(chr(file2), &fstat[1])}) ? 0
         : fstat[0].st_size == fstat[1].st_size && fstat[0].st_mtim.tv_sec == fstat[1].st_mtim.tv_sec ? fstat[0].st_mode == fstat[1].st_mode && fstat[0].st_uid == fstat[1].st_uid && fstat[0].st_gid == fstat[1].st_gid ? 2 : 1 : 0;
 }
@@ -1441,8 +1442,7 @@ void sb::run()
                                         {
                                             ullong start(psalign(egeom.at(2), dev->sector_size));
                                             ThrdSlst->append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - start + 1) * dev->sector_size - (prt->type == PED_PARTITION_LOGICAL ? 2097152 : 1048576 - dev->sector_size)) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(start * dev->sector_size + 1048576));
-                                            egeom.removeAt(3);
-                                            egeom.removeAt(2);
+                                            for(uchar a(3) ; a > 1 ; --a) egeom.removeAt(a);
                                         }
 
                                         blkid_probe pr(blkid_new_probe_from_filename(chr(ppath)));

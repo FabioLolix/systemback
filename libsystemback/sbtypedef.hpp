@@ -22,6 +22,7 @@
 
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QCheckBox>
 #include <QTranslator>
 #include <QTextStream>
@@ -30,8 +31,11 @@
 typedef QTranslator QTrn;
 typedef QPushButton QPB;
 typedef QLineEdit QLE;
+typedef QComboBox QCbB;
 typedef QCheckBox QCB;
 typedef QTextStream QTS;
+typedef QList<QWidget *> QWL;
+typedef QList<QComboBox *> QCbBL;
 typedef const QStringList cQSL;
 typedef QStringList QSL;
 typedef QList<QByteArray> QBAL;
@@ -40,6 +44,7 @@ typedef QList<long long> QLIL;
 typedef const QList<uchar> cQUCL;
 typedef QList<uchar> QUCL;
 typedef const std::initializer_list<int> cSIL;
+typedef QWidget QWdt;
 typedef const QString cQStr;
 typedef QString QStr;
 typedef const QByteArray cQBA;

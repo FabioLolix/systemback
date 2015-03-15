@@ -1037,7 +1037,7 @@ void systemback::busy(bool state)
         if(qApp->overrideCursor()->shape() == Qt::WaitCursor) qApp->restoreOverrideCursor();
         break;
     case 1:
-        if(! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::WaitCursor) qApp->setOverrideCursor(Qt::WaitCursor);
+        if(! qApp->overrideCursor()) qApp->setOverrideCursor(Qt::WaitCursor);
     }
 }
 
@@ -1180,12 +1180,20 @@ void systemback::dialogtimer()
 
 void systemback::wpressed()
 {
-    if(! wismax) qApp->setOverrideCursor(Qt::SizeAllCursor);
+    if(! wismax)
+    {
+        if(qApp->overrideCursor()) qApp->restoreOverrideCursor();
+        qApp->setOverrideCursor(Qt::SizeAllCursor);
+    }
 }
 
 void systemback::wreleased()
 {
-    if(qApp->overrideCursor() && qApp->overrideCursor()->shape() == Qt::SizeAllCursor) busycnt > 0 ? qApp->setOverrideCursor(Qt::WaitCursor) : qApp->restoreOverrideCursor();
+    if(qApp->overrideCursor() && qApp->overrideCursor()->shape() == Qt::SizeAllCursor)
+    {
+        qApp->restoreOverrideCursor();
+        if(busycnt > 0) qApp->setOverrideCursor(Qt::WaitCursor);
+    }
 
     if(! wismax)
     {
@@ -1444,12 +1452,20 @@ void systemback::chsleave()
 
 void systemback::chspressed()
 {
-    if(! wismax) qApp->setOverrideCursor(Qt::SizeFDiagCursor);
+    if(! wismax)
+    {
+        if(qApp->overrideCursor()) qApp->restoreOverrideCursor();
+        qApp->setOverrideCursor(Qt::SizeFDiagCursor);
+    }
 }
 
 void systemback::chsreleased()
 {
-    if(qApp->overrideCursor() && qApp->overrideCursor()->shape() == Qt::SizeFDiagCursor) busycnt > 0 ? qApp->setOverrideCursor(Qt::WaitCursor) : qApp->restoreOverrideCursor();
+    if(qApp->overrideCursor() && qApp->overrideCursor()->shape() == Qt::SizeFDiagCursor)
+    {
+        qApp->restoreOverrideCursor();
+        if(busycnt > 0) qApp->setOverrideCursor(Qt::WaitCursor);
+    }
 }
 
 void systemback::cpyenter()
@@ -2586,8 +2602,8 @@ start:
 
                     fstabtxt.append("# " % (nmpt == "SWAP" ? QStr("SWAP\nUUID=" % uuid % "   none   swap   sw   0   0")
                                 : nmpt % "\nUUID=" % uuid % "   " % nmpt % "   " % nfs % "   noatime"
-                                    % nmpt == "/" ? QStr(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}) ? ",errors=remount-ro" : nfs == "reiserfs" ? ",notail" : ",subvol=@") % "   0   1"
-                                        : (nfs == "reiserfs" ? ",notail" : nfs == "btrfs" ? QStr(",subvol=@" % sb::right(nmpt, -1)) : nullptr) % "   0   2") % '\n');
+                                    % (nmpt == "/" ? QStr(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}) ? ",errors=remount-ro" : nfs == "reiserfs" ? ",notail" : ",subvol=@") % "   0   1"
+                                        : (nfs == "reiserfs" ? ",notail" : nfs == "btrfs" ? QStr(",subvol=@" % sb::right(nmpt, -1)) : nullptr) % "   0   2")) % '\n');
                 }
             }
 

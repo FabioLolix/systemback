@@ -50,19 +50,67 @@ void systemback::main()
 {
     auto help([] {
             return tr("Usage: systemback-cli [option]\n\n"
-            " Options:\n\n"
-            "  -n, --newbackup          create a new restore point\n\n"
-            "  -s, --storagedir <path>  get or set restore points storage directory path\n\n"
-            "  -u, --upgrade            upgrade current system\n"
-            "                           remove unnecessary files and packages\n\n"
-            "  -v, --version            output Systemback version number\n\n"
-            "  -h, --help               show this help");
+                " Options:\n\n"
+                "  -n, --newbackup          create a new restore point\n\n"
+                "  -s, --storagedir <path>  get or set restore points storage directory path\n\n"
+                "  -u, --upgrade            upgrade current system\n"
+                "                           remove unnecessary files and packages\n\n"
+                "  -v, --version            output Systemback version number\n\n"
+                "  -h, --help               show this help");
         });
 
-    uchar rv;
-    goto start;
-error:
-    sb::error("\n " % [=]() -> QStr {
+    uchar rv([&] {
+            if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
+                sb::print("\n " % help() % "\n\n");
+            else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
+                sb::print("\n " % sb::appver() % "\n\n");
+            else if(sb::like(qApp->arguments().value(1), {"_-u_", "_--upgrade_"}))
+            {
+                sb::unlock(sb::Dpkglock);
+                sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
+            }
+            else
+                return getuid() + getgid() > 0 ? 2
+                    : ! sb::lock(sb::Sblock) ? 3
+                    : ! sb::lock(sb::Dpkglock) ? 4
+                    : [&] {
+                            auto startui([this](bool crtrpt = false) -> uchar {
+                                    { int pgid(getpgrp());
+                                    if(pgid == -1 || ! sb::like(pgid, {tcgetpgrp(STDIN_FILENO), tcgetpgrp(STDOUT_FILENO)}, true)) return 255; }
+                                    initscr();
+
+                                    uchar rv(! has_colors() ? 11
+                                        : LINES < 24 || COLS < 80 ? 12
+                                        : [crtrpt, this]() -> uchar {
+                                                noecho();
+                                                raw();
+                                                curs_set(0);
+                                                attron(A_BOLD);
+                                                start_color();
+                                                assume_default_colors(COLOR_BLUE, COLOR_BLACK);
+                                                init_pair(1, COLOR_WHITE, COLOR_BLACK);
+                                                init_pair(2, COLOR_BLUE, COLOR_BLACK);
+                                                init_pair(3, COLOR_GREEN, COLOR_BLACK);
+                                                init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+                                                init_pair(5, COLOR_RED, COLOR_BLACK);
+                                                if(! crtrpt) return clistart();
+                                                sb::pupgrade();
+                                                return newrestorepoint() ? 0 : sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
+                                            }());
+
+                                    endwin();
+                                    return rv;
+                                });
+
+                            return qApp->arguments().count() == 1 ? startui()
+                                : sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}) ? [&] { return ! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write) ? 10 : startui(true); }()
+                                : sb::like(qApp->arguments().value(1), {"_-s_", "_--storagedir_"}) ? storagedir() : 1;
+                        }();
+
+            return 0;
+        }());
+
+    if(! sb::like(rv, {0, 255})) sb::error("\n " % [=]() -> QStr {
             switch(rv) {
             case 1:
                 return help();
@@ -94,85 +142,6 @@ error:
         }() % "\n\n");
 
     qApp->exit(rv);
-    return;
-start:
-    if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
-        sb::print("\n " % help() % "\n\n");
-    else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
-        sb::print("\n " % sb::appver() % "\n\n");
-    else if(sb::like(qApp->arguments().value(1), {"_-u_", "_--upgrade_"}))
-    {
-        sb::unlock(sb::Dpkglock);
-        sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
-    }
-    else
-    {
-        if(getuid() + getgid() > 0)
-            rv = 2;
-        else if(! sb::lock(sb::Sblock))
-            rv = 3;
-        else if(! sb::lock(sb::Dpkglock))
-            rv = 4;
-        else
-        {
-            auto uinit([&rv]() -> bool {
-                    int pgid(getpgrp());
-                    if(pgid == -1 || ! sb::like(pgid, {tcgetpgrp(STDIN_FILENO), tcgetpgrp(STDOUT_FILENO)}, true)) return 255;
-                    initscr();
-
-                    if(! has_colors())
-                        rv = 11;
-                    else if(LINES < 24 || COLS < 80)
-                        rv = 12;
-                    else
-                    {
-                        noecho();
-                        raw();
-                        curs_set(0);
-                        attron(A_BOLD);
-                        start_color();
-                        assume_default_colors(COLOR_BLUE, COLOR_BLACK);
-                        init_pair(1, COLOR_WHITE, COLOR_BLACK);
-                        init_pair(2, COLOR_BLUE, COLOR_BLACK);
-                        init_pair(3, COLOR_GREEN, COLOR_BLACK);
-                        init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-                        init_pair(5, COLOR_RED, COLOR_BLACK);
-                        return true;
-                    }
-
-                    return false;
-                });
-
-            if(qApp->arguments().count() == 1)
-            {
-                if(uinit()) rv = clistart();
-                endwin();
-            }
-            else if(sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}))
-            {
-                if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
-                    rv = 10;
-                else
-                {
-                    if(uinit())
-                    {
-                        sb::pupgrade();
-                        rv = newrestorepoint() ? 0 : sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
-                    }
-
-                    endwin();
-                }
-            }
-            else if(sb::like(qApp->arguments().value(1), {"_-s_", "_--storagedir_"}))
-                rv = storagedir();
-            else
-                rv = 1;
-        }
-
-        if(rv > 0) goto error;
-    }
-
-    qApp->quit();
 }
 
 uchar systemback::clistart()

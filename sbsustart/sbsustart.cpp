@@ -22,126 +22,109 @@
 #include <QProcess>
 #include <unistd.h>
 
-void sbsustart::main()
+sustart::sustart()
 {
-    uchar rv;
-    goto start;
-error:
+    cmd = nullptr;
+}
+
+sustart::~sustart()
 {
-    if(rv == 2)
-        sb::error("\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
-    else
+    if(cmd) delete cmd;
+}
+
+void sustart::main()
+{
     {
-        QStr emsg((qApp->arguments().value(1) == "systemback" ? tr("Cannot start Systemback graphical user interface!") : tr("Cannot start Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? tr("Unable to get root permissions.") : tr("Unable to connect to X server.")));
+        uchar rv([&] {
+                return ! sb::like(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().value(1), {"_systemback_", "_scheduler_"}) ? 2
+                    : [&] {
+                        QStr uname, usrhm;
+
+                        if(uid == 0)
+                            uname = "root", usrhm = "/root";
+                        else
+                        {
+                            QFile file("/etc/passwd");
+
+                            if(file.open(QIODevice::ReadOnly))
+                                while(! file.atEnd())
+                                {
+                                    QStr line(file.readLine().trimmed());
+
+                                    if(line.contains("x:" % QStr::number(uid) % ':'))
+                                    {
+                                        QSL uslst(line.split(':'));
+                                        uname = uslst.at(0), usrhm = uslst.at(5);
+                                        break;
+                                    }
+                                }
+
+                            if(uname.isEmpty() || usrhm.isEmpty()) return 3;
+                        }
+
+                        bool uidinr(getuid() > 0), gidinr(getgid() > 0);
+
+                        if(uidinr || gidinr)
+                        {
+                            if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1)) return 3;
+
+                            auto clrenv([](cQStr &usrhm, cQStr &xpath = nullptr) {
+                                    QSL excl{"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"};
+
+                                    for(cQStr &cvar : QProcess::systemEnvironment())
+                                    {
+                                        QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
+                                        if(! sb::like(var, excl) && ! qunsetenv(chr(var))) return false;
+                                    }
+
+                                    if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.toUtf8()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;
+                                    return true;
+                                });
+
+                            if(qApp->arguments().value(1) == "systemback")
+                            {
+                                QStr xauth("/tmp/sbXauthority-" % sb::rndstr());
+                                if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (! sb::isfile("/home/" % uname % "/.Xauthority") || ! QFile("/home/" % uname % "/.Xauthority").copy(xauth)) && (! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth))) return 4;
+                                if(! clrenv("/root", xauth)) return 3;
+                                cmd = new QStr("systemback authorization " % uname);
+                            }
+                            else if(! clrenv(usrhm))
+                                return 3;
+                            else
+                                cmd = new QStr("sbscheduler " % uname);
+                        }
+                        else
+                            cmd = new QStr([&]() -> QStr {
+                                if(qApp->arguments().value(1) == "systemback") return "systemback";
+                                qputenv("HOME", usrhm.toUtf8());
+                                return "sbscheduler " % uname;
+                            }());
+
+                        return 0;
+                }();
+            }());
+
+        if(rv > 0)
+        {
+            if(rv == 2)
+                sb::error("\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
+            else
+            {
+                QStr emsg((qApp->arguments().value(1) == "systemback" ? tr("Cannot start Systemback graphical user interface!") : tr("Cannot start Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? tr("Unable to get root permissions.") : tr("Unable to connect to X server.")));
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
-        if(uid != geteuid() && seteuid(uid) == -1)
-            sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
-        else
+                if(uid != geteuid() && seteuid(uid) == -1)
+                    sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
+                else
 #endif
-        sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
-    }
-
-    qApp->exit(rv);
-    return;
-}
-start:
-    if(! sb::like(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().value(1), {"_systemback_", "_scheduler_"}))
-    {
-        rv = 2;
-        goto error;
-    }
-
-    QStr cmd;
-
-    {
-        QStr uname, usrhm;
-
-        if(uid == 0)
-            uname = "root", usrhm = "/root";
-        else
-        {
-            QFile file("/etc/passwd");
-
-            if(file.open(QIODevice::ReadOnly))
-                while(! file.atEnd())
-                {
-                    QStr line(file.readLine().trimmed());
-
-                    if(line.contains("x:" % QStr::number(uid) % ':'))
-                    {
-                        QSL uslst(line.split(':'));
-                        uname = uslst.at(0), usrhm = uslst.at(5);
-                        break;
-                    }
-                }
-
-            if(uname.isEmpty() || usrhm.isEmpty())
-            {
-                rv = 3;
-                goto error;
-            }
-        }
-
-        bool uidinr(getuid() > 0), gidinr(getgid() > 0);
-
-        if(uidinr || gidinr)
-        {
-            if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1))
-            {
-                rv = 3;
-                goto error;
+                sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
             }
 
-            auto clrenv([](cQStr &usrhm, cQStr &xpath = nullptr) {
-                    QSL excl{"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"};
-
-                    for(cQStr &cvar : QProcess::systemEnvironment())
-                    {
-                        QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
-                        if(! sb::like(var, excl) && ! qunsetenv(chr(var))) return false;
-                    }
-
-                    if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.toUtf8()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;
-                    return true;
-                });
-
-            if(qApp->arguments().value(1) == "systemback")
-            {
-                QStr xauth("/tmp/sbXauthority-" % sb::rndstr());
-
-                if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (! sb::isfile("/home/" % uname % "/.Xauthority") || ! QFile("/home/" % uname % "/.Xauthority").copy(xauth)) && (! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth)))
-                {
-                    rv = 4;
-                    goto error;
-                }
-
-                if(! clrenv("/root", xauth))
-                {
-                    sb::remove(xauth);
-                    rv = 3;
-                    goto error;
-                }
-
-                cmd = "systemback authorization " % uname;
-            }
-            else if(! clrenv(usrhm))
-            {
-                rv = 3;
-                goto error;
-            }
-            else
-                cmd = "sbscheduler " % uname;
-        }
-        else if(qApp->arguments().value(1) == "systemback")
-            cmd = "systemback";
-        else
-        {
-            qputenv("HOME", usrhm.toUtf8());
-            cmd = "sbscheduler " % uname;
+            qApp->exit(rv);
+            return;
         }
     }
 
     if(qApp->arguments().value(2) == "gtk+") qputenv("QT_STYLE_OVERRIDE", "gtk+");
-    qApp->exit(sb::exec(cmd));
+    qApp->exit(sb::exec(*cmd));
 }

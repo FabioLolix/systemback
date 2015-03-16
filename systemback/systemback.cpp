@@ -4805,7 +4805,7 @@ void systemback::ilstupdt(cQStr &dir)
     }
     else
         for(cQStr &item : QDir(dir).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-            if(((ui->pointexclude->isChecked() && item.startsWith('.')) || (ui->liveexclude->isChecked() && ! item.startsWith('.'))) && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty())
+            if([&] { return ui->pointexclude->isChecked() ? item.startsWith('.') : ! item.startsWith('.'); }() && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty())
             {
                 if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
                 {

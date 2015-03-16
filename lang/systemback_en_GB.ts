@@ -21,29 +21,6 @@
     </message>
 </context>
 <context>
-    <name>sbsustart</name>
-    <message>
-        <source>Missing, wrong or too much argument(s).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to get root permissions.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to connect to X server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot start Systemback graphical user interface!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot start Systemback scheduler daemon!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>scheduler</name>
     <message>
         <source>Cannot start Systemback scheduler daemon!</source>
@@ -72,6 +49,29 @@
     <message>
         <source>Unable to daemonize.</source>
         <translation>Unable to daemonise.</translation>
+    </message>
+</context>
+<context>
+    <name>sustart</name>
+    <message>
+        <source>Missing, wrong or too much argument(s).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to get root permissions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to connect to X server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot start Systemback graphical user interface!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot start Systemback scheduler daemon!</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

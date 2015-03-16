@@ -22,13 +22,13 @@
 #include <QTimer>
 #include <unistd.h>
 
-uint sbsustart::uid(getuid());
+uint sustart::uid(getuid());
 
 int main(int argc, char *argv[])
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
     {
-        if(sbsustart::uid > 0 && setuid(0) == -1 && sbsustart::uid != geteuid())
+        if(sustart::uid > 0 && setuid(0) == -1 && sustart::uid != geteuid())
         {
             QStr arg1(argv[1]);
 
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
             QStr emsg("Cannot start Systemback " % QStr(arg1 == "systemback" ? "graphical user interface" : "scheduler daemon") % "!\n\nUnable to get root permissions.");
 
-            if(seteuid(sbsustart::uid) == -1)
+            if(seteuid(sustart::uid) == -1)
                 sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
             else
                 sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     QTrn *tltr(sb::ldtltr());
     if(tltr) a.installTranslator(tltr);
-    sbsustart s;
+    sustart s;
     QTimer::singleShot(0, &s, SLOT(main()));
     uchar rv(a.exec());
     if(tltr) delete tltr;

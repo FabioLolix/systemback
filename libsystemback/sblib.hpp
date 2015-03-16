@@ -112,6 +112,7 @@ protected:
 
 private:
     sb();
+
     static QSL *ThrdSlst;
     static int sblock[3];
     static uchar ThrdType, ThrdChr;

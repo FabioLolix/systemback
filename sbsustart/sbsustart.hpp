@@ -23,15 +23,21 @@
 #include "../libsystemback/sblib.hpp"
 #include <QObject>
 
-class sbsustart : public QObject
+class sustart : public QObject
 {
     Q_OBJECT
 
 public:
+    sustart();
+    ~sustart();
+
     static uint uid;
 
 public slots:
     void main();
+
+private:
+    QStr *cmd;
 };
 
 #endif

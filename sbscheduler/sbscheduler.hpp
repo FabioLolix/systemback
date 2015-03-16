@@ -29,12 +29,17 @@ class scheduler : public QObject
     Q_OBJECT
 
 public:
+    scheduler();
+    ~scheduler();
+
     static QDateTime cfglmd;
 
 public slots:
     void main();
 
 private:
+    QStr *pfile;
+
     void newrestorepoint();
 };
 

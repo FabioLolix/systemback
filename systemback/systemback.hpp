@@ -63,7 +63,7 @@ private:
 
     GRUB grub;
     QTimer utimer, *shdltimer, *dlgtimer, *intrrptimer;
-    QStr cpoint, points, pname, prun, dialogdev, hash;
+    QStr cpoint, points, pname, prun, hash;
     ushort dialog;
     short wgeom[4], cpos;
     uchar busycnt, ppipe, sfctr, icnt;
@@ -75,11 +75,11 @@ private:
     QStr ckname();
     ushort ss(ushort size);
     bool minside(cQPoint &wpos, cQSize &wsize);
+    void dialogopen(ushort dlg = 0, cchar *dev = nullptr, schar snum = -1);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
     void ptxtchange(uchar num, cQStr &txt);
     void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);
-    void dialogopen(schar snum = -1);
     void busy(bool state = true);
     void fontcheck(uchar wdgt);
     void pnmchange(uchar num);

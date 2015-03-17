@@ -333,39 +333,38 @@ void systemback::emptycache()
 
 bool systemback::newrestorepoint()
 {
-    goto start;
-error:
-    progress(Stop);
-    return false;
-start:
+    auto end([this](bool rv = true) {
+            progress(Stop);
+            return rv;
+        });
+
     progress(Start);
 
     for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
         {
             if(prun != tr("Deleting incomplete restore point")) prun = tr("Deleting incomplete restore point");
-            if(! sb::remove(sb::sdir[1] % '/' % item)) goto error;
+            if(! sb::remove(sb::sdir[1] % '/' % item)) return end(false);
         }
 
     for(uchar a(9) ; a > 1 ; --a)
         if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
         {
             if(prun != tr("Deleting old restore point(s)")) prun = tr("Deleting old restore point(s)");
-            if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) goto error;
+            if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) return end(false);
         }
 
     prun = tr("Creating restore point");
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
-    if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) goto error;
+    if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) return end(false);
 
     for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
-        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) goto error;
+        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return end(false);
 
-    if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) goto error;
+    if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return end(false);
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
     emptycache();
-    progress(Stop);
-    return true;
+    return end();
 }
 
 uchar systemback::restore()

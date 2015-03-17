@@ -1107,42 +1107,37 @@ inline bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
 
         if(! like(iname, dd) && (! hidden || iname.startsWith('.')))
         {
-            bool dir(true);
+            uchar type([&] {
+                    switch(ent->d_type) {
+                    case DT_LNK:
+                        return Islink;
+                    case DT_DIR:
+                        return Isdir;
+                    case DT_REG:
+                        return Isfile;
+                    case DT_UNKNOWN:
+                        switch(stype(path % '/' % iname)) {
+                        case Islink:
+                            return Islink;
+                        case Isdir:
+                            return Isdir;
+                        case Isfile:
+                            return Isfile;
+                        }
+                    default:
+                        return Excluded;
+                    }
+                }());
 
-            switch(ent->d_type) {
-            case DT_LNK:
-                ucl.append(Islink);
+            switch(type) {
+            case Islink:
+            case Isfile:
+                ucl.append(type);
+                ba.append(prepath % iname % '\n');
                 break;
-            case DT_DIR:
-                ucl.append(Isdir);
-                goto end;
-            case DT_REG:
-                ucl.append(Isfile);
-                break;
-            case DT_UNKNOWN:
-                switch(stype(path % '/' % iname)) {
-                case Islink:
-                    ucl.append(Islink);
-                    break;
-                case Isdir:
-                    ucl.append(Isdir);
-                    goto end;
-                case Isfile:
-                    ucl.append(Isfile);
-                    break;
-                default:
-                    continue;
-                }
-
-                break;
-            default:
-                continue;
+            case Isdir:
+                rodir(ba.append(prepath % iname % '\n'), ucl << type, path % '/' % iname, false, (oplen == 0 ? path.length() : oplen));
             }
-
-            dir = false;
-        end:
-            ba.append(prepath % iname % '\n');
-            if(dir) rodir(ba, ucl, path % '/' % iname, false, (oplen == 0 ? path.length() : oplen));
         }
     }
 
@@ -1163,36 +1158,31 @@ inline bool sb::rodir(QBA &ba, cQStr &path, uchar oplen)
         QStr iname(ent->d_name);
 
         if(! like(iname, dd))
-        {
-            bool dir(true);
-
-            switch(ent->d_type) {
-            case DT_LNK:
-            case DT_REG:
+            switch([&]() -> uchar {
+                    switch(ent->d_type) {
+                    case DT_LNK:
+                    case DT_REG:
+                        return Included;
+                    case DT_DIR:
+                        return Isdir;
+                    case DT_UNKNOWN:
+                        switch(stype(path % '/' % iname)) {
+                        case Islink:
+                        case Isfile:
+                            return Included;
+                        case Isdir:
+                            return Isdir;
+                        }
+                    default:
+                        return Excluded;
+                    }
+                }()) {
+            case Included:
+                ba.append(prepath % iname % '\n');
                 break;
-            case DT_DIR:
-                goto end;
-            case DT_UNKNOWN:
-                switch(stype(path % '/' % iname)) {
-                case Islink:
-                case Isfile:
-                    break;
-                case Isdir:
-                    goto end;
-                default:
-                    continue;
-                }
-
-                break;
-            default:
-                continue;
+            case Isdir:
+                rodir(ba.append(prepath % iname % '\n'), path % '/' % iname, (oplen == 0 ? path.length() : oplen));
             }
-
-            dir = false;
-        end:
-            ba.append(prepath % iname % '\n');
-            if(dir) rodir(ba, path % '/' % iname, (oplen == 0 ? path.length() : oplen));
-        }
     }
 
     closedir(dir);
@@ -1211,36 +1201,31 @@ inline bool sb::rodir(QUCL &ucl, cQStr &path, uchar oplen)
         QStr iname(ent->d_name);
 
         if(! like(iname, dd))
-        {
-            bool dir(true);
-
-            switch(ent->d_type) {
-            case DT_LNK:
-            case DT_REG:
+            switch([&]() -> uchar {
+                    switch(ent->d_type) {
+                    case DT_LNK:
+                    case DT_REG:
+                        return Included;
+                    case DT_DIR:
+                        return Isdir;
+                    case DT_UNKNOWN:
+                        switch(stype(path % '/' % iname)) {
+                        case Islink:
+                        case Isfile:
+                            return Included;
+                        case Isdir:
+                            return Isdir;
+                        }
+                    default:
+                       return Excluded;
+                    }
+                }()) {
+            case Included:
+                ucl.append(0);
                 break;
-            case DT_DIR:
-                goto end;
-            case DT_UNKNOWN:
-                switch(stype(path % '/' % iname)) {
-                case Islink:
-                case Isfile:
-                    break;
-                case Isdir:
-                    goto end;
-                default:
-                    continue;
-                }
-
-                break;
-            default:
-                continue;
+            case Isdir:
+                rodir(ucl << 0, path % '/' % iname, (oplen == 0 ? path.length() : oplen));
             }
-
-            dir = false;
-        end:
-            ucl.append(0);
-            if(dir) rodir(ucl, path % '/' % iname, (oplen == 0 ? path.length() : oplen));
-        }
     }
 
     closedir(dir);
@@ -1402,20 +1387,20 @@ void sb::run()
             {
                 PedDevice *dev(ped_device_get(chr(path)));
                 PedDisk *dsk(ped_disk_new(dev));
-                QStr type(dsk ? dsk->type->name : nullptr), dtxt(path % '\n' % QStr::number(dev->length * dev->sector_size) % '\n');
 
-                if(type == "msdos")
-                    ThrdSlst->append(dtxt % QStr::number(MSDOS));
-                else if(type == "gpt")
-                    ThrdSlst->append(dtxt % QStr::number(GPT));
-                else
+                uchar type([&dsk] {
+                        QStr name(dsk ? dsk->type->name : nullptr);
+                        return name == "gpt" ? GPT : name == "msdos" ? MSDOS : Clear;
+                    }());
+
+                ThrdSlst->append(path % '\n' % QStr::number(dev->length * dev->sector_size) % '\n' % QStr::number(type));
+
+                if(type == Clear)
                 {
-                    ThrdSlst->append(dtxt % QStr::number(Clear));
-
-                    if(type.isNull())
-                        goto next_2;
-                    else
+                    if(dsk)
                         goto next_1;
+                    else
+                        goto next_2;
                 }
 
                 {
@@ -1469,7 +1454,7 @@ void sb::run()
                                     egeom.clear();
                                 }
 
-                                llong fgeom[]{llong(prt->geom.start < 1048576 / dev->sector_size ? 1048576 / dev->sector_size : psalign(prt->geom.start, dev->sector_size)), llong(prt->next && prt->next->type == PED_PARTITION_METADATA ? type == "msdos" ? prt->next->geom.end : prt->next->geom.end - (34816 / dev->sector_size * 10 + 5) / 10 : pealign(prt->geom.end, dev->sector_size))};
+                                llong fgeom[]{llong(prt->geom.start < 1048576 / dev->sector_size ? 1048576 / dev->sector_size : psalign(prt->geom.start, dev->sector_size)), llong(prt->next && prt->next->type == PED_PARTITION_METADATA ? type == MSDOS ? prt->next->geom.end : prt->next->geom.end - (34816 / dev->sector_size * 10 + 5) / 10 : pealign(prt->geom.end, dev->sector_size))};
                                 if(fgeom[1] - fgeom[0] > 1048576 / dev->sector_size - 2) ThrdSlst->append(path % "?\n" % QStr::number((fgeom[1] - fgeom[0] + 1) * dev->sector_size) % '\n' % QStr::number(Freespace) % '\n' % QStr::number(fgeom[0] * dev->sector_size));
                             }
                             else if(! egeom.isEmpty())

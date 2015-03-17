@@ -73,10 +73,12 @@ void scheduler::main()
     }
 
     QDateTime pflmd(QFileInfo(*pfile).lastModified());
-    sleep(300);
+    sleep(290);
 
     forever
     {
+        sleep(10);
+
         if(! sb::isfile(*pfile) || (pflmd != QFileInfo(*pfile).lastModified() && sb::fload(*pfile) != QBA::number(qApp->applicationPid())))
         {
             sb::unlock(sb::Schdlrlock);
@@ -90,47 +92,36 @@ void scheduler::main()
             cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
         }
 
-        if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write)) goto next;
-
-        if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))
-        {
+        if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
+            sleep(50);
+        else if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
-            goto next;
-        }
-
-        if(sb::schdle[0] == sb::True)
+        else if(sb::schdle[0] == sb::False)
+            sleep(1790);
+        else if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 >= sb::schdle[1] * 1440 + sb::schdle[2] * 60 + sb::schdle[3] && sb::lock(sb::Sblock))
         {
-            if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 < sb::schdle[1] * 1440 + sb::schdle[2] * 60 + sb::schdle[3]) goto next;
-            if(! sb::lock(sb::Sblock)) goto next;
-
             if(! sb::lock(sb::Dpkglock))
-            {
                 sb::unlock(sb::Sblock);
-                goto next;
-            }
-
-            if(sb::schdle[5] == sb::True || ! sb::execsrch("systemback"))
-                newrestorepoint();
             else
             {
-                QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
-
-                if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                if(sb::schdle[5] == sb::True || ! sb::execsrch("systemback"))
+                    newrestorepoint();
+                else
                 {
-                    sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
-                    QFile::remove(xauth);
+                    QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
+
+                    if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                    {
+                        sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
+                        QFile::remove(xauth);
+                    }
                 }
+
+                sb::unlock(sb::Sblock);
+                sb::unlock(sb::Dpkglock);
+                sleep(50);
             }
-
-            sb::unlock(sb::Sblock);
-            sb::unlock(sb::Dpkglock);
-            sleep(50);
         }
-        else
-            sleep(1790);
-
-    next:
-        sleep(10);
     }
 
     qApp->quit();
@@ -148,22 +139,18 @@ void scheduler::newrestorepoint()
 
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
 
-    if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime))
+    if(sb::crtrpoint(sb::sdir[1], ".S00_" % dtime))
     {
-        if(sb::dfree(sb::sdir[1]) < 104857600)
-        {
-            sb::remove(sb::sdir[1] % "/.S00_" % dtime);
-            goto end;
-        }
+        for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
+            if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return;
 
-        return;
+        if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return;
     }
+    else if(sb::dfree(sb::sdir[1]) < 104857600)
+        sb::remove(sb::sdir[1] % "/.S00_" % dtime);
+    else
+        return;
 
-    for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
-        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return;
-
-    if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return;
-end:
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
     sb::fssync();
     if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");

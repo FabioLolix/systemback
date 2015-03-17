@@ -33,8 +33,8 @@ class SHARED_EXPORT_IMPORT sb : public QThread
 {
 public:
     enum { Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvdevs = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Delpart = 11, Crtrpoint = 12, Srestore = 13, Scopy = 14, Lvprpr = 15,
+           Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknown = 5, Included = 6, Excluded = 7,
            MSDOS = 0, GPT = 1, Clear = 2, Primary = 3, Extended = 4, Logical = 5, Freespace = 6, Emptyspace = 7,
-           Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknow = 5,
            Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4,
            Sblock = 0, Dpkglock = 1, Schdlrlock = 2,
            False = 0, True = 1, Empty = 2,
@@ -275,7 +275,7 @@ inline uchar sb::stype(cchar *path)
     case S_IFBLK:
         return Isblock;
     default:
-        return Unknow;
+        return Unknown;
     }
 }
 

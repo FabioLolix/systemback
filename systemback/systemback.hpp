@@ -55,19 +55,22 @@ private:
 
     Ui::systemback *ui;
 
-    struct GRUB
-    {
+    struct {
+        QStr txt;
+        uchar type, pnts;
+    } prun;
+
+    struct {
         QStr name;
         bool isEFI;
-    };
+    } grub;
 
-    GRUB grub;
     QTimer utimer, *shdltimer, *dlgtimer, *intrrptimer;
-    QStr cpoint, points, pname, prun, hash;
+    QStr cpoint, pname, hash;
     ushort dialog;
     short wgeom[4], cpos;
     uchar busycnt, ppipe, sfctr, icnt;
-    bool wismax, uchkd, nrxth, ickernel, irblck, utblock, nohmcpy, sstart, cfgupdt, intrrpt;
+    bool sislive, wismax, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy, sstart, cfgupdt, intrrpt;
 
     QLE *getpoint(uchar num);
     QCB *getppipe(uchar num);
@@ -77,6 +80,7 @@ private:
     bool minside(cQPoint &wpos, cQSize &wsize);
     void dialogopen(ushort dlg = 0, cchar *dev = nullptr, schar snum = -1);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
+    void pset(uchar type, cchar *tend = nullptr);
     void ptxtchange(uchar num, cQStr &txt);
     void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);

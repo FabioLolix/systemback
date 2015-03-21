@@ -186,15 +186,7 @@ uchar systemback::clistart()
         int gtch(getch());
 
         switch(gtch) {
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        case '1' ... '9':
         {
             QStr cstr(gtch);
             cpoint = "S0" % cstr;
@@ -202,26 +194,32 @@ uchar systemback::clistart()
             if(! sb::pnames[num].isEmpty()) pname = sb::pnames[num];
             break;
         }
+        case 'a':
         case 'A':
             cpoint = "S10";
             if(! sb::pnames[9].isEmpty()) pname = sb::pnames[9];
             break;
+        case 'b':
         case 'B':
             cpoint = "H01";
             if(! sb::pnames[10].isEmpty()) pname = sb::pnames[10];
             break;
+        case 'c':
         case 'C':
             cpoint = "H02";
             if(! sb::pnames[11].isEmpty()) pname = sb::pnames[11];
             break;
+        case 'd':
         case 'D':
             cpoint = "H03";
             if(! sb::pnames[12].isEmpty()) pname = sb::pnames[12];
             break;
+        case 'e':
         case 'E':
             cpoint = "H04";
             if(! sb::pnames[13].isEmpty()) pname = sb::pnames[13];
             break;
+        case 'f':
         case 'F':
             cpoint = "H05";
             if(! sb::pnames[14].isEmpty()) pname = sb::pnames[14];
@@ -395,10 +393,7 @@ uchar systemback::restore()
         case 'C':
             clear();
             return clistart();
-        case '1':
-        case '2':
-        case '3':
-        case '4':
+        case '1' ... '4':
             rmode = QStr(gtch).toUShort();
         }
     } while(rmode == 0);

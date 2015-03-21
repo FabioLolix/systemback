@@ -402,10 +402,8 @@ bool sb::mcheck(cQStr &item)
             return uuid && QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
         }
     }
-    else if(itm.endsWith('/') && itm.length() > 1)
-        return mnts.contains(' ' % left(itm, -1));
     else
-        return mnts.contains(' ' % itm % ' ');
+        return mnts.contains(' ' % (itm.endsWith('/') && itm.length() > 1 ? left(itm, -1) : itm % ' '));
 }
 
 QStr sb::gdetect(cQStr rdir)

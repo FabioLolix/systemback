@@ -305,7 +305,7 @@ uchar systemback::storagedir()
                     sb::remove(sb::sdir[1]);
             }
 
-            sb::sdir[0] = ndir, sb::sdir[1] = sb::sdir[0] % "/Systemback";
+            sb::sdir[0] = ndir, sb::sdir[1] = sb::sdir[0] % "/Systemback", sb::ismpnt = ! sb::issmfs(chr(sb::sdir[0]), sb::sdir[0].count('/') == 1 ? "/" : chr(sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1)));
             sb::cfgwrite();
         }
 

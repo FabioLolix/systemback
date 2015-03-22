@@ -50,7 +50,7 @@ QSL *sb::ThrdSlst;
 QStr sb::ThrdStr[3], sb::ThrdDbg, sb::sdir[3], sb::schdlr[2], sb::pnames[15], sb::lang, sb::style, sb::wsclng;
 ullong sb::ThrdLng[]{0, 0};
 int sb::sblock[3];
-uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0), sb::schdle[]{sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty}, sb::waot(sb::Empty), sb::incrmtl(sb::Empty), sb::xzcmpr(sb::Empty), sb::autoiso(sb::Empty), sb::ecache(sb::Empty);
+uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0), sb::ismpnt(sb::Empty), sb::schdle[]{sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty}, sb::waot(sb::Empty), sb::incrmtl(sb::Empty), sb::xzcmpr(sb::Empty), sb::autoiso(sb::Empty), sb::ecache(sb::Empty);
 schar sb::Progress(-1);
 bool sb::ThrdBool, sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdRslt;
 
@@ -218,8 +218,9 @@ void sb::thrdelay()
 
 bool sb::cfgwrite(cQStr &file)
 {
-    return crtfile(file, "# Restore points settings\n#  storage_directory=<path>\n#  max_temporary_restore_points=[3-10]\n#  use_incremental_backup_method=[true/false]\n\n"
+    return crtfile(file, "# Restore points settings\n#  storage_directory=<path>\n#  storage_dir_is_mount_point=[true/false]\n#  max_temporary_restore_points=[3-10]\n#  use_incremental_backup_method=[true/false]\n\n"
             "storage_directory=" % sdir[0] %
+            "\nstorage_dir_is_mount_point=" % (ismpnt == True ? "true" : "false") %
             "\nmax_temporary_restore_points=" % QStr::number(pnumber) %
             "\nuse_incremental_backup_method=" % (incrmtl == True ? "true" : "false") %
             "\n\n\n# Live system settings\n#  working_directory=<path>\n#  use_xz_compressor=[true/false]\n#  auto_iso_images=[true/false]\n\n"
@@ -586,6 +587,13 @@ void sb::cfgread()
                 {
                     if(cline.startsWith("storage_directory="))
                         sdir[0] = cval;
+                    else if(cline.startsWith("storage_dir_is_mount_point="))
+                    {
+                        if(cval == "true")
+                            ismpnt = True;
+                        else if(cval == "false")
+                            ismpnt = False;
+                    }
                     else if(cline.startsWith("max_temporary_restore_points="))
                         pnumber = cval.toUShort();
                     else if(cline.startsWith("use_incremental_backup_method="))
@@ -670,12 +678,13 @@ void sb::cfgread()
     if(sdir[0].isEmpty())
     {
         sdir[0] = "/home", cfgupdt = true;
+        if(ismpnt != Empty) ismpnt = Empty;
         if(! isdir("/home/Systemback")) QDir().mkdir("/home/Systemback");
         if(! isfile("/home/Systemback/.sbschedule")) crtfile("/home/Systemback/.sbschedule");
     }
     else
     {
-        if(! isdir(sdir[0] % "/Systemback") && isdir(sdir[0]) && QDir().mkdir(sdir[0] % "/Systemback")) crtfile(sdir[0] % "/Systemback/.sbschedule");
+        if(! isdir(sdir[0] % "/Systemback") && isdir(sdir[0]) && (ismpnt != True || ! issmfs(chr(sdir[0]), sdir[0].count('/') == 1 ? "/" : chr(left(sdir[0], rinstr(sdir[0], "/") - 1)))) && QDir().mkdir(sdir[0] % "/Systemback")) crtfile(sdir[0] % "/Systemback/.sbschedule");
         QStr cpath(QDir::cleanPath(sdir[0]));
         if(sdir[0] != cpath) sdir[0] = cpath, cfgupdt = true;
     }
@@ -694,6 +703,12 @@ void sb::cfgread()
             sdir[2] = cpath;
             if(! cfgupdt) cfgupdt = true;
         }
+    }
+
+    if(ismpnt == Empty)
+    {
+        ismpnt = ! issmfs(chr(sdir[0]), sdir[0].count('/') == 1 ? "/" : chr(left(sdir[0], rinstr(sdir[0], "/") - 1)));
+        if(! cfgupdt) cfgupdt = true;
     }
 
     if(incrmtl == Empty)

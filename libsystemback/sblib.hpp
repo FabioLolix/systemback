@@ -44,7 +44,7 @@ public:
     static sb SBThrd;
     static QStr ThrdStr[3], ThrdDbg, sdir[3], schdlr[2], pnames[15], lang, style, wsclng;
     static ullong ThrdLng[2];
-    static uchar pnumber, schdle[6], waot, incrmtl, xzcmpr, autoiso, ecache;
+    static uchar pnumber, ismpnt, schdle[6], waot, incrmtl, xzcmpr, autoiso, ecache;
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
@@ -312,7 +312,7 @@ inline bool sb::islnxfs(cQStr &dirpath)
 inline bool sb::issmfs(cchar *item1, cchar *item2)
 {
     struct stat istat[2];
-    return stat(item1, &istat[0]) != -1 && stat(item2, &istat[1]) != -1 && istat[0].st_dev == istat[1].st_dev;
+    return ! like(-1, {stat(item1, &istat[0]), stat(item2, &istat[1])}) && istat[0].st_dev == istat[1].st_dev;
 }
 
 inline bool sb::isnum(cQStr &txt)

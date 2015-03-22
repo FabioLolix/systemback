@@ -5265,7 +5265,7 @@ void systemback::on_dirchooseok_clicked()
                 else if(dlst.count() == 1 && sb::isfile(sb::sdir[1] % "/.sbschedule"))
                     sb::remove(sb::sdir[1]);
 
-                sb::sdir[0] = ui->dirpath->text(), sb::sdir[1] = sb::sdir[0] % "/Systemback";
+                sb::sdir[0] = ui->dirpath->text(), sb::sdir[1] = sb::sdir[0] % "/Systemback", sb::ismpnt = ! sb::issmfs(chr(sb::sdir[0]), sb::sdir[0].count('/') == 1 ? "/" : chr(sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1)));
                 if(! cfgupdt) cfgupdt = true;
                 ui->storagedir->setText(sb::sdir[0]);
                 ui->storagedir->setToolTip(sb::sdir[0]);

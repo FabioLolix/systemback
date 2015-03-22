@@ -6248,7 +6248,16 @@ void systemback::on_livename_textChanged(cQStr &arg1)
         cpos = -1;
     }
 
-    if(sb::like(arg1, {"* *", "*/*"}) || arg1.toUtf8().length() > 32 || arg1.toLower().endsWith(".iso"))
+    if([&arg1] {
+            for(uchar a(0) ; a < arg1.length() ; ++a)
+            {
+                cQChar &ctr(arg1.at(a));
+                if(ctr == '/' || ((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! ctr.isDigit() && ! ctr.isPunct())) return true;
+            }
+
+            return false;
+        }() || arg1.toUtf8().length() > 32 || arg1.toLower().endsWith(".iso"))
+
         ui->livename->setText(QStr(arg1).replace((cpos = ui->livename->cursorPosition() - 1), 1, nullptr));
     else
     {
@@ -6456,40 +6465,33 @@ void systemback::on_fullname_textChanged(cQStr &arg1)
         else if(ui->installnext->isEnabled())
             ui->installnext->setDisabled(true);
     }
+    else if([&arg1] {
+            for(uchar a(0) ; a < arg1.length() ; ++a)
+            {
+                cQChar &ctr(arg1.at(a));
+                if(ctr == ':' || ctr == ',' || ctr == '=' || ! (ctr.isLetterOrNumber() || ctr.isPrint())) return true;
+            }
+
+            return false;
+        }() || sb::like(arg1, {"_ *", "*  *", "*ß*"}))
+
+        ui->fullname->setText(QStr(arg1).replace((cpos = ui->fullname->cursorPosition() - 1), 1, nullptr));
+    else if(arg1.at(0).isLower())
+    {
+        cpos = ui->fullname->cursorPosition();
+        ui->fullname->setText(arg1.at(0).toUpper() % sb::right(arg1, -1));
+    }
     else
     {
-        bool ok(true);
-
-        for(uchar a(0) ; a < arg1.length() ; ++a)
-        {
-            cQChar &ctr(arg1.at(a));
-
-            if(ctr == ':' || ctr == ',' || ctr == '=' || ! (ctr.isLetterOrNumber() || ctr.isPrint()))
+        for(cQStr &word : arg1.split(' '))
+            if(! word.isEmpty() && word.at(0).isLower())
             {
-                ok = false;
-                break;
+                cpos = ui->fullname->cursorPosition();
+                ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
+                return;
             }
-        }
 
-        if(! ok || sb::like(arg1, {"_ *", "*  *", "*ß*"}))
-            ui->fullname->setText(QStr(arg1).replace((cpos = ui->fullname->cursorPosition() - 1), 1, nullptr));
-        else if(arg1.at(0).isLower())
-        {
-            cpos = ui->fullname->cursorPosition();
-            ui->fullname->setText(arg1.at(0).toUpper() % sb::right(arg1, -1));
-        }
-        else
-        {
-            for(cQStr &word : arg1.split(' '))
-                if(! word.isEmpty() && word.at(0).isLower())
-                {
-                    cpos = ui->fullname->cursorPosition();
-                    ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
-                    return;
-                }
-
-            if(ui->fullnamepipe->isHidden()) ui->fullnamepipe->show();
-        }
+        if(ui->fullnamepipe->isHidden()) ui->fullnamepipe->show();
     }
 }
 
@@ -6531,28 +6533,21 @@ void systemback::on_username_textChanged(cQStr &arg1)
     }
     else if(arg1 != arg1.toLower())
         ui->username->setText(arg1.toLower());
-    else
-    {
-        bool ok(true);
-
-        for(uchar a(0) ; a < arg1.length() ; ++a)
-        {
-            cQChar &ctr(arg1.at(a));
-
-            if((ctr < 'a' || ctr > 'z') && ctr != '.' && ctr != '_' && ctr != '@' && (a == 0 || (! ctr.isDigit() && ctr != '-' && ctr != '$')))
+    else if([&arg1] {
+            for(uchar a(0) ; a < arg1.length() ; ++a)
             {
-                ok = false;
-                break;
+                cQChar &ctr(arg1.at(a));
+                if((ctr < 'a' || ctr > 'z') && ctr != '.' && ctr != '_' && ctr != '@' && (a == 0 || (! ctr.isDigit() && ctr != '-' && ctr != '$'))) return true;
             }
-        }
 
-        if(! ok || (arg1.contains('$') && (arg1.count('$') > 1 || ! arg1.endsWith('$'))))
-            ui->username->setText(QStr(arg1).replace((cpos = ui->username->cursorPosition() - 1), 1, nullptr));
-        else if(ui->usernamepipe->isHidden())
-        {
-            if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
-            ui->usernamepipe->show();
-        }
+            return false;
+        }() || (arg1.contains('$') && (arg1.count('$') > 1 || ! arg1.endsWith('$'))))
+
+        ui->username->setText(QStr(arg1).replace((cpos = ui->username->cursorPosition() - 1), 1, nullptr));
+    else if(ui->usernamepipe->isHidden())
+    {
+        if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
+        ui->usernamepipe->show();
     }
 }
 
@@ -6587,28 +6582,21 @@ void systemback::on_hostname_textChanged(cQStr &arg1)
             ui->hostnameerror->show();
         }
     }
-    else
-    {
-        bool ok(true);
-
-        for(uchar a(0) ; a < arg1.length() ; ++a)
-        {
-            cQChar &ctr(arg1.at(a));
-
-            if((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! ctr.isDigit() && (a == 0 || (ctr != '-' && ctr != '.')))
+    else if([&arg1] {
+            for(uchar a(0) ; a < arg1.length() ; ++a)
             {
-                ok = false;
-                break;
+                cQChar &ctr(arg1.at(a));
+                if((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! ctr.isDigit() && (a == 0 || (ctr != '-' && ctr != '.'))) return true;
             }
-        }
 
-        if(! ok || (arg1.length() > 1 && sb::like(arg1, {"*..*", "*--*", "*.-*", "*-.*"})))
-            ui->hostname->setText(QStr(arg1).replace((cpos = ui->hostname->cursorPosition() - 1), 1, nullptr));
-        else if(ui->hostnamepipe->isHidden())
-        {
-            if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
-            ui->hostnamepipe->show();
-        }
+            return false;
+        }() || (arg1.length() > 1 && sb::like(arg1, {"*..*", "*--*", "*.-*", "*-.*"})))
+
+        ui->hostname->setText(QStr(arg1).replace((cpos = ui->hostname->cursorPosition() - 1), 1, nullptr));
+    else if(ui->hostnamepipe->isHidden())
+    {
+        if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
+        ui->hostnamepipe->show();
     }
 }
 
@@ -7117,7 +7105,7 @@ void systemback::on_livecreatenew_clicked()
 {
     statustart();
     pset(17, " 1/3");
-    QStr ckernel(ckname()), lvtype(sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live"), ifname;
+    QStr ckernel(ckname()), lvtype(sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live");
 
     auto error([this](ushort dlg = 0) {
             if(! intrrpt && dlg != 326)
@@ -7148,7 +7136,7 @@ void systemback::on_livecreatenew_clicked()
     if((sb::exist(sb::sdir[2] % "/.sblivesystemcreate") && ! sb::remove(sb::sdir[2] % "/.sblivesystemcreate"))
         || intrrpt || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/.disk") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux")) return error();
 
-    ifname = ui->livename->text() == "auto" ? "systemback_live_" % QDateTime().currentDateTime().toString("yyyy-MM-dd") : ui->livename->text();
+    QStr ifname(ui->livename->text() == "auto" ? "systemback_live_" % QDateTime().currentDateTime().toString("yyyy-MM-dd") : ui->livename->text());
     uchar ncount(0);
 
     while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive"))

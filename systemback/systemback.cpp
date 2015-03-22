@@ -282,7 +282,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 on_installmenu_clicked();
         }
 
-        if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
+        if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlay *","* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
         {
             for(QWdt *wdgt : QWL{ui->mainpanel, ui->schedulerpanel, ui->adminpasswordpipe, ui->adminpassworderror}) wdgt->hide();
             ui->passwordpanel->move(0, 0);
@@ -722,7 +722,7 @@ void systemback::unitimer()
 
                                     if(file.open(QIODevice::ReadOnly))
                                     {
-                                        QSL incl{"*aufs.ko_", "*overlayfs.ko_", "*unionfs.ko_"};
+                                        QSL incl{"*aufs.ko_", "*overlay.ko_", "*overlayfs.ko_", "*unionfs.ko_"};
 
                                         while(! file.atEnd())
                                             if(sb::like(file.readLine().trimmed(), incl)) return true;

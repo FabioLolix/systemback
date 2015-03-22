@@ -707,7 +707,8 @@ void sb::cfgread()
 
     if(ismpnt == Empty)
     {
-        ismpnt = ! issmfs(chr(sdir[0]), sdir[0].count('/') == 1 ? "/" : chr(left(sdir[0], rinstr(sdir[0], "/") - 1)));
+        QStr pdir(sdir[0].count('/') == 1 ? "/" : left(sdir[0], rinstr(sdir[0], "/") - 1));
+        ismpnt = sdir[0] != pdir && isdir(pdir) && ! issmfs(chr(sdir[0]), chr(pdir));
         if(! cfgupdt) cfgupdt = true;
     }
 
@@ -2870,7 +2871,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             if(! usr.isNull())
             {
                 QStr srcd[2], trgd;
-                usr.isEmpty() ? srcd[0] = srcdir % "/root", trgd = "/.sbsystemcopy/root" : srcd[0] = srcdir % "/home/" % usr, trgd = "/.sbsystemcopy/home/" % usr;
+                usr.isEmpty() ? (srcd[0] = srcdir % "/root", trgd = "/.sbsystemcopy/root") : (srcd[0] = srcdir % "/home/" % usr, trgd = "/.sbsystemcopy/home/" % usr);
                 srcd[1] = mthd == 5 ? srcdir % "/etc/skel" : srcd[0];
 
                 if(! isdir(trgd))
@@ -3648,7 +3649,6 @@ bool sb::thrdlvprpr(bool iudata)
     ++ThrdLng[0];
     QSL elist{"lib/dpkg/lock", "lib/udisks/mtab", "lib/ureadahead/", "log/", "run/", "tmp/"};
     uint lcnt(0);
-    auto issmfs([](cchar *item1, cQStr &item2) { return sb::issmfs(item1, chr(item2)); });
 
     if(! varitmst.isEmpty())
     {
@@ -3672,7 +3672,7 @@ bool sb::thrdlvprpr(bool iudata)
                         ++ThrdLng[0];
                         break;
                     case Isfile:
-                        if(issmfs("/var/.sblvtmp", srci) && link(chr(srci), chr(("/var/.sblvtmp/var/" % item))) == -1) goto err_1;
+                        if(issmfs("/var/.sblvtmp", chr(srci)) && link(chr(srci), chr(("/var/.sblvtmp/var/" % item))) == -1) goto err_1;
                         ++ThrdLng[0];
                     }
                 else if(item.startsWith("log"))
@@ -3750,7 +3750,7 @@ bool sb::thrdlvprpr(bool iudata)
     if(dfree("/home") > 104857600 && dfree("/root") > 104857600)
         for(uchar a(1) ; a < usrs.count() ; ++a)
         {
-            if(! issmfs("/home", "/home/" % usrs.at(a)))
+            if(! issmfs("/home", chr(("/home/" % usrs.at(a)))))
             {
                 uhl = false;
                 break;

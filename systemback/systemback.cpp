@@ -7348,7 +7348,7 @@ void systemback::on_newpartition_clicked()
             goto end;
 
         start += 1048576;
-        if(msize) len -= 1048576;
+        if(msize && (len -= 1048576) < 1048576) goto end;
     }
     default:
         type = sb::Logical;

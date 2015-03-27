@@ -757,86 +757,7 @@ void systemback::unitimer()
             connect(&utimer, SIGNAL(timeout()), this, SLOT(unitimer()));
             utimer.start(500);
         }
-        else if(ui->statuspanel->isVisible())
-        {
-            if(prun.type > 0)
-            {
-                ui->processrun->setText(prun.txt % [this] {
-                        switch(++prun.pnts) {
-                        case 1:
-                            return " .  ";
-                        case 2:
-                            return " .. ";
-                        case 3:
-                            return " ...";
-                        default:
-                            prun.pnts = 0;
-                            return "    ";
-                        }
-                    }());
-
-                switch(prun.type) {
-                case 2 ... 6:
-                case 8 ... 10:
-                case 15:
-                case 19 ... 21:
-                {
-                    if(irblck)
-                    {
-                        if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
-                    }
-                    else if(! ui->interrupt->isEnabled())
-                        ui->interrupt->setEnabled(true);
-
-                    schar cperc(sb::Progress);
-
-                    if(cperc != -1)
-                    {
-                        if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
-
-                        if(cperc < 100)
-                        {
-                            if(ui->progressbar->value() < cperc)
-                                ui->progressbar->setValue(cperc);
-                            else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
-                                ui->progressbar->setValue(100);
-                        }
-                        else if(ui->progressbar->value() < 100)
-                            ui->progressbar->setValue(100);
-                    }
-                    else if(ui->progressbar->maximum() == 100)
-                        ui->progressbar->setMaximum(0);
-
-                    break;
-                }
-                case 18:
-                {
-                    if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
-                    schar cperc(sb::Progress);
-
-                    if(cperc != -1)
-                    {
-                        if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
-                        if(cperc < 101 && ui->progressbar->value() < cperc) ui->progressbar->setValue(cperc);
-                    }
-                    else if(ui->progressbar->maximum() == 100)
-                        ui->progressbar->setMaximum(0);
-
-                    break;
-                }
-                default:
-                    if(! irblck && sb::like(prun.type, {12, 14, 16, 17}))
-                    {
-                        if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
-                    }
-                    else if(ui->interrupt->isEnabled())
-                        ui->interrupt->setDisabled(true);
-
-                    if(ui->progressbar->maximum() == 100) ui->progressbar->setMaximum(0);
-                }
-            }
-        }
-        else
+        else if(! ui->statuspanel->isVisible())
         {
             if(! sstart)
             {
@@ -963,6 +884,82 @@ void systemback::unitimer()
                 if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
                 if(ui->progressbar->value() > 0) ui->progressbar->setValue(0);
                 if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+            }
+        }
+        else if(prun.type > 0)
+        {
+            ui->processrun->setText(prun.txt % [this] {
+                    switch(++prun.pnts) {
+                    case 1:
+                        return " .  ";
+                    case 2:
+                        return " .. ";
+                    case 3:
+                        return " ...";
+                    default:
+                        prun.pnts = 0;
+                        return "    ";
+                    }
+                }());
+
+            switch(prun.type) {
+            case 2 ... 6:
+            case 8 ... 10:
+            case 15:
+            case 19 ... 21:
+            {
+                if(irblck)
+                {
+                    if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+                }
+                else if(! ui->interrupt->isEnabled())
+                    ui->interrupt->setEnabled(true);
+
+                schar cperc(sb::Progress);
+
+                if(cperc != -1)
+                {
+                    if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
+
+                    if(cperc < 100)
+                    {
+                        if(ui->progressbar->value() < cperc)
+                            ui->progressbar->setValue(cperc);
+                        else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
+                            ui->progressbar->setValue(100);
+                    }
+                    else if(ui->progressbar->value() < 100)
+                        ui->progressbar->setValue(100);
+                }
+                else if(ui->progressbar->maximum() == 100)
+                    ui->progressbar->setMaximum(0);
+
+                break;
+            }
+            case 18:
+            {
+                if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
+                schar cperc(sb::Progress);
+
+                if(cperc != -1)
+                {
+                    if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
+                    if(cperc < 101 && ui->progressbar->value() < cperc) ui->progressbar->setValue(cperc);
+                }
+                else if(ui->progressbar->maximum() == 100)
+                    ui->progressbar->setMaximum(0);
+
+                break;
+            }
+            default:
+                if(! irblck && sb::like(prun.type, {12, 14, 16, 17}))
+                {
+                    if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
+                }
+                else if(ui->interrupt->isEnabled())
+                    ui->interrupt->setDisabled(true);
+
+                if(ui->progressbar->maximum() == 100) ui->progressbar->setMaximum(0);
             }
         }
 
@@ -2167,25 +2164,7 @@ void systemback::systemcopy()
 
     if(ppipe == 0)
     {
-        if(pname == tr("Currently running system"))
-        {
-            if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
-            {
-                if(! sb::scopy([this] {
-                        switch(ui->usersettingscopy->checkState()) {
-                        case Qt::Unchecked:
-                            return 5;
-                        case Qt::PartiallyChecked:
-                            return 3;
-                        default:
-                            return 4;
-                        }
-                    }(), guname(), nullptr)) return error();
-            }
-            else if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) || (sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy/etc/systemback.conf")))
-                return error();
-        }
-        else
+        if(pname != tr("Currently running system"))
         {
             if(! sb::isdir("/.systembacklivepoint") && ! QDir().mkdir("/.systembacklivepoint"))
             {
@@ -2220,6 +2199,21 @@ void systemback::systemcopy()
             sb::umount("/.systembacklivepoint");
             QDir().rmdir("/.systembacklivepoint");
         }
+        else if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
+        {
+            if(! sb::scopy([this] {
+                    switch(ui->usersettingscopy->checkState()) {
+                    case Qt::Unchecked:
+                        return 5;
+                    case Qt::PartiallyChecked:
+                        return 3;
+                    default:
+                        return 4;
+                    }
+                }(), guname(), nullptr)) return error();
+        }
+        else if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) || (sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy/etc/systemback.conf")))
+            return error();
     }
     else if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
     {
@@ -4820,13 +4814,8 @@ void systemback::on_dialogok_clicked()
 
             setwontop(false);
         }
-        else if(dialog == 209)
-        {
-            if(sislive)
-                close();
-            else
-                on_dialogcancel_clicked();
-        }
+        else if(sislive && dialog == 209)
+            close();
         else
             on_dialogcancel_clicked();
     }
@@ -5708,12 +5697,10 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                     if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
                 }
 
-                if(ui->mountpoint->currentIndex() == 0)
-                {
-                    if(! ui->mountpoint->currentText().isEmpty()) ui->mountpoint->setCurrentText(nullptr);
-                }
-                else
+                if(ui->mountpoint->currentIndex() > 0)
                     ui->mountpoint->setCurrentIndex(0);
+                else if(! ui->mountpoint->currentText().isEmpty())
+                    ui->mountpoint->setCurrentText(nullptr);
             }
             else
             {
@@ -5788,10 +5775,8 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                     else if(! ui->mountpoint->currentText().isEmpty())
                         ui->mountpoint->setCurrentText(nullptr);
 
-                    if([&mpt] {
-                            if(sb::sdir[0].startsWith(mpt) || sb::like(mpt, {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}))
-                                return true;
-                            else if(sb::isfile("/etc/fstab"))
+                    if(sb::sdir[0].startsWith(mpt) || sb::like(mpt, {'_' % tr("Multiple mount points") % '_', "_/cdrom_", "_/live/image_", "_/lib/live/mount/medium_"}) || [&mpt] {
+                            if(sb::isfile("/etc/fstab"))
                             {
                                 QFile file("/etc/fstab");
 
@@ -5975,7 +5960,9 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
             ui->mountpoint->setCurrentText(sb::left(arg1, -1));
         else
         {
-            if(sb::like(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text(), {"_/boot/efi_", "_/home_", "_SWAP_"}))
+            QStr mpt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text());
+
+            if(sb::like(mpt, {"_/boot/efi_", "_/home_", "_SWAP_"}))
             {
                 if(ui->format->isEnabled())
                 {
@@ -5983,49 +5970,53 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
                     if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
                 }
             }
-            else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text().isEmpty() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "btrfs")
+            else
             {
-                if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
+                QStr ompt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
+
+                if(ompt.isEmpty() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "btrfs")
                 {
-                    if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
+                    if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
+                    {
+                        if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
+                    }
+                    else if(! ui->filesystem->isEnabled())
+                        ui->filesystem->setEnabled(true);
+
+                    if(! ui->format->isEnabled()) ui->format->setEnabled(true);
+                    if(! ui->format->isChecked()) ui->format->setChecked(true);
                 }
-                else if(! ui->filesystem->isEnabled())
-                    ui->filesystem->setEnabled(true);
-
-                if(! ui->format->isEnabled()) ui->format->setEnabled(true);
-                if(! ui->format->isChecked()) ui->format->setChecked(true);
-            }
-            else if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
-            {
-                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-                return;
-            }
-
-            if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text() || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456) || [&] {
-                    if((grub.isEFI && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/boot/efi" && arg1 != "/boot/efi") || (nohmcpy[0] && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && arg1 != "/home") || (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "SWAP" && arg1 != "SWAP"))
-                        return true;
-                    else if(arg1 != "SWAP")
-                        for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-                            if(ui->partitionsettings->item(a, 4)->text() == arg1) return true;
-
-                    return false;
-                }())
-            {
-                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-            }
-            else if(! sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
-            {
-                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-                sb::delay(300);
-
-                if(ccnt == icnt)
+                else if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
                 {
-                    QTemporaryDir tdir("/tmp/" % QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
-                    if(tdir.isValid()) ui->changepartition->setEnabled(true);
+                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                    return;
                 }
+
+                if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ompt || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456) || (grub.isEFI && mpt == "/boot/efi" && arg1 != "/boot/efi") || (nohmcpy[0] && mpt == "/home" && arg1 != "/home") || (mpt == "SWAP" && arg1 != "SWAP")
+                        || [&] {
+                                if(arg1 != "SWAP")
+                                    for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+                                        if(ui->partitionsettings->item(a, 4)->text() == arg1) return true;
+
+                                return false;
+                            }())
+                {
+                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                }
+                else if(! sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
+                {
+                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                    sb::delay(300);
+
+                    if(ccnt == icnt)
+                    {
+                        QTemporaryDir tdir("/tmp/" % QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
+                        if(tdir.isValid()) ui->changepartition->setEnabled(true);
+                    }
+                }
+                else if(! ui->changepartition->isEnabled())
+                    ui->changepartition->setEnabled(true);
             }
-            else if(! ui->changepartition->isEnabled())
-                ui->changepartition->setEnabled(true);
         }
     }
 }
@@ -6898,14 +6889,9 @@ void systemback::on_newrestorepoint_clicked()
                 intrrpt = false;
             else
             {
-                dialogopen([this] {
-                        if(sb::dfree(sb::sdir[1]) < 104857600)
-                            return 304;
-                        else
-                        {
-                            if(! sb::ThrdDbg.isEmpty()) prntdbgmsg();
-                            return 318;
-                        }
+                dialogopen(sb::dfree(sb::sdir[1]) < 104857600 ? 304 : [this] {
+                        if(! sb::ThrdDbg.isEmpty()) prntdbgmsg();
+                        return 318;
                     }());
 
                 if(! sstart) pntupgrade();

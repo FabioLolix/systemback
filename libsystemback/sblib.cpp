@@ -389,22 +389,19 @@ bool sb::mcheck(cQStr &item)
     QStr mnts(fload("/proc/self/mounts"));
     cQStr &itm(item.contains(' ') ? QStr(item).replace(" ", "\\040") : item);
 
-    if(itm.startsWith("/dev/"))
-    {
-        if(QStr('\n' % mnts).contains('\n' % itm % (itm.length() > (item.contains("mmc") ? 12 : 8) ? " " : nullptr)))
-            return true;
-        else
-        {
-            blkid_probe pr(blkid_new_probe_from_filename(chr(itm)));
-            blkid_do_probe(pr);
-            cchar *uuid(nullptr);
-            blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
-            blkid_free_probe(pr);
-            return uuid && QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
-        }
-    }
-    else
+    if(! itm.startsWith("/dev/"))
         return mnts.contains(' ' % (itm.endsWith('/') && itm.length() > 1 ? left(itm, -1) : itm % ' '));
+    else if(QStr('\n' % mnts).contains('\n' % itm % (itm.length() > (item.contains("mmc") ? 12 : 8) ? " " : nullptr)))
+        return true;
+    else
+    {
+        blkid_probe pr(blkid_new_probe_from_filename(chr(itm)));
+        blkid_do_probe(pr);
+        cchar *uuid(nullptr);
+        blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+        blkid_free_probe(pr);
+        return uuid && QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
+    }
 }
 
 QStr sb::gdetect(cQStr rdir)
@@ -1336,13 +1333,13 @@ void sb::run()
     switch(ThrdType) {
     case Remove:
         ThrdRslt = [this] {
-            switch(stype(ThrdStr[0])) {
-            case Isdir:
-                return recrmdir(ThrdStr[0]);
-            default:
-                return QFile::remove(ThrdStr[0]);
-            }
-        }();
+                switch(stype(ThrdStr[0])) {
+                case Isdir:
+                    return recrmdir(ThrdStr[0]);
+                default:
+                    return QFile::remove(ThrdStr[0]);
+                }
+            }();
 
         break;
     case Copy:
@@ -2259,18 +2256,17 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         {
             QStr srci(srcdir % cdir), trgi(trgt % cdir);
 
-            if(isdir(srci))
+            if(! isdir(srci))
             {
-                if(isdir(trgi))
-                    cpertime(srci, trgi);
-                else
-                {
-                    if(exist(trgi)) QFile::remove(trgi);
-                    if(! cpdir(srci, trgi) && ! fspchk()) return false;
-                }
+                if(exist(trgi)) stype(trgi) == Isdir ? recrmdir(trgi) : QFile::remove(trgi);
             }
-            else if(exist(trgi))
-                stype(trgi) == Isdir ? recrmdir(trgi) : QFile::remove(trgi);
+            else if(isdir(trgi))
+                cpertime(srci, trgi);
+            else
+            {
+                if(exist(trgi)) QFile::remove(trgi);
+                if(! cpdir(srci, trgi) && ! fspchk()) return false;
+            }
 
             if(ThrdKill) return false;
         }
@@ -3087,26 +3083,25 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     {
         QStr trgd("/.sbsystemcopy" % cdir);
 
-        if(isdir(srcdir % cdir))
+        if(! isdir(srcdir % cdir))
         {
-            if(! isdir(trgd))
-            {
-                if(exist(trgd)) QFile::remove(trgd);
+            if(exist(trgd)) stype(trgd) == Isdir ? recrmdir(trgd) : QFile::remove(trgd);
+        }
+        else if(! isdir(trgd))
+        {
+            if(exist(trgd)) QFile::remove(trgd);
 
-                if(! cpdir(srcdir % cdir, trgd))
-                {
-                    ThrdDbg = '@' % cdir;
-                    return false;
-                }
-            }
-            else if(! cpertime(srcdir % cdir, trgd))
+            if(! cpdir(srcdir % cdir, trgd))
             {
                 ThrdDbg = '@' % cdir;
                 return false;
             }
         }
-        else if(exist(trgd))
-            stype(trgd) == Isdir ? recrmdir(trgd) : QFile::remove(trgd);
+        else if(! cpertime(srcdir % cdir, trgd))
+        {
+            ThrdDbg = '@' % cdir;
+            return false;
+        }
 
         if(ThrdKill) return false;
     }
@@ -3300,45 +3295,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                 if(! QDir().mkdir(trgd)) return false;
             }
 
-            if(srcdir.isEmpty())
-            {
-                if(isfile("/etc/fstab"))
-                {
-                    QSL dlst(QDir(srcd).entryList(QDir::Dirs | QDir::NoDotAndDotDot));
-                    QFile file("/etc/fstab");
-                    if(! file.open(QIODevice::ReadOnly)) return false;
-
-                    for(uchar a(0) ; a < dlst.count() ; ++a)
-                    {
-                        cQStr &item(dlst.at(a));
-                        if(a > 0 && ! file.open(QIODevice::ReadOnly)) return false;
-                        QSL incl{"* /media/" % item % " *", "* /media/" % item % "/*"};
-
-                        while(! file.atEnd())
-                        {
-                            QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
-
-                            if(! cline.startsWith('#') && like(cline.contains("\\040") ? QStr(cline).replace("\\040", " ") : cline, incl))
-                                for(cQStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
-                                    if(! cdname.isEmpty())
-                                    {
-                                        QStr trgi(trgd % fdir.append('/' % (cdname.contains("\\040") ? QStr(cdname).replace("\\040", " ") : cdname)));
-
-                                        if(! isdir(trgi) && ! cpdir("/media" % fdir, trgi))
-                                        {
-                                            ThrdDbg = "@/media" % fdir;
-                                            return false;
-                                        }
-                                    }
-
-                            if(ThrdKill) return false;
-                        }
-
-                        file.close();
-                    }
-                }
-            }
-            else
+            if(! srcdir.isEmpty())
             {
                 QBA mediaitms;
                 mediaitms.reserve(10000);
@@ -3371,6 +3328,41 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                         ThrdDbg = "@/media/" % item;
                         return false;
                     }
+                }
+            }
+            else if(isfile("/etc/fstab"))
+            {
+                QSL dlst(QDir(srcd).entryList(QDir::Dirs | QDir::NoDotAndDotDot));
+                QFile file("/etc/fstab");
+                if(! file.open(QIODevice::ReadOnly)) return false;
+
+                for(uchar a(0) ; a < dlst.count() ; ++a)
+                {
+                    cQStr &item(dlst.at(a));
+                    if(a > 0 && ! file.open(QIODevice::ReadOnly)) return false;
+                    QSL incl{"* /media/" % item % " *", "* /media/" % item % "/*"};
+
+                    while(! file.atEnd())
+                    {
+                        QStr cline(file.readLine().trimmed().replace('\t', ' ')), fdir;
+
+                        if(! cline.startsWith('#') && like(cline.contains("\\040") ? QStr(cline).replace("\\040", " ") : cline, incl))
+                            for(cQStr cdname : mid(cline, instr(cline, "/media/") + 7, instr(cline, " ", instr(cline, "/media/")) - instr(cline, "/media/") - 7).split('/'))
+                                if(! cdname.isEmpty())
+                                {
+                                    QStr trgi(trgd % fdir.append('/' % (cdname.contains("\\040") ? QStr(cdname).replace("\\040", " ") : cdname)));
+
+                                    if(! isdir(trgi) && ! cpdir("/media" % fdir, trgi))
+                                    {
+                                        ThrdDbg = "@/media" % fdir;
+                                        return false;
+                                    }
+                                }
+
+                        if(ThrdKill) return false;
+                    }
+
+                    file.close();
                 }
             }
 
@@ -3724,9 +3716,7 @@ bool sb::thrdlvprpr(bool iudata)
     usrs.prepend(isdir("/root") ? "" : nullptr);
     if(ThrdKill) return false;
 
-    bool uhl([&usrs] {
-            if(dfree("/home") < 104857600 || dfree("/root") < 104857600) return false;
-
+    bool uhl(dfree("/home") > 104857600 && dfree("/root") > 104857600 && [&usrs] {
             for(uchar a(1) ; a < usrs.count() ; ++a)
                 if(! issmfs("/home", chr(("/home/" % usrs.at(a))))) return false;
 

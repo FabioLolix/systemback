@@ -1421,8 +1421,8 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="566"/>
         <location filename="../systemback/systemback.cpp" line="3725"/>
-        <location filename="../systemback/systemback.cpp" line="7508"/>
-        <location filename="../systemback/systemback.cpp" line="7531"/>
+        <location filename="../systemback/systemback.cpp" line="7510"/>
+        <location filename="../systemback/systemback.cpp" line="7533"/>
         <source>Everyone</source>
         <translation>Toți</translation>
     </message>

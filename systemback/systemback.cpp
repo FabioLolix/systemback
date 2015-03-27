@@ -7316,7 +7316,8 @@ void systemback::on_newpartition_clicked()
     busy();
     ui->copycover->show();
     QStr dev(sb::left(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text(), (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text().contains("mmc") ? 12 : 8)));
-    ullong start(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong());
+    bool msize(ui->partitionsize->value() == ui->partitionsize->maximum());
+    ullong start(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 9)->text().toULongLong()), len(msize ? ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() : ullong(ui->partitionsize->value()) * 1048576);
     uchar type;
 
     switch(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 8)->text().toUShort()) {
@@ -7347,13 +7348,14 @@ void systemback::on_newpartition_clicked()
             goto end;
 
         start += 1048576;
+        if(msize) len -= 1048576;
     }
     default:
         type = sb::Logical;
     }
 
 exec:
-    sb::mkpart(dev, start, ui->partitionsize->value() == ui->partitionsize->maximum() ? ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() : ullong(ui->partitionsize->value()) * 1048576, type);
+    sb::mkpart(dev, start, len, type);
 end:
     on_partitionrefresh2_clicked();
     busy(false);

@@ -105,7 +105,7 @@ void scheduler::main()
             else
             {
                 if(sb::schdle[5] == sb::True || ! sb::execsrch("systemback"))
-                    newrestorepoint();
+                    newrpnt();
                 else
                 {
                     QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
@@ -127,7 +127,7 @@ void scheduler::main()
     qApp->quit();
 }
 
-void scheduler::newrestorepoint()
+void scheduler::newrpnt()
 {
     sb::pupgrade();
 

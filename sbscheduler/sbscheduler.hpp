@@ -40,7 +40,7 @@ public slots:
 private:
     QStr *pfile;
 
-    void newrestorepoint();
+    void newrpnt();
 };
 
 #endif

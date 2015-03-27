@@ -44,7 +44,7 @@ private:
     uchar storagedir();
     uchar clistart();
     uchar restore();
-    bool newrestorepoint();
+    bool newrpnt();
     void emptycache();
 };
 

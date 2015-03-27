@@ -20,6 +20,7 @@
 #ifndef SBTYPEDEF_HPP
 #define SBTYPEDEF_HPP
 
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QComboBox>
@@ -29,6 +30,7 @@
 #include <QStringList>
 
 typedef QTranslator QTrn;
+typedef QTableWidget QTblW;
 typedef QPushButton QPB;
 typedef QLineEdit QLE;
 typedef QComboBox QCbB;

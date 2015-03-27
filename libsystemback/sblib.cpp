@@ -889,7 +889,8 @@ bool sb::crtrpoint(cQStr &sdir, cQStr &pname)
 
 bool sb::setpflag(cQStr &part, cQStr &flag)
 {
-    if(part.length() < (part.contains("mmc") ? 14 : 9) || stype(part) != Isblock || stype(left(part, (part.contains("mmc") ? 12 : 8))) != Isblock) return false;
+    { bool ismmc(part.contains("mmc"));
+    if(part.length() < (ismmc ? 14 : 9) || stype(part) != Isblock || stype(left(part, (ismmc ? 12 : 8))) != Isblock) return false; }
     ThrdType = Setpflag,
     ThrdStr[0] = part,
     ThrdStr[1] = flag;
@@ -1121,7 +1122,7 @@ inline bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
 
         if(! like(iname, dd) && (! hidden || iname.startsWith('.')))
         {
-            uchar type([&] {
+            uchar type([&]() -> uchar {
                     switch(ent->d_type) {
                     case DT_LNK:
                         return Islink;
@@ -1130,14 +1131,7 @@ inline bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
                     case DT_REG:
                         return Isfile;
                     case DT_UNKNOWN:
-                        switch(stype(path % '/' % iname)) {
-                        case Islink:
-                            return Islink;
-                        case Isdir:
-                            return Isdir;
-                        case Isfile:
-                            return Isfile;
-                        }
+                        return stype(path % '/' % iname);
                     default:
                         return Excluded;
                     }
@@ -1150,7 +1144,7 @@ inline bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
                 ba.append(prepath % iname % '\n');
                 break;
             case Isdir:
-                rodir(ba.append(prepath % iname % '\n'), ucl << type, path % '/' % iname, false, (oplen == 0 ? path.length() : oplen));
+                rodir(ba.append(prepath % iname % '\n'), ucl << Isdir, path % '/' % iname, false, (oplen == 0 ? path.length() : oplen));
             }
         }
     }
@@ -1180,17 +1174,13 @@ inline bool sb::rodir(QBA &ba, cQStr &path, uchar oplen)
                     case DT_DIR:
                         return Isdir;
                     case DT_UNKNOWN:
-                        switch(stype(path % '/' % iname)) {
-                        case Islink:
-                        case Isfile:
-                            return Included;
-                        case Isdir:
-                            return Isdir;
-                        }
+                        return stype(path % '/' % iname);
                     default:
                         return Excluded;
                     }
                 }()) {
+            case Islink:
+            case Isfile:
             case Included:
                 ba.append(prepath % iname % '\n');
                 break;
@@ -1223,17 +1213,13 @@ inline bool sb::rodir(QUCL &ucl, cQStr &path, uchar oplen)
                     case DT_DIR:
                         return Isdir;
                     case DT_UNKNOWN:
-                        switch(stype(path % '/' % iname)) {
-                        case Islink:
-                        case Isfile:
-                            return Included;
-                        case Isdir:
-                            return Isdir;
-                        }
+                        return stype(path % '/' % iname);
                     default:
-                       return Excluded;
+                        return Excluded;
                     }
                 }()) {
+            case Islink:
+            case Isfile:
             case Included:
                 ucl.append(0);
                 break;
@@ -1363,8 +1349,7 @@ void sb::run()
         ThrdRslt = cpfile(ThrdStr[0], ThrdStr[1]);
         break;
     case Sync:
-        sync();
-        break;
+        return sync();
     case Mount:
     {
         libmnt_context *mcxt(mnt_new_context());
@@ -1372,8 +1357,7 @@ void sb::run()
         mnt_context_set_target(mcxt, chr(ThrdStr[1]));
         mnt_context_set_options(mcxt, ! ThrdStr[2].isEmpty() ? chr(ThrdStr[2]) : isdir(ThrdStr[0]) ? "bind" : "noatime");
         ThrdRslt = mnt_context_mount(mcxt) == 0;
-        mnt_free_context(mcxt);
-        break;
+        return mnt_free_context(mcxt);
     }
     case Umount:
     {
@@ -1385,8 +1369,7 @@ void sb::run()
         mnt_context_enable_loopdel(ucxt, true);
 #endif
         ThrdRslt = mnt_context_umount(ucxt) == 0;
-        mnt_free_context(ucxt);
-        break;
+        return mnt_free_context(ucxt);
     }
     case Readprttns:
     {
@@ -1567,8 +1550,7 @@ void sb::run()
         next_3:;
         }
 
-        ThrdSlst->sort();
-        break;
+        return ThrdSlst->sort();
     }
     case Ruuid:
     {
@@ -1576,80 +1558,76 @@ void sb::run()
         blkid_do_probe(pr);
         cchar *uuid(nullptr);
         blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
-        blkid_free_probe(pr);
         ThrdStr[1] = uuid;
-        break;
+        return blkid_free_probe(pr);
     }
     case Setpflag:
-	{
-		PedDevice *dev(ped_device_get(chr(left(ThrdStr[0], (ThrdStr[0].contains("mmc") ? 12 : 8)))));
-		PedDisk *dsk(ped_disk_new(dev));
-		PedPartition *prt(nullptr);
-		if(ThrdRslt) ThrdRslt = false;
+    {
+        PedDevice *dev(ped_device_get(chr(left(ThrdStr[0], (ThrdStr[0].contains("mmc") ? 12 : 8)))));
+        PedDisk *dsk(ped_disk_new(dev));
+        PedPartition *prt(nullptr);
+        if(ThrdRslt) ThrdRslt = false;
 
-		while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
-			if(QStr(ped_partition_get_path(prt)) == ThrdStr[0])
-			{
-				if(like(1, {ped_partition_set_flag(prt, ped_partition_flag_get_by_name(chr(ThrdStr[1])), 1), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
-				ped_disk_commit_to_os(dsk);
-			}
+        while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
+            if(QStr(ped_partition_get_path(prt)) == ThrdStr[0])
+            {
+                if(like(1, {ped_partition_set_flag(prt, ped_partition_flag_get_by_name(chr(ThrdStr[1])), 1), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
+                ped_disk_commit_to_os(dsk);
+            }
 
-		ped_disk_destroy(dsk);
-		ped_device_destroy(dev);
-        break;
-	}
+        ped_disk_destroy(dsk);
+        return ped_device_destroy(dev);
+    }
     case Mkptable:
-	{
-		PedDevice *dev(ped_device_get(chr(ThrdStr[0])));
-		PedDisk *dsk(ped_disk_new_fresh(dev, ped_disk_type_get(chr(ThrdStr[1]))));
-		ThrdRslt = ped_disk_commit_to_dev(dsk) == 1;
-		ped_disk_commit_to_os(dsk);
-		ped_disk_destroy(dsk);
-		ped_device_destroy(dev);
-        break;
-	}
+    {
+        PedDevice *dev(ped_device_get(chr(ThrdStr[0])));
+        PedDisk *dsk(ped_disk_new_fresh(dev, ped_disk_type_get(chr(ThrdStr[1]))));
+        ThrdRslt = ped_disk_commit_to_dev(dsk) == 1;
+        ped_disk_commit_to_os(dsk);
+        ped_disk_destroy(dsk);
+        return ped_device_destroy(dev);
+    }
     case Mkpart:
-	{
-		PedDevice *dev(ped_device_get(chr(ThrdStr[0])));
-		PedDisk *dsk(ped_disk_new(dev));
-		PedPartition *prt(nullptr);
-		if(ThrdRslt) ThrdRslt = false;
+    {
+        PedDevice *dev(ped_device_get(chr(ThrdStr[0])));
+        PedDisk *dsk(ped_disk_new(dev));
+        PedPartition *prt(nullptr);
+        if(ThrdRslt) ThrdRslt = false;
 
-		if(ThrdLng[0] > 0 && ThrdLng[1] > 0)
-		{
-			PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ullong(dev->length - 1048576 / dev->sector_size) >= (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1 ? pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size) : (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1));
-			if(like(1, {ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
-			ped_disk_commit_to_os(dsk);
-		}
-		else
-			while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
-				if(prt->type == PED_PARTITION_FREESPACE && prt->geom.length >= 1048576 / dev->sector_size)
-				{
-					PedPartition *crtprt(ped_partition_new(dsk, PED_PARTITION_NORMAL, ped_file_system_type_get("ext2"), ThrdLng[0] == 0 ? psalign(prt->geom.start, dev->sector_size) : psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ThrdLng[1] == 0 ? prt->next && prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : pealign(prt->geom.end, dev->sector_size) : pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size)));
-					if(like(1, {ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
-					ped_disk_commit_to_os(dsk);
-					break;
-				}
+        if(ThrdLng[0] > 0 && ThrdLng[1] > 0)
+        {
+            PedPartition *crtprt(ped_partition_new(dsk, ThrdChr == Primary ? PED_PARTITION_NORMAL : ThrdChr == Extended ? PED_PARTITION_EXTENDED : PED_PARTITION_LOGICAL, ped_file_system_type_get("ext2"), psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ullong(dev->length - 1048576 / dev->sector_size) >= (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1 ? pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size) : (ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1));
+            if(like(1, {ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
+            ped_disk_commit_to_os(dsk);
+        }
+        else
+            while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
+                if(prt->type == PED_PARTITION_FREESPACE && prt->geom.length >= 1048576 / dev->sector_size)
+                {
+                    PedPartition *crtprt(ped_partition_new(dsk, PED_PARTITION_NORMAL, ped_file_system_type_get("ext2"), ThrdLng[0] == 0 ? psalign(prt->geom.start, dev->sector_size) : psalign(ThrdLng[0] / dev->sector_size, dev->sector_size), ThrdLng[1] == 0 ? prt->next && prt->next->type == PED_PARTITION_METADATA ? prt->next->geom.end : pealign(prt->geom.end, dev->sector_size) : pealign((ThrdLng[0] + ThrdLng[1]) / dev->sector_size - 1, dev->sector_size)));
+                    if(like(1, {ped_disk_add_partition(dsk, crtprt, ped_constraint_exact(&crtprt->geom)), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
+                    ped_disk_commit_to_os(dsk);
+                    break;
+                }
 
-		ped_disk_destroy(dsk);
-		ped_device_destroy(dev);
-        break;
-	}
+        ped_disk_destroy(dsk);
+        return ped_device_destroy(dev);
+    }
     case Delpart:
-	{
-		PedDevice *dev(ped_device_get(chr(left(ThrdStr[0], 8))));
-		PedDisk *dsk(ped_disk_new(dev));
+    {
+        bool ismmc(ThrdStr[0].contains("mmc"));
+        PedDevice *dev(ped_device_get(chr(left(ThrdStr[0], ismmc ? 12 : 8))));
+        PedDisk *dsk(ped_disk_new(dev));
 
-		if(ped_disk_delete_partition(dsk, ped_disk_get_partition(dsk, right(ThrdStr[0], -8).toUShort())) == 1)
-		{
-			ped_disk_commit_to_dev(dsk);
-			ped_disk_commit_to_os(dsk);
-		}
+        if(ped_disk_delete_partition(dsk, ped_disk_get_partition(dsk, right(ThrdStr[0], - (ismmc ? 13 : 8)).toUShort())) == 1)
+        {
+            ped_disk_commit_to_dev(dsk);
+            ped_disk_commit_to_os(dsk);
+        }
 
-		ped_disk_destroy(dsk);
-		ped_device_destroy(dev);
-        break;
-	}
+        ped_disk_destroy(dsk);
+        return ped_device_destroy(dev);
+    }
     case Crtrpoint:
         ThrdRslt = thrdcrtrpoint(ThrdStr[0], ThrdStr[1]);
         break;
@@ -3745,21 +3723,17 @@ bool sb::thrdlvprpr(bool iudata)
 
     usrs.prepend(isdir("/root") ? "" : nullptr);
     if(ThrdKill) return false;
-    bool uhl(true);
 
-    if(dfree("/home") > 104857600 && dfree("/root") > 104857600)
-        for(uchar a(1) ; a < usrs.count() ; ++a)
-        {
-            if(! issmfs("/home", chr(("/home/" % usrs.at(a)))))
-            {
-                uhl = false;
-                break;
-            }
+    bool uhl([&usrs] {
+            if(dfree("/home") < 104857600 || dfree("/root") < 104857600) return false;
 
-            if(ThrdKill) return false;
-        }
-    else
-        uhl = false;
+            for(uchar a(1) ; a < usrs.count() ; ++a)
+                if(! issmfs("/home", chr(("/home/" % usrs.at(a))))) return false;
+
+            return true;
+        }());
+
+    if(ThrdKill) return false;
 
     if(uhl)
     {

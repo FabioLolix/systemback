@@ -65,12 +65,12 @@ private:
         bool isEFI;
     } grub;
 
-    QTimer utimer, *shdltimer, *dlgtimer, *intrrptimer;
+    QTimer utimer, *shdltimer, *dlgtimer, *intrptimer;
     QStr cpoint, pname, hash;
     ushort dialog;
     short wgeom[4], cpos;
     uchar busycnt, ppipe, sfctr, icnt;
-    bool sislive, wismax, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy, sstart, cfgupdt, intrrpt;
+    bool sislive, wismax, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy[2], sstart, cfgupdt, intrrpt;
 
     QLE *getpoint(uchar num);
     QCB *getppipe(uchar num);
@@ -87,10 +87,11 @@ private:
     void busy(bool state = true);
     void fontcheck(uchar wdgt);
     void pnmchange(uchar num);
-    void pointupgrade();
+    void pntupgrade();
     void emptycache();
     void statustart();
     void systemcopy();
+    void prntdbgmsg();
     void livewrite();
     void rmntcheck();
     void stschange();
@@ -98,7 +99,6 @@ private:
     void repair();
 
 private slots:
-    void apokkeyreleased();
     void schedulertimer();
     void sbttnreleased();
     void hmpg1released();
@@ -115,7 +115,6 @@ private slots:
     void chsreleased();
     void dialogtimer();
     void dntreleased();
-    void printdbgmsg();
     void foutpsttngs();
     void chspressed();
     void wcreleased();

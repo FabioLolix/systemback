@@ -95,7 +95,7 @@ void systemback::main()
                                                 init_pair(5, COLOR_RED, COLOR_BLACK);
                                                 if(! crtrpt) return clistart();
                                                 sb::pupgrade();
-                                                return newrestorepoint() ? 0 : sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
+                                                return newrpnt() ? 0 : sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
                                             }());
 
                                     endwin();
@@ -226,7 +226,7 @@ uchar systemback::clistart()
             break;
         case 'g':
         case 'G':
-            if(! newrestorepoint()) return sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
+            if(! newrpnt()) return sb::dfree(sb::sdir[1]) < 104857600 ? 8 : 9;
             clear();
             return clistart();
         case 'q':
@@ -329,7 +329,7 @@ void systemback::emptycache()
     if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }
 
-bool systemback::newrestorepoint()
+bool systemback::newrpnt()
 {
     auto end([this](bool rv = true) {
             progress(Stop);
@@ -596,8 +596,7 @@ void systemback::progress(uchar status)
     case Start:
         connect((ptimer = new QTimer), SIGNAL(timeout()), this, SLOT(progress()));
         QTimer::singleShot(0, this, SLOT(progress()));
-        ptimer->start(2000);
-        break;
+        return ptimer->start(2000);
     case Inprog:
         for(uchar a(0) ; a < 4 ; ++a)
         {

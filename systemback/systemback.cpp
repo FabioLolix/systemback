@@ -303,7 +303,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
             if(ui->admins->count() == 0)
                 ui->admins->addItem("root");
-            else if(ui->admins->findText(qApp->arguments().value(2)) != -1)
+            else if(ui->admins->findText(qApp->arguments().value(2)) > -1)
                 ui->admins->setCurrentIndex(ui->admins->findText(qApp->arguments().value(2)));
 
             setFixedSize((wgeom[2] = ss(376)), (wgeom[3] = ss(224)));
@@ -880,7 +880,7 @@ void systemback::unitimer()
                 prun.txt.clear();
                 ui->processrun->clear();
                 if(prun.pnts > 0) prun.pnts = 0;
-                if(sb::Progress != -1) sb::Progress = -1;
+                if(sb::Progress > -1) sb::Progress = -1;
                 if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
                 if(ui->progressbar->value() > 0) ui->progressbar->setValue(0);
                 if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
@@ -917,18 +917,17 @@ void systemback::unitimer()
 
                 schar cperc(sb::Progress);
 
-                if(cperc != -1)
+                if(cperc > -1)
                 {
                     if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
 
-                    if(cperc < 100)
+                    if(cperc > 99)
                     {
-                        if(ui->progressbar->value() < cperc)
-                            ui->progressbar->setValue(cperc);
-                        else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
-                            ui->progressbar->setValue(100);
+                        if(ui->progressbar->value() < 100) ui->progressbar->setValue(100);
                     }
-                    else if(ui->progressbar->value() < 100)
+                    else if(ui->progressbar->value() < cperc)
+                        ui->progressbar->setValue(cperc);
+                    else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
                         ui->progressbar->setValue(100);
                 }
                 else if(ui->progressbar->maximum() == 100)
@@ -941,7 +940,7 @@ void systemback::unitimer()
                 if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
                 schar cperc(sb::Progress);
 
-                if(cperc != -1)
+                if(cperc > -1)
                 {
                     if(ui->progressbar->maximum() == 0) ui->progressbar->setMaximum(100);
                     if(cperc < 101 && ui->progressbar->value() < cperc) ui->progressbar->setValue(cperc);
@@ -4002,8 +4001,7 @@ void systemback::on_partitionrefresh_clicked()
 
         if(sb::like(path.length(), {8, 12}))
         {
-            ++sn;
-            ui->partitionsettings->setRowCount(sn + 1);
+            ui->partitionsettings->setRowCount(++sn + 1);
             if(sn > 0) ui->partitionsettings->setRowHeight(sn, ss(25));
             QTblWI *dev(new QTblWI(path));
             dev->setTextAlignment(Qt::AlignBottom);
@@ -4028,8 +4026,7 @@ void systemback::on_partitionrefresh_clicked()
             switch(type.toUShort()) {
             case sb::Extended:
             {
-                ++sn;
-                ui->partitionsettings->setRowCount(sn + 1);
+                ui->partitionsettings->setRowCount(++sn + 1);
                 QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
                 QTblWI *size(new QTblWI);
@@ -4053,8 +4050,7 @@ void systemback::on_partitionrefresh_clicked()
                 if(! grub.isEFI)
                     for(QCbB *cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->addItem(path);
 
-                ++sn;
-                ui->partitionsettings->setRowCount(sn + 1);
+                ui->partitionsettings->setRowCount(++sn + 1);
                 QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
                 QTblWI *size(new QTblWI);
@@ -4105,8 +4101,7 @@ void systemback::on_partitionrefresh_clicked()
             }
             case sb::Freespace:
             case sb::Emptyspace:
-                ++sn;
-                ui->partitionsettings->setRowCount(sn + 1);
+                ui->partitionsettings->setRowCount(++sn + 1);
                 QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
                 QTblWI *size(new QTblWI);
@@ -4591,8 +4586,7 @@ void systemback::on_livedevicesrefresh_clicked()
 
     for(cQStr &cdts : dlst)
     {
-        ++sn;
-        ui->livedevices->setRowCount(sn + 1);
+        ui->livedevices->setRowCount(++sn + 1);
         QSL dts(cdts.split('\n'));
         QTblWI *dev(new QTblWI(dts.at(0)));
         ui->livedevices->setItem(sn, 0, dev);
@@ -6915,8 +6909,7 @@ void systemback::on_newrestorepoint_clicked()
         for(uchar a(9) ; a > 1 ; --a)
             if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
             {
-                ++dnum;
-                pset(14, chr((QStr::number(dnum) % '/' % QStr::number(ppipe))));
+                pset(14, chr((QStr::number(++dnum) % '/' % QStr::number(ppipe))));
                 if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || intrrpt) return error();
             }
     }
@@ -6957,8 +6950,7 @@ void systemback::on_pointdelete_clicked()
     {
         if(getppipe(a)->isChecked())
         {
-            ++dnum;
-            pset(16, chr((QStr::number(dnum) % '/' % QStr::number(ppipe))));
+            pset(16, chr((QStr::number(++dnum) % '/' % QStr::number(ppipe))));
 
             if(! QFile::rename(sb::sdir[1] % [a]() -> QStr {
                     switch(a) {
@@ -7025,14 +7017,8 @@ void systemback::on_livecreatenew_clicked()
         || intrrpt || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/.disk") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux")) return error();
 
     QStr ifname(ui->livename->text() == "auto" ? "systemback_live_" % QDateTime().currentDateTime().toString("yyyy-MM-dd") : ui->livename->text());
-    uchar ncount(0);
-
-    while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive"))
-    {
-        ++ncount;
-        ncount == 1 ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(ncount);
-    }
-
+    { uchar ncount(0);
+    while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) ncount == 0 ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(++ncount); }
     if(intrrpt || ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::right(ui->systembackversion->text(), - sb::rinstr(ui->systembackversion->text(), "_")) % '\n') || ! sb::copy("/boot/vmlinuz-" % ckernel, sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz") || intrrpt) return error();
     QStr fname;
 

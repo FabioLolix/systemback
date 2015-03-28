@@ -37,14 +37,21 @@ public slots:
 
 private:
     enum { Inprog = 0, Start = 1, Stop = 2 };
+
+    struct {
+        QStr txt, pbar;
+        uchar type, cperc;
+    } prun;
+
     QTimer *ptimer;
-    QStr pname, cpoint, prun, pbar;
+    QStr pname, cpoint;
     QChar yn[2];
 
     uchar storagedir();
     uchar clistart();
     uchar restore();
     bool newrpnt();
+    void pset(uchar type);
     void emptycache();
 };
 

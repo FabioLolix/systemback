@@ -35,10 +35,9 @@
 
 systemback::systemback()
 {
-    ptimer = nullptr;
+    ptimer = nullptr, prun.cperc = 0;
     QStr yns(tr("(Y/N)"));
-    yn[0] = yns.at(1);
-    yn[1] = yns.at(3);
+    yn[0] = yns.at(1), yn[1] = yns.at(3);
 }
 
 systemback::~systemback()
@@ -180,7 +179,6 @@ uchar systemback::clistart()
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
     if(! pname.isEmpty()) pname.clear();
-    if(sb::Progress != -1) sb::Progress = -1;
 
     do {
         int gtch(getch());
@@ -251,7 +249,7 @@ uchar systemback::clistart()
         switch(getch()) {
         case '1':
         {
-            prun = tr("Deleting restore point");
+            pset(2);
             progress(Start);
 
             if(! QFile::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname))
@@ -324,7 +322,7 @@ uchar systemback::storagedir()
 
 void systemback::emptycache()
 {
-    prun = sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
+    pset(1);
     sb::fssync();
     if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }
@@ -341,18 +339,18 @@ bool systemback::newrpnt()
     for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
         {
-            if(prun != tr("Deleting incomplete restore point")) prun = tr("Deleting incomplete restore point");
+            if(prun.type != 3) pset(3);
             if(! sb::remove(sb::sdir[1] % '/' % item)) return end(false);
         }
 
     for(uchar a(9) ; a > 1 ; --a)
         if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
         {
-            if(prun != tr("Deleting old restore point(s)")) prun = tr("Deleting old restore point(s)");
+            if(prun.type != 4) pset(4);
             if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) return end(false);
         }
 
-    prun = tr("Creating restore point");
+    pset(5);
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
     if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) return end(false);
 
@@ -383,7 +381,7 @@ uchar systemback::restore()
     attron(COLOR_PAIR(2));
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
-    uchar rmode(0);
+    uchar mthd(0);
 
     do {
         int gtch(getch());
@@ -394,9 +392,9 @@ uchar systemback::restore()
             clear();
             return clistart();
         case '1' ... '4':
-            rmode = QStr(gtch).toUShort();
+            mthd = QStr(gtch).toUShort();
         }
-    } while(rmode == 0);
+    } while(mthd == 0);
 
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
@@ -408,8 +406,8 @@ uchar systemback::restore()
     printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
     attron(COLOR_PAIR(4));
 
-    printw(chr(("\n\n  " % [rmode] {
-            switch(rmode) {
+    printw(chr(("\n\n  " % [mthd] {
+            switch(mthd) {
             case 1:
                 return tr("Full restore");
             case 2:
@@ -424,7 +422,7 @@ uchar systemback::restore()
     attron(COLOR_PAIR(3));
     uchar fsave(0), greinst(0);
 
-    if(rmode < 3)
+    if(mthd < 3)
     {
         if(sb::isfile("/etc/fstab"))
         {
@@ -451,7 +449,7 @@ uchar systemback::restore()
             attron(COLOR_PAIR(1));
             printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
             attron(COLOR_PAIR(4));
-            printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1])));
+            printw(chr(("\n\n  " % (mthd == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1])));
             attron(COLOR_PAIR(3));
 
             if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
@@ -479,7 +477,7 @@ uchar systemback::restore()
                 attron(COLOR_PAIR(1));
                 printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
                 attron(COLOR_PAIR(4));
-                printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1] % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1])));
+                printw(chr(("\n\n  " % (mthd == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1] % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1])));
             }
         }
         else if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
@@ -507,7 +505,7 @@ uchar systemback::restore()
             attron(COLOR_PAIR(1));
             printw(chr(("\n\n " % tr("Restore with the following restore method:"))));
             attron(COLOR_PAIR(4));
-            printw(chr(("\n\n  " % (rmode == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1])));
+            printw(chr(("\n\n  " % (mthd == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1])));
         }
     }
 
@@ -527,41 +525,24 @@ uchar systemback::restore()
             return 6;
     } while(! rstart);
 
-    uchar mthd([rmode, this] {
-            switch(rmode) {
-            case 1:
-                prun = tr("Restoring the full system");
-                return 1;
-            case 2:
-                prun = tr("Restoring the system files");
-                return 2;
-            case 3:
-                prun = tr("Restoring users configuration files");
-                return 3;
-            default:
-                prun = tr("Restoring users configuration files");
-                return 4;
-            }
-        }());
-
+    pset(mthd + 5);
     progress(Start);
     bool sfstab(fsave == 1);
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
 
-    if(greinst == 1)
-        if(sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, sb::Silent) > 0)
-        {
-            progress(Stop);
-            return 7;
-        }
+    if(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, sb::Silent) > 0)
+    {
+        progress(Stop);
+        return 7;
+    }
 
     progress(Stop);
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
     attron(COLOR_PAIR(1));
 
-    printw(chr(("\n\n " % [rmode] {
-            switch(rmode) {
+    printw(chr(("\n\n " % [mthd] {
+            switch(mthd) {
             case 1:
                 return tr("Full system restoration is completed.");
             case 2:
@@ -574,7 +555,7 @@ uchar systemback::restore()
         }())));
 
     attron(COLOR_PAIR(3));
-    printw(chr(("\n\n " % (rmode < 3 ? tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit.")))));
+    printw(chr(("\n\n " % (mthd < 3 ? tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit.")))));
     attron(COLOR_PAIR(2));
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
@@ -582,12 +563,38 @@ uchar systemback::restore()
     forever
         switch(getch()) {
         case '\n':
-            if(rmode < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, sb::Bckgrnd);
+            if(mthd < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, sb::Bckgrnd);
             return 0;
         case 'q':
         case 'Q':
-            if(rmode < 3) return 0;
+            if(mthd < 3) return 0;
         }
+}
+
+void systemback::pset(uchar type)
+{
+    prun.txt = [type]() -> QStr {
+            switch(type) {
+            case 1:
+                return sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
+            case 2:
+                return tr("Deleting restore point");
+            case 3:
+                return tr("Deleting incomplete restore point");
+            case 4:
+                return tr("Deleting old restore point(s)");
+            case 5:
+                return tr("Creating restore point");
+            case 6:
+                return tr("Restoring the full system");
+            case 7:
+                return tr("Restoring the system files");
+            default:
+                return tr("Restoring users configuration files");
+            }
+        }();
+
+    prun.type = type;
 }
 
 void systemback::progress(uchar status)
@@ -600,36 +607,49 @@ void systemback::progress(uchar status)
     case Inprog:
         for(uchar a(0) ; a < 4 ; ++a)
         {
-            if(sb::like(prun, {'_' % tr("Creating restore point") % '_', '_' % tr("Restoring the full system") % '_', '_' % tr("Restoring the system files") % '_', '_' % tr("Restoring users configuration files") % '_'}))
+            switch(prun.type) {
+            case 5 ... 9:
             {
-                schar cbperc(sb::mid(pbar, 3, sb::instr(pbar, "%") - 1).toUShort()), cperc(sb::Progress);
+                schar cperc(sb::Progress);
 
                 if(cperc == -1)
+                    prun.pbar = prun.pbar == " (?%)" ? " ( %)" : " (?%)";
+                else if(cperc > 99)
                 {
-                    if(pbar == " (?%)")
-                        pbar = " ( %)";
-                    else if(pbar.isEmpty() || pbar == " ( %)")
-                        pbar = " (?%)";
+                    if(prun.cperc < 100) prun.cperc = 100, prun.pbar = " (100%)";
                 }
-                else if(cperc < 100)
-                {
-                    if(cbperc < cperc || (cbperc == 0 && pbar != "(0%)"))
-                        pbar = " (" % QStr::number(cperc) % "%)";
-                    else if(sb::like(99, {cperc, cbperc}, true))
-                        pbar = " (100%)";
-                }
-                else if(cbperc < 100)
-                    pbar = " (100%)";
+                else if(prun.cperc < cperc)
+                    prun.pbar = " (" % QStr::number((prun.cperc = cperc)) % "%)";
+                else if(prun.cperc == 0 && prun.pbar != " (0%)")
+                    prun.pbar = " (0%)";
+                else if(sb::like(99, {cperc, prun.cperc}, true))
+                    prun.pbar = " (100%)", prun.cperc = 100;
+
+                break;
             }
-            else if(! pbar.isEmpty())
-                pbar.clear();
+            default:
+                if(! prun.pbar.isEmpty()) prun.pbar.clear();
+            }
 
             if(! ptimer) return;
             clear();
             attron(COLOR_PAIR(2));
             mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
             attron(COLOR_PAIR(1));
-            mvprintw(LINES / 2 - 1, COLS / 2 - (prun.length() + pbar.length() + 4) / 2, chr((prun % pbar % ' ' % (a == 0 ? "   " : a == 1 ? ".  " : a == 2 ? ".. " : "..."))));
+
+            mvprintw(LINES / 2 - 1, COLS / 2 - (prun.txt.length() + prun.pbar.length() + 4) / 2, chr((prun.txt % prun.pbar % [a] {
+                    switch(a) {
+                    case 0:
+                        return "    ";
+                    case 1:
+                        return " .  ";
+                    case 2:
+                        return " .. ";
+                    default:
+                        return " ...";
+                    }
+                }())));
+
             attron(COLOR_PAIR(2));
             mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
             refresh();
@@ -640,8 +660,9 @@ void systemback::progress(uchar status)
     case Stop:
         delete ptimer;
         ptimer = nullptr;
-        prun.clear();
-        if(! pbar.isEmpty()) pbar.clear();
-        if(sb::Progress != -1) sb::Progress = -1;
+        prun.txt.clear();
+        if(! prun.pbar.isEmpty()) prun.pbar.clear();
+        if(prun.cperc > 0) prun.cperc = 0;
+        if(sb::Progress > -1) sb::Progress = -1;
     }
 }

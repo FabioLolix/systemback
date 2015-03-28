@@ -188,7 +188,7 @@ bool sb::lock(uchar type)
             default:
                 return isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock";
             }
-        }(), O_RDWR | O_CREAT, 0644)) != -1 && lockf(sblock[type], F_TLOCK, 0) == 0;
+        }(), O_RDWR | O_CREAT, 0644)) > -1 && lockf(sblock[type], F_TLOCK, 0) == 0;
 }
 
 void sb::unlock(uchar type)

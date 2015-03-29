@@ -529,14 +529,9 @@ uchar systemback::restore()
     progress(Start);
     bool sfstab(fsave == 1);
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
-
-    if(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, sb::Silent) > 0)
-    {
-        progress(Stop);
-        return 7;
-    }
-
+    { bool err(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, sb::Silent) > 0);
     progress(Stop);
+    if(err) return 7; }
     clear();
     mvprintw(0, COLS / 2 - 6 - tr("basic restore UI").length() / 2, chr(("Systemback " % tr("basic restore UI"))));
     attron(COLOR_PAIR(1));

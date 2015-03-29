@@ -213,7 +213,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1287"/>
-        <location filename="../systemback/systemback.cpp" line="6128"/>
+        <location filename="../systemback/systemback.cpp" line="6120"/>
         <source>Mount</source>
         <translation>Montează</translation>
     </message>
@@ -305,7 +305,7 @@
         <location filename="../systemback/systemback.cpp" line="5417"/>
         <location filename="../systemback/systemback.cpp" line="5431"/>
         <location filename="../systemback/systemback.cpp" line="5432"/>
-        <location filename="../systemback/systemback.cpp" line="6600"/>
+        <location filename="../systemback/systemback.cpp" line="6592"/>
         <source>Disabled</source>
         <translation>Dezactivat</translation>
     </message>
@@ -512,7 +512,7 @@
         <location filename="../systemback/systemback.ui" line="3679"/>
         <location filename="../systemback/systemback.cpp" line="3776"/>
         <location filename="../systemback/systemback.cpp" line="4290"/>
-        <location filename="../systemback/systemback.cpp" line="6020"/>
+        <location filename="../systemback/systemback.cpp" line="6012"/>
         <source>System copy</source>
         <translation>Copiere sistem</translation>
     </message>
@@ -859,28 +859,28 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="454"/>
-        <location filename="../systemback/systemback.cpp" line="6743"/>
+        <location filename="../systemback/systemback.cpp" line="6735"/>
         <source>Top left</source>
         <translation>Stânga sus</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="454"/>
         <location filename="../systemback/systemback.cpp" line="455"/>
-        <location filename="../systemback/systemback.cpp" line="6744"/>
+        <location filename="../systemback/systemback.cpp" line="6736"/>
         <source>Top right</source>
         <translation>Dreapta sus</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="454"/>
         <location filename="../systemback/systemback.cpp" line="455"/>
-        <location filename="../systemback/systemback.cpp" line="6745"/>
+        <location filename="../systemback/systemback.cpp" line="6737"/>
         <source>Center</source>
         <translation>Centrat</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="454"/>
         <location filename="../systemback/systemback.cpp" line="455"/>
-        <location filename="../systemback/systemback.cpp" line="6746"/>
+        <location filename="../systemback/systemback.cpp" line="6738"/>
         <source>Bottom left</source>
         <translation>Stânga jos</translation>
     </message>
@@ -892,31 +892,31 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="456"/>
-        <location filename="../systemback/systemback.cpp" line="6637"/>
-        <location filename="../systemback/systemback.cpp" line="6647"/>
+        <location filename="../systemback/systemback.cpp" line="6629"/>
+        <location filename="../systemback/systemback.cpp" line="6639"/>
         <source>day(s)</source>
         <translation>zi(le)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="457"/>
-        <location filename="../systemback/systemback.cpp" line="6671"/>
-        <location filename="../systemback/systemback.cpp" line="6681"/>
+        <location filename="../systemback/systemback.cpp" line="6663"/>
+        <location filename="../systemback/systemback.cpp" line="6673"/>
         <source>hour(s)</source>
         <translation>oră(e)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="458"/>
-        <location filename="../systemback/systemback.cpp" line="6657"/>
-        <location filename="../systemback/systemback.cpp" line="6691"/>
-        <location filename="../systemback/systemback.cpp" line="6705"/>
-        <location filename="../systemback/systemback.cpp" line="6714"/>
+        <location filename="../systemback/systemback.cpp" line="6649"/>
+        <location filename="../systemback/systemback.cpp" line="6683"/>
+        <location filename="../systemback/systemback.cpp" line="6697"/>
+        <location filename="../systemback/systemback.cpp" line="6706"/>
         <source>minute(s)</source>
         <translation>minut(e)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="459"/>
-        <location filename="../systemback/systemback.cpp" line="6723"/>
-        <location filename="../systemback/systemback.cpp" line="6732"/>
+        <location filename="../systemback/systemback.cpp" line="6715"/>
+        <location filename="../systemback/systemback.cpp" line="6724"/>
         <source>seconds</source>
         <translation>secunde</translation>
     </message>
@@ -936,19 +936,19 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1193"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="587"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="582"/>
         <source>Creating restore point</source>
         <translation>Creare punct de restabilire</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1167"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="589"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="584"/>
         <source>Restoring the full system</source>
         <translation>Restabilire sistem complet</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1169"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="591"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="586"/>
         <source>Restoring the system files</source>
         <translation>Restabilire fișiere de sistem</translation>
     </message>
@@ -984,7 +984,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1195"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="581"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="576"/>
         <source>Deleting restore point</source>
         <translation>Ștergere punct de restabilire</translation>
     </message>
@@ -995,7 +995,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1187"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="583"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="578"/>
         <source>Deleting incomplete restore point</source>
         <translation>Ștergerea punctelor de restabilire incomplete</translation>
     </message>
@@ -1022,7 +1022,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1165"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="579"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="574"/>
         <source>Emptying cache</source>
         <translation>Golire cache</translation>
     </message>
@@ -1063,7 +1063,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1165"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="579"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="574"/>
         <source>Flushing filesystem buffers</source>
         <translation>Golire bufferul sistemului de fișiere</translation>
     </message>
@@ -1168,7 +1168,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2815"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="549"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="544"/>
         <source>System files restoration are completed.</source>
         <translation>Restabilirea fișierelor de sistem este finalizată.</translation>
     </message>
@@ -1180,7 +1180,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2820"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="547"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="542"/>
         <source>Full system restoration is completed.</source>
         <translation>Restabilirea sistemului complet este finalizată.</translation>
     </message>
@@ -1214,7 +1214,7 @@
         <translation>Întreruperea procesului actual</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7280"/>
+        <location filename="../systemback/systemback.cpp" line="7272"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation>Eroare la firul de lucru Systemback din cauza următoarelor elemente:</translation>
     </message>
@@ -1418,8 +1418,8 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="566"/>
         <location filename="../systemback/systemback.cpp" line="3724"/>
-        <location filename="../systemback/systemback.cpp" line="7496"/>
-        <location filename="../systemback/systemback.cpp" line="7519"/>
+        <location filename="../systemback/systemback.cpp" line="7488"/>
+        <location filename="../systemback/systemback.cpp" line="7511"/>
         <source>Everyone</source>
         <translation>Toți</translation>
     </message>
@@ -1438,12 +1438,12 @@
         <translation>Mai multe puncte de montare</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="6580"/>
+        <location filename="../systemback/systemback.cpp" line="6572"/>
         <source>Enabled</source>
         <translation>Activat(ă)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="6789"/>
+        <location filename="../systemback/systemback.cpp" line="6781"/>
         <source>Systemback worker thread is interrupted by the user.</source>
         <translation>Firul de lucru Systemback este întreruptă de către utilizator.</translation>
     </message>
@@ -1454,38 +1454,38 @@
         <translation>proces</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7191"/>
+        <location filename="../systemback/systemback.cpp" line="7183"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Pornire Live fără fișier xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7194"/>
-        <location filename="../systemback/systemback.cpp" line="7196"/>
-        <location filename="../systemback/systemback.cpp" line="7198"/>
+        <location filename="../systemback/systemback.cpp" line="7186"/>
+        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Boot Live system</source>
         <translation>Pornire sistem Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7194"/>
-        <location filename="../systemback/systemback.cpp" line="7196"/>
-        <location filename="../systemback/systemback.cpp" line="7198"/>
+        <location filename="../systemback/systemback.cpp" line="7186"/>
+        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Pornire Live în modul de grafică redusă</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7194"/>
-        <location filename="../systemback/systemback.cpp" line="7196"/>
-        <location filename="../systemback/systemback.cpp" line="7198"/>
+        <location filename="../systemback/systemback.cpp" line="7186"/>
+        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Boot Live in debug mode</source>
         <translation>Poenire Live în modul de depanare</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7195"/>
+        <location filename="../systemback/systemback.cpp" line="7187"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Apăsați tasta &apos;E&apos; pentru editare</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7198"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Press TAB key to edit</source>
         <translation>Apăsați tasta TAB pentru editare</translation>
     </message>
@@ -1592,8 +1592,8 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="444"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="472"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="500"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="541"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="637"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="536"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="632"/>
         <source>basic restore UI</source>
         <translation>interfață de bază</translation>
     </message>
@@ -1618,7 +1618,7 @@
         <translation>Calea dosarului de salvare este setat.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="585"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="580"/>
         <source>Deleting old restore point(s)</source>
         <translation>Ștergerea punctelor de restabilire vechi</translation>
     </message>
@@ -1689,27 +1689,27 @@
         <translation>Începeți restabilirea?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="593"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="588"/>
         <source>Restoring users configuration files</source>
         <translation>Restabilire fișiere de configurare ale utilizatorilor</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="551"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="546"/>
         <source>Users configuration files full restoration are completed.</source>
         <translation>Restabilirea completă a fișierelor de configurare este finalizată.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="553"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="548"/>
         <source>Users configuration files restoration are completed.</source>
         <translation>Restabilirea fișierelor de configurare este finalizată.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="558"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="553"/>
         <source>Press &apos;ENTER&apos; key to reboot computer, or &apos;Q&apos; to quit.</source>
         <translation>Apasă pe &apos;ENTER&apos; pentru reporníre, or &apos;Q&apos; pentru închidere.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="558"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="553"/>
         <source>Press &apos;ENTER&apos; key to quit.</source>
         <translation>Apăsă pe &apos;ENTER&apos; pentru a ieși.</translation>
     </message>

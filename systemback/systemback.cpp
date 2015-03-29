@@ -5954,7 +5954,7 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
             ui->mountpoint->setCurrentText(sb::left(arg1, -1));
         else
         {
-            QStr mpt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text());
+            QStr mpt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text()), ompt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
 
             if(sb::like(mpt, {"_/boot/efi_", "_/home_", "_SWAP_"}))
             {
@@ -5964,53 +5964,45 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
                     if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
                 }
             }
-            else
+            else if(ompt.isEmpty() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "btrfs")
             {
-                QStr ompt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text());
-
-                if(ompt.isEmpty() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "btrfs")
+                if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
                 {
-                    if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
-                    {
-                        if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
-                    }
-                    else if(! ui->filesystem->isEnabled())
-                        ui->filesystem->setEnabled(true);
-
-                    if(! ui->format->isEnabled()) ui->format->setEnabled(true);
-                    if(! ui->format->isChecked()) ui->format->setChecked(true);
+                    if(ui->filesystem->isEnabled()) ui->filesystem->setDisabled(true);
                 }
-                else if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
-                {
-                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-                    return;
-                }
+                else if(! ui->filesystem->isEnabled())
+                    ui->filesystem->setEnabled(true);
 
-                if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ompt || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456) || (grub.isEFI && mpt == "/boot/efi" && arg1 != "/boot/efi") || (nohmcpy[0] && mpt == "/home" && arg1 != "/home") || (mpt == "SWAP" && arg1 != "SWAP")
-                        || [&] {
-                                if(arg1 != "SWAP")
-                                    for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-                                        if(ui->partitionsettings->item(a, 4)->text() == arg1) return true;
-
-                                return false;
-                            }())
-                {
-                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-                }
-                else if(! sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
-                {
-                    if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
-                    sb::delay(300);
-
-                    if(ccnt == icnt)
-                    {
-                        QTemporaryDir tdir("/tmp/" % QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
-                        if(tdir.isValid()) ui->changepartition->setEnabled(true);
-                    }
-                }
-                else if(! ui->changepartition->isEnabled())
-                    ui->changepartition->setEnabled(true);
+                if(! ui->format->isEnabled()) ui->format->setEnabled(true);
+                if(! ui->format->isChecked()) ui->format->setChecked(true);
             }
+            else if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
+                return ui->changepartition->isEnabled() ? ui->changepartition->setDisabled(true) : void();
+
+            if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ompt || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456) || (grub.isEFI && mpt == "/boot/efi" && arg1 != "/boot/efi") || (nohmcpy[0] && mpt == "/home" && arg1 != "/home") || (mpt == "SWAP" && arg1 != "SWAP")
+                    || [&] {
+                            if(arg1 != "SWAP")
+                                for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+                                    if(ui->partitionsettings->item(a, 4)->text() == arg1) return true;
+
+                            return false;
+                        }())
+            {
+                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+            }
+            else if(! sb::like(arg1, {"_/_", "_/home_", "_/boot_", "_/boot/efi_", "_/tmp_", "_/usr_", "_/usr/local_", "_/var_", "_/srv_", "_/opt_", "_SWAP_"}))
+            {
+                if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
+                sb::delay(300);
+
+                if(ccnt == icnt)
+                {
+                    QTemporaryDir tdir("/tmp/" % QStr(arg1 % '_' % sb::rndstr()).replace('/', '_'));
+                    if(tdir.isValid()) ui->changepartition->setEnabled(true);
+                }
+            }
+            else if(! ui->changepartition->isEnabled())
+                ui->changepartition->setEnabled(true);
         }
     }
 }

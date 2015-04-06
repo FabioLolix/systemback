@@ -78,7 +78,7 @@ void systemback::main()
                                     if(pgid == -1 || ! sb::like(pgid, {tcgetpgrp(STDIN_FILENO), tcgetpgrp(STDOUT_FILENO)}, true)) return 255; }
                                     initscr();
 
-                                    uchar rv(! has_colors() ? 11
+                                    uchar crv(! has_colors() ? 11
                                         : LINES < 24 || COLS < 80 ? 12
                                         : [crtrpt, this]() -> uchar {
                                                 noecho();
@@ -98,7 +98,7 @@ void systemback::main()
                                             }());
 
                                     endwin();
-                                    return rv;
+                                    return crv;
                                 });
 
                             return qApp->arguments().count() == 1 ? startui()
@@ -352,7 +352,7 @@ bool systemback::newrpnt()
 
     pset(5);
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
-    if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) return end(false);
+    if(! sb::crtrpoint(dtime)) return end(false);
 
     for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
         if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return end(false);

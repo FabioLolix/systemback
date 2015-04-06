@@ -68,7 +68,7 @@ void sustart::main()
                             {
                                 if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1)) return 3;
 
-                                auto clrenv([](cQStr &usrhm, cQStr &xpath = nullptr) {
+                                auto clrenv([](cQBA &uhm, cQStr &xpath = nullptr) {
                                         QSL excl{"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"};
 
                                         for(cQStr &cvar : QProcess::systemEnvironment())
@@ -77,7 +77,7 @@ void sustart::main()
                                             if(! sb::like(var, excl) && ! qunsetenv(chr(var))) return false;
                                         }
 
-                                        if(! qputenv("USER", "root") || ! qputenv("HOME", usrhm.toUtf8()) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;
+                                        if(! qputenv("USER", "root") || ! qputenv("HOME", uhm) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;
                                         return true;
                                     });
 
@@ -88,7 +88,7 @@ void sustart::main()
                                     if(! clrenv("/root", xauth)) return 3;
                                     cmd = new QStr("systemback authorization " % uname);
                                 }
-                                else if(! clrenv(usrhm))
+                                else if(! clrenv(usrhm.toUtf8()))
                                     return 3;
                                 else
                                     cmd = new QStr("sbscheduler " % uname);

@@ -19,6 +19,7 @@
 
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
+#define fnln __attribute__((always_inline))
 #define chr(qstr) qstr.toUtf8().constData()
 
 #include "sblib_global.hpp"
@@ -48,11 +49,25 @@ public:
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
+    static fnln QStr mid(cQStr &txt, ushort start, ushort len);
+    static fnln QStr right(cQStr &txt, short len);
+    static fnln QStr left(cQStr &txt, short len);
+    static fnln ullong fsize(cQStr &path);
+    static fnln ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
+    static fnln ushort rinstr(cQStr &txt, cQStr &stxt);
+    static fnln uchar stype(cchar *path);
+    static fnln uchar stype(cQStr &path);
+    static fnln bool like(int num, cSIL &lst, bool all = false);
+    static fnln bool issmfs(cchar *item1, cchar *item2);
+    static fnln bool islink(cQStr &path);
+    static fnln bool isfile(cQStr &path);
+    static fnln bool exist(cchar *path);
+    static fnln bool exist(cQStr &path);
+    static fnln bool isdir(cQStr &path);
+    static fnln bool isnum(cQStr &txt);
+
     static QTrn *ldtltr();
-    static QStr mid(cQStr &txt, ushort start, ushort len);
     static QStr fload(cQStr &path, bool ascnt);
-    static QStr right(cQStr &txt, short len);
-    static QStr left(cQStr &txt, short len);
     static QStr gdetect(cQStr rdir = "/");
     static QStr rndstr(uchar vlen = 10);
     static QStr ruuid(cQStr &part);
@@ -60,12 +75,7 @@ public:
     static QBA fload(cQStr &path);
     static ullong dfree(cchar *path);
     static ullong dfree(cQStr &path);
-    static ullong fsize(cQStr &path);
-    static ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
-    static ushort rinstr(cQStr &txt, cQStr &stxt);
     static uchar exec(cQStr &cmd, cQStr &envv = nullptr, uchar flag = Noflag);
-    static uchar stype(cchar *path);
-    static uchar stype(cQStr &path);
     static uchar exec(cQSL &cmds);
     static bool srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);
     static bool mkpart(cQStr &dev, ullong start = 0, ullong len = 0, uchar type = Primary);
@@ -76,23 +86,15 @@ public:
     static bool scopy(uchar mthd, cQStr &usr, cQStr &srcdir);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool crtfile(cQStr &path, cQStr &txt = nullptr);
-    static bool like(int num, cSIL &lst, bool all = false);
     static bool access(cQStr &path, uchar mode = Read);
     static bool copy(cQStr &srcfile, cQStr &newfile);
-    static bool crtrpoint(cQStr &sdir, cQStr &pname);
     static bool setpflag(cQStr &part, cQStr &flag);
-    static bool issmfs(cchar *item1, cchar *item2);
+    static bool crtrpoint(cQStr &pname);
     static bool islnxfs(cQStr &path);
-    static bool islink(cQStr &path);
-    static bool isfile(cQStr &path);
     static bool remove(cQStr &path);
     static bool mcheck(cQStr &item);
     static bool lvprpr(bool iudata);
     static bool umount(cQStr &dev);
-    static bool exist(cchar *path);
-    static bool exist(cQStr &path);
-    static bool isdir(cQStr &path);
-    static bool isnum(cQStr &txt);
     static bool lock(uchar type);
     static void readprttns(QSL &strlst);
     static void readlvdevs(QSL &strlst);
@@ -118,7 +120,8 @@ private:
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 
-    static QStr rlink(cQStr &path, ushort blen);
+    static fnln QStr rlink(cQStr &path, ushort blen);
+
     static uchar fcomp(cQStr &file1, cQStr &file2);
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden = false, uchar oplen = 0);
     static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
@@ -133,7 +136,7 @@ private:
     bool thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab);
     bool thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir);
     bool recrmdir(cQStr &path, bool slimit = false);
-    bool thrdcrtrpoint(cQStr &sdir, cQStr &pname);
+    bool thrdcrtrpoint(cQStr &trgt);
     bool thrdlvprpr(bool iudata);
 };
 
@@ -160,70 +163,6 @@ inline ushort sb::instr(cQStr &txt, cQStr &stxt, ushort start)
 inline ushort sb::rinstr(cQStr &txt, cQStr &stxt)
 {
     return txt.lastIndexOf(stxt) + 1;
-}
-
-inline bool sb::like(cQStr &txt, cQSL &lst, uchar mode)
-{
-    switch(mode) {
-    case Norm:
-        for(cQStr &stxt : lst)
-            if(stxt.startsWith('*'))
-            {
-                if(stxt.endsWith('*'))
-                {
-                    if(txt.contains(stxt.mid(1, stxt.length() - 2))) return true;
-                }
-                else if(txt.endsWith(stxt.mid(1, stxt.length() - 2)))
-                    return true;
-            }
-            else if(stxt.endsWith('*'))
-            {
-                if(txt.startsWith(stxt.mid(1, stxt.length() - 2))) return true;
-            }
-            else if(txt == stxt.mid(1, stxt.length() - 2))
-                return true;
-
-        return false;
-    case All:
-        for(cQStr &stxt : lst)
-            if(stxt.startsWith('*'))
-            {
-                if(stxt.endsWith('*'))
-                {
-                    if(! txt.contains(stxt.mid(1, stxt.length() - 2))) return false;
-                }
-                else if(! txt.endsWith(stxt.mid(1, stxt.length() - 2)))
-                    return false;
-            }
-            else if(stxt.endsWith('*'))
-            {
-                if(! txt.startsWith(stxt.mid(1, stxt.length() - 2))) return false;
-            }
-            else if(txt != stxt.mid(1, stxt.length() - 2))
-                return false;
-
-        return true;
-    case Mixed:
-    {
-        QSL alst, nlst;
-
-        for(cQStr &stxt : lst)
-            switch(stxt.at(0).toLatin1()) {
-            case '+':
-                alst.append(right(stxt, -1));
-                break;
-            case '-':
-                nlst.append(right(stxt, -1));
-                break;
-            default:
-                return false;
-            }
-
-        return like(txt, alst, All) && like(txt, nlst);
-    }
-    default:
-        return false;
-    }
 }
 
 inline bool sb::like(int num, cSIL &lst, bool all)
@@ -287,26 +226,6 @@ inline uchar sb::stype(cQStr &path)
 inline ullong sb::fsize(cQStr &path)
 {
     return QFileInfo(path).size();
-}
-
-inline bool sb::access(cQStr &path, uchar mode)
-{
-    switch(mode) {
-    case Read:
-        return QFileInfo(path).isReadable();
-    case Write:
-        return QFileInfo(path).isWritable();
-    case Exec:
-        return QFileInfo(path).isExecutable();
-    default:
-        return false;
-    }
-}
-
-inline bool sb::islnxfs(cQStr &dirpath)
-{
-    QTemporaryFile file(dirpath % "/.sbdirtestfile_" % rndstr());
-    return file.open() && file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther) && file.permissions() == 30548;
 }
 
 inline bool sb::issmfs(cchar *item1, cchar *item2)

@@ -25,7 +25,10 @@ RESOURCES += version.qrc
 QMAKE_CXXFLAGS += -fno-rtti \
                   -fno-asynchronous-unwind-tables
 
-QMAKE_CXXFLAGS_WARN_ON += -Wextra
+QMAKE_CXXFLAGS_WARN_ON += -Wextra \
+                          -Wshadow \
+                          -Winline \
+                          -Werror
 
 QMAKE_LFLAGS += -Wl,--as-needed
 

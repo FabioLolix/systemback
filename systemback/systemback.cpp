@@ -967,21 +967,21 @@ void systemback::unitimer()
     }
 }
 
-inline ushort systemback::ss(ushort size)
+inline ushort systemback::ss(ushort dsize)
 {
     switch(sfctr) {
     case Max:
-        return size * 2;
+        return dsize * 2;
     case High:
-        switch(size) {
+        switch(dsize) {
         case 0:
             return 0;
         case 1:
             return 2;
         default:
-            ushort ssize((size * High + 50) / 100);
+            ushort ssize((dsize * High + 50) / 100);
 
-            switch(size) {
+            switch(dsize) {
             case 154:
             case 201:
             case 402:
@@ -993,7 +993,7 @@ inline ushort systemback::ss(ushort size)
             }
         }
     default:
-        return size;
+        return dsize;
     }
 }
 
@@ -1023,7 +1023,7 @@ void systemback::fontcheck(uchar wdgt)
     case Strgdr:
         if(ui->storagedir->font().pixelSize() != ss(15))
         {
-            for(QWdt *wdgt : QWL{ui->storagedirarea, ui->storagedir}) wdgt->setFont(font());
+            for(QWdt *cwdgt : QWL{ui->storagedirarea, ui->storagedir}) cwdgt->setFont(font());
             QFont fnt;
             fnt.setPixelSize(ss(15));
             fnt.setBold(true);
@@ -1034,7 +1034,7 @@ void systemback::fontcheck(uchar wdgt)
     case Lvwrkdr:
         if(ui->liveworkdir->font().pixelSize() != ss(15))
         {
-            for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) wdgt->setFont(font());
+            for(QWdt *cwdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) cwdgt->setFont(font());
             QFont fnt;
             fnt.setPixelSize(ss(15));
             fnt.setBold(true);
@@ -1081,29 +1081,29 @@ inline bool systemback::minside(cQPoint &wpos, cQSize &wsize)
 
     return QCursor::pos().x() >
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
-            wxy[0]
+        wxy[0]
 #else
-            x()
+        x()
 #endif
-            + wpos.x() && QCursor::pos().y() >
+        + wpos.x() && QCursor::pos().y() >
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
-            wxy[1]
+        wxy[1]
 #else
-            y()
+        y()
 #endif
-            + wpos.y() && QCursor::pos().x() <
+        + wpos.y() && QCursor::pos().x() <
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
-            wxy[0]
+        wxy[0]
 #else
-            x()
+        x()
 #endif
-            + wpos.x() + wsize.width() && QCursor::pos().y() <
+        + wpos.x() + wsize.width() && QCursor::pos().y() <
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
-            wxy[1]
+        wxy[1]
 #else
-            y()
+        y()
 #endif
-            + wpos.y() + wsize.height();
+        + wpos.y() + wsize.height();
 }
 
 QStr systemback::guname()
@@ -2544,9 +2544,9 @@ void systemback::systemcopy()
                     QStr uuid(sb::ruuid(ui->partitionsettings->item(a, 0)->text())), nfs(ui->partitionsettings->item(a, 5)->text());
 
                     fstabtxt.append("# " % (nmpt == "SWAP" ? QStr("SWAP\nUUID=" % uuid % "   none   swap   sw   0   0")
-                                : nmpt % "\nUUID=" % uuid % "   " % nmpt % "   " % nfs % "   noatime"
-                                    % (nmpt == "/" ? QStr(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}) ? ",errors=remount-ro" : nfs == "reiserfs" ? ",notail" : ",subvol=@") % "   0   1"
-                                        : (nfs == "reiserfs" ? ",notail" : nfs == "btrfs" ? QStr(",subvol=@" % sb::right(nmpt, -1)) : nullptr) % "   0   2")) % '\n');
+                        : nmpt % "\nUUID=" % uuid % "   " % nmpt % "   " % nfs % "   noatime"
+                            % (nmpt == "/" ? QStr(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}) ? ",errors=remount-ro" : nfs == "reiserfs" ? ",notail" : ",subvol=@") % "   0   1"
+                                : (nfs == "reiserfs" ? ",notail" : nfs == "btrfs" ? QStr(",subvol=@" % sb::right(nmpt, -1)) : nullptr) % "   0   2")) % '\n');
                 }
             }
 
@@ -2678,10 +2678,10 @@ void systemback::livewrite()
     }
 
     if(! sb::mkptable(ldev) || intrrpt) return error(337);
-    ullong size(sb::fsize(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive"));
+    ullong isize(sb::fsize(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive"));
     QStr lrdir;
 
-    if(size < 4294967295)
+    if(isize < 4294967295)
     {
         if(! sb::mkpart(ldev) || intrrpt) return error(337);
         lrdir = "sblive";
@@ -2708,8 +2708,8 @@ void systemback::livewrite()
         if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '2', "/.sblivesystemwrite/sbroot") || intrrpt) return error(336);
     }
 
-    if(sb::dfree("/.sblivesystemwrite/" % lrdir) < size + 52428800) return error(321);
-    sb::ThrdStr[0] = "/.sblivesystemwrite", sb::ThrdLng[0] = size;
+    if(sb::dfree("/.sblivesystemwrite/" % lrdir) < isize + 52428800) return error(321);
+    sb::ThrdStr[0] = "/.sblivesystemwrite", sb::ThrdLng[0] = isize;
 
     if(lrdir == "sblive")
     {
@@ -3590,7 +3590,7 @@ void systemback::on_pnumber10_clicked()
     pnmchange(10);
 }
 
-inline void systemback::ptxtchange(uchar num, cQStr &txt)
+void systemback::ptxtchange(uchar num, cQStr &txt)
 {
     QLE *ldt(getpoint(num));
     QCB *ckbx(getppipe(num));
@@ -3604,9 +3604,9 @@ inline void systemback::ptxtchange(uchar num, cQStr &txt)
         }
         else if(sb::like(txt, {"* *", "*/*"}))
         {
-            uchar cpos(ldt->cursorPosition() - 1);
-            ldt->setText(QStr(txt).replace(cpos, 1, nullptr));
-            ldt->setCursorPosition(cpos);
+            uchar cps(ldt->cursorPosition() - 1);
+            ldt->setText(QStr(txt).replace(cps, 1, nullptr));
+            ldt->setCursorPosition(cps);
         }
         else
         {
@@ -4006,10 +4006,10 @@ void systemback::on_partitionrefresh_clicked()
             QTblWI *dev(new QTblWI(path));
             dev->setTextAlignment(Qt::AlignBottom);
             ui->partitionsettings->setItem(sn, 0, dev);
-            QTblWI *size(new QTblWI);
-            size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-            size->setTextAlignment(Qt::AlignRight | Qt::AlignBottom);
-            ui->partitionsettings->setItem(sn, 1, size);
+            QTblWI *rsize(new QTblWI);
+            rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+            rsize->setTextAlignment(Qt::AlignRight | Qt::AlignBottom);
+            ui->partitionsettings->setItem(sn, 1, rsize);
             QTblWI *empty(new QTblWI);
             ui->partitionsettings->setItem(sn, 2, empty);
             for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
@@ -4019,7 +4019,7 @@ void systemback::on_partitionrefresh_clicked()
             ui->partitionsettings->setItem(sn, 10, lngth);
             QFont fnt;
             fnt.setWeight(QFont::DemiBold);
-            for(QTblWI *twi : {dev, size}) twi->setFont(fnt);
+            for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt);
         }
         else
         {
@@ -4029,17 +4029,17 @@ void systemback::on_partitionrefresh_clicked()
                 ui->partitionsettings->setRowCount(++sn + 1);
                 QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *size(new QTblWI);
-                size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-                size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                ui->partitionsettings->setItem(sn, 1, size);
+                QTblWI *rsize(new QTblWI);
+                rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+                rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                ui->partitionsettings->setItem(sn, 1, rsize);
                 QTblWI *empty(new QTblWI);
                 ui->partitionsettings->setItem(sn, 2, empty);
                 for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
                 QFont fnt;
                 fnt.setWeight(QFont::DemiBold);
                 fnt.setItalic(true);
-                for(QTblWI *twi : {dev, size}) twi->setFont(fnt);
+                for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt);
                 break;
             }
             case sb::Primary:
@@ -4053,10 +4053,10 @@ void systemback::on_partitionrefresh_clicked()
                 ui->partitionsettings->setRowCount(++sn + 1);
                 QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *size(new QTblWI);
-                size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-                size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                ui->partitionsettings->setItem(sn, 1, size);
+                QTblWI *rsize(new QTblWI);
+                rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+                rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                ui->partitionsettings->setItem(sn, 1, rsize);
                 QTblWI *lbl(new QTblWI(dts.at(5)));
                 lbl->setTextAlignment(Qt::AlignCenter);
                 if(! dts.at(5).isEmpty()) lbl->setToolTip(dts.at(5));
@@ -4104,16 +4104,16 @@ void systemback::on_partitionrefresh_clicked()
                 ui->partitionsettings->setRowCount(++sn + 1);
                 QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *size(new QTblWI);
-                size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-                size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                ui->partitionsettings->setItem(sn, 1, size);
+                QTblWI *rsize(new QTblWI);
+                rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+                rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                ui->partitionsettings->setItem(sn, 1, rsize);
                 QTblWI *empty(new QTblWI);
                 ui->partitionsettings->setItem(sn, 2, empty);
                 for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
                 QFont fnt;
                 fnt.setItalic(true);
-                for(QTblWI *twi : {dev, size}) twi->setFont(fnt);
+                for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt);
                 break;
             }
 
@@ -4590,11 +4590,11 @@ void systemback::on_livedevicesrefresh_clicked()
         QSL dts(cdts.split('\n'));
         QTblWI *dev(new QTblWI(dts.at(0)));
         ui->livedevices->setItem(sn, 0, dev);
-        QTblWI *size(new QTblWI);
+        QTblWI *rsize(new QTblWI);
         ullong bsize(dts.at(2).toULongLong());
-        size->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
-        size->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        ui->livedevices->setItem(sn, 1, size);
+        rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+        rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        ui->livedevices->setItem(sn, 1, rsize);
         QTblWI *name(new QTblWI(dts.at(1)));
         name->setToolTip(dts.at(1));
         ui->livedevices->setItem(sn, 2, name);
@@ -6199,22 +6199,24 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
         QStr path('/' % twi->text(0));
         while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
 
-        auto itmxpnd([&](cQSL &path) {
+        auto itmxpnd([&](cQStr &pdir) {
+                QStr fpath(pdir % path);
+
                 for(ushort a(0) ; a < item->childCount() ; ++a)
                 {
                     QTrWI *ctwi(item->child(a));
                     QStr iname(ctwi->text(0));
 
-                    if(sb::stype(path.at(0) % path.at(1) % '/' % iname) == sb::Isdir)
+                    if(sb::stype(fpath % '/' % iname) == sb::Isdir)
                     {
                         if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                         QSL itmlst;
                         itmlst.reserve(ctwi->childCount());
                         for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
 
-                        for(cQStr &siname : QDir(path.at(0) % path.at(1) % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
+                        for(cQStr &siname : QDir(fpath % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
                         {
-                            if(ui->excludedlist->findItems(sb::right(path.at(1), -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
+                            if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
                             {
                                 for(ushort b(0) ; b < itmlst.count() ; ++b)
                                     if(itmlst.at(b) == siname)
@@ -6236,14 +6238,14 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
                 }
             });
 
-        if(sb::stype("/root" % path) == sb::Isdir) itmxpnd({"/root", path});
+        if(sb::stype("/root" % path) == sb::Isdir) itmxpnd("/root");
         QFile file("/etc/passwd");
 
         if(file.open(QIODevice::ReadOnly))
             while(! file.atEnd())
             {
                 QStr usr(file.readLine().trimmed());
-                if(usr.contains(":/home/") && sb::stype("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)) % path) == sb::Isdir) itmxpnd({"/home/" % usr, path});
+                if(usr.contains(":/home/") && sb::stype("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)) % path) == sb::Isdir) itmxpnd("/home/" % usr);
             }
 
         busy(false);
@@ -6908,7 +6910,7 @@ void systemback::on_newrestorepoint_clicked()
 
     pset(15);
     QStr dtime(QDateTime().currentDateTime().toString("yyyy-MM-dd,hh.mm.ss"));
-    if(! sb::crtrpoint(sb::sdir[1], ".S00_" % dtime)) return error();
+    if(! sb::crtrpoint(dtime)) return error();
 
     for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
         if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return error();

@@ -18,7 +18,8 @@ SOURCES += sblib.cpp
 
 HEADERS += sblib.hpp \
            sblib_global.hpp \
-           sbtypedef.hpp
+           sbtypedef.hpp \
+           bstr.hpp
 
 RESOURCES += version.qrc
 
@@ -27,7 +28,6 @@ QMAKE_CXXFLAGS += -fno-rtti \
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra \
                           -Wshadow \
-                          -Winline \
                           -Werror
 
 QMAKE_LFLAGS += -Wl,--as-needed

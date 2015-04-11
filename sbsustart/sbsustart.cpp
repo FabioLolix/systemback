@@ -20,7 +20,6 @@
 #include "sbsustart.hpp"
 #include <QCoreApplication>
 #include <QProcess>
-#include <unistd.h>
 
 sustart::sustart()
 {
@@ -74,7 +73,7 @@ void sustart::main()
                                         for(cQStr &cvar : QProcess::systemEnvironment())
                                         {
                                             QStr var(sb::left(cvar, sb::instr(cvar, "=") - 1));
-                                            if(! sb::like(var, excl) && ! qunsetenv(chr(var))) return false;
+                                            if(! sb::like(var, excl) && ! qunsetenv(bstr(var))) return false;
                                         }
 
                                         if(! qputenv("USER", "root") || ! qputenv("HOME", uhm) || ! qputenv("LOGNAME", "root") || ! qputenv("SHELL", "/bin/bash") || ! (xpath.isEmpty() || qputenv("XAUTHORITY", xpath.toUtf8()))) return false;

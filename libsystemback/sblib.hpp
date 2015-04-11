@@ -20,15 +20,16 @@
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
 #define fnln __attribute__((always_inline))
-#define chr(qstr) qstr.toUtf8().constData()
 
 #include "sblib_global.hpp"
-#include "sbtypedef.hpp"
+#include "bstr.hpp"
 #include <QStringBuilder>
 #include <QTemporaryFile>
 #include <QFileInfo>
 #include <QThread>
+#include <sys/statvfs.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 class SHARED_EXPORT_IMPORT sb : public QThread
 {
@@ -49,52 +50,50 @@ public:
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
-    static fnln QStr mid(cQStr &txt, ushort start, ushort len);
-    static fnln QStr right(cQStr &txt, short len);
-    static fnln QStr left(cQStr &txt, short len);
-    static fnln ullong fsize(cQStr &path);
-    static fnln ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
-    static fnln ushort rinstr(cQStr &txt, cQStr &stxt);
-    static fnln uchar stype(cchar *path);
-    static fnln uchar stype(cQStr &path);
-    static fnln bool like(int num, cSIL &lst, bool all = false);
-    static fnln bool issmfs(cchar *item1, cchar *item2);
-    static fnln bool islink(cQStr &path);
-    static fnln bool isfile(cQStr &path);
-    static fnln bool exist(cchar *path);
-    static fnln bool exist(cQStr &path);
-    static fnln bool isdir(cQStr &path);
-    static fnln bool isnum(cQStr &txt);
-
     static QTrn *ldtltr();
+    static QStr mid(cQStr &txt, ushort start, ushort len);
     static QStr fload(cQStr &path, bool ascnt);
+    static QStr right(cQStr &txt, short len);
+    static QStr left(cQStr &txt, short len);
     static QStr gdetect(cQStr rdir = "/");
     static QStr rndstr(uchar vlen = 10);
     static QStr ruuid(cQStr &part);
     static QStr appver();
     static QBA fload(cQStr &path);
-    static ullong dfree(cchar *path);
-    static ullong dfree(cQStr &path);
+    template<typename T> static ullong dfree(const T &path);
+    static fnln ullong fsize(cQStr &path);
+    static fnln ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
+    static fnln ushort rinstr(cQStr &txt, cQStr &stxt);
     static uchar exec(cQStr &cmd, cQStr &envv = nullptr, uchar flag = Noflag);
+    template<typename T> static uchar stype(const T &path);
     static uchar exec(cQSL &cmds);
     static bool srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);
+    template<typename T1, typename T2> static bool issmfs(const T1 &item1, const T2 &item2);
     static bool mkpart(cQStr &dev, ullong start = 0, ullong len = 0, uchar type = Primary);
     static bool mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = nullptr);
+    template<typename T> static fnln bool crtdir(const T &path);
+    template<typename T> static fnln bool rmfile(const T &file);
     static bool like(cQStr &txt, cQSL &lst, uchar mode = Norm);
     static bool execsrch(cQStr &fname, cQStr &ppath = nullptr);
     static bool cfgwrite(cQStr &file = "/etc/systemback.conf");
     static bool scopy(uchar mthd, cQStr &usr, cQStr &srcdir);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool crtfile(cQStr &path, cQStr &txt = nullptr);
+    static bool like(int num, cSIL &lst, bool all = false);
+    template<typename T> static bool exist(const T &path);
     static bool access(cQStr &path, uchar mode = Read);
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool setpflag(cQStr &part, cQStr &flag);
+    static fnln bool islink(cQStr &path);
+    static fnln bool isfile(cQStr &path);
+    static fnln bool isdir(cQStr &path);
     static bool crtrpoint(cQStr &pname);
     static bool islnxfs(cQStr &path);
     static bool remove(cQStr &path);
     static bool mcheck(cQStr &item);
     static bool lvprpr(bool iudata);
     static bool umount(cQStr &dev);
+    static bool isnum(cQStr &txt);
     static bool lock(uchar type);
     static void readprttns(QSL &strlst);
     static void readlvdevs(QSL &strlst);
@@ -120,9 +119,9 @@ private:
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 
-    static fnln QStr rlink(cQStr &path, ushort blen);
-
+    static QStr rlink(cQStr &path, ushort blen);
     static uchar fcomp(cQStr &file1, cQStr &file2);
+    template<typename T1, typename T2> static fnln bool crthlnk(const T1 &srclnk, const T2 &newlnk);
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden = false, uchar oplen = 0);
     static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
     static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
@@ -173,15 +172,10 @@ inline bool sb::like(int num, cSIL &lst, bool all)
     return all;
 }
 
-inline bool sb::exist(cchar *path)
+template<typename T> inline bool sb::exist(const T &path)
 {
     struct stat istat;
-    return lstat(path, &istat) == 0;
-}
-
-inline bool sb::exist(cQStr &path)
-{
-    return exist(chr(path));
+    return lstat(bstr(path), &istat) == 0;
 }
 
 inline bool sb::islink(cQStr &path)
@@ -199,10 +193,10 @@ inline bool sb::isdir(cQStr &path)
     return QFileInfo(path).isDir();
 }
 
-inline uchar sb::stype(cchar *path)
+template<typename T> inline uchar sb::stype(const T &path)
 {
     struct stat istat;
-    if(lstat(path, &istat) == -1) return Notexist;
+    if(lstat(bstr(path), &istat) == -1) return Notexist;
 
     switch(istat.st_mode & S_IFMT) {
     case S_IFREG:
@@ -218,20 +212,31 @@ inline uchar sb::stype(cchar *path)
     }
 }
 
-inline uchar sb::stype(cQStr &path)
-{
-    return stype(chr(path));
-}
-
 inline ullong sb::fsize(cQStr &path)
 {
     return QFileInfo(path).size();
 }
 
-inline bool sb::issmfs(cchar *item1, cchar *item2)
+template<typename T> ullong sb::dfree(const T &path)
+{
+    struct statvfs dstat;
+    return statvfs(bstr(path), &dstat) == -1 ? 0 : dstat.f_bavail * dstat.f_bsize;
+}
+
+template<typename T1, typename T2> inline bool sb::issmfs(const T1 &item1, const T2 &item2)
 {
     struct stat istat[2];
-    return ! like(-1, {stat(item1, &istat[0]), stat(item2, &istat[1])}) && istat[0].st_dev == istat[1].st_dev;
+    return ! like(-1, {stat(bstr(item1), &istat[0]), stat(bstr(item2), &istat[1])}) && istat[0].st_dev == istat[1].st_dev;
+}
+
+template<typename T> inline bool sb::crtdir(const T &path)
+{
+    return mkdir(bstr(path), 0644) == 0;
+}
+
+template<typename T> inline bool sb::rmfile(const T &file)
+{
+    return unlink(bstr(file)) == 0;
 }
 
 inline bool sb::isnum(cQStr &txt)

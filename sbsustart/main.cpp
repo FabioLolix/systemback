@@ -20,7 +20,6 @@
 #include "sbsustart.hpp"
 #include <QCoreApplication>
 #include <QTimer>
-#include <unistd.h>
 
 uint sustart::uid(getuid());
 

@@ -27,7 +27,7 @@ class pnlevent : public QWidget
     Q_OBJECT
 
 public:
-    inline explicit pnlevent(QWidget *prnt) : QWidget(prnt) {}
+    inline pnlevent(QWidget *prnt) : QWidget(prnt) {}
 
 protected:
     void mouseMoveEvent(QMouseEvent *);

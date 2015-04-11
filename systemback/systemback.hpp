@@ -72,16 +72,15 @@ private:
     uchar busycnt, ppipe, sfctr, icnt;
     bool sislive, wismax, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy[2], sstart, cfgupdt, intrrpt;
 
-    fnln QLE *getpoint(uchar num);
-    fnln QCB *getppipe(uchar num);
-    fnln ushort ss(ushort dsize);
-    fnln bool minside(cQPoint &wpos, cQSize &wsize);
-
+    QLE *getpoint(uchar num);
+    QCB *getppipe(uchar num);
     QStr guname();
     QStr ckname();
-    void dialogopen(ushort dlg = 0, cchar *dev = nullptr, schar snum = -1);
+    ushort ss(ushort dsize);
+    bool minside(cQPoint &wpos, cQSize &wsize);
+    void dialogopen(ushort dlg = 0, cbstr &dev = nullptr, schar snum = -1);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
-    void pset(uchar type, cchar *tend = nullptr);
+    void pset(uchar type, cbstr &tend = nullptr);
     void ptxtchange(uchar num, cQStr &txt);
     void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);

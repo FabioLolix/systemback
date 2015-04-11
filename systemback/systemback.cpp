@@ -30,7 +30,6 @@
 #include <X11/Xlib.h>
 #include <dirent.h>
 #include <signal.h>
-#include <unistd.h>
 
 #ifdef KeyRelease
 #undef KeyRelease
@@ -366,7 +365,7 @@ systemback::~systemback()
     if(! nrxth)
     {
         QBA xauth(qgetenv("XAUTHORITY"));
-        if(xauth.startsWith("/tmp/sbXauthority-")) QFile::remove(xauth);
+        if(xauth.startsWith("/tmp/sbXauthority-")) sb::rmfile(xauth);
     }
 
     for(QTimer *tmr : {shdltimer, dlgtimer, intrptimer})
@@ -997,7 +996,7 @@ inline ushort systemback::ss(ushort dsize)
     }
 }
 
-inline QLE *systemback::getpoint(uchar num)
+QLE *systemback::getpoint(uchar num)
 {
     schar cnum(-1);
 
@@ -1007,7 +1006,7 @@ inline QLE *systemback::getpoint(uchar num)
     return nullptr;
 }
 
-inline QCB *systemback::getppipe(uchar num)
+QCB *systemback::getppipe(uchar num)
 {
     schar cnum(-1);
 
@@ -1064,7 +1063,7 @@ void systemback::busy(bool state)
     }
 }
 
-inline bool systemback::minside(cQPoint &wpos, cQSize &wsize)
+bool systemback::minside(cQPoint &wpos, cQSize &wsize)
 {
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
     short wxy[2];
@@ -1157,7 +1156,7 @@ QStr systemback::ckname()
     return snfo.release;
 }
 
-void systemback::pset(uchar type, cchar *tend)
+void systemback::pset(uchar type, cbstr &tend)
 {
     prun.txt = [type, &tend]() -> QStr {
             switch(type) {
@@ -1188,15 +1187,15 @@ void systemback::pset(uchar type, cchar *tend)
             case 13:
                 return tr("Interrupting the current process");
             case 14:
-                return tr("Deleting old restore point") % ' ' % tend;
+                return tr("Deleting old restore point") % ' ' % tend.data;
             case 15:
                 return tr("Creating restore point");
             case 16:
-                return tr("Deleting restore point") % ' ' % tend;
+                return tr("Deleting restore point") % ' ' % tend.data;
             case 21:
-                return tr("Converting Live system image") % '\n' % tr("process") % tend;
+                return tr("Converting Live system image") % '\n' % tr("process") % tend.data;
             default:
-                return tr("Creating Live system") % '\n' % tr("process") % tend % (type < 20 && sb::autoiso == sb::True ? "+1" : nullptr);
+                return tr("Creating Live system") % '\n' % tr("process") % tend.data % (type < 20 && sb::autoiso == sb::True ? "+1" : nullptr);
             }
         }();
 
@@ -1968,17 +1967,17 @@ void systemback::repair()
 
         if(ppipe == 0)
         {
-            if(! sb::isdir("/.systembacklivepoint") && ! QDir().mkdir("/.systembacklivepoint"))
+            if(! sb::isdir("/.systembacklivepoint") && ! sb::crtdir("/.systembacklivepoint"))
             {
                 QFile::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
-                QDir().mkdir("/.systembacklivepoint");
+                sb::crtdir("/.systembacklivepoint");
             }
 
             if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop")) return dialogopen(333);
             if(intrrpt) return exit();
             rv = sb::srestore(mthd, nullptr, "/.systembacklivepoint", "/mnt", sfstab);
             sb::umount("/.systembacklivepoint");
-            QDir().rmdir("/.systembacklivepoint");
+            rmdir("/.systembacklivepoint");
         }
         else
             rv = sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, "/mnt", sfstab);
@@ -2018,7 +2017,7 @@ void systemback::systemcopy()
     statustart();
     pset(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 8 : 9);
 
-    auto error([this](ushort dlg = 0, cchar *dev = nullptr) {
+    auto error([this](ushort dlg = 0, cbstr &dev = nullptr) {
             if(! intrrpt && (dlg == 0 || ! sb::like(dlg, {307, 313, 314, 316, 329, 330, 331, 332}))) dlg = [this] {
                     if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
                     {
@@ -2044,12 +2043,12 @@ void systemback::systemcopy()
 
             if(sb::isdir("/.sbmountpoints"))
             {
-                for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) QDir().rmdir("/.sbmountpoints/" % item);
-                QDir().rmdir("/.sbmountpoints");
+                for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) rmdir(bstr("/.sbmountpoints/" % item));
+                rmdir("/.sbmountpoints");
             }
 
-            QDir().rmdir("/.sbsystemcopy");
-            if(sb::isdir("/.systembacklivepoint")) QDir().rmdir("/.systembacklivepoint");
+            rmdir("/.sbsystemcopy");
+            if(sb::isdir("/.systembacklivepoint")) rmdir("/.systembacklivepoint");
 
             if(intrrpt)
                 intrrpt = false;
@@ -2060,7 +2059,7 @@ void systemback::systemcopy()
             }
         });
 
-    if(! sb::isdir("/.sbsystemcopy") && ! QDir().mkdir("/.sbsystemcopy")) return error();
+    if(! sb::isdir("/.sbsystemcopy") && ! sb::crtdir("/.sbsystemcopy")) return error();
 
     {
         QSL msort;
@@ -2100,7 +2099,7 @@ void systemback::systemcopy()
                        : sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part));
 
                 if(intrrpt) return error();
-                if(rv > 0) return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 316 : 330, chr(part));
+                if(rv > 0) return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 316 : 330, part);
             }
 
             if(mpoint != "SWAP")
@@ -2110,10 +2109,10 @@ void systemback::systemcopy()
                     QStr path("/.sbsystemcopy");
 
                     for(cQStr &cpath : mpoint.split('/'))
-                        if(! sb::isdir(path.append('/' % cpath)) && ! QDir().mkdir(path))
+                        if(! sb::isdir(path.append('/' % cpath)) && ! sb::crtdir(path))
                         {
                             QFile::rename(path, path % '_' % sb::rndstr());
-                            if(! QDir().mkdir(path)) return error();
+                            if(! sb::crtdir(path)) return error();
                         }
                 }
 
@@ -2128,8 +2127,8 @@ void systemback::systemcopy()
                         case 0 ... 1:
                             if(! sb::isdir(mpt))
                             {
-                                if(sb::exist(mpt)) QFile::remove(mpt);
-                                if(! QDir().mkdir(mpt)) return error();
+                                if(sb::exist(mpt)) sb::rmfile(mpt);
+                                if(! sb::crtdir(mpt)) return error();
                             }
 
                             if(a == 0)
@@ -2139,7 +2138,7 @@ void systemback::systemcopy()
                                 if(sb::mount(part, mpt))
                                     ckd.append(part);
                                 else
-                                    return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, chr(part));
+                                    return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, part);
                             }
 
                             break;
@@ -2150,11 +2149,11 @@ void systemback::systemcopy()
                             if(sb::mount(part, "/.sbsystemcopy" % mpoint, "noatime,subvol=@" % sb::right(mpoint, -1)))
                                 ++a;
                             else if(a == 3 || ! QFile::rename(mpt % "/@" % sb::right(mpoint, -1), mpt % "/@" % sb::right(mpoint, -1) % '_' % sb::rndstr()))
-                                return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, chr(part));
+                                return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, part);
                         }
                 }
                 else if(! sb::mount(part, "/.sbsystemcopy" % mpoint))
-                    return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, chr(part));
+                    return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, part);
             }
 
             if(intrrpt) return error();
@@ -2165,10 +2164,10 @@ void systemback::systemcopy()
     {
         if(pname != tr("Currently running system"))
         {
-            if(! sb::isdir("/.systembacklivepoint") && ! QDir().mkdir("/.systembacklivepoint"))
+            if(! sb::isdir("/.systembacklivepoint") && ! sb::crtdir("/.systembacklivepoint"))
             {
                 QFile::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
-                if(! QDir().mkdir("/.systembacklivepoint") || intrrpt) return error();
+                if(! sb::crtdir("/.systembacklivepoint") || intrrpt) return error();
             }
 
             QStr mdev(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs");
@@ -2196,7 +2195,7 @@ void systemback::systemcopy()
             }
 
             sb::umount("/.systembacklivepoint");
-            QDir().rmdir("/.systembacklivepoint");
+            rmdir("/.systembacklivepoint");
         }
         else if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
         {
@@ -2362,7 +2361,7 @@ void systemback::systemcopy()
                                     case 0:
                                         return guname() == "root" ? "root" : ui->username->text();
                                     case 1:
-                                        return QStr(crypt(chr(ui->password1->text()), chr(("$6$" % sb::rndstr(16)))));
+                                        return QStr(crypt(bstr(ui->password1->text()), bstr("$6$" % sb::rndstr(16))));
                                     default:
                                         return uslst.at(a);
                                     }
@@ -2377,7 +2376,7 @@ void systemback::systemcopy()
                             nline.append([&, a]() -> QStr {
                                     switch(a) {
                                     case 1:
-                                        return ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(chr(ui->rootpassword1->text()), chr(("$6$" % sb::rndstr(16)))));
+                                        return ui->rootpassword1->text().isEmpty() ? "!" : QStr(crypt(bstr(ui->rootpassword1->text()), bstr("$6$" % sb::rndstr(16))));
                                     default:
                                         return uslst.at(a);
                                     }
@@ -2510,7 +2509,7 @@ void systemback::systemcopy()
         }
 
         QBA mid(sb::rndstr(16).toUtf8().toHex() % '\n');
-        if(intrrpt || ! sb::crtfile("/.sbsystemcopy/etc/machine-id", mid) || (sb::isdir("/.sbsystemcopy/var/lib/dbus") && ! QFile::setPermissions("/.sbsystemcopy/etc/machine-id", QFile::ReadOwner | QFile::ReadGroup | QFile::ReadOther) && ! sb::crtfile("/.sbsystemcopy/var/lib/dbus/machine-id", mid))) return error();
+        if(intrrpt || ! sb::crtfile("/.sbsystemcopy/etc/machine-id", mid) || chmod("/.sbsystemcopy/etc/machine-id", 0444) == -1 || (sb::isdir("/.sbsystemcopy/var/lib/dbus") && ! sb::crtfile("/.sbsystemcopy/var/lib/dbus/machine-id", mid))) return error();
     }
 
     {
@@ -2620,11 +2619,11 @@ void systemback::systemcopy()
 
     if(sb::isdir("/.sbmountpoints"))
     {
-        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) QDir().rmdir("/.sbmountpoints/" % item);
-        QDir().rmdir("/.sbmountpoints");
+        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) rmdir(bstr("/.sbmountpoints/" % item));
+        rmdir("/.sbmountpoints");
     }
 
-    QDir().rmdir("/.sbsystemcopy");
+    rmdir("/.sbsystemcopy");
     sb::fssync();
     if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
     dialogopen(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 206 : 209);
@@ -2641,21 +2640,21 @@ void systemback::livewrite()
             if(sb::isdir("/.sblivesystemwrite"))
             {
                 if(sb::mcheck("/.sblivesystemwrite/sblive")) sb::umount("/.sblivesystemwrite/sblive");
-                QDir().rmdir("/.sblivesystemwrite/sblive");
+                rmdir("/.sblivesystemwrite/sblive");
 
                 if(sb::isdir("/.sblivesystemwrite/sbroot"))
                 {
                     if(sb::mcheck("/.sblivesystemwrite/sbroot")) sb::umount("/.sblivesystemwrite/sbroot");
-                    QDir().rmdir("/.sblivesystemwrite/sbroot");
+                    rmdir("/.sblivesystemwrite/sbroot");
                 }
 
-                QDir().rmdir("/.sblivesystemwrite");
+                rmdir("/.sblivesystemwrite");
             }
 
             if(intrrpt)
                 intrrpt = false;
             else
-                dialogopen(dlg, sb::like(dlg, {336, 337}) ? chr((ldev % (ismmc ? "p" : nullptr) % '1')) : nullptr);
+                dialogopen(dlg, sb::like(dlg, {336, 337}) ? bstr(ldev % (ismmc ? "p" : nullptr) % '1') : nullptr);
         });
 
     if(! sb::exist(ldev))
@@ -2697,14 +2696,14 @@ void systemback::livewrite()
 
     if(sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ismmc ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ismmc ? "p" : nullptr) % '1', "lba")
         || intrrpt || (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite")))
-        || intrrpt || ! QDir().mkdir("/.sblivesystemwrite") || ! QDir().mkdir("/.sblivesystemwrite/sblive")
+        || intrrpt || ! sb::crtdir("/.sblivesystemwrite") || ! sb::crtdir("/.sblivesystemwrite/sblive")
         || intrrpt) return error();
 
     if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '1', "/.sblivesystemwrite/sblive") || intrrpt) return error(336);
 
     if(lrdir == "sbroot")
     {
-        if(! QDir().mkdir("/.sblivesystemwrite/sbroot")) return error();
+        if(! sb::crtdir("/.sblivesystemwrite/sbroot")) return error();
         if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '2', "/.sblivesystemwrite/sbroot") || intrrpt) return error(336);
     }
 
@@ -2723,19 +2722,19 @@ void systemback::livewrite()
     sb::fssync();
     if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
     sb::umount("/.sblivesystemwrite/sblive");
-    QDir().rmdir("/.sblivesystemwrite/sblive");
+    rmdir("/.sblivesystemwrite/sblive");
 
     if(lrdir == "sbroot")
     {
         sb::umount("/.sblivesystemwrite/sbroot");
-        QDir().rmdir("/.sblivesystemwrite/sbroot");
+        rmdir("/.sblivesystemwrite/sbroot");
     }
 
-    QDir().rmdir("/.sblivesystemwrite");
+    rmdir("/.sblivesystemwrite");
     dialogopen(210);
 }
 
-void systemback::dialogopen(ushort dlg, cchar *dev, schar snum)
+void systemback::dialogopen(ushort dlg, cbstr &dev, schar snum)
 {
     if(ui->dialognumber->isVisibleTo(ui->dialogpanel)) ui->dialognumber->hide();
 
@@ -2877,13 +2876,13 @@ void systemback::dialogopen(ushort dlg, cchar *dev, schar snum)
                     case 312:
                         return tr("Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
                     case 313:
-                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev;
+                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 314:
                         return tr("System install is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader.");
                     case 315:
                         return tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.");
                     case 316:
-                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev;
+                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 317:
                         return tr("An error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)");
                     case 318:
@@ -2909,9 +2908,9 @@ void systemback::dialogopen(ushort dlg, cchar *dev, schar snum)
                     case 328:
                         return tr("Restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process.");
                     case 329:
-                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev;
+                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 330:
-                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev;
+                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 331:
                         return tr("System copy is aborted!") % "<p>" % tr("The Live image could not be mounted.");
                     case 332:
@@ -2923,9 +2922,9 @@ void systemback::dialogopen(ushort dlg, cchar *dev, schar snum)
                     case 335:
                         return tr("Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 336:
-                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev;
+                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 337:
-                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev;
+                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 338:
                         return tr("System restoration is aborted!") % "<p>" % tr("There is not enough free space.");
                     default:
@@ -3403,7 +3402,7 @@ void systemback::on_admins_currentIndexChanged(cQStr &arg1)
 
     if(ui->adminpassword->text().length() > 0) ui->adminpassword->clear();
 
-    if(! hash.isEmpty() && QStr(crypt("", chr(hash))) == hash)
+    if(! hash.isEmpty() && QStr(crypt("", bstr(hash))) == hash)
     {
         ui->adminpasswordpipe->show();
         for(QWdt *wdgt : QWL{ui->adminpassword, ui->admins}) wdgt->setDisabled(true);
@@ -3419,7 +3418,7 @@ void systemback::on_adminpassword_textChanged(cQStr &arg1)
     {
         if(ui->adminpassworderror->isVisible()) ui->adminpassworderror->hide();
     }
-    else if(! hash.isEmpty() && QStr(crypt(chr(arg1), chr(hash))) == hash)
+    else if(! hash.isEmpty() && QStr(crypt(bstr(arg1), bstr(hash))) == hash)
     {
         sb::delay(300);
 
@@ -4183,7 +4182,7 @@ void systemback::on_unmountdelete_clicked()
 
             sb::fssync();
         }
-        else if(! QStr('\n' % sb::fload("/proc/swaps")).contains('\n' % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text() % ' ') || swapoff(chr(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text())) == 0)
+        else if(! QStr('\n' % sb::fload("/proc/swaps")).contains('\n' % ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text() % ' ') || swapoff(bstr(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 0)->text())) == 0)
         {
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->setText(nullptr);
             ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->setToolTip(nullptr);
@@ -4225,7 +4224,7 @@ void systemback::on_unmount_clicked()
             if(! mpt.isEmpty())
             {
                 if(mpt == "SWAP")
-                    swapoff(chr(ui->partitionsettings->item(a, 0)->text()));
+                    swapoff(bstr(ui->partitionsettings->item(a, 0)->text()));
                 else
                 {
                     QTS in(&mnts[0], QIODevice::ReadOnly);
@@ -5175,11 +5174,11 @@ void systemback::on_dirchooseok_clicked()
                 QSL dlst(QDir(sb::sdir[1]).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
                 if(dlst.count() == 0)
-                    QDir().rmdir(sb::sdir[1]);
+                    rmdir(bstr(sb::sdir[1]));
                 else if(dlst.count() == 1 && sb::isfile(sb::sdir[1] % "/.sbschedule"))
                     sb::remove(sb::sdir[1]);
 
-                sb::sdir[0] = ui->dirpath->text(), sb::sdir[1] = sb::sdir[0] % "/Systemback", sb::ismpnt = ! sb::issmfs(chr(sb::sdir[0]), sb::sdir[0].count('/') == 1 ? "/" : chr(sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1)));
+                sb::sdir[0] = ui->dirpath->text(), sb::sdir[1] = sb::sdir[0] % "/Systemback", sb::ismpnt = ! sb::issmfs(sb::sdir[0], sb::sdir[0].count('/') == 1 ? "/" : sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1));
                 if(! cfgupdt) cfgupdt = true;
                 ui->storagedir->setText(sb::sdir[0]);
                 ui->storagedir->setToolTip(sb::sdir[0]);
@@ -5187,10 +5186,10 @@ void systemback::on_dirchooseok_clicked()
                 pntupgrade();
             }
 
-            if(! sb::isdir(sb::sdir[1]) && ! QDir().mkdir(sb::sdir[1]))
+            if(! sb::isdir(sb::sdir[1]) && ! sb::crtdir(sb::sdir[1]))
             {
                 QFile::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
-                QDir().mkdir(sb::sdir[1]);
+                sb::crtdir(sb::sdir[1]);
             }
 
             if(! sb::isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule");
@@ -6084,10 +6083,10 @@ void systemback::on_repairmount_clicked()
             QStr path;
 
             for(cQStr &cpath : sb::right(ui->repairmountpoint->currentText(), -5).split('/'))
-                if(! sb::isdir("/mnt/" % path.append('/' % cpath)) && ! QDir().mkdir("/mnt" % path))
+                if(! sb::isdir("/mnt/" % path.append('/' % cpath)) && ! sb::crtdir("/mnt" % path))
                 {
                     QFile::rename("/mnt" % path, "/mnt" % path % '_' % sb::rndstr());
-                    QDir().mkdir("/mnt" % path);
+                    sb::crtdir("/mnt" % path);
                 }
         }
 
@@ -6734,7 +6733,7 @@ void systemback::on_windowposition_currentIndexChanged(cQStr &arg1)
 
     if(ui->schedulepanel->isVisible())
     {
-        cchar *cval(arg1 == tr("Top left") ? "topleft"
+        QStr cval(arg1 == tr("Top left") ? "topleft"
                   : arg1 == tr("Top right") ? "topright"
                   : arg1 == tr("Center") ? "center"
                   : arg1 == tr("Bottom left") ? "bottomleft" : "bottomright");
@@ -6903,7 +6902,7 @@ void systemback::on_newrestorepoint_clicked()
         for(uchar a(9) ; a > 1 ; --a)
             if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
             {
-                pset(14, chr((QStr::number(++dnum) % '/' % QStr::number(ppipe))));
+                pset(14, bstr(QStr::number(++dnum) % '/' % QStr::number(ppipe)));
                 if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || intrrpt) return error();
             }
     }
@@ -6944,7 +6943,7 @@ void systemback::on_pointdelete_clicked()
     {
         if(getppipe(a)->isChecked())
         {
-            pset(16, chr((QStr::number(++dnum) % '/' % QStr::number(ppipe))));
+            pset(16, bstr(QStr::number(++dnum) % '/' % QStr::number(ppipe)));
 
             if(! QFile::rename(sb::sdir[1] % [a]() -> QStr {
                     switch(a) {
@@ -7008,7 +7007,7 @@ void systemback::on_livecreatenew_clicked()
         });
 
     if((sb::exist(sb::sdir[2] % "/.sblivesystemcreate") && ! sb::remove(sb::sdir[2] % "/.sblivesystemcreate"))
-        || intrrpt || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/.disk") || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux")) return error();
+        || intrrpt || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate") || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/.disk") || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype) || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux")) return error();
 
     QStr ifname(ui->livename->text() == "auto" ? "systemback_live_" % QDateTime().currentDateTime().toString("yyyy-MM-dd") : ui->livename->text());
     { uchar ncount(0);
@@ -7066,12 +7065,12 @@ void systemback::on_livecreatenew_clicked()
         QSL incl{"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"};
 
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
-            if(! sb::like(item, incl) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther)) return error();
+            if(! sb::like(item, incl) && chmod(bstr("/usr/share/initramfs-tools/scripts/casper-bottom/" % item), 0644) == -1) return error();
     }
     else
     {
         sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", "#!/bin/sh\nif [ \"$BOOT\" = live ] && [ ! -e /root/etc/fstab ]\nthen touch /root/etc/fstab\nfi\n");
-        if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) return error();
+        if(chmod("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", 0755) == -1) return error();
     }
 
     bool xmntry;
@@ -7079,7 +7078,7 @@ void systemback::on_livecreatenew_clicked()
     if((xmntry = sb::isfile("/etc/X11/xorg.conf")))
     {
         sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", "#!/bin/sh\nif [ -s /root/etc/X11/xorg.conf ] && grep noxconf /proc/cmdline >/dev/null 2>&1\nthen rm /root/etc/X11/xorg.conf\nfi\n");
-        if(! QFile::setPermissions("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) return error();
+        if(chmod("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", 0755) == -1) return error();
     }
 
     uchar rv(sb::exec("update-initramfs -tck" % ckernel));
@@ -7089,7 +7088,7 @@ void systemback::on_livecreatenew_clicked()
         QSL incl{"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"};
 
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
-            if(! sb::like(item, incl) && ! QFile::setPermissions("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther)) return error();
+            if(! sb::like(item, incl) && chmod(bstr("/usr/share/initramfs-tools/scripts/casper-bottom/" % item), 0755) == -1) return error();
     }
     else if(! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab"))
         return error();
@@ -7204,7 +7203,7 @@ void systemback::on_livecreatenew_clicked()
         return error(311);
     }
 
-    if(! QFile::setPermissions(sb::sdir[2] % '/' % ifname % ".sblive", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) return error();
+    if(chmod(bstr(sb::sdir[2] % '/' % ifname % ".sblive"), 0666) == -1) return error();
 
     if(sb::autoiso == sb::True)
     {
@@ -7223,7 +7222,7 @@ void systemback::on_livecreatenew_clicked()
                 return error(311);
             }
 
-            if(sb::exec("isohybrid " % sb::sdir[2] % '/' % ifname % ".iso") > 0 || ! QFile::setPermissions(sb::sdir[2] % '/' % ifname % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther) || intrrpt) return error();
+            if(sb::exec("isohybrid " % sb::sdir[2] % '/' % ifname % ".iso") > 0 || chmod(bstr(sb::sdir[2] % '/' % ifname % ".iso"), 0666) == -1 || intrrpt) return error();
         }
     }
 
@@ -7249,7 +7248,7 @@ void systemback::on_liveconvert_clicked()
                 dialogopen(dlg == 0 ? 334 : dlg);
         });
 
-    if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! QDir().mkdir(sb::sdir[2] % "/.sblivesystemconvert")) return error();
+    if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemconvert")) return error();
     sb::ThrdLng[0] = sb::fsize(path % ".sblive"), sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
     if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions", nullptr, sb::Prgrss) > 0) return error(335);
     if(! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") || ! QFile::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux") || intrrpt) return error();
@@ -7257,7 +7256,7 @@ void systemback::on_liveconvert_clicked()
     sb::Progress = -1;
     ui->progressbar->setValue(0);
     if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % path % ".iso " % sb::sdir[2] % "/.sblivesystemconvert", nullptr, sb::Prgrss) > 0) return error(324);
-    if(sb::exec("isohybrid " % path % ".iso") > 0 || ! QFile::setPermissions(path % ".iso", QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther | QFile::WriteOther)) return error();
+    if(sb::exec("isohybrid " % path % ".iso") > 0 || chmod(bstr(path % ".iso"), 0666) == -1) return error();
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(intrrpt) return error();
     emptycache();

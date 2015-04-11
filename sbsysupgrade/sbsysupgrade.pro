@@ -19,7 +19,6 @@ QMAKE_CXXFLAGS += -fno-rtti \
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra \
                           -Wshadow \
-                          -Winline \
                           -Werror
 
 QMAKE_LFLAGS += -Wl,-rpath=/usr/lib/systemback \

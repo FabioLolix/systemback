@@ -20,7 +20,6 @@
 #include "sbscheduler.hpp"
 #include <QCoreApplication>
 #include <QDir>
-#include <unistd.h>
 
 scheduler::scheduler()
 {
@@ -113,7 +112,7 @@ void scheduler::main()
                     if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
                     {
                         sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
-                        QFile::remove(xauth);
+                        sb::rmfile(xauth);
                     }
                 }
 

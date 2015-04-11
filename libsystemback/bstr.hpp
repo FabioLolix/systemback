@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
+ * Copyright(C) 2015, Krisztián Kende <nemh@freemail.hu>
  *
  * This file is part of Systemback.
  *
@@ -17,28 +17,23 @@
  * along with Systemback. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BTTNEVENT_HPP
-#define BTTNEVENT_HPP
+#ifndef BSTR_HPP
+#define BSTR_HPP
 
-#include <QPushButton>
+#include "sbtypedef.hpp"
 
-class bttnevent : public QPushButton
+class bstr
 {
-    Q_OBJECT
+private:
+    QBA ba;
 
 public:
-    inline bttnevent(QWidget *prnt) : QPushButton(prnt) {}
+    inline bstr(cchar *txt) : data(txt) {}
+    inline bstr(cQBA &txt) : data(txt.constData()) {}
+    inline bstr(cQStr &txt) : ba(txt.toUtf8()), data(ba.constData()) {}
+    inline operator cchar *() const { return data; }
 
-protected:
-    void leaveEvent(QEvent *);
-
-signals:
-    void Mouse_Leave();
+    cchar *data;
 };
-
-inline void bttnevent::leaveEvent(QEvent *)
-{
-    emit Mouse_Leave();
-}
 
 #endif

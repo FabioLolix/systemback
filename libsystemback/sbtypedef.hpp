@@ -29,6 +29,9 @@
 #include <QTextStream>
 #include <QStringList>
 
+class bstr;
+
+typedef const bstr cbstr;
 typedef QTranslator QTrn;
 typedef QTableWidget QTblW;
 typedef QPushButton QPB;

@@ -29,7 +29,7 @@ class scheduler : public QObject
     Q_OBJECT
 
 public:
-    scheduler();
+    inline scheduler() : pfile(nullptr) {}
     ~scheduler();
 
     static QDateTime cfglmd;
@@ -42,5 +42,10 @@ private:
 
     void newrpnt();
 };
+
+inline scheduler::~scheduler()
+{
+    if(pfile) delete pfile;
+}
 
 #endif

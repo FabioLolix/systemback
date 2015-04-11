@@ -27,37 +27,37 @@
 <context>
     <name>scheduler</name>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="52"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
         <source>Cannot start Systemback scheduler daemon!</source>
         <translation>Impossible de démarrer le démon de planification de Systemback !</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="57"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="47"/>
         <source>The process is disabled for this user.</source>
         <translation>L&apos;opération est désactivée pour cet utilisateur.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="55"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="45"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation>Argument(s) manquant(s), incorrect(s) ou trop nombreux.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="59"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="49"/>
         <source>Root privileges are required.</source>
         <translation>Les droits root sont nécessaires.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="61"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="51"/>
         <source>This system is a Live.</source>
         <translation>Ceci est un système Live.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="63"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="53"/>
         <source>Already running.</source>
         <translation>Déja en cours d&apos;exécution.</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="65"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="55"/>
         <source>Unable to daemonize.</source>
         <translation>Impossible de se transformer en démon.</translation>
     </message>
@@ -65,27 +65,27 @@
 <context>
     <name>sustart</name>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="108"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="98"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation>Argument(s) manquant(s), incorrect(s) ou trop nombreux.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="111"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
         <source>Cannot start Systemback graphical user interface!</source>
         <translation>Impossible de lancer l&apos;interface graphique utilisateur de Systemback !</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="111"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
         <source>Unable to connect to X server.</source>
         <translation>Impossible de se connecter au serveur X.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="111"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
         <source>Unable to get root permissions.</source>
         <translation>Impossible d&apos;obtenir les autorisations root.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="111"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
         <source>Cannot start Systemback scheduler daemon!</source>
         <translation>Impossible de démarrer le démon de planification de Systemback !</translation>
     </message>
@@ -129,7 +129,7 @@
         <location filename="../systemback/systemback.ui" line="5120"/>
         <location filename="../systemback/systemback.ui" line="5351"/>
         <location filename="../systemback/systemback.ui" line="6155"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="242"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="231"/>
         <source>Back</source>
         <translation>Retour</translation>
     </message>
@@ -190,7 +190,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="927"/>
         <location filename="../systemback/systemback.ui" line="3462"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="242"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="231"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
@@ -202,7 +202,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="993"/>
         <location filename="../systemback/systemback.ui" line="3396"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="176"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="165"/>
         <source>Create new</source>
         <translation>Créer un nouveau</translation>
     </message>
@@ -395,7 +395,7 @@
         <location filename="../systemback/systemback.ui" line="3055"/>
         <location filename="../systemback/systemback.ui" line="7087"/>
         <location filename="../systemback/systemback.ui" line="7356"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="379"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="372"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -504,7 +504,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="3647"/>
         <location filename="../systemback/systemback.cpp" line="3727"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="242"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="231"/>
         <source>System restore</source>
         <translation>Restauration du système</translation>
     </message>
@@ -578,21 +578,21 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4899"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="375"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="411"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="451"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="479"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="507"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="368"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="403"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="442"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="470"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
         <source>Full restore</source>
         <translation>Restauration complète</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4921"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="375"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="413"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="451"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="479"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="507"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="368"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="405"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="442"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="470"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
         <source>System files restore</source>
         <translation>Restauration des fichiers système</translation>
     </message>
@@ -603,7 +603,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4962"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="379"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="372"/>
         <source>Keep newly installed configuration files</source>
         <translation>Conserver les fichiers de la récente configuration</translation>
     </message>
@@ -936,19 +936,19 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1192"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="581"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="573"/>
         <source>Creating restore point</source>
         <translation>Création d&apos;un point de restauration</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1166"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="583"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="575"/>
         <source>Restoring the full system</source>
         <translation>Restauration complète du système</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1168"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="585"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="577"/>
         <source>Restoring the system files</source>
         <translation>Restauration des fichiers système</translation>
     </message>
@@ -984,7 +984,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1194"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="575"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="567"/>
         <source>Deleting restore point</source>
         <translation>Suppression du point de restauration en cours</translation>
     </message>
@@ -995,7 +995,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1186"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="577"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="569"/>
         <source>Deleting incomplete restore point</source>
         <translation>Suppression d&apos;un point de restauration endommagé</translation>
     </message>
@@ -1022,7 +1022,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1164"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="573"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="565"/>
         <source>Emptying cache</source>
         <translation>Effacement du cache en cours</translation>
     </message>
@@ -1063,7 +1063,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1164"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="573"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="565"/>
         <source>Flushing filesystem buffers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1143,21 +1143,21 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="2861"/>
         <location filename="../systemback/systemback.cpp" line="2889"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="128"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="130"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="117"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="119"/>
         <source>Restore point creation is aborted!</source>
         <translation>La création du point de restauration a été annulée !</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2861"/>
         <location filename="../systemback/systemback.cpp" line="2877"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="128"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="117"/>
         <source>Not enough free disk space to complete the process.</source>
         <translation>Espace disque insuffisant pour terminer l&apos;opération.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2863"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="116"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="105"/>
         <source>Root privileges are required for running Systemback!</source>
         <translation>Les privilèges super-utilisateur sont requis pour exécuter Systemback !</translation>
     </message>
@@ -1168,7 +1168,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2814"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="543"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="535"/>
         <source>System files restoration are completed.</source>
         <translation>La restauration des fichiers système s&apos;est terminée avec succès.</translation>
     </message>
@@ -1180,7 +1180,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2819"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="541"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="533"/>
         <source>Full system restoration is completed.</source>
         <translation>La restauration complète du système s&apos;est terminée avec succès.</translation>
     </message>
@@ -1361,7 +1361,7 @@
         <location filename="../systemback/systemback.cpp" line="2907"/>
         <location filename="../systemback/systemback.cpp" line="2921"/>
         <location filename="../systemback/systemback.cpp" line="2923"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="130"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="119"/>
         <source>There has been critical changes in the file system during this operation.</source>
         <translation>Cette manipulation a entraîné des modifications critiques dans le système de fichiers.</translation>
     </message>
@@ -1399,13 +1399,13 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2909"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="138"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="127"/>
         <source>Restore point deletion is aborted!</source>
         <translation>La destruction du point de restauration est abandonnée !</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2909"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="138"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="127"/>
         <source>An error occurred while during the process.</source>
         <translation>Une erreur est survenue pendant la durée du processus.</translation>
     </message>
@@ -1495,7 +1495,7 @@
         <translation>Conversion de l&apos;image du Live systeme</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="118"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="107"/>
         <source>Another Systemback process is currently running, please wait until it
  finishes.</source>
         <translation>Une autre instance du processus de Systemback est en cours d&apos;exécution,
@@ -1503,18 +1503,18 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2855"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="120"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="109"/>
         <source>Unable to get exclusive lock!</source>
         <translation>Impossible d&apos;obtenir le verrouillage exclusif !</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2855"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="120"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="109"/>
         <source>First, close all package manager.</source>
         <translation>Il est impératif de fermer tous les gestionnaires de paquets ouverts.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="50"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="38"/>
         <source>Usage: systemback-cli [option]
 
  Options:
@@ -1546,173 +1546,157 @@
   -h, --help               montrer cette aide</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="122"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="111"/>
         <source>The specified storage directory path has not been set!</source>
         <translation>Le chemin du répertoire de stockage spécifié n&apos;a pas été attibué !</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="124"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="113"/>
         <source>Restoration is aborted!</source>
         <translation>La restauration est annulée !</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="126"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="115"/>
         <source>Restoration is completed, but an error occurred while reinstalling GRUB!</source>
         <translation>La restauration est terminée, néanmoins une erreur est survenue pendant la
  réinstallation de GRUB !</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="132"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="121"/>
         <source>Restore points storage directory is not available or not writable!</source>
         <translation>Le répertoire de stockage des points de restauration est indisponible ou
  protégé contre l&apos;écriture !</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="134"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="123"/>
         <source>This stupid terminal does not support color!</source>
         <translation>Ce stupide terminal ne supporte pas la couleur !</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="136"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="125"/>
         <source>This terminal is too small!</source>
         <translation>Ce terminal est trop petit !</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="68"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="56"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>La mise à jour du système a généré une erreur !</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="68"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="56"/>
         <source>Restart upgrade ...</source>
         <translation>Effectuer de nouveau la mise à jour du système...</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="147"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="236"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="367"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="399"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="443"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="471"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="499"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="535"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="631"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="82"/>
         <source>basic restore UI</source>
         <translation>IU basique de restauration</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="149"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="138"/>
         <source>Available restore point(s):</source>
         <translation>Point(s) de restauration disponible(s) :</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="176"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="165"/>
         <source>Quit</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="238"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="227"/>
         <source>Selected restore point:</source>
         <translation>Point de restauration sélectionné :</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="316"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="305"/>
         <source>The specified storage directory path is set.</source>
         <translation>La configuration du répertoire de sauvegarde a été prise en compte.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="579"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="571"/>
         <source>Deleting old restore point(s)</source>
         <translation>Suppression du (des) point(s) de restauration archivés</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="369"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="401"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="445"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="473"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="501"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="361"/>
         <source>Restore with the following restore point:</source>
         <translation>Effectuer la restauration à l&apos;aide du point de restauration suivant :</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="373"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="405"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="449"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="477"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="505"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="361"/>
         <source>Restore with the following restore method:</source>
         <translation>Sélection de la méthode de restauration :</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="377"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="370"/>
         <source>Users configuration files restore</source>
         <translation>Restauration des fichiers de configuration utilisateur</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="379"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="415"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="372"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="407"/>
         <source>Complete configuration files restore</source>
         <translation>Restauration complète des fichiers de configuration</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="417"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="409"/>
         <source>Configuration files restore</source>
         <translation>Restauration des fichiers de restauration</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="428"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="451"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="479"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="419"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="442"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="470"/>
         <source>You want to keep the current fstab file?</source>
         <translation>Souhaitez-vous conserver le fichier fstab courant ?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="38"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="428"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="451"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="456"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="479"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="484"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="507"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="512"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="419"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="442"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="447"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="470"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="475"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="504"/>
+        <location filename="../systemback-cli/systemback-cli.hpp" line="63"/>
         <source>(Y/N)</source>
         <translation>(O/N)</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="456"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="479"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="484"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="507"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="447"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="470"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="475"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="498"/>
         <source>Reinstall the GRUB 2 bootloader?</source>
         <translation>Réinstallation du chargeur d&apos;amorçage GRUB 2 ?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="512"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="504"/>
         <source>Start the restore?</source>
         <translation>Souhaitez-vous démarrez la restauration ?</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="587"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="579"/>
         <source>Restoring users configuration files</source>
         <translation>Restauration des fichiers de configuration utilisateur</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="545"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="537"/>
         <source>Users configuration files full restoration are completed.</source>
         <translation>La restauration complète de la configuration utilisateur s&apos;est terminée avec succès.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="547"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="539"/>
         <source>Users configuration files restoration are completed.</source>
         <translation>La restauration des fichiers de configuration s&apos;est terminée avec succès.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="552"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="544"/>
         <source>Press &apos;ENTER&apos; key to reboot computer, or &apos;Q&apos; to quit.</source>
         <translation>Appuyez sur la touche &lt;Entrée&gt; pour redémarrer ou &lt;Q&gt; pour quitter.</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="552"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="544"/>
         <source>Press &apos;ENTER&apos; key to quit.</source>
         <translation>Appuyez sur la touche &lt;Entrée&gt; pour quitter.</translation>
     </message>

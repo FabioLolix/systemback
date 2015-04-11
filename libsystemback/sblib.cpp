@@ -3805,9 +3805,9 @@ bool sb::thrdlvprpr(bool iudata)
     if(uhl)
     {
         if(exist("/home/.sbuserdata")) stype("/home/.sbuserdata") == Isdir ? recrmdir("/home/.sbuserdata") : rmfile("/home/.sbuserdata");
-        if(! crtdir("/home/.sbuserdata") || ! crtdir("/home/.sbuserdata/home")) return false;
+        if(! crtdir("/home/.sbuserdata") || ! cpdir("/home", "/home/.sbuserdata/home")) return false;
     }
-    else if(! crtdir(sdir[2] % "/.sblivesystemcreate/userdata") || ! crtdir(sdir[2] % "/.sblivesystemcreate/userdata/home"))
+    else if(! crtdir(sdir[2] % "/.sblivesystemcreate/userdata") || ! cpdir("/home", sdir[2] % "/.sblivesystemcreate/userdata/home"))
         return false;
 
     ++ThrdLng[0];

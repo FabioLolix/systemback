@@ -21,16 +21,6 @@
 #include <QCoreApplication>
 #include <QProcess>
 
-sustart::sustart()
-{
-    cmd = nullptr;
-}
-
-sustart::~sustart()
-{
-    if(cmd) delete cmd;
-}
-
 void sustart::main()
 {
     {

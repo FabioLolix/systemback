@@ -231,7 +231,7 @@ template<typename T1, typename T2> inline bool sb::issmfs(const T1 &item1, const
 
 template<typename T> inline bool sb::crtdir(const T &path)
 {
-    return mkdir(bstr(path), 0644) == 0;
+    return mkdir(bstr(path), 0755) == 0;
 }
 
 template<typename T> inline bool sb::rmfile(const T &file)

@@ -31,7 +31,6 @@
 
 class bstr;
 
-typedef const bstr cbstr;
 typedef QTranslator QTrn;
 typedef QTableWidget QTblW;
 typedef QPushButton QPB;
@@ -57,6 +56,7 @@ typedef QByteArray QBA;
 typedef const QChar cQChar;
 typedef const QSize cQSize;
 typedef const QPoint cQPoint;
+typedef const bstr cbstr;
 typedef unsigned long long ullong;
 typedef long long llong;
 typedef const char cchar;

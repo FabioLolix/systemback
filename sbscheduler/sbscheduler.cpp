@@ -21,16 +21,6 @@
 #include <QCoreApplication>
 #include <QDir>
 
-scheduler::scheduler()
-{
-    pfile = nullptr;
-}
-
-scheduler::~scheduler()
-{
-    if(pfile) delete pfile;
-}
-
 void scheduler::main()
 {
     {

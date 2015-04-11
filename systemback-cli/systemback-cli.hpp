@@ -46,6 +46,8 @@ private:
     QTimer *ptimer;
     QStr pname, cpoint;
     QChar yn[2];
+    bstr sbtxt;
+    uchar blgn;
 
     uchar storagedir();
     uchar clistart();
@@ -54,5 +56,17 @@ private:
     void pset(uchar type);
     void emptycache();
 };
+
+inline systemback::systemback() : ptimer(nullptr)
+{
+    prun.cperc = 0;
+    QStr yns(tr("(Y/N)"));
+    yn[0] = yns.at(1), yn[1] = yns.at(3);
+}
+
+inline systemback::~systemback()
+{
+    if(ptimer) delete ptimer;
+}
 
 #endif

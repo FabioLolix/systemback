@@ -28,12 +28,18 @@ private:
     QBA ba;
 
 public:
+    inline bstr() {}
     inline bstr(cchar *txt) : data(txt) {}
     inline bstr(cQBA &txt) : data(txt.constData()) {}
     inline bstr(cQStr &txt) : ba(txt.toUtf8()), data(ba.constData()) {}
-    inline operator cchar *() const { return data; }
+    operator cchar *() const;
 
     cchar *data;
 };
+
+inline bstr::operator cchar *() const
+{
+    return data;
+}
 
 #endif

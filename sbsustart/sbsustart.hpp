@@ -28,7 +28,7 @@ class sustart : public QObject
     Q_OBJECT
 
 public:
-    sustart();
+    inline sustart() : cmd(nullptr) {}
     ~sustart();
 
     static uint uid;
@@ -39,5 +39,10 @@ public slots:
 private:
     QStr *cmd;
 };
+
+inline sustart::~sustart()
+{
+    if(cmd) delete cmd;
+}
 
 #endif

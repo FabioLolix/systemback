@@ -210,18 +210,17 @@ bool sb::access(cQStr &path, uchar mode)
 QStr sb::fload(cQStr &path, bool ascnt)
 {
     QBA ba;
-    ushort size;
     { QFile file(path);
     if(! file.open(QIODevice::ReadOnly)) return nullptr;
-    ba = file.readAll();
+    ba = file.readAll(); }
     if(! ascnt || ba.isEmpty()) return ba;
-    size = file.size(); }
     QSL lst;
     lst.reserve(100);
     QTS in(&ba, QIODevice::ReadOnly);
     while(! in.atEnd()) lst.append(in.readLine());
     QStr str;
-    str.reserve(size + 1);
+    str.reserve(ba.size() + 1);
+    ba.clear();
     for(ushort a(lst.count()) ; a > 0 ; --a) str.append(lst.at(a - 1) % '\n');
     return str;
 }

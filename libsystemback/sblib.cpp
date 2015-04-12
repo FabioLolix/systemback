@@ -179,10 +179,10 @@ bool sb::like(cQStr &txt, cQSL &lst, uchar mode)
 
 QStr sb::rndstr(uchar vlen)
 {
+    qsrand(QTime::currentTime().msecsSinceStartOfDay());
     QStr val, chrs("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz./");
     val.reserve(vlen);
     uchar clen(vlen == 16 ? 64 : 62), num(255);
-    qsrand(QTime::currentTime().msecsSinceStartOfDay());
 
     do {
         uchar prev(num);
@@ -210,19 +210,20 @@ bool sb::access(cQStr &path, uchar mode)
 QStr sb::fload(cQStr &path, bool ascnt)
 {
     QBA ba;
+    ushort size;
     { QFile file(path);
     if(! file.open(QIODevice::ReadOnly)) return nullptr;
-    ba = file.readAll(); }
-
-    if(ascnt && ! ba.isEmpty())
-    {
-        QStr str;
-        QTS in(&ba, QIODevice::ReadOnly);
-        while(! in.atEnd()) str.prepend(in.readLine() % '\n');
-        return str;
-    }
-
-    return ba;
+    ba = file.readAll();
+    if(! ascnt || ba.isEmpty()) return ba;
+    size = file.size(); }
+    QSL lst;
+    lst.reserve(100);
+    QTS in(&ba, QIODevice::ReadOnly);
+    while(! in.atEnd()) lst.append(in.readLine());
+    QStr str;
+    str.reserve(size + 1);
+    for(ushort a(lst.count()) ; a > 0 ; --a) str.append(lst.at(a - 1) % '\n');
+    return str;
 }
 
 QBA sb::fload(cQStr &path)
@@ -1212,7 +1213,7 @@ bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
                     case DT_UNKNOWN:
                         return stype(path % '/' % iname);
                     default:
-                        return Excluded;
+                        return Unknown;
                     }
                 }());
 
@@ -1249,18 +1250,17 @@ bool sb::rodir(QBA &ba, cQStr &path, uchar oplen)
                     switch(ent->d_type) {
                     case DT_LNK:
                     case DT_REG:
-                        return Included;
+                        return Isfile;
                     case DT_DIR:
                         return Isdir;
                     case DT_UNKNOWN:
                         return stype(path % '/' % iname);
                     default:
-                        return Excluded;
+                        return Unknown;
                     }
                 }()) {
             case Islink:
             case Isfile:
-            case Included:
                 ba.append(prepath % iname % '\n');
                 break;
             case Isdir:
@@ -1288,18 +1288,17 @@ bool sb::rodir(QUCL &ucl, cQStr &path, uchar oplen)
                     switch(ent->d_type) {
                     case DT_LNK:
                     case DT_REG:
-                        return Included;
+                        return Isfile;
                     case DT_DIR:
                         return Isdir;
                     case DT_UNKNOWN:
                         return stype(path % '/' % iname);
                     default:
-                        return Excluded;
+                        return Unknown;
                     }
                 }()) {
             case Islink:
             case Isfile:
-            case Included:
                 ucl.append(0);
                 break;
             case Isdir:
@@ -1345,22 +1344,13 @@ bool sb::recrmdir(cQStr &path, bool slimit)
             switch(ent->d_type) {
             case DT_UNKNOWN:
                 switch(stype(fpath)) {
-                case Isdir:
-                    if(! recrmdir(fpath, slimit))
-                    {
-                        closedir(dir);
-                        return false;
-                    }
-
-                    rmdir(bstr(fpath));
-                    break;
                 case Isfile:
-                    if(slimit && QFile(fpath).size() > 8000000) break;
+                    if(slimit && QFile(fpath).size() > 8000000) continue;
                 default:
                     rmfile(fpath);
+                    continue;
+                case Isdir:;
                 }
-
-                break;
             case DT_DIR:
                 if(! recrmdir(fpath, slimit))
                 {
@@ -1464,21 +1454,14 @@ void sb::run()
                 PedDevice *dev(ped_device_get(bstr(path)));
                 PedDisk *dsk(ped_disk_new(dev));
 
-                uchar type([&dsk] {
-                        QStr name(dsk ? dsk->type->name : nullptr);
+                uchar type(dsk ? [&dsk] {
+                        QStr name(dsk->type->name);
                         return name == "gpt" ? GPT : name == "msdos" ? MSDOS : Clear;
-                    }());
+                    }() : Clear);
 
                 ThrdSlst->append(path % '\n' % QStr::number(dev->length * dev->sector_size) % '\n' % QStr::number(type));
 
-                if(type == Clear)
-                {
-                    if(dsk)
-                        goto next_1;
-                    else
-                        goto next_2;
-                }
-
+                if(type != Clear)
                 {
                     PedPartition *prt(nullptr);
                     QLIL egeom;
@@ -1554,10 +1537,11 @@ void sb::run()
                         ThrdSlst->append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - pstart + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(pstart * dev->sector_size + 1048576));
                     }
                 }
+                else if(! dsk)
+                    goto next_1;
 
-            next_1:
                 ped_disk_destroy(dsk);
-            next_2:
+            next_1:
                 ped_device_destroy(dev);
             }
         }
@@ -1618,7 +1602,7 @@ void sb::run()
                             QTS in(&fstab, QIODevice::ReadOnly);
 
                             while(! in.atEnd())
-                                if(like(in.readLine().trimmed(), fchk)) goto next_3;
+                                if(like(in.readLine().trimmed(), fchk)) goto next_2;
                         }
 
                         ThrdSlst->append(path % '\n' % mid(item, 5, rinstr(item, "_") - 5).replace('_', ' ') % '\n' % QStr::number(size));
@@ -1626,7 +1610,7 @@ void sb::run()
                 }
             }
 
-        next_3:;
+        next_2:;
         }
 
         return ThrdSlst->sort();

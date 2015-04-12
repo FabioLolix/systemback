@@ -24,18 +24,16 @@
 void scheduler::main()
 {
     {
-        uchar rv([&] {
-                return qApp->arguments().count() != 2 ? 1
-                    : sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(qApp->arguments().value(1))) ? 2
-                    : getuid() + getgid() > 0 ? 3
-                    : sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? 4
-                    : ! sb::lock(sb::Schdlrlock) ? 5
-                    : daemon(0, 0) == -1 ? 6
-                    : [&]() -> uchar {
-                            sb::delay(100);
-                            return sb::lock(sb::Schdlrlock) && sb::crtfile(*(pfile = new QStr(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid")), QStr::number(qApp->applicationPid())) ? 0 : 255;
-                        }();
-            }());
+        uchar rv(qApp->arguments().count() != 2 ? 1
+            : sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(qApp->arguments().value(1))) ? 2
+            : getuid() + getgid() > 0 ? 3
+            : sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? 4
+            : ! sb::lock(sb::Schdlrlock) ? 5
+            : daemon(0, 0) == -1 ? 6
+            : [&]() -> uchar {
+                    sb::delay(100);
+                    return sb::lock(sb::Schdlrlock) && sb::crtfile(*(pfile = new QStr(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid")), QStr::number(qApp->applicationPid())) ? 0 : 255;
+                }());
 
         if(rv > 0)
         {

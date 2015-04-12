@@ -90,7 +90,7 @@ void systemback::main()
                                 });
 
                             return qApp->arguments().count() == 1 ? startui()
-                                : sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}) ? [&] { return ! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write) ? 10 : startui(true); }()
+                                : sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 10
                                 : sb::like(qApp->arguments().value(1), {"_-s_", "_--storagedir_"}) ? storagedir() : 1;
                         }();
 

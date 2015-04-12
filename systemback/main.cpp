@@ -32,12 +32,10 @@ int main(int argc, char *argv[])
                 sb::error("\n " % QTrn::tr("Unsafe X Window authorization!") % "\n\n " % QTrn::tr("Please do not use 'sudo' command.") % "\n\n");
                 return 1;
             }
-            else
-            {
-                systemback w;
-                w.show();
-                return a.exec();
-            }
+
+            systemback w;
+            w.show();
+            return a.exec();
         }());
 
     if(tltr) delete tltr;

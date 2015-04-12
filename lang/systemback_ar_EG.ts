@@ -27,37 +27,37 @@
 <context>
     <name>scheduler</name>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="40"/>
         <source>Cannot start Systemback scheduler daemon!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="47"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="45"/>
         <source>The process is disabled for this user.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="45"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="43"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="49"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="47"/>
         <source>Root privileges are required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="51"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="49"/>
         <source>This system is a Live.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="53"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="51"/>
         <source>Already running.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="55"/>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="53"/>
         <source>Unable to daemonize.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -65,27 +65,27 @@
 <context>
     <name>sustart</name>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="98"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="95"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="98"/>
         <source>Cannot start Systemback graphical user interface!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="98"/>
         <source>Unable to connect to X server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="98"/>
         <source>Unable to get root permissions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="101"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="98"/>
         <source>Cannot start Systemback scheduler daemon!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -213,7 +213,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1287"/>
-        <location filename="../systemback/systemback.cpp" line="6119"/>
+        <location filename="../systemback/systemback.cpp" line="6118"/>
         <source>Mount</source>
         <translation>ضُمّ</translation>
     </message>
@@ -305,7 +305,7 @@
         <location filename="../systemback/systemback.cpp" line="5416"/>
         <location filename="../systemback/systemback.cpp" line="5430"/>
         <location filename="../systemback/systemback.cpp" line="5431"/>
-        <location filename="../systemback/systemback.cpp" line="6593"/>
+        <location filename="../systemback/systemback.cpp" line="6592"/>
         <source>Disabled</source>
         <translation>معطّل</translation>
     </message>
@@ -512,7 +512,7 @@
         <location filename="../systemback/systemback.ui" line="3679"/>
         <location filename="../systemback/systemback.cpp" line="3775"/>
         <location filename="../systemback/systemback.cpp" line="4289"/>
-        <location filename="../systemback/systemback.cpp" line="6011"/>
+        <location filename="../systemback/systemback.cpp" line="6010"/>
         <source>System copy</source>
         <translation>انسخ النظام</translation>
     </message>
@@ -859,28 +859,28 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="453"/>
-        <location filename="../systemback/systemback.cpp" line="6736"/>
+        <location filename="../systemback/systemback.cpp" line="6735"/>
         <source>Top left</source>
         <translation>أعلى اليسار</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="453"/>
         <location filename="../systemback/systemback.cpp" line="454"/>
-        <location filename="../systemback/systemback.cpp" line="6737"/>
+        <location filename="../systemback/systemback.cpp" line="6736"/>
         <source>Top right</source>
         <translation>أعلى اليمين</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="453"/>
         <location filename="../systemback/systemback.cpp" line="454"/>
-        <location filename="../systemback/systemback.cpp" line="6738"/>
+        <location filename="../systemback/systemback.cpp" line="6737"/>
         <source>Center</source>
         <translation>الوسط</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="453"/>
         <location filename="../systemback/systemback.cpp" line="454"/>
-        <location filename="../systemback/systemback.cpp" line="6739"/>
+        <location filename="../systemback/systemback.cpp" line="6738"/>
         <source>Bottom left</source>
         <translation>أدنى اليسار</translation>
     </message>
@@ -892,31 +892,31 @@
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="455"/>
-        <location filename="../systemback/systemback.cpp" line="6630"/>
-        <location filename="../systemback/systemback.cpp" line="6640"/>
+        <location filename="../systemback/systemback.cpp" line="6629"/>
+        <location filename="../systemback/systemback.cpp" line="6639"/>
         <source>day(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="456"/>
-        <location filename="../systemback/systemback.cpp" line="6664"/>
-        <location filename="../systemback/systemback.cpp" line="6674"/>
+        <location filename="../systemback/systemback.cpp" line="6663"/>
+        <location filename="../systemback/systemback.cpp" line="6673"/>
         <source>hour(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="457"/>
-        <location filename="../systemback/systemback.cpp" line="6650"/>
-        <location filename="../systemback/systemback.cpp" line="6684"/>
-        <location filename="../systemback/systemback.cpp" line="6698"/>
-        <location filename="../systemback/systemback.cpp" line="6707"/>
+        <location filename="../systemback/systemback.cpp" line="6649"/>
+        <location filename="../systemback/systemback.cpp" line="6683"/>
+        <location filename="../systemback/systemback.cpp" line="6697"/>
+        <location filename="../systemback/systemback.cpp" line="6706"/>
         <source>minute(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="458"/>
-        <location filename="../systemback/systemback.cpp" line="6716"/>
-        <location filename="../systemback/systemback.cpp" line="6725"/>
+        <location filename="../systemback/systemback.cpp" line="6715"/>
+        <location filename="../systemback/systemback.cpp" line="6724"/>
         <source>seconds</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1204,7 +1204,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7273"/>
+        <location filename="../systemback/systemback.cpp" line="7272"/>
         <source>Systemback worker thread error because the following item:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1418,8 +1418,8 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="565"/>
         <location filename="../systemback/systemback.cpp" line="3723"/>
-        <location filename="../systemback/systemback.cpp" line="7489"/>
-        <location filename="../systemback/systemback.cpp" line="7512"/>
+        <location filename="../systemback/systemback.cpp" line="7488"/>
+        <location filename="../systemback/systemback.cpp" line="7511"/>
         <source>Everyone</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1438,12 +1438,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="6573"/>
+        <location filename="../systemback/systemback.cpp" line="6572"/>
         <source>Enabled</source>
         <translation>مُمكّن</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="6782"/>
+        <location filename="../systemback/systemback.cpp" line="6781"/>
         <source>Systemback worker thread is interrupted by the user.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1454,38 +1454,38 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7184"/>
+        <location filename="../systemback/systemback.cpp" line="7183"/>
         <source>Boot Live without xorg.conf file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7187"/>
-        <location filename="../systemback/systemback.cpp" line="7189"/>
-        <location filename="../systemback/systemback.cpp" line="7191"/>
+        <location filename="../systemback/systemback.cpp" line="7186"/>
+        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Boot Live system</source>
         <translation>أقلِع النظام الحيّ</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7187"/>
-        <location filename="../systemback/systemback.cpp" line="7189"/>
-        <location filename="../systemback/systemback.cpp" line="7191"/>
+        <location filename="../systemback/systemback.cpp" line="7186"/>
+        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Boot Live in safe graphics mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7187"/>
-        <location filename="../systemback/systemback.cpp" line="7189"/>
-        <location filename="../systemback/systemback.cpp" line="7191"/>
+        <location filename="../systemback/systemback.cpp" line="7186"/>
+        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Boot Live in debug mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7187"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>اضغط زر &apos;E&apos; للتحرير</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7191"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
         <source>Press TAB key to edit</source>
         <translation>اضغط زر TAB للتحرير</translation>
     </message>

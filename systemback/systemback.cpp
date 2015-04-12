@@ -5979,13 +5979,12 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
                 return ui->changepartition->isEnabled() ? ui->changepartition->setDisabled(true) : void();
 
             if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ompt || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456) || (grub.isEFI && mpt == "/boot/efi" && arg1 != "/boot/efi") || (nohmcpy[0] && mpt == "/home" && arg1 != "/home") || (mpt == "SWAP" && arg1 != "SWAP")
-                    || [&] {
-                            if(arg1 != "SWAP")
-                                for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
-                                    if(ui->partitionsettings->item(a, 4)->text() == arg1) return true;
+                || (arg1 != "SWAP" && [&] {
+                        for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
+                            if(ui->partitionsettings->item(a, 4)->text() == arg1) return true;
 
-                            return false;
-                        }())
+                        return false;
+                    }()))
             {
                 if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
             }

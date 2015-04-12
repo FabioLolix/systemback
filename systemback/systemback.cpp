@@ -5978,7 +5978,7 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
             else if(sb::like(arg1, {"_/boot/efi_", "_SWAP_"}))
                 return ui->changepartition->isEnabled() ? ui->changepartition->setDisabled(true) : void();
 
-            if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || arg1 == ompt || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456) || (grub.isEFI && mpt == "/boot/efi" && arg1 != "/boot/efi") || (nohmcpy[0] && mpt == "/home" && arg1 != "/home") || (mpt == "SWAP" && arg1 != "SWAP")
+            if(arg1.isEmpty() || (arg1.length() > 1 && arg1.endsWith('/')) || sb::like(arg1, {'_' % ompt % '_', "_/bin_", "_/sbin_", "_/etc_", "_/lib_", "_/lib32_", "_/lib64_", "_/media_"}) || (ui->usersettingscopy->isVisible() && arg1.startsWith("/home/")) || (arg1 != "/boot/efi" && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 10)->text().toULongLong() < 268435456) || (grub.isEFI && mpt == "/boot/efi" && arg1 != "/boot/efi") || (nohmcpy[0] && mpt == "/home" && arg1 != "/home") || (mpt == "SWAP" && arg1 != "SWAP")
                 || (arg1 != "SWAP" && [&] {
                         for(ushort a(0) ; a < ui->partitionsettings->rowCount() ; ++a)
                             if(ui->partitionsettings->item(a, 4)->text() == arg1) return true;
@@ -6052,7 +6052,7 @@ void systemback::on_repairmountpoint_currentTextChanged(cQStr &arg1)
 
     if(! arg1.isEmpty() && (! sb::like(arg1, {"_/_", "_/m_", "_/mn_", "_/mnt_", "_/mnt/*"}) || sb::like(arg1, {"* *", "*//*"})))
         ui->repairmountpoint->setCurrentText(sb::left(arg1, -1));
-    else if(! arg1.startsWith("/mnt") || arg1.endsWith('/') || (arg1.length() > 5 && sb::issmfs("/", "/mnt")) || sb::mcheck(arg1 % '/'))
+    else if(! arg1.startsWith("/mnt") || sb::like(arg1, {"*/_", "_/mnt/bin_", "_/mnt/sbin_", "_/mnt/etc_", "_/mnt/lib_", "_/mnt/lib32_", "_/mnt/lib64_", "_/mnt/media_"}) || (arg1.length() > 5 && sb::issmfs("/", "/mnt")) || sb::mcheck(arg1 % '/'))
     {
         if(ui->repairmount->isEnabled()) ui->repairmount->setDisabled(true);
     }

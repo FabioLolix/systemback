@@ -236,7 +236,6 @@ uchar systemback::clistart()
     forever
         switch(getch()) {
         case '1':
-        {
             pset(2);
             progress(Start);
 
@@ -250,7 +249,6 @@ uchar systemback::clistart()
             progress(Stop);
             clear();
             return clistart();
-        }
         case '2':
             clear();
             return restore();

@@ -26,7 +26,10 @@ FORMS += systemback.ui
 
 RESOURCES += pictures.qrc
 
-QMAKE_CXXFLAGS += -fno-rtti \
+QMAKE_CXXFLAGS += -flto \
+                  -fno-rtti \
+                  -fvisibility=hidden \
+                  -fvisibility-inlines-hidden \
                   -fno-asynchronous-unwind-tables
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra \
@@ -34,7 +37,9 @@ QMAKE_CXXFLAGS_WARN_ON += -Wextra \
                           -Werror
 
 QMAKE_LFLAGS += -Wl,-rpath=/usr/lib/systemback \
-                -Wl,--as-needed
+                -Wl,--as-needed \
+                -fuse-ld=gold \
+                -flto
 
 QMAKE_LFLAGS_RELEASE += -s
 

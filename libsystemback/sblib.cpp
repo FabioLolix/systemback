@@ -116,7 +116,7 @@ QStr sb::appver()
 bool sb::like(cQStr &txt, cQSL &lst, uchar mode)
 {
     switch(mode) {
-    case Norm:
+    default:
         for(cQStr &stxt : lst)
             if(stxt.startsWith('*'))
             {
@@ -155,7 +155,6 @@ bool sb::like(cQStr &txt, cQSL &lst, uchar mode)
 
         return true;
     case Mixed:
-    {
         QSL alst, nlst;
 
         for(cQStr &stxt : lst)
@@ -171,9 +170,6 @@ bool sb::like(cQStr &txt, cQSL &lst, uchar mode)
             }
 
         return like(txt, alst, All) && like(txt, nlst);
-    }
-    default:
-        return false;
     }
 }
 
@@ -2677,7 +2673,6 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                             case Isdir:
                                 switch(stype(trgi)) {
                                 case Isdir:
-                                {
                                     if(! like(mthd, {3, 4}))
                                     {
                                         QBAL sdlst;
@@ -2705,7 +2700,6 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                                     }
 
                                     goto nitem_2;
-                                }
                                 case Islink:
                                 case Isfile:
                                     rmfile(trgi);

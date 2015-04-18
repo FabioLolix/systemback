@@ -23,14 +23,19 @@ HEADERS += sblib.hpp \
 
 RESOURCES += version.qrc
 
-QMAKE_CXXFLAGS += -fno-rtti \
+QMAKE_CXXFLAGS += -flto \
+                  -fno-rtti \
+                  -fvisibility=hidden \
+                  -fvisibility-inlines-hidden \
                   -fno-asynchronous-unwind-tables
 
 QMAKE_CXXFLAGS_WARN_ON += -Wextra \
                           -Wshadow \
                           -Werror
 
-QMAKE_LFLAGS += -Wl,--as-needed
+QMAKE_LFLAGS += -Wl,--as-needed \
+                -fuse-ld=gold \
+                -flto
 
 QMAKE_LFLAGS_RELEASE += -s
 

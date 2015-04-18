@@ -2120,7 +2120,7 @@ void systemback::systemcopy()
 
                 if(fstype.length() == 2 || fstype == "btrfs")
                 {
-                    QStr mpt("/.sbmountpoints");
+                    QStr mpt("/.sbmountpoints"), sv('@' % sb::right(mpoint, -1).replace('/', '_'));
 
                     for(uchar a(0) ; a < 4 ; ++a)
                         switch(a) {
@@ -2143,12 +2143,12 @@ void systemback::systemcopy()
 
                             break;
                         case 2 ... 3:
-                            sb::exec("btrfs subvolume create " % mpt % "/@" % sb::right(mpoint, -1));
+                            sb::exec("btrfs subvolume create " % mpt % '/' % sv);
                             if(intrrpt) return error();
 
-                            if(sb::mount(part, "/.sbsystemcopy" % mpoint, "noatime,subvol=@" % sb::right(mpoint, -1)))
+                            if(sb::mount(part, "/.sbsystemcopy" % mpoint, "noatime,subvol=" % sv))
                                 ++a;
-                            else if(a == 3 || ! QFile::rename(mpt % "/@" % sb::right(mpoint, -1), mpt % "/@" % sb::right(mpoint, -1) % '_' % sb::rndstr()))
+                            else if(a == 3 || ! QFile::rename(mpt % '/' % sv, mpt % '/' % sv % '_' % sb::rndstr()))
                                 return error(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, part);
                         }
                 }
@@ -2545,7 +2545,7 @@ void systemback::systemcopy()
                     fstabtxt.append("# " % (nmpt == "SWAP" ? QStr("SWAP\nUUID=" % uuid % "   none   swap   sw   0   0")
                         : nmpt % "\nUUID=" % uuid % "   " % nmpt % "   " % nfs % "   noatime"
                             % (nmpt == "/" ? QStr(sb::like(nfs, {"_ext4_", "_ext3_", "_ext2_", "_jfs_", "_xfs_"}) ? ",errors=remount-ro" : nfs == "reiserfs" ? ",notail" : ",subvol=@") % "   0   1"
-                                : (nfs == "reiserfs" ? ",notail" : nfs == "btrfs" ? QStr(",subvol=@" % sb::right(nmpt, -1)) : nullptr) % "   0   2")) % '\n');
+                                : (nfs == "reiserfs" ? ",notail" : nfs == "btrfs" ? QStr(",subvol=@" % sb::right(nmpt, -1).replace('/', '_')) : nullptr) % "   0   2")) % '\n');
                 }
             }
 
@@ -3227,9 +3227,8 @@ void systemback::keyPressEvent(QKeyEvent *ev)
             break;
         case Qt::Key_Enter:
         case Qt::Key_Return:
-        {
-            QKeyEvent press(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
-            qApp->sendEvent(qApp->focusObject(), &press);
+            { QKeyEvent press(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+            qApp->sendEvent(qApp->focusObject(), &press); }
 
             if(ui->sbpanel->isVisible())
             {
@@ -3311,7 +3310,6 @@ void systemback::keyPressEvent(QKeyEvent *ev)
             }
 
             break;
-        }
         case Qt::Key_F5:
             if(ui->sbpanel->isVisible())
             {
@@ -4002,117 +4000,110 @@ void systemback::on_partitionrefresh_clicked()
         {
             ui->partitionsettings->setRowCount(++sn + 1);
             if(sn > 0) ui->partitionsettings->setRowHeight(sn, ss(25));
-            QTblWI *dev(new QTblWI(path));
+            { QTblWI *dev(new QTblWI(path));
             dev->setTextAlignment(Qt::AlignBottom);
             ui->partitionsettings->setItem(sn, 0, dev);
-            QTblWI *rsize(new QTblWI);
-            rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+            QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
             rsize->setTextAlignment(Qt::AlignRight | Qt::AlignBottom);
             ui->partitionsettings->setItem(sn, 1, rsize);
-            QTblWI *empty(new QTblWI);
-            ui->partitionsettings->setItem(sn, 2, empty);
-            for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
+            QFont fnt;
+            fnt.setWeight(QFont::DemiBold);
+            for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt); }
+            for(uchar a(2) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, new QTblWI);
             QTblWI *tp(new QTblWI(type));
             ui->partitionsettings->setItem(sn, 8, tp);
             QTblWI *lngth(new QTblWI(QStr::number(bsize)));
             ui->partitionsettings->setItem(sn, 10, lngth);
-            QFont fnt;
-            fnt.setWeight(QFont::DemiBold);
-            for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt);
         }
         else
         {
             switch(type.toUShort()) {
             case sb::Extended:
-            {
                 ui->partitionsettings->setRowCount(++sn + 1);
-                QTblWI *dev(new QTblWI(path));
+                { QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *rsize(new QTblWI);
-                rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+                QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
                 rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 ui->partitionsettings->setItem(sn, 1, rsize);
-                QTblWI *empty(new QTblWI);
-                ui->partitionsettings->setItem(sn, 2, empty);
-                for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
                 QFont fnt;
                 fnt.setWeight(QFont::DemiBold);
                 fnt.setItalic(true);
-                for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt);
+                for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt); }
+                for(uchar a(2) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, new QTblWI);
                 break;
-            }
             case sb::Primary:
             case sb::Logical:
-            {
-                cQStr &uuid(dts.at(6));
-
                 if(! grub.isEFI)
                     for(QCbB *cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->addItem(path);
 
                 ui->partitionsettings->setRowCount(++sn + 1);
-                QTblWI *dev(new QTblWI(path));
+                { QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *rsize(new QTblWI);
-                rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+                QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
                 rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 ui->partitionsettings->setItem(sn, 1, rsize);
                 QTblWI *lbl(new QTblWI(dts.at(5)));
                 lbl->setTextAlignment(Qt::AlignCenter);
                 if(! dts.at(5).isEmpty()) lbl->setToolTip(dts.at(5));
-                ui->partitionsettings->setItem(sn, 2, lbl);
-                QTblWI *mpt(new QTblWI);
+                ui->partitionsettings->setItem(sn, 2, lbl); }
 
-                if(uuid.isEmpty())
                 {
-                    if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
-                    {
-                        QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], path % ' ')));
-                        short spc(sb::instr(mnt, " "));
-                        mpt->setText(sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " "));
-                    }
-                }
-                else if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
-                    mpt->setText(QStr('\n' % mnts[0]).count('\n' % path % ' ') > 1 || QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' ') ? tr("Multiple mount points") : [&] {
-                            QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], path % ' ')));
-                            short spc(sb::instr(mnt, " "));
-                            return sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " ");
-                        }());
-                else if(QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
-                    mpt->setText(QStr('\n' % mnts[0]).count("\n/dev/disk/by-uuid/" % uuid % ' ') > 1 ? tr("Multiple mount points") : [&] {
-                            QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], "/dev/disk/by-uuid/" % uuid % ' ')));
-                            short spc(sb::instr(mnt, " "));
-                            return sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " ");
-                        }());
-                else if(QStr('\n' % mnts[1]).contains('\n' % path % ' '))
-                    mpt->setText("SWAP");
+                    QTblWI *mpt(new QTblWI([&]() -> QStr {
+                            cQStr &uuid(dts.at(6));
 
-                mpt->text().isEmpty() ? ui->repairpartition->addItem(path) : mpt->setToolTip(mpt->text());
-                ui->partitionsettings->setItem(sn, 3, mpt);
-                QTblWI *empty(new QTblWI);
-                ui->partitionsettings->setItem(sn, 4, empty);
-                QTblWI *fs(new QTblWI(dts.at(4)));
-                ui->partitionsettings->setItem(sn, 5, fs);
-                QTblWI *frmt(new QTblWI("-"));
-                for(QTblWI *wdi : QList<QTblWI *>{mpt, empty, fs, frmt}) wdi->setTextAlignment(Qt::AlignCenter);
-                ui->partitionsettings->setItem(sn, 6, frmt);
-                ui->partitionsettings->setItem(sn, 7, fs->clone());
+                            if(uuid.isEmpty())
+                            {
+                                if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
+                                {
+                                    QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], path % ' ')));
+                                    short spc(sb::instr(mnt, " "));
+                                    return sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " ");
+                                }
+                            }
+                            else if(QStr('\n' % mnts[0]).contains('\n' % path % ' '))
+                                return QStr('\n' % mnts[0]).count('\n' % path % ' ') > 1 || QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' ') ? tr("Multiple mount points") : [&] {
+                                        QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], path % ' ')));
+                                        short spc(sb::instr(mnt, " "));
+                                        return sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " ");
+                                    }();
+                            else if(QStr('\n' % mnts[0]).contains("\n/dev/disk/by-uuid/" % uuid % ' '))
+                                return QStr('\n' % mnts[0]).count("\n/dev/disk/by-uuid/" % uuid % ' ') > 1 ? tr("Multiple mount points") : [&] {
+                                        QStr mnt(sb::right(mnts[0], - sb::instr(mnts[0], "/dev/disk/by-uuid/" % uuid % ' ')));
+                                        short spc(sb::instr(mnt, " "));
+                                        return sb::mid(mnt, spc + 1, sb::instr(mnt, " ", spc + 1) - spc - 1).replace("\\040", " ");
+                                    }();
+                            else if(QStr('\n' % mnts[1]).contains('\n' % path % ' '))
+                                return "SWAP";
+
+                            ui->repairpartition->addItem(path);
+                            return nullptr;
+                        }()));
+
+                    if(! mpt->text().isEmpty()) mpt->setToolTip(mpt->text());
+                    ui->partitionsettings->setItem(sn, 3, mpt);
+                    QTblWI *empty(new QTblWI);
+                    ui->partitionsettings->setItem(sn, 4, empty);
+                    QTblWI *fs(new QTblWI(dts.at(4)));
+                    ui->partitionsettings->setItem(sn, 5, fs);
+                    QTblWI *frmt(new QTblWI("-"));
+                    ui->partitionsettings->setItem(sn, 6, frmt);
+                    ui->partitionsettings->setItem(sn, 7, fs->clone());
+                    for(QTblWI *wdi : QList<QTblWI *>{mpt, empty, fs, frmt}) wdi->setTextAlignment(Qt::AlignCenter);
+                }
+
                 break;
-            }
             case sb::Freespace:
             case sb::Emptyspace:
                 ui->partitionsettings->setRowCount(++sn + 1);
-                QTblWI *dev(new QTblWI(path));
+                { QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *rsize(new QTblWI);
-                rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+                QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
                 rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 ui->partitionsettings->setItem(sn, 1, rsize);
-                QTblWI *empty(new QTblWI);
-                ui->partitionsettings->setItem(sn, 2, empty);
-                for(uchar a(3) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, empty->clone());
                 QFont fnt;
                 fnt.setItalic(true);
-                for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt);
+                for(QTblWI *twi : {dev, rsize}) twi->setFont(fnt); }
+                for(uchar a(2) ; a < 7 ; ++a) ui->partitionsettings->setItem(sn, a, new QTblWI);
                 break;
             }
 
@@ -4589,9 +4580,8 @@ void systemback::on_livedevicesrefresh_clicked()
         QSL dts(cdts.split('\n'));
         QTblWI *dev(new QTblWI(dts.at(0)));
         ui->livedevices->setItem(sn, 0, dev);
-        QTblWI *rsize(new QTblWI);
         ullong bsize(dts.at(2).toULongLong());
-        rsize->setText(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB");
+        QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
         rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         ui->livedevices->setItem(sn, 1, rsize);
         QTblWI *name(new QTblWI(dts.at(1)));

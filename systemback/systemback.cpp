@@ -147,7 +147,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                     QStyleOption optn;
                     optn.init(ui->pointpipe1);
                     QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
-                    for(QCB *ckbx : findChildren<QCB *>()) ckbx->setStyleSheet("QCB::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+                    for(QCB *ckbx : findChildren<QCB *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
                     optn.init(ui->pnumber3);
                     nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
                     for(QRadioButton *rbtn : findChildren<QRadioButton *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");

@@ -324,7 +324,7 @@ void sb::cfgread()
         if(file.open(QIODevice::ReadOnly))
             while(! file.atEnd())
             {
-                QStr cline(file.readLine().trimmed()), cval(right(cline, - instr(cline, "=")));
+                QStr cline(file.readLine().trimmed()), cval(right(cline, -instr(cline, "=")));
 
                 if(! cval.isEmpty() && ! cval.startsWith('#'))
                 {
@@ -1186,7 +1186,7 @@ bool sb::lcomp(cQStr &link1, cQStr &link2)
 
 bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
 {
-    QStr prepath(ba.isEmpty() ? nullptr : QStr(right(path, - (oplen == 1 ? 1 : oplen + 1)) % '/'));
+    QStr prepath(ba.isEmpty() ? nullptr : QStr(right(path, -(oplen == 1 ? 1 : oplen + 1)) % '/'));
     DIR *dir(opendir(bstr(path)));
     dirent *ent;
     QSL dd{"_._", "_.._"};
@@ -1231,7 +1231,7 @@ bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden, uchar oplen)
 
 bool sb::rodir(QBA &ba, cQStr &path, uchar oplen)
 {
-    QStr prepath(ba.isEmpty() ? nullptr : QStr(right(path, - (oplen == 1 ? 1 : oplen + 1)) % '/'));
+    QStr prepath(ba.isEmpty() ? nullptr : QStr(right(path, -(oplen == 1 ? 1 : oplen + 1)) % '/'));
     DIR *dir(opendir(bstr(path)));
     dirent *ent;
     QSL dd{"_._", "_.._"};
@@ -1677,7 +1677,7 @@ void sb::run()
         PedDevice *dev(ped_device_get(bstr(left(ThrdStr[0], ismmc ? 12 : 8))));
         PedDisk *dsk(ped_disk_new(dev));
 
-        if(ped_disk_delete_partition(dsk, ped_disk_get_partition(dsk, right(ThrdStr[0], - (ismmc ? 13 : 8)).toUShort())) == 1)
+        if(ped_disk_delete_partition(dsk, ped_disk_get_partition(dsk, right(ThrdStr[0], -(ismmc ? 13 : 8)).toUShort())) == 1)
         {
             ped_disk_commit_to_dev(dsk);
             ped_disk_commit_to_os(dsk);
@@ -2143,7 +2143,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                     if(! crtdir(trgt % "/var/log/" % item)) goto err_4;
                     break;
                 case Isfile:
-                    if(! like(item, excl) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
+                    if(! like(item, excl) && (! item.contains('.') || ! isnum(right(item, -rinstr(item, ".")))))
                     {
                         QStr srci("/var/log/" % item), nrpi(trgt % srci);
                         crtfile(nrpi);
@@ -3051,7 +3051,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                             {
                                 QStr cline(file.readLine().trimmed()), dir;
 
-                                if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0)
+                                if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, -instr(cline, "/")), -1)).length() > 0)
                                 {
                                     QStr trgi(trgd % '/' % dir);
 
@@ -3453,7 +3453,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     if(! crtdir("/.sbsystemcopy/var/log/" % item)) goto err_5;
                     break;
                 case Isfile:
-                    if(! like(item, excl) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
+                    if(! like(item, excl) && (! item.contains('.') || ! isnum(right(item, -rinstr(item, ".")))))
                     {
                         QStr trgi("/.sbsystemcopy/var/log/" % item);
                         crtfile(trgi);
@@ -3705,7 +3705,7 @@ bool sb::thrdlvprpr(bool iudata)
                             ++ThrdLng[0];
                             break;
                         case Isfile:
-                            if(! like(item, excl[3]) && (! item.contains('.') || ! isnum(right(item, - rinstr(item, ".")))))
+                            if(! like(item, excl[3]) && (! item.contains('.') || ! isnum(right(item, -rinstr(item, ".")))))
                             {
                                 QStr sbli("/var/.sblvtmp/var/" % item);
                                 crtfile(sbli);
@@ -3925,7 +3925,7 @@ bool sb::thrdlvprpr(bool iudata)
                 {
                     QStr cline(file.readLine().trimmed()), dir;
 
-                    if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, - instr(cline, "/")), -1)).length() > 0)
+                    if(! cline.startsWith('#') && cline.contains("$HOME") && (dir = left(right(cline, -instr(cline, "/")), -1)).length() > 0)
                     {
                         QStr srci(srcd % '/' % dir);
 

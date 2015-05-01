@@ -70,14 +70,15 @@ private:
     ushort dialog;
     short wgeom[4], cpos;
     uchar busycnt, ppipe, sfctr, icnt;
-    bool sislive, wismax, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy[2], sstart, cfgupdt, intrrpt;
+    bool sislive, wismax, wmblck, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy[2], sstart, cfgupdt, intrrpt;
 
     QLE *getpoint(uchar num);
     QCB *getppipe(uchar num);
     QStr guname();
     QStr ckname();
     ushort ss(ushort dsize);
-    bool minside(cQPoint &wpos, cQSize &wsize);
+    bool minside(cQRect &rct);
+    bool minside(QWdt *wgt);
     void dialogopen(ushort dlg = 0, cbstr &dev = nullptr, schar snum = -1);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
     void pset(uchar type, cbstr &tend = nullptr);
@@ -95,10 +96,13 @@ private:
     void livewrite();
     void rmntcheck();
     void stschange();
+    void bttnsshow();
+    void bttnshide();
     void restore();
     void repair();
 
 private slots:
+    void benter(bool click = false);
     void schedulertimer();
     void sbttnreleased();
     void hmpg1released();
@@ -150,7 +154,7 @@ private slots:
     void foutp13();
     void foutp14();
     void foutp15();
-    void benter();
+    void cbenter();
     void bleave();
     void foutp1();
     void foutp2();

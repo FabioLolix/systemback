@@ -3616,7 +3616,7 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="functionmenu1" native="true">
+     <widget class="QWidget" name="widget" native="true">
       <property name="geometry">
        <rect>
         <x>448</x>
@@ -3625,325 +3625,325 @@
         <height>272</height>
        </rect>
       </property>
-      <widget class="QPushButton" name="restoremenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
+      <widget class="QWidget" name="functionmenu" native="true">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>224</width>
-         <height>32</height>
+         <width>448</width>
+         <height>272</height>
         </rect>
        </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>System restore</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="copymenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>40</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>System copy</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="installmenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>80</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>System install</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="livecreatemenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>120</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>Live system create</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="repairmenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>160</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>System repair</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="systemupgrade">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>200</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>System upgrade</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="excludemenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>240</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>Exclude</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="functionmenu2" native="true">
-      <property name="geometry">
-       <rect>
-        <x>448</x>
-        <y>96</y>
-        <width>224</width>
-        <height>272</height>
-       </rect>
-      </property>
-      <widget class="QPushButton" name="schedulemenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>Schedule</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="aboutmenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>80</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>About</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="settingsmenu">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>40</y>
-         <width>224</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>Settings</string>
-       </property>
-       <property name="icon">
-        <iconset resource="pictures.qrc">
-         <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>13</width>
-         <height>13</height>
-        </size>
-       </property>
+       <widget class="QPushButton" name="schedulemenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>224</x>
+          <y>0</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Schedule</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="aboutmenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>224</x>
+          <y>80</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>About</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="settingsmenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>224</x>
+          <y>40</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Settings</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="systemupgrade">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>200</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>System upgrade</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="installmenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>80</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>System install</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="livecreatemenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>120</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Live system create</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="repairmenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>160</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>System repair</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="restoremenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>System restore</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="copymenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>System copy</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="excludemenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>240</y>
+          <width>224</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Exclude</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>13</width>
+          <height>13</height>
+         </size>
+        </property>
+       </widget>
       </widget>
      </widget>
      <widget class="QPushButton" name="functionmenuback">
@@ -4752,8 +4752,7 @@
      </widget>
      <zorder>label_3</zorder>
      <zorder>points</zorder>
-     <zorder>functionmenu1</zorder>
-     <zorder>functionmenu2</zorder>
+     <zorder>widget</zorder>
      <zorder>storagedirarea</zorder>
      <zorder>label_4</zorder>
      <zorder>label_2</zorder>
@@ -7378,13 +7377,48 @@
      <rect>
       <x>540</x>
       <y>2941</y>
-      <width>20</width>
-      <height>20</height>
+      <width>48</width>
+      <height>48</height>
      </rect>
     </property>
     <property name="autoFillBackground">
      <bool>true</bool>
     </property>
+    <widget class="QLabel" name="resizeborder">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>48</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0));</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QWidget" name="subpanel" native="true">
+     <property name="geometry">
+      <rect>
+       <x>1</x>
+       <y>24</y>
+       <width>47</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <zorder>mainpanel</zorder>
    <zorder>statuspanel</zorder>

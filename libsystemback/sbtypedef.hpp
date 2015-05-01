@@ -21,6 +21,7 @@
 #define SBTYPEDEF_HPP
 
 #include <QtWidgets/QTableWidget>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QComboBox>
@@ -36,6 +37,7 @@ typedef QTableWidget QTblW;
 typedef QPushButton QPB;
 typedef QLineEdit QLE;
 typedef QComboBox QCbB;
+typedef QRadioButton QRB;
 typedef QCheckBox QCB;
 typedef QTextStream QTS;
 typedef QList<QWidget *> QWL;
@@ -54,6 +56,7 @@ typedef QString QStr;
 typedef const QByteArray cQBA;
 typedef QByteArray QBA;
 typedef const QChar cQChar;
+typedef const QRect cQRect;
 typedef const QSize cQSize;
 typedef const QPoint cQPoint;
 typedef const bstr cbstr;

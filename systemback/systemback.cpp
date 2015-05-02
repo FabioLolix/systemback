@@ -272,11 +272,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             connect(ui->usersettingscopy, SIGNAL(Mouse_Enter()), this, SLOT(center()));
             connect(ui->usersettingscopy, SIGNAL(Mouse_Leave()), this, SLOT(cleave()));
             connect(ui->unmountdelete, SIGNAL(Mouse_Leave()), this, SLOT(umntleave()));
-
-            if(! (sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")))
-                ui->livename->setText("auto");
-            else if(sb::isdir("/.systemback"))
-                on_installmenu_clicked();
+            if(! (sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")) && sb::isdir("/.systemback")) on_installmenu_clicked();
         }
 
         if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlay *","* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
@@ -1456,6 +1452,7 @@ void systemback::wminreleased()
 {
     if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0 && ui->windowminimize->foregroundRole() == QPalette::Highlight)
     {
+        ui->buttonspanel->hide();
         Display *dsply(XOpenDisplay(nullptr));
         XWindowAttributes attr;
         XGetWindowAttributes(dsply, winId(), &attr);

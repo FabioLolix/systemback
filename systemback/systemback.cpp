@@ -24,6 +24,7 @@
 #include <QStyleFactory>
 #include <QTemporaryDir>
 #include <QTextStream>
+#include <QScrollBar>
 #include <QDateTime>
 #include <sys/utsname.h>
 #include <sys/swap.h>
@@ -111,14 +112,14 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         if(fnt.overline()) fnt.setOverline(false);
         if(fnt.strikeOut()) fnt.setStrikeOut(false);
         if(fnt.underline()) fnt.setUnderline(false);
-        if(fnt != font()) setFont(fnt);
 
         if(! sb::like(sb::wsclng, {"_auto_", "_1_"}) || fontInfo().pixelSize() != 15)
         {
             sfctr = sb::wsclng == "auto" ? fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal : sb::wsclng == "2" ? Max : sb::wsclng == "1.5" ? High : Normal;
             while(sfctr > Normal && (qApp->desktop()->screenGeometry(snum).width() - ss(30) < ss(698) || qApp->desktop()->screenGeometry(snum).height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
             fnt.setPixelSize(ss(15));
-            setFont(fnt);
+            for(QWdt *wdgt : QWL{ui->storagedir, ui->liveworkdir, ui->interrupt, ui->partitiondelete}) wdgt->setFont(fnt);
+            qApp->setFont(fnt);
             fnt.setPixelSize(ss(27));
             ui->buttonspanel->setFont(fnt);
             fnt.setPixelSize(ss(17));
@@ -144,18 +145,29 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
                     { QSize nsize(ss(112), ss(32));
                     for(QCbB *cmbx : findChildren<QCbB *>()) cmbx->setMinimumSize(nsize); }
+                    ui->partitionsettings->verticalScrollBar()->adjustSize();
+                    QStr nsize(QStr::number(ss(ui->partitionsettings->verticalScrollBar()->width())));
+                    for(QWdt *wdgt : QWL{ui->partitionsettings, ui->livelist, ui->livedevices, ui->itemslist, ui->excludedlist, ui->license, ui->dirchoose}) wdgt->setStyleSheet("QScrollBar::vertical{width: " % nsize % "px}\nQScrollBar::horizontal{height: " % nsize % "px}");
                     QStyleOption optn;
                     optn.init(ui->pointpipe1);
-                    QStr nsize(QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width())));
-                    for(QCB *ckbx : findChildren<QCB *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+                    nsize = QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width()));
+                    for(QCB *ckbx : findChildren<QCB *>()) ckbx->setStyleSheet("QCheckBox::indicator{width:" % nsize % "px; height:" % nsize % "px}");
                     optn.init(ui->pnumber3);
                     nsize = QStr::number(ss(ui->pnumber3->style()->subElementRect(QStyle::SE_RadioButtonClickRect, &optn).width()));
-                    for(QRB *rbtn : findChildren<QRB *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px;}");
+                    for(QRB *rbtn : findChildren<QRB *>()) rbtn->setStyleSheet("QRadioButton::indicator{width:" % nsize % "px; height:" % nsize % "px}");
                 }
             }
         }
         else
+        {
             sfctr = Normal;
+
+            if(fnt != font())
+            {
+                for(QWdt *wdgt : QWL{ui->storagedir, ui->liveworkdir, ui->interrupt, ui->partitiondelete}) wdgt->setFont(fnt);
+                qApp->setFont(fnt);
+            }
+        }
     }
 
     if(dialog > 0)
@@ -176,7 +188,6 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
         for(QWdt *wdgt : QWL{ui->substatuspanel, ui->subpanel}) wdgt->setBackgroundRole(QPalette::Background);
         for(QWdt *wdgt : QWL{ui->function2, ui->function4, ui->windowbutton2, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Base);
-        ui->interrupt->setStyleSheet("QPushButton:enabled {color: red}");
         connect(ui->function2, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
         connect(ui->function2, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
         connect(ui->function2, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
@@ -272,17 +283,16 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             connect(ui->usersettingscopy, SIGNAL(Mouse_Enter()), this, SLOT(center()));
             connect(ui->usersettingscopy, SIGNAL(Mouse_Leave()), this, SLOT(cleave()));
             connect(ui->unmountdelete, SIGNAL(Mouse_Leave()), this, SLOT(umntleave()));
-            if(! (sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")) && sb::isdir("/.systemback")) on_installmenu_clicked();
+            if((sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")) && sb::isdir("/.systemback")) on_installmenu_clicked();
         }
 
         if(qApp->arguments().count() == 3 && qApp->arguments().value(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlay *","* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
         {
             for(QWdt *wdgt : QWL{ui->mainpanel, ui->schedulerpanel, ui->adminpasswordpipe, ui->adminpassworderror}) wdgt->hide();
             ui->passwordpanel->move(0, 0);
-            ui->adminstext->resize(fontMetrics().width(ui->adminstext->text()) + ss(7), ui->adminstext->height());
+            for(QLbl *lbl : QLbL{ui->adminstext, ui->adminpasswordtext}) lbl->resize(fontMetrics().width(lbl->text() + ss(7)), lbl->height());
             ui->admins->move(ui->adminstext->x() + ui->adminstext->width(), ui->admins->y());
             ui->admins->setMaximumWidth(ui->passwordpanel->width() - ui->admins->x() - ss(8));
-            ui->adminpasswordtext->resize(fontMetrics().width(ui->adminpasswordtext->text()) + ss(7), ui->adminpasswordtext->height());
             ui->adminpassword->move(ui->adminpasswordtext->x() + ui->adminpasswordtext->width(), ui->adminpassword->y());
             ui->adminpassword->resize(ss(336) - ui->adminpassword->x(), ui->adminpassword->height());
 
@@ -432,7 +442,6 @@ void systemback::unitimer()
                 }
 
                 for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->schedulerday, ui->schedulerhour, ui->schedulerminute, ui->schedulersecond}) wdgt->setBackgroundRole(QPalette::Base);
-                ui->partitiondelete->setStyleSheet("QPushButton:enabled {color: red}");
                 { QPalette pal(ui->license->palette());
                 pal.setBrush(QPalette::Base, pal.background());
                 ui->license->setPalette(pal); }
@@ -534,7 +543,7 @@ void systemback::unitimer()
                         }
                     }
 
-                    for(QLabel *lbl : findChildren<QLabel *>())
+                    for(QLbl *lbl : findChildren<QLbl *>())
                         if(lbl->alignment() == (Qt::AlignLeft | Qt::AlignVCenter) && lbl->text().isRightToLeft()) lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 }
                 else
@@ -588,7 +597,7 @@ void systemback::unitimer()
                     ui->schedulerusers->setCursorPosition(0);
                 }
 
-                for(QLabel *lbl : QList<QLabel *>{ui->includeuserstext, ui->grubreinstallrestoretext, ui->grubinstalltext, ui->grubreinstallrepairtext, ui->schedulerstatetext, ui->schedulersecondtext, ui->windowpositiontext, ui->homepage1, ui->homepage2, ui->email, ui->donate, ui->filesystemwarning}) lbl->resize(fontMetrics().width(lbl->text()) + ss(7), lbl->height());
+                for(QLbl *lbl : QLbL{ui->includeuserstext, ui->grubreinstallrestoretext, ui->grubinstalltext, ui->grubreinstallrepairtext, ui->schedulerstatetext, ui->schedulersecondtext, ui->windowpositiontext, ui->homepage1, ui->homepage2, ui->email, ui->donate, ui->filesystemwarning}) lbl->resize(lbl->fontMetrics().width(lbl->text()) + ss(7), lbl->height());
                 ui->includeusers->move(ui->includeuserstext->x() + ui->includeuserstext->width(), ui->includeusers->y());
                 ui->includeusers->setMaximumWidth(width() - ui->includeusers->x() - ss(8));
                 ui->grubreinstallrestore->move(ui->grubreinstallrestoretext->x() + ui->grubreinstallrestoretext->width(), ui->grubreinstallrestore->y());
@@ -748,8 +757,7 @@ void systemback::unitimer()
                 {
                     if(! ui->storagedirarea->styleSheet().isEmpty())
                     {
-                        for(QWdt *wdgt : QWL{ui->storagedirarea, ui->storagedir}) wdgt->setStyleSheet(nullptr);
-                        fontcheck(Strgdr);
+                        ui->storagedirarea->setStyleSheet(nullptr);
                         pntupgrade();
                     }
 
@@ -780,12 +788,7 @@ void systemback::unitimer()
                 {
                     if(ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) acserr();
                     if(ui->newrestorepoint->isEnabled()) ui->newrestorepoint->setDisabled(true);
-
-                    if(ui->storagedirarea->styleSheet().isEmpty())
-                    {
-                        for(QWdt *wdgt : QWL{ui->storagedirarea, ui->storagedir}) wdgt->setStyleSheet("background-color: rgb(255, 103, 103)");
-                        fontcheck(Strgdr);
-                    }
+                    if(ui->storagedirarea->styleSheet().isEmpty()) ui->storagedirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
                 }
 
                 if(ui->installpanel->isVisible())
@@ -802,12 +805,7 @@ void systemback::unitimer()
                     {
                         if(sb::isdir(sb::sdir[2]) && sb::access(sb::sdir[2], sb::Write))
                         {
-                            if(! ui->liveworkdirarea->styleSheet().isEmpty())
-                            {
-                                for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) wdgt->setStyleSheet(nullptr);
-                                fontcheck(Lvwrkdr);
-                            }
-
+                            if(! ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet(nullptr);
                             if(ickernel && ! ui->livecreatenew->isEnabled()) ui->livecreatenew->setEnabled(true);
 
                             if(! ui->livelist->isEnabled())
@@ -818,11 +816,7 @@ void systemback::unitimer()
                         }
                         else
                         {
-                            if(ui->liveworkdirarea->styleSheet().isEmpty())
-                            {
-                                for(QWdt *wdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) wdgt->setStyleSheet("background-color: rgb(255, 103, 103)");
-                                fontcheck(Lvwrkdr);
-                            }
+                            if(ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
 
                             for(QWdt *wdgt : QWL{ui->livecreatenew, ui->livedelete, ui->liveconvert, ui->livewritestart})
                                 if(wdgt->isEnabled()) wdgt->setDisabled(true);
@@ -980,40 +974,6 @@ QCB *systemback::getppipe(uchar num)
         if(++cnum == num) return ckbx;
 
     return nullptr;
-}
-
-void systemback::fontcheck(uchar wdgt)
-{
-    switch(wdgt) {
-    case Strgdr:
-        if(ui->storagedir->font().pixelSize() != ss(15))
-        {
-            for(QWdt *cwdgt : QWL{ui->storagedirarea, ui->storagedir}) cwdgt->setFont(font());
-            QFont fnt;
-            fnt.setPixelSize(ss(15));
-            fnt.setBold(true);
-            ui->storagedirbutton->setFont(fnt);
-        }
-
-        break;
-    case Lvwrkdr:
-        if(ui->liveworkdir->font().pixelSize() != ss(15))
-        {
-            for(QWdt *cwdgt : QWL{ui->liveworkdirarea, ui->liveworkdir}) cwdgt->setFont(font());
-            QFont fnt;
-            fnt.setPixelSize(ss(15));
-            fnt.setBold(true);
-            ui->liveworkdirbutton->setFont(fnt);
-        }
-
-        break;
-    case Dpath:
-        if(ui->dirpath->font().pixelSize() != ss(15)) ui->dirpath->setFont(font());
-        break;
-    case Rpnts:
-        for(QLE *ldt : ui->points->findChildren<QLE *>())
-            if(ldt->font().pixelSize() != ss(15)) ldt->setFont(font());
-    }
 }
 
 void systemback::busy(bool state)
@@ -1872,7 +1832,6 @@ void systemback::pntupgrade()
         }
 
     if(! sstart) on_pointpipe1_clicked();
-    fontcheck(Rpnts);
 }
 
 void systemback::statustart()
@@ -3546,7 +3505,7 @@ void systemback::pnmchange(uchar num)
 
             break;
         case 11:
-            goto end;
+            return;
         default:
             if(ldt->isEnabled())
             {
@@ -3564,9 +3523,6 @@ void systemback::pnmchange(uchar num)
             else if(ldt->text() == tr("empty"))
                 ldt->setText(tr("not used"));
         }
-
-end:
-    fontcheck(Rpnts);
 }
 
 void systemback::on_pnumber3_clicked()
@@ -4196,7 +4152,7 @@ void systemback::on_unmountdelete_clicked()
         if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().isEmpty())
         {
             ui->unmountdelete->setText(tr("! Delete !"));
-            ui->unmountdelete->setStyleSheet("QPushButton:enabled {color: red}");
+            ui->unmountdelete->setStyleSheet("QPushButton:enabled{color: red}");
             if(minside(ui->unmountdelete)) ui->unmountdelete->setDisabled(true);
             if(! ui->mountpoint->isEnabled()) ui->mountpoint->setEnabled(true);
             for(QWdt *wdgt : QWL{ui->filesystem, ui->format}) wdgt->setEnabled(true);
@@ -5002,7 +4958,6 @@ void systemback::on_dirrefresh_clicked()
         {
             ui->dirpath->setStyleSheet("color: red");
             ui->dirchooseok->setDisabled(true);
-            fontcheck(Dpath);
         }
 
         ui->dirchoosecancel->setFocus();
@@ -5029,14 +4984,12 @@ void systemback::on_dirchoose_currentItemChanged(QTrWI *crrnt)
                 {
                     ui->dirpath->setStyleSheet("color: red");
                     ui->dirchooseok->setDisabled(true);
-                    fontcheck(Dpath);
                 }
             }
             else if(! ui->dirpath->styleSheet().isEmpty())
             {
                 ui->dirpath->setStyleSheet(nullptr);
                 ui->dirchooseok->setEnabled(true);
-                fontcheck(Dpath);
             }
         }
         else
@@ -5056,7 +5009,6 @@ void systemback::on_dirchoose_currentItemChanged(QTrWI *crrnt)
                     {
                         ui->dirpath->setStyleSheet("color: red");
                         ui->dirchooseok->setDisabled(true);
-                        fontcheck(Dpath);
                     }
                 }
             }
@@ -5125,7 +5077,6 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                     {
                         ui->dirpath->setStyleSheet("color: red");
                         ui->dirchooseok->setDisabled(true);
-                        fontcheck(Dpath);
                     }
                 }
             }
@@ -5222,7 +5173,6 @@ void systemback::on_dirchooseok_clicked()
         ui->dirpath->setText("/");
         ui->dirpath->setStyleSheet("color: red");
         ui->dirchooseok->setDisabled(true);
-        fontcheck(Dpath);
     }
 }
 
@@ -5649,7 +5599,7 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
                 if(ui->unmountdelete->text() == tr("Unmount"))
                 {
                     ui->unmountdelete->setText(tr("! Delete !"));
-                    ui->unmountdelete->setStyleSheet("QPushButton:enabled {color: red}");
+                    ui->unmountdelete->setStyleSheet("QPushButton:enabled{color: red}");
                 }
 
                 if(! ui->partitionsettings->item(crrnt->row(), 4)->text().isEmpty() && ui->partitionsettings->item(crrnt->row(), 5)->text() == "btrfs")

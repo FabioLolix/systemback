@@ -26,6 +26,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QLabel>
 #include <QTranslator>
 #include <QTextStream>
 #include <QStringList>
@@ -39,9 +40,11 @@ typedef QLineEdit QLE;
 typedef QComboBox QCbB;
 typedef QRadioButton QRB;
 typedef QCheckBox QCB;
+typedef QLabel QLbl;
 typedef QTextStream QTS;
 typedef QList<QWidget *> QWL;
 typedef QList<QComboBox *> QCbBL;
+typedef QList<QLabel *> QLbL;
 typedef const QStringList cQSL;
 typedef QStringList QSL;
 typedef QList<QByteArray> QBAL;

@@ -1009,7 +1009,7 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgba(0, 0, 0, 0);</string>
+        <string notr="true">background-color: rgba(0, 0, 0, 0)</string>
        </property>
        <property name="frame">
         <bool>false</bool>
@@ -4044,7 +4044,7 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgba(0, 0, 0, 0);</string>
+        <string notr="true">background-color: rgba(0, 0, 0, 0)</string>
        </property>
        <property name="frame">
         <bool>false</bool>
@@ -4780,7 +4780,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0));</string>
+      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0))</string>
      </property>
     </widget>
     <widget class="lblevent" name="windowbutton1">
@@ -5771,6 +5771,9 @@
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton:enabled{color: red}</string>
+       </property>
        <property name="text">
         <string>! Delete !</string>
        </property>
@@ -6582,7 +6585,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0));</string>
+      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0))</string>
      </property>
     </widget>
     <widget class="QWidget" name="substatuspanel" native="true">
@@ -6655,6 +6658,9 @@
       </property>
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton:enabled{color: red}</string>
       </property>
       <property name="text">
        <string>! Interrupt !</string>
@@ -6764,7 +6770,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0));</string>
+      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0))</string>
      </property>
     </widget>
     <widget class="QWidget" name="subschedulerpanel" native="true">
@@ -6964,7 +6970,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0));</string>
+      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0))</string>
      </property>
     </widget>
     <widget class="QWidget" name="subdialogpanel" native="true">
@@ -7382,7 +7388,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0));</string>
+      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 205), stop:1 rgba(255, 255, 255, 0))</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

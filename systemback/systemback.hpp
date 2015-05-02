@@ -50,8 +50,7 @@ protected:
     void closeEvent(QCloseEvent *ev);
 
 private:
-    enum { Strgdr = 0, Lvwrkdr = 1, Dpath = 2, Rpnts = 3,
-           Normal = 100, High = 147, Max = 200 };
+    enum { Normal = 100, High = 147, Max = 200 };
 
     Ui::systemback *ui;
 
@@ -86,7 +85,6 @@ private:
     void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);
     void busy(bool state = true);
-    void fontcheck(uchar wdgt);
     void pnmchange(uchar num);
     void pntupgrade();
     void emptycache();

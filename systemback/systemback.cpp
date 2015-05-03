@@ -2996,7 +2996,7 @@ void systemback::wmove()
 
 void systemback::rmove()
 {
-    if(! wismax && size() != QSize((wgeom[2] = QCursor::pos().x() - x() + ss(31) - lblevent::MouseX), (wgeom[3] = QCursor::pos().y() - y() + ss(31) - lblevent::MouseY))) resize(wgeom[2], wgeom[3]);
+    if(! wismax) resize(QCursor::pos().x() - x() + ss(31) - lblevent::MouseX, QCursor::pos().y() - y() + ss(31) - lblevent::MouseY);
 }
 
 void systemback::on_functionmenunext_clicked()
@@ -3126,32 +3126,37 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
         }
 
-        if(! wismax && ! wmblck)
+        if(! wismax)
         {
-            if(wgeom[2] != width()) wgeom[2] = width();
-            if(wgeom[3] != height()) wgeom[3] = height();
+            if(! wmblck)
+            {
+                if(wgeom[2] != width()) wgeom[2] = width();
+                if(wgeom[3] != height()) wgeom[3] = height();
+            }
+
             goto bcheck;
         }
 
         return false;
     case QEvent::Move:
-        if(! wmblck)
+        if(! wismax)
         {
-            if(wismax)
-            {
-                schar snum(qApp->desktop()->screenNumber(this));
-
-                if(geometry() != qApp->desktop()->availableGeometry(snum))
-                {
-                    setGeometry(qApp->desktop()->availableGeometry(snum));
-                    return true;
-                }
-            }
-            else
+            if(! wmblck)
             {
                 if(wgeom[0] != x()) wgeom[0] = x();
                 if(wgeom[1] != y()) wgeom[1] = y();
-                goto bcheck;
+            }
+
+            goto bcheck;
+        }
+        else if(! wmblck)
+        {
+            schar snum(qApp->desktop()->screenNumber(this));
+
+            if(geometry() != qApp->desktop()->availableGeometry(snum))
+            {
+                setGeometry(qApp->desktop()->availableGeometry(snum));
+                return true;
             }
         }
 
@@ -3195,7 +3200,7 @@ gcheck:
     }
 
 bcheck:
-    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0) bttnshide();
+    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0) ui->buttonspanel->hide();
     return false;
 }
 
@@ -3824,7 +3829,7 @@ void systemback::on_systemupgrade_clicked()
     pset(11);
     QDateTime ofdate(QFileInfo("/usr/bin/systemback").lastModified());
     sb::unlock(sb::Dpkglock);
-    sb::exec("xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+80+70 -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e sbsysupgrade");
+    sb::exec("xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+" % QStr::number(ss(80)) % '+' % QStr::number(ss(70)) % " -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e sbsysupgrade");
 
     if(isVisible())
     {

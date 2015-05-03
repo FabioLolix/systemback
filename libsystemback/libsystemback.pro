@@ -33,7 +33,8 @@ QMAKE_CXXFLAGS_WARN_ON += -Wextra \
                           -Wshadow \
                           -Werror
 
-QMAKE_LFLAGS += -Wl,--as-needed \
+QMAKE_LFLAGS += -Wl,-Bsymbolic-functions \
+                -Wl,--as-needed \
                 -fuse-ld=gold \
                 -flto
 

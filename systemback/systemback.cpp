@@ -1208,7 +1208,7 @@ void systemback::wdblclck()
 
 void systemback::benter(bool click)
 {
-    if(click || qApp->mouseButtons() == Qt::NoButton)
+    if(click || (qApp->mouseButtons() == Qt::NoButton && ui->function3->foregroundRole() == QPalette::Base))
     {
         if(ui->statuspanel->isVisible())
         {
@@ -1219,7 +1219,7 @@ void systemback::benter(bool click)
             }
 
             if(ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->hide();
-            if(ui->buttonspanel->width() != ss(48)) ui->buttonspanel->resize(ui->buttonspanel->height(), ui->buttonspanel->height());
+            if(ui->buttonspanel->width() != ui->buttonspanel->height()) ui->buttonspanel->resize(ui->buttonspanel->height(), ui->buttonspanel->height());
         }
         else if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible())
         {

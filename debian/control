@@ -7,7 +7,7 @@ Standards-Version: 3.9.6
 
 Package: systemback
 Architecture: amd64 i386
-Depends: ${misc:Depends}, ${shlibs:Depends}, casper | live-boot, dosfstools, fonts-freefont-ttf | ttf-freefont, genisoimage, squashfs-tools,
+Depends: ${misc:Depends}, ${shlibs:Depends}, casper | live-boot, dosfstools, fonts-freefont-ttf | ttf-freefont, genisoimage, squashfs-tools, syslinux,
  syslinux (<< 3:5) | isolinux (>> 3:6), syslinux (<< 3:5) | syslinux-common (>> 3:6), syslinux (<< 3:5) | syslinux-utils (>> 3:6),
  systemback-efiboot-amd64 (= ${source:Version}) [amd64], systemback-scheduler (= ${binary:Version}), upstart | sysvinit (>= 2.88) | systemd, xterm,
  zenity | kde-baseapps-bin | kdebase-bin

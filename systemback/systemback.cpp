@@ -76,19 +76,18 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     connect(ui->function3, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
     connect(ui->function3, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
     connect(ui->windowbutton3, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
-    connect(ui->windowbutton3, SIGNAL(Mouse_Pressed()), this, SLOT(cbenter()));
-    connect(ui->buttonspanel, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
+    connect(ui->windowbutton3, SIGNAL(Mouse_Pressed()), this, SLOT(bpressed()));
+    connect(ui->windowbutton3, SIGNAL(Mouse_Released()), this, SLOT(wbreleased()));
+    for(QWdt *wdgt : QWL{ui->windowbutton3, ui->buttonspanel, ui->windowminimize, ui->windowclose}) connect(wdgt, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
     connect(ui->buttonspanel, SIGNAL(Mouse_Leave()), this, SLOT(bleave()));
-    connect(ui->windowminimize, SIGNAL(Mouse_Enter()), this, SLOT(wminenter()));
-    connect(ui->windowminimize, SIGNAL(Mouse_Leave()), this, SLOT(wminleave()));
-    connect(ui->windowminimize, SIGNAL(Mouse_Pressed()), this, SLOT(wminpressed()));
-    connect(ui->windowminimize, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
-    connect(ui->windowminimize, SIGNAL(Mouse_Released()), this, SLOT(wminreleased()));
-    connect(ui->windowclose, SIGNAL(Mouse_Enter()), this, SLOT(wcenter()));
-    connect(ui->windowclose, SIGNAL(Mouse_Leave()), this, SLOT(wcleave()));
-    connect(ui->windowclose, SIGNAL(Mouse_Pressed()), this, SLOT(wcpressed()));
-    connect(ui->windowclose, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
-    connect(ui->windowclose, SIGNAL(Mouse_Released()), this, SLOT(wcreleased()));
+
+    for(QWdt *wdgt : QWL{ui->windowminimize, ui->windowclose})
+    {
+        connect(wdgt, SIGNAL(Mouse_Enter()), this, SLOT(wbenter()));
+        connect(wdgt, SIGNAL(Mouse_Leave()), this, SLOT(wbleave()));
+        connect(wdgt, SIGNAL(Mouse_Pressed()), this, SLOT(mpressed()));
+        connect(wdgt, SIGNAL(Mouse_Released()), this, SLOT(wbreleased()));
+    }
 
     dialog = getuid() + getgid() > 0 ? 305 : [this] {
             if(qApp->arguments().count() == 2 && qApp->arguments().value(1) == "schedule")
@@ -188,16 +187,22 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
         for(QWdt *wdgt : QWL{ui->substatuspanel, ui->subpanel}) wdgt->setBackgroundRole(QPalette::Background);
         for(QWdt *wdgt : QWL{ui->function2, ui->function4, ui->windowbutton2, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Base);
-        connect(ui->function2, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
-        connect(ui->function2, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
-        connect(ui->function2, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
-        connect(ui->function4, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
-        connect(ui->function4, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
-        connect(ui->function4, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
-        connect(ui->windowbutton2, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
-        connect(ui->windowbutton2, SIGNAL(Mouse_Pressed()), this, SLOT(cbenter()));
-        connect(ui->windowbutton4, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
-        connect(ui->windowbutton4, SIGNAL(Mouse_Pressed()), this, SLOT(cbenter()));
+
+        for(QWdt *wdgt : QWL{ui->function2, ui->function4})
+        {
+            connect(wdgt, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
+            connect(wdgt, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
+            connect(wdgt, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
+        }
+
+        for(QWdt *wdgt : QWL{ui->windowbutton2, ui->windowbutton4})
+        {
+            connect(wdgt, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
+            connect(wdgt, SIGNAL(Mouse_Pressed()), this, SLOT(bpressed()));
+        }
+
+        connect(ui->windowbutton4, SIGNAL(Mouse_Released()), this, SLOT(wbreleased()));
+        connect(ui->windowbutton4, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
 
         if(! sstart)
         {
@@ -221,63 +226,40 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             else
                 ui->scalingfactor->setText('x' % sb::wsclng);
 
-            connect(ui->windowmaximize, SIGNAL(Mouse_Enter()), this, SLOT(wmaxenter()));
-            connect(ui->windowmaximize, SIGNAL(Mouse_Leave()), this, SLOT(wmaxleave()));
-            connect(ui->windowmaximize, SIGNAL(Mouse_Pressed()), this, SLOT(wmaxpressed()));
-            connect(ui->windowmaximize, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
-            connect(ui->windowmaximize, SIGNAL(Mouse_Released()), this, SLOT(wmaxreleased()));
+            connect(ui->windowmaximize, SIGNAL(Mouse_Enter()), this, SLOT(wbenter()));
+            connect(ui->windowmaximize, SIGNAL(Mouse_Leave()), this, SLOT(wbleave()));
+            for(QWdt *wdgt : QWL{ui->windowmaximize, ui->scalingbutton, ui->homepage1, ui->homepage2, ui->email, ui->donate}) connect(wdgt, SIGNAL(Mouse_Pressed()), this, SLOT(mpressed()));
+
+            for(QWdt *wdgt : QWL{ui->windowmaximize, ui->windowbutton1})
+            {
+                connect(wdgt, SIGNAL(Mouse_Move()), this, SLOT(bmove()));
+                connect(wdgt, SIGNAL(Mouse_Released()), this, SLOT(wbreleased()));
+            }
+
+            for(QWdt *wdgt : QWL{ui->chooseresize, ui->copyresize, ui->excluderesize})
+            {
+                connect(wdgt, SIGNAL(Mouse_Enter()), this, SLOT(renter()));
+                connect(wdgt, SIGNAL(Mouse_Leave()), this, SLOT(rleave()));
+                connect(wdgt, SIGNAL(Mouse_Pressed()), this, SLOT(rpressed()));
+                connect(wdgt, SIGNAL(Mouse_Released()), this, SLOT(rreleased()));
+                connect(wdgt, SIGNAL(Mouse_Move()), this, SLOT(rmove()));
+            }
+
             connect(ui->function1, SIGNAL(Mouse_Pressed()), this, SLOT(wpressed()));
             connect(ui->function1, SIGNAL(Mouse_Move()), this, SLOT(wmove()));
             connect(ui->function1, SIGNAL(Mouse_Released()), this, SLOT(wreleased()));
             connect(ui->function1, SIGNAL(Mouse_DblClick()), this, SLOT(wdblclck()));
-            connect(ui->scalingbutton, SIGNAL(Mouse_Pressed()), this, SLOT(sbttnpressed()));
             connect(ui->scalingbutton, SIGNAL(Mouse_Released()), this, SLOT(sbttnreleased()));
             connect(ui->scalingbutton, SIGNAL(Mouse_Move()), this, SLOT(sbttnmove()));
             connect(ui->scalingbuttonspanel, SIGNAL(Mouse_Leave()), this, SLOT(sbttnleave()));
             connect(ui->windowbutton1, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
-            connect(ui->windowbutton1, SIGNAL(Mouse_Pressed()), this, SLOT(cbenter()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Enter()), this, SLOT(chsenter()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Leave()), this, SLOT(chsleave()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Pressed()), this, SLOT(chspressed()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Released()), this, SLOT(chsreleased()));
-            connect(ui->chooseresize, SIGNAL(Mouse_Move()), this, SLOT(rmove()));
-            connect(ui->copyresize, SIGNAL(Mouse_Enter()), this, SLOT(cpyenter()));
-            connect(ui->copyresize, SIGNAL(Mouse_Leave()), this, SLOT(cpyleave()));
-            connect(ui->copyresize, SIGNAL(Mouse_Pressed()), this, SLOT(chspressed()));
-            connect(ui->copyresize, SIGNAL(Mouse_Released()), this, SLOT(chsreleased()));
-            connect(ui->copyresize, SIGNAL(Mouse_Move()), this, SLOT(rmove()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Enter()), this, SLOT(xcldenter()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Leave()), this, SLOT(xcldleave()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Pressed()), this, SLOT(chspressed()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Released()), this, SLOT(chsreleased()));
-            connect(ui->excluderesize, SIGNAL(Mouse_Move()), this, SLOT(rmove()));
-            connect(ui->homepage1, SIGNAL(Mouse_Pressed()), this, SLOT(hmpg1pressed()));
-            connect(ui->homepage1, SIGNAL(Mouse_Released()), this, SLOT(hmpg1released()));
+            connect(ui->windowbutton1, SIGNAL(Mouse_Pressed()), this, SLOT(bpressed()));
+            for(QWdt *wdgt : QWL{ui->homepage1, ui->homepage2, ui->email, ui->donate}) connect(wdgt, SIGNAL(Mouse_Released()), this, SLOT(abtreleased()));
             connect(ui->homepage1, SIGNAL(Mouse_Move()), this, SLOT(hmpg1move()));
-            connect(ui->homepage2, SIGNAL(Mouse_Pressed()), this, SLOT(hmpg2pressed()));
-            connect(ui->homepage2, SIGNAL(Mouse_Released()), this, SLOT(hmpg2released()));
             connect(ui->homepage2, SIGNAL(Mouse_Move()), this, SLOT(hmpg2move()));
-            connect(ui->email, SIGNAL(Mouse_Pressed()), this, SLOT(emailpressed()));
-            connect(ui->email, SIGNAL(Mouse_Released()), this, SLOT(emailreleased()));
             connect(ui->email, SIGNAL(Mouse_Move()), this, SLOT(emailmove()));
-            connect(ui->donate, SIGNAL(Mouse_Pressed()), this, SLOT(dntpressed()));
-            connect(ui->donate, SIGNAL(Mouse_Released()), this, SLOT(dntreleased()));
             connect(ui->donate, SIGNAL(Mouse_Move()), this, SLOT(dntmove()));
-            connect(ui->point1, SIGNAL(Focus_Out()), this, SLOT(foutp1()));
-            connect(ui->point2, SIGNAL(Focus_Out()), this, SLOT(foutp2()));
-            connect(ui->point3, SIGNAL(Focus_Out()), this, SLOT(foutp3()));
-            connect(ui->point4, SIGNAL(Focus_Out()), this, SLOT(foutp4()));
-            connect(ui->point5, SIGNAL(Focus_Out()), this, SLOT(foutp5()));
-            connect(ui->point6, SIGNAL(Focus_Out()), this, SLOT(foutp6()));
-            connect(ui->point7, SIGNAL(Focus_Out()), this, SLOT(foutp7()));
-            connect(ui->point8, SIGNAL(Focus_Out()), this, SLOT(foutp8()));
-            connect(ui->point9, SIGNAL(Focus_Out()), this, SLOT(foutp9()));
-            connect(ui->point10, SIGNAL(Focus_Out()), this, SLOT(foutp10()));
-            connect(ui->point11, SIGNAL(Focus_Out()), this, SLOT(foutp11()));
-            connect(ui->point12, SIGNAL(Focus_Out()), this, SLOT(foutp12()));
-            connect(ui->point13, SIGNAL(Focus_Out()), this, SLOT(foutp13()));
-            connect(ui->point14, SIGNAL(Focus_Out()), this, SLOT(foutp14()));
-            connect(ui->point15, SIGNAL(Focus_Out()), this, SLOT(foutp15()));
+            for(QLE *ldt : ui->points->findChildren<QLE *>()) connect(ldt, SIGNAL(Focus_Out()), this, SLOT(foutpnt()));
             connect(ui->partitionsettings, SIGNAL(Focus_In()), this, SLOT(finpsttngs()));
             connect(ui->partitionsettings, SIGNAL(Focus_Out()), this, SLOT(foutpsttngs()));
             connect(ui->usersettingscopy, SIGNAL(Mouse_Enter()), this, SLOT(center()));
@@ -1130,8 +1112,8 @@ void systemback::stschange()
     }
 
     setGeometry(rct.x(), rct.y(), rct.width(), rct.height());
-    wmblck = false;
     ui->resizepanel->hide();
+    wmblck = false;
 
     if(! wismax)
         setMaximumSize(qApp->desktop()->availableGeometry(snum).width() - ss(60), qApp->desktop()->availableGeometry(snum).height() - ss(60));
@@ -1236,7 +1218,6 @@ void systemback::benter(bool click)
             else if(ui->windowmaximize->text() == "▭")
                 ui->windowmaximize->setText("□");
 
-            wmaxleave();
             if(ui->windowclose->x() != ss(92)) ui->windowclose->move(ss(92), ss(2));
             if(! ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->show();
             if(ui->buttonspanel->width() != ss(138)) ui->buttonspanel->resize(ss(138), ui->buttonspanel->height());
@@ -1254,14 +1235,15 @@ void systemback::benter(bool click)
             if(ui->buttonspanel->width() != ss(93)) ui->buttonspanel->resize(ss(93), ui->buttonspanel->height());
         }
 
-        wminleave();
+        wbleave();
         bttnsshow();
     }
 }
 
-void systemback::cbenter()
+void systemback::bpressed()
 {
     benter(true);
+    if(ui->windowclose->isVisible()) ui->windowclose->setForegroundRole(QPalette::Highlight);
 }
 
 void systemback::bttnsshow()
@@ -1359,111 +1341,73 @@ void systemback::bleave()
     if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0) bttnshide();
 }
 
-void systemback::wmaxenter()
+void systemback::wbenter()
 {
-     ui->windowmaximize->setBackgroundRole(QPalette::Background);
-     ui->windowmaximize->setForegroundRole(QPalette::Text);
+    QWdt *wdgt(minside(ui->windowminimize) ? ui->windowminimize : ui->windowclose->isVisible() && minside(ui->windowclose) ? ui->windowclose : ui->windowmaximize);
+    wdgt->setBackgroundRole(QPalette::Background);
+    wdgt->setForegroundRole(QPalette::Text);
 }
 
-void systemback::wmaxleave()
+void systemback::wbleave()
 {
-    if(ui->windowmaximize->backgroundRole() == QPalette::Background)
+    for(QWdt *wdgt : QWL{ui->windowminimize, ui->windowclose, ui->windowmaximize})
+        if(wdgt->backgroundRole() == QPalette::Background)
+        {
+            wdgt->setBackgroundRole(QPalette::Foreground);
+            wdgt->setForegroundRole(QPalette::Base);
+            break;
+        }
+
+}
+
+void systemback::wbreleased()
+{
+    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0)
     {
-        ui->windowmaximize->setBackgroundRole(QPalette::Foreground);
-        ui->windowmaximize->setForegroundRole(QPalette::Base);
+        if(ui->windowclose->isVisible() && minside(ui->windowclose))
+        {
+            if(ui->windowclose->foregroundRole() == QPalette::Highlight) close();
+        }
+        else if(ui->windowmaximize->isVisible() && minside(ui->windowmaximize))
+        {
+            if(ui->windowmaximize->foregroundRole() == QPalette::Highlight)
+            {
+                ui->buttonspanel->hide();
+                stschange();
+            }
+        }
+        else if(ui->windowminimize->foregroundRole() == QPalette::Highlight)
+        {
+            Display *dsply(XOpenDisplay(nullptr));
+            XWindowAttributes attr;
+            XGetWindowAttributes(dsply, winId(), &attr);
+            XIconifyWindow(dsply, winId(), XScreenNumberOfScreen(attr.screen));
+            XFlush(dsply);
+            XCloseDisplay(dsply);
+        }
     }
 }
 
-void systemback::wmaxpressed()
+void systemback::renter()
 {
-    ui->windowmaximize->setForegroundRole(QPalette::Highlight);
-}
+    QWdt *wdgt(ui->copypanel->isVisible() ? ui->copyresize : ui->choosepanel->isVisible() ? ui->chooseresize : ui->excluderesize);
 
-void systemback::wmaxreleased()
-{
-    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0 && ui->windowmaximize->foregroundRole() == QPalette::Highlight)
-    {
-        ui->buttonspanel->hide();
-        stschange();
-    }
-}
-
-void systemback::wminenter()
-{
-    ui->windowminimize->setBackgroundRole(QPalette::Background);
-    ui->windowminimize->setForegroundRole(QPalette::Text);
-}
-
-void systemback::wminleave()
-{
-    if(ui->windowminimize->backgroundRole() == QPalette::Background)
-    {
-        ui->windowminimize->setBackgroundRole(QPalette::Foreground);
-        ui->windowminimize->setForegroundRole(QPalette::Base);
-    }
-}
-
-void systemback::wminpressed()
-{
-    ui->windowminimize->setForegroundRole(QPalette::Highlight);
-}
-
-void systemback::wminreleased()
-{
-    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0 && ui->windowminimize->foregroundRole() == QPalette::Highlight)
-    {
-        ui->buttonspanel->hide();
-        Display *dsply(XOpenDisplay(nullptr));
-        XWindowAttributes attr;
-        XGetWindowAttributes(dsply, winId(), &attr);
-        XIconifyWindow(dsply, winId(), XScreenNumberOfScreen(attr.screen));
-        XFlush(dsply);
-        XCloseDisplay(dsply);
-    }
-}
-
-void systemback::wcenter()
-{
-    ui->windowclose->setBackgroundRole(QPalette::Background);
-    ui->windowclose->setForegroundRole(QPalette::Text);
-}
-
-void systemback::wcleave()
-{
-    if(ui->windowclose->backgroundRole() == QPalette::Background)
-    {
-        ui->windowclose->setBackgroundRole(QPalette::Foreground);
-        ui->windowclose->setForegroundRole(QPalette::Base);
-    }
-}
-
-void systemback::wcpressed()
-{
-    ui->windowclose->setForegroundRole(QPalette::Highlight);
-}
-
-void systemback::wcreleased()
-{
-    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0 && ui->windowclose->foregroundRole() == QPalette::Highlight) close();
-}
-
-void systemback::chsenter()
-{
     if(! wismax)
     {
-        if(ui->chooseresize->cursor().shape() == Qt::ArrowCursor) ui->chooseresize->setCursor(Qt::PointingHandCursor);
-        if(ui->chooseresize->width() == ss(10)) ui->chooseresize->setGeometry(ui->chooseresize->x() - ss(20), ui->chooseresize->y() - ss(20), ss(30), ss(30));
+        if(wdgt->cursor().shape() == Qt::ArrowCursor) wdgt->setCursor(Qt::PointingHandCursor);
+        if(wdgt->width() == ss(10)) wdgt->setGeometry(wdgt->x() - ss(20), wdgt->y() - ss(20), ss(30), ss(30));
     }
-    else if(ui->chooseresize->cursor().shape() == Qt::PointingHandCursor)
-        ui->chooseresize->setCursor(Qt::ArrowCursor);
+    else if(wdgt->cursor().shape() == Qt::PointingHandCursor)
+        wdgt->setCursor(Qt::ArrowCursor);
 }
 
-void systemback::chsleave()
+void systemback::rleave()
 {
-    if(ui->chooseresize->width() == ss(30) && (! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor)) ui->chooseresize->setGeometry(ui->chooseresize->x() + ss(20), ui->chooseresize->y() + ss(20), ss(10), ss(10));
+    QWdt *wdgt(ui->copypanel->isVisible() ? ui->copyresize : ui->choosepanel->isVisible() ? ui->chooseresize : ui->excluderesize);
+    if(wdgt->width() == ss(30) && (! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor)) wdgt->setGeometry(wdgt->x() + ss(20), wdgt->y() + ss(20), ss(10), ss(10));
 }
 
-void systemback::chspressed()
+void systemback::rpressed()
 {
     if(! wismax)
     {
@@ -1472,50 +1416,13 @@ void systemback::chspressed()
     }
 }
 
-void systemback::chsreleased()
+void systemback::rreleased()
 {
     if(qApp->overrideCursor() && qApp->overrideCursor()->shape() == Qt::SizeFDiagCursor)
     {
         qApp->restoreOverrideCursor();
         if(busycnt > 0) qApp->setOverrideCursor(Qt::WaitCursor);
     }
-}
-
-void systemback::cpyenter()
-{
-    if(! wismax)
-    {
-        if(ui->copyresize->cursor().shape() == Qt::ArrowCursor) ui->copyresize->setCursor(Qt::PointingHandCursor);
-        if(ui->copyresize->width() == ss(10)) ui->copyresize->setGeometry(ui->copyresize->x() - ss(20), ui->copyresize->y() - ss(20), ss(30), ss(30));
-    }
-    else if(ui->copyresize->cursor().shape() == Qt::PointingHandCursor)
-        ui->copyresize->setCursor(Qt::ArrowCursor);
-}
-
-void systemback::cpyleave()
-{
-    if(ui->copyresize->width() == ss(30) && (! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor)) ui->copyresize->setGeometry(ui->copyresize->x() + ss(20), ui->copyresize->y() + ss(20), ss(10), ss(10));
-}
-
-void systemback::xcldenter()
-{
-    if(! wismax)
-    {
-        if(ui->excluderesize->cursor().shape() == Qt::ArrowCursor) ui->excluderesize->setCursor(Qt::PointingHandCursor);
-        if(ui->excluderesize->width() == ss(10)) ui->excluderesize->setGeometry(ui->excluderesize->x() - ss(20), ui->excluderesize->y() - ss(20), ss(30), ss(30));
-    }
-    else if(ui->excluderesize->cursor().shape() == Qt::PointingHandCursor)
-        ui->excluderesize->setCursor(Qt::ArrowCursor);
-}
-
-void systemback::xcldleave()
-{
-    if(ui->excluderesize->width() == ss(30) && (! qApp->overrideCursor() || qApp->overrideCursor()->shape() != Qt::SizeFDiagCursor)) ui->excluderesize->setGeometry(ui->excluderesize->x() + ss(20), ui->excluderesize->y() + ss(20), ss(10), ss(10));
-}
-
-void systemback::sbttnpressed()
-{
-    ui->scalingbutton->setForegroundRole(QPalette::Highlight);
 }
 
 void systemback::sbttnreleased()
@@ -1572,17 +1479,32 @@ void systemback::sbttnleave()
     }
 }
 
-void systemback::hmpg1pressed()
+void systemback::mpressed()
 {
-    ui->homepage1->setForegroundRole(QPalette::Highlight);
+    (ui->buttonspanel->isVisible() ? minside(ui->windowminimize) ? ui->windowminimize : ui->windowclose->isVisible() && minside(ui->windowclose) ? ui->windowclose : ui->windowmaximize : ui->scalingbutton->isVisible() && minside(ui->scalingbutton) ? ui->scalingbutton : minside(ui->homepage1) ? ui->homepage1 : minside(ui->homepage2) ? ui->homepage2 : minside(ui->email) ? ui->email : ui->donate)->setForegroundRole(QPalette::Highlight);
 }
 
-void systemback::hmpg1released()
+void systemback::abtreleased()
 {
     if(ui->homepage1->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage1->setForegroundRole(QPalette::Text);
         sb::exec("su -c \"xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), nullptr, sb::Bckgrnd);
+    }
+    else if(ui->homepage2->foregroundRole() == QPalette::Highlight)
+    {
+        ui->homepage2->setForegroundRole(QPalette::Text);
+        sb::exec("su -c \"xdg-open https://launchpad.net/systemback &\" " % guname(), nullptr, sb::Bckgrnd);
+    }
+    else if(ui->email->foregroundRole() == QPalette::Highlight)
+    {
+        ui->email->setForegroundRole(QPalette::Text);
+        sb::exec("su -c \"xdg-email nemh@freemail.hu &\" " % guname(), nullptr, sb::Bckgrnd);
+    }
+    else if(ui->donate->foregroundRole() == QPalette::Highlight)
+    {
+        ui->donate->setForegroundRole(QPalette::Text);
+        sb::exec("su -c \"xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), nullptr, sb::Bckgrnd);
     }
 }
 
@@ -1596,20 +1518,6 @@ void systemback::hmpg1move()
         ui->homepage1->setForegroundRole(QPalette::Text);
 }
 
-void systemback::hmpg2pressed()
-{
-    ui->homepage2->setForegroundRole(QPalette::Highlight);
-}
-
-void systemback::hmpg2released()
-{
-    if(ui->homepage2->foregroundRole() == QPalette::Highlight)
-    {
-        ui->homepage2->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open https://launchpad.net/systemback &\" " % guname(), nullptr, sb::Bckgrnd);
-    }
-}
-
 void systemback::hmpg2move()
 {
     if(minside(ui->homepage2))
@@ -1618,20 +1526,6 @@ void systemback::hmpg2move()
     }
     else if(ui->homepage2->foregroundRole() == QPalette::Highlight)
         ui->homepage2->setForegroundRole(QPalette::Text);
-}
-
-void systemback::emailpressed()
-{
-    ui->email->setForegroundRole(QPalette::Highlight);
-}
-
-void systemback::emailreleased()
-{
-    if(ui->email->foregroundRole() == QPalette::Highlight)
-    {
-        ui->email->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-email nemh@freemail.hu &\" " % guname(), nullptr, sb::Bckgrnd);
-    }
 }
 
 void systemback::emailmove()
@@ -1644,20 +1538,6 @@ void systemback::emailmove()
         ui->email->setForegroundRole(QPalette::Text);
 }
 
-void systemback::dntpressed()
-{
-    ui->donate->setForegroundRole(QPalette::Highlight);
-}
-
-void systemback::dntreleased()
-{
-    if(ui->donate->foregroundRole() == QPalette::Highlight)
-    {
-        ui->donate->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), nullptr, sb::Bckgrnd);
-    }
-}
-
 void systemback::dntmove()
 {
     if(minside(ui->donate))
@@ -1668,79 +1548,20 @@ void systemback::dntmove()
         ui->donate->setForegroundRole(QPalette::Text);
 }
 
-void systemback::foutp1()
+void systemback::foutpnt()
 {
-    if(ui->point1->text().isEmpty()) ui->point1->setText(sb::pnames[0]);
-}
+    schar num(-1);
 
-void systemback::foutp2()
-{
-    if(ui->point2->text().isEmpty()) ui->point2->setText(sb::pnames[1]);
-}
+    for(QLE *ldt : ui->points->findChildren<QLE *>())
+    {
+        ++num;
 
-void systemback::foutp3()
-{
-    if(ui->point3->text().isEmpty()) ui->point3->setText(sb::pnames[2]);
-}
-
-void systemback::foutp4()
-{
-    if(ui->point4->text().isEmpty()) ui->point4->setText(sb::pnames[3]);
-}
-
-void systemback::foutp5()
-{
-    if(ui->point5->text().isEmpty()) ui->point5->setText(sb::pnames[4]);
-}
-
-void systemback::foutp6()
-{
-    if(ui->point6->text().isEmpty()) ui->point6->setText(sb::pnames[5]);
-}
-
-void systemback::foutp7()
-{
-    if(ui->point7->text().isEmpty()) ui->point7->setText(sb::pnames[6]);
-}
-
-void systemback::foutp8()
-{
-    if(ui->point8->text().isEmpty()) ui->point8->setText(sb::pnames[7]);
-}
-
-void systemback::foutp9()
-{
-    if(ui->point9->text().isEmpty()) ui->point9->setText(sb::pnames[8]);
-}
-
-void systemback::foutp10()
-{
-    if(ui->point10->text().isEmpty()) ui->point10->setText(sb::pnames[9]);
-}
-
-void systemback::foutp11()
-{
-    if(ui->point11->text().isEmpty()) ui->point11->setText(sb::pnames[10]);
-}
-
-void systemback::foutp12()
-{
-    if(ui->point12->text().isEmpty()) ui->point12->setText(sb::pnames[11]);
-}
-
-void systemback::foutp13()
-{
-    if(ui->point13->text().isEmpty()) ui->point13->setText(sb::pnames[12]);
-}
-
-void systemback::foutp14()
-{
-    if(ui->point14->text().isEmpty()) ui->point14->setText(sb::pnames[13]);
-}
-
-void systemback::foutp15()
-{
-    if(ui->point15->text().isEmpty()) ui->point15->setText(sb::pnames[14]);
+        if(ldt->text().isEmpty())
+        {
+            ldt->setText(sb::pnames[num]);
+            break;
+        }
+    }
 }
 
 void systemback::finpsttngs()

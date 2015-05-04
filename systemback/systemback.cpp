@@ -1243,7 +1243,7 @@ void systemback::benter(bool click)
 void systemback::bpressed()
 {
     benter(true);
-    if(ui->windowclose->isVisible()) ui->windowclose->setForegroundRole(QPalette::Highlight);
+    if(ui->windowclose->isVisible() && qApp->mouseButtons() == Qt::LeftButton && minside(ui->windowclose)) ui->windowclose->setForegroundRole(QPalette::Highlight);
 }
 
 void systemback::bttnsshow()
@@ -1357,14 +1357,17 @@ void systemback::wbleave()
             wdgt->setForegroundRole(QPalette::Base);
             break;
         }
-
 }
 
 void systemback::wbreleased()
 {
-    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0)
+    if(ui->buttonspanel->isVisible())
     {
-        if(ui->windowclose->isVisible() && minside(ui->windowclose))
+        if(ui->buttonspanel->y() < 0)
+        {
+            if(ui->windowclose->foregroundRole() == QPalette::Highlight) ui->windowclose->setForegroundRole(ui->windowclose->backgroundRole() == QPalette::Background ? QPalette::Text : QPalette::Base);
+        }
+        else if(ui->windowclose->isVisible() && minside(ui->windowclose))
         {
             if(ui->windowclose->foregroundRole() == QPalette::Highlight) close();
         }
@@ -1556,7 +1559,7 @@ void systemback::foutpnt()
     {
         ++num;
 
-        if(ldt->text().isEmpty())
+        if(ldt->isEnabled() && ldt->text().isEmpty())
         {
             ldt->setText(sb::pnames[num]);
             break;

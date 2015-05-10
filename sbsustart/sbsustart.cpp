@@ -24,7 +24,7 @@
 void sustart::main()
 {
     {
-        uchar rv(! sb::like(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().value(1), {"_systemback_", "_scheduler_"}) ? 2 : [&] {
+        uchar rv(! sb::like(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().at(1), {"_systemback_", "_scheduler_"}) ? 2 : [&] {
                 QStr uname, usrhm;
 
                 if(uid == 0)
@@ -68,7 +68,7 @@ void sustart::main()
                             return true;
                         });
 
-                    if(qApp->arguments().value(1) == "systemback")
+                    if(qApp->arguments().at(1) == "systemback")
                     {
                         QStr xauth("/tmp/sbXauthority-" % sb::rndstr());
                         if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (! sb::isfile("/home/" % uname % "/.Xauthority") || ! QFile("/home/" % uname % "/.Xauthority").copy(xauth)) && (! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth))) return 4;
@@ -81,7 +81,7 @@ void sustart::main()
                         cmd = new QStr("sbscheduler " % uname);
                 }
                 else
-                    cmd = new QStr(qApp->arguments().value(1) == "systemback" ? "systemback" : [&]() -> QStr {
+                    cmd = new QStr(qApp->arguments().at(1) == "systemback" ? "systemback" : [&]() -> QStr {
                             qputenv("HOME", usrhm.toUtf8());
                             return "sbscheduler " % uname;
                         }());
@@ -95,7 +95,7 @@ void sustart::main()
                 sb::error("\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
             else
             {
-                QStr emsg((qApp->arguments().value(1) == "systemback" ? tr("Cannot start Systemback graphical user interface!") : tr("Cannot start Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? tr("Unable to get root permissions.") : tr("Unable to connect to X server.")));
+                QStr emsg((qApp->arguments().at(1) == "systemback" ? tr("Cannot start Systemback graphical user interface!") : tr("Cannot start Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? tr("Unable to get root permissions.") : tr("Unable to connect to X server.")));
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
                 if(uid != geteuid() && seteuid(uid) == -1)
@@ -110,6 +110,6 @@ void sustart::main()
         }
     }
 
-    if(qApp->arguments().value(2) == "gtk+") qputenv("QT_STYLE_OVERRIDE", "gtk+");
+    if(qApp->arguments().count() == 3 && qApp->arguments().at(2) == "gtk+") qputenv("QT_STYLE_OVERRIDE", "gtk+");
     qApp->exit(sb::exec(*cmd));
 }

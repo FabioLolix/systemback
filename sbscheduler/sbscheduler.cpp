@@ -25,7 +25,7 @@ void scheduler::main()
 {
     {
         uchar rv(qApp->arguments().count() != 2 ? 1
-            : sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(qApp->arguments().value(1))) ? 2
+            : sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(qApp->arguments().at(1))) ? 2
             : getuid() + getgid() > 0 ? 3
             : sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? 4
             : ! sb::lock(sb::Schdlrlock) ? 5
@@ -69,7 +69,7 @@ void scheduler::main()
         if(! sb::isfile(*pfile) || (pflmd != QFileInfo(*pfile).lastModified() && sb::fload(*pfile) != QBA::number(qApp->applicationPid())))
         {
             sb::unlock(sb::Schdlrlock);
-            sb::exec("sbscheduler " % qApp->arguments().value(1), nullptr, sb::Silent | sb::Bckgrnd);
+            sb::exec("sbscheduler " % qApp->arguments().at(1), nullptr, sb::Silent | sb::Bckgrnd);
             break;
         }
 
@@ -97,7 +97,7 @@ void scheduler::main()
                 {
                     QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
 
-                    if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().value(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().value(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                    if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().at(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().at(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
                     {
                         sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
                         sb::rmfile(xauth);

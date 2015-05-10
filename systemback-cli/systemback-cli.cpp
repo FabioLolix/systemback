@@ -46,17 +46,21 @@ void systemback::main()
         });
 
     uchar rv([&] {
-            if(sb::like(qApp->arguments().value(1), {"_-h_", "_--help_"}))
-                sb::print("\n " % help() % "\n\n");
-            else if(sb::like(qApp->arguments().value(1), {"_-v_", "_--version_"}))
-                sb::print("\n " % sb::appver() % "\n\n");
-            else if(sb::like(qApp->arguments().value(1), {"_-u_", "_--upgrade_"}))
-            {
-                sb::unlock(sb::Dpkglock);
-                sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
-            }
-            else
-                return getuid() + getgid() > 0 ? 2
+            if(qApp->arguments().count() == 1 || [&] {
+                    if(sb::like(qApp->arguments().at(1), {"_-h_", "_--help_"}))
+                        sb::print("\n " % help() % "\n\n");
+                    else if(sb::like(qApp->arguments().at(1), {"_-v_", "_--version_"}))
+                        sb::print("\n " % sb::appver() % "\n\n");
+                    else if(sb::like(qApp->arguments().at(1), {"_-u_", "_--upgrade_"}))
+                    {
+                        sb::unlock(sb::Dpkglock);
+                        sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
+                    }
+                    else
+                        return true;
+
+                    return false;
+                }()) return getuid() + getgid() > 0 ? 2
                     : ! sb::lock(sb::Sblock) ? 3
                     : ! sb::lock(sb::Dpkglock) ? 4
                     : [&] {
@@ -90,8 +94,8 @@ void systemback::main()
                                 });
 
                             return qApp->arguments().count() == 1 ? startui()
-                                : sb::like(qApp->arguments().value(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 10
-                                : sb::like(qApp->arguments().value(1), {"_-s_", "_--storagedir_"}) ? storagedir() : 1;
+                                : sb::like(qApp->arguments().at(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 10
+                                : sb::like(qApp->arguments().at(1), {"_-s_", "_--storagedir_"}) ? storagedir() : 1;
                         }();
 
             return 0;
@@ -268,10 +272,10 @@ uchar systemback::storagedir()
         QStr ndir;
 
         {
-            QStr cpath, idir(qApp->arguments().value(2));
+            QStr cpath, idir(qApp->arguments().at(2));
 
             if(qApp->arguments().count() > 3)
-                for(uchar a(3) ; a < qApp->arguments().count() ; ++a) idir.append(' ' % qApp->arguments().value(a));
+                for(uchar a(3) ; a < qApp->arguments().count() ; ++a) idir.append(' ' % qApp->arguments().at(a));
 
             QSL excl{"*/Systemback_", "*/Systemback/*", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"};
             if(sb::like((ndir = QDir::cleanPath(idir)), excl) || sb::like((cpath = QDir(idir).canonicalPath()), excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 5;

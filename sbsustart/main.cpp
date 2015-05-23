@@ -26,26 +26,24 @@ uint sustart::uid(getuid());
 int main(int argc, char *argv[])
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+    if(sustart::uid > 0 && setuid(0) == -1 && sustart::uid != geteuid())
     {
-        if(sustart::uid > 0 && setuid(0) == -1 && sustart::uid != geteuid())
+        QStr arg1(argv[1]);
+
+        if(! sb::like(arg1, {"_systemback_", "_scheduler_"}))
         {
-            QStr arg1(argv[1]);
-
-            if(! sb::like(arg1, {"_systemback_", "_scheduler_"}))
-            {
-                sb::error("\n Missing, wrong or too much argument(s).\n\n");
-                return 2;
-            }
-
-            QStr emsg("Cannot start Systemback " % QStr(arg1 == "systemback" ? "graphical user interface" : "scheduler daemon") % "!\n\nUnable to get root permissions.");
-
-            if(seteuid(sustart::uid) == -1)
-                sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
-            else
-                sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
-
-            return 1;
+            sb::error("\n Missing, wrong or too much argument(s).\n\n");
+            return 2;
         }
+
+        QStr emsg("Cannot start Systemback " % QStr(arg1 == "systemback" ? "graphical user interface" : "scheduler daemon") % "!\n\nUnable to get root permissions.");
+
+        if(seteuid(sustart::uid) == -1)
+            sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
+        else
+            sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
+
+        return 1;
     }
 #endif
 

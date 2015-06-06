@@ -170,12 +170,12 @@
     <message>
         <location filename="../systemback/systemback.ui" line="704"/>
         <source>Write target</source>
-        <translation type="unfinished"></translation>
+        <translation>Цільовий диск для запису</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="726"/>
         <source>Live operations</source>
-        <translation type="unfinished"></translation>
+        <translation>Дії з системою &quot;Live&quot;</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="813"/>
@@ -197,7 +197,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="928"/>
         <source>Write to target</source>
-        <translation type="unfinished"></translation>
+        <translation>Записати на диск</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="950"/>
@@ -267,12 +267,12 @@
     <message>
         <location filename="../systemback/systemback.ui" line="1636"/>
         <source>Exclude hidden user files and directories from restore points</source>
-        <translation>Виключити приховані файли і каталоги користувачів з точок відновлення</translation>
+        <translation>Вилучити приховані файли і каталоги користувачів з точок відновлення</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1658"/>
         <source>Exclude user data files and directories from Live system</source>
-        <translation>Виключити файли даних і каталогі користувача  з Live-системи</translation>
+        <translation>Вилучити файли даних і каталогі користувача з Live-системи</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1677"/>
@@ -538,7 +538,7 @@
         <location filename="../systemback/systemback.ui" line="3916"/>
         <location filename="../systemback/systemback.cpp" line="3712"/>
         <source>Exclude</source>
-        <translation>Виключити</translation>
+        <translation>Вилучити</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4078"/>
@@ -921,7 +921,7 @@
         <location filename="../systemback/systemback.cpp" line="7280"/>
         <location filename="../systemback/systemback.cpp" line="7303"/>
         <source>Everyone</source>
-        <translation type="unfinished"></translation>
+        <translation>Усі</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="600"/>
@@ -1003,7 +1003,7 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="1065"/>
         <source>Upgrading the system</source>
-        <translation type="unfinished"></translation>
+        <translation>Оновлюємо систему</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1067"/>
@@ -1014,7 +1014,7 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="1069"/>
         <source>Interrupting the current process</source>
-        <translation type="unfinished"></translation>
+        <translation>Перериваємо поточний процес</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1071"/>
@@ -1036,13 +1036,13 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="1077"/>
         <source>Converting Live system image</source>
-        <translation type="unfinished"></translation>
+        <translation>Перетворення системи &quot;Live&quot;</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1077"/>
         <location filename="../systemback/systemback.cpp" line="1079"/>
         <source>process</source>
-        <translation type="unfinished"></translation>
+        <translation>процес</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1079"/>
@@ -1093,27 +1093,27 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="2584"/>
         <source>Copy the system, using the following restore point:</source>
-        <translation type="unfinished"></translation>
+        <translation>Копіюємо систему з наступної точки відновлення:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2586"/>
         <source>Install the system, using the following restore point:</source>
-        <translation type="unfinished"></translation>
+        <translation>Встановлюємо систему з наступної точки відновлення:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2588"/>
         <source>Restore complete system to the following restore point:</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити систему цілком до наступної точки відновлення:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2590"/>
         <source>Format the %1, and write the following Live system image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Форматуємо %1, та записуємо наступний образ системи &quot;Live&quot;:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2592"/>
         <source>Repair the GRUB 2 bootloader.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ремонт завантажувача GRUB 2.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2613"/>
@@ -1124,45 +1124,45 @@
         <location filename="../systemback/systemback.cpp" line="2613"/>
         <location filename="../systemback/systemback.cpp" line="2618"/>
         <source>The X server will restart automatically within 30 seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>X-сервер буде автоматично перезапущений протягом 30 сек.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2618"/>
         <source>User(s) configuration files restoration are completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновлення конфігураційних файлів користувача завершено.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2621"/>
         <source>Full system repair is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Повний ремонт системи завершений.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2624"/>
         <source>System repair is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ремонт системи завершений.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2629"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="537"/>
         <source>System files restoration are completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновлення системних файлів завершено.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2629"/>
         <location filename="../systemback/systemback.cpp" line="2634"/>
         <source>The computer will restart automatically within 30 seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>Комп&apos;ютер буде автоматично перезавантажено протягом 30 секунд.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2634"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="535"/>
         <source>Full system restoration is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Повне відновлення системи завершено.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2637"/>
         <source>System copy is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Копіювання системи завершено.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2640"/>
@@ -1177,17 +1177,17 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="2643"/>
         <source>GRUB 2 repair is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ремонт GRUB завершено.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2646"/>
         <source>System install is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Встановлення системи завершено.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2649"/>
         <source>Live system image write is completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Запис образу системи &quot;Live&quot; завершено.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2668"/>
@@ -1198,13 +1198,13 @@
         <location filename="../systemback/systemback.cpp" line="2670"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="113"/>
         <source>Unable to get exclusive lock!</source>
-        <translation type="unfinished"></translation>
+        <translation>Не вдалося ексклюзивне блокування!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2670"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="113"/>
         <source>First, close all package manager.</source>
-        <translation type="unfinished"></translation>
+        <translation>По-перше, закрийте усі менеджери пакетів.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2672"/>
@@ -1219,7 +1219,7 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="2674"/>
         <source>System files repair are completed, but an error occurred while reinstalling GRUB!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ремонт системних файлів завершено, але сталася помилка під час перевстановлення GRUB!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2674"/>
@@ -1234,20 +1234,20 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="121"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="123"/>
         <source>Restore point creation is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Створення точки відновлення було скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2676"/>
         <location filename="../systemback/systemback.cpp" line="2692"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="121"/>
         <source>Not enough free disk space to complete the process.</source>
-        <translation type="unfinished"></translation>
+        <translation>Бракує вільного місця на диску, щоб завершити процес.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2678"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="109"/>
         <source>Root privileges are required for running Systemback!</source>
-        <translation type="unfinished"></translation>
+        <translation>Для запуску Systemback необхідні права Root!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2680"/>
@@ -1255,39 +1255,39 @@
         <location filename="../systemback/systemback.cpp" line="2700"/>
         <location filename="../systemback/systemback.cpp" line="2730"/>
         <source>System copy is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Копіювання системи скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2680"/>
         <source>The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.</source>
-        <translation type="unfinished"></translation>
+        <translation>Зазначений розділ(и) не має достатньо вільного місця для копіювання системи. Скопійована система не буде функціонувати належним чином.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2682"/>
         <source>System copy is completed, but an error occurred while installing GRUB!</source>
-        <translation type="unfinished"></translation>
+        <translation>Копіювання системи завершено, але сталася помилка при установці GRUB!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2682"/>
         <location filename="../systemback/systemback.cpp" line="2696"/>
         <source>Need to manually install a bootloader.</source>
-        <translation type="unfinished"></translation>
+        <translation>Потрібно вручну встановити завантажувач.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2684"/>
         <location filename="../systemback/systemback.cpp" line="2744"/>
         <source>System restoration is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновлення системи скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2684"/>
         <source>An error occurred while reinstalling GRUB.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при перевстановленні GRUB.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2686"/>
         <source>Full system repair is completed, but an error occurred while reinstalling GRUB!</source>
-        <translation type="unfinished"></translation>
+        <translation>Повний ремонт системи завершено, але сталася помилка під час перевстановлення GRUB!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2688"/>
@@ -1296,29 +1296,29 @@
         <location filename="../systemback/systemback.cpp" line="2720"/>
         <location filename="../systemback/systemback.cpp" line="2722"/>
         <source>Live system creation is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Створення системи &quot;Live&quot; скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2688"/>
         <source>An error occurred while creating file system image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при створенні образу файлової системи.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2690"/>
         <source>An error occurred while creating container file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при створенні файла-контейнера.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2694"/>
         <location filename="../systemback/systemback.cpp" line="2726"/>
         <location filename="../systemback/systemback.cpp" line="2740"/>
         <source>The specified partition could not be mounted.</source>
-        <translation type="unfinished"></translation>
+        <translation>Зазначений розділ не може бути змонтований.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2696"/>
         <source>System install is completed, but an error occurred while installing GRUB!</source>
-        <translation type="unfinished"></translation>
+        <translation>Встановлення системи завершено, але сталася помилка при встановленні GRUB!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2698"/>
@@ -1327,24 +1327,24 @@
         <location filename="../systemback/systemback.cpp" line="2728"/>
         <location filename="../systemback/systemback.cpp" line="2732"/>
         <source>System installation is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Встановлення системи скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2698"/>
         <source>The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.</source>
-        <translation type="unfinished"></translation>
+        <translation>Зазначений розділ(и) не має достатньо вільного місця для встановлення системи. Встановлена система не буде функціонувати належним чином.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2700"/>
         <location filename="../systemback/systemback.cpp" line="2728"/>
         <location filename="../systemback/systemback.cpp" line="2742"/>
         <source>The specified partition could not be formatted (in use or unavailable).</source>
-        <translation type="unfinished"></translation>
+        <translation>Зазначений розділ не може бути відформатований (використовується або недійсний).</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2702"/>
         <source>An error occurred while reinstalling GRUB!</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка під час перевстановлення GRUB!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2704"/>
@@ -1355,12 +1355,12 @@
         <location filename="../systemback/systemback.cpp" line="2738"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="123"/>
         <source>There has been critical changes in the file system during this operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Під час цієї операції сталися критичні зміни в файлової системі.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2706"/>
         <source>System copying is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Копіювання системи скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2710"/>
@@ -1369,17 +1369,17 @@
         <location filename="../systemback/systemback.cpp" line="2740"/>
         <location filename="../systemback/systemback.cpp" line="2742"/>
         <source>Live write is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Запис &quot;Live&quot; скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2710"/>
         <source>The selected device does not have enough space to write the Live system.</source>
-        <translation type="unfinished"></translation>
+        <translation>На вибраному пристрої не достатньо місця для запису системи &quot;Live&quot;.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2712"/>
         <source>An error occurred while unpacking Live system files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при розпакуванні файлів системи &quot;Live&quot;.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2714"/>
@@ -1387,58 +1387,58 @@
         <location filename="../systemback/systemback.cpp" line="2718"/>
         <location filename="../systemback/systemback.cpp" line="2736"/>
         <source>Live conversion is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Перетворення &quot;Live&quot; скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2714"/>
         <source>An error occurred while renaming essential Live files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при перейменуванні основних файлів &quot;Live&quot;.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2716"/>
         <source>An error occurred while creating .iso image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при створенні образу ISO.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2718"/>
         <source>An error occurred while reading .sblive image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при читанні образу .sblive.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2720"/>
         <source>An error occurred while creating new initramfs image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка при створенні нового образу initramfs.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2724"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="131"/>
         <source>Restore point deletion is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Видалення точки відновлення скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2724"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="131"/>
         <source>An error occurred while during the process.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася помилка під час процесу.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2730"/>
         <location filename="../systemback/systemback.cpp" line="2732"/>
         <location filename="../systemback/systemback.cpp" line="2734"/>
         <source>The Live image could not be mounted.</source>
-        <translation type="unfinished"></translation>
+        <translation>Образ &quot;Live&quot; не може бути змонтований.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2734"/>
         <location filename="../systemback/systemback.cpp" line="2746"/>
         <source>System repair is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ремонт системи скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2744"/>
         <location filename="../systemback/systemback.cpp" line="2746"/>
         <source>There is not enough free space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не достатньо вільного місця.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="3656"/>
@@ -1453,58 +1453,58 @@
         <location filename="../systemback/systemback.cpp" line="5370"/>
         <location filename="../systemback/systemback.cpp" line="5568"/>
         <source>Multiple mount points</source>
-        <translation type="unfinished"></translation>
+        <translation>Декілька точок монтування</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6352"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6561"/>
         <source>Systemback worker thread is interrupted by the user.</source>
-        <translation type="unfinished"></translation>
+        <translation>Systemback &quot;worker thread&quot; перервано користувачем.</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6970"/>
         <source>Boot Live without xorg.conf file</source>
-        <translation type="unfinished"></translation>
+        <translation>Завантажити &quot;Live&quot; без файлу xorg.conf</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6973"/>
         <location filename="../systemback/systemback.cpp" line="6975"/>
         <location filename="../systemback/systemback.cpp" line="6977"/>
         <source>Boot Live system</source>
-        <translation type="unfinished"></translation>
+        <translation>Завантажити систему &quot;Live&quot;</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6973"/>
         <location filename="../systemback/systemback.cpp" line="6975"/>
         <location filename="../systemback/systemback.cpp" line="6977"/>
         <source>Boot Live in safe graphics mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Завантажити &quot;Live&quot; у безпечному графічному режимі</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6973"/>
         <location filename="../systemback/systemback.cpp" line="6975"/>
         <location filename="../systemback/systemback.cpp" line="6977"/>
         <source>Boot Live in debug mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Завантажити &quot;Live&quot; в режимі налагодження</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6974"/>
         <source>Press &apos;E&apos; key to edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Натисніть клавішу &apos;E&apos; для редагування</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="6977"/>
         <source>Press TAB key to edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Натисніть клавішу TAB для редагування</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7060"/>
         <source>Systemback worker thread error because the following item:</source>
-        <translation type="unfinished"></translation>
+        <translation>Помилка Systemback &quot;worker thread&quot;, викликана наступним елементом:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="38"/>
@@ -1522,7 +1522,21 @@
   -v, --version            output Systemback version number
 
   -h, --help               show this help</source>
-        <translation type="unfinished"></translation>
+        <translation>Використання: systemback-cli [опція]
+
+ Опції:
+
+  -n, --newbackup          створити нову точку відновлення
+
+  -s, --storagedir &lt;path&gt;  отримати або встановити шлях до каталогу зберігання
+                           точок відновлення
+
+  -u, --upgrade            оновити існуючу систему
+                           видалити непотрібні файли і пакети
+
+  -v, --version            номер версії Systemback
+
+  -h, --help               показати цю довідку</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="57"/>
@@ -1537,7 +1551,7 @@
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="86"/>
         <source>basic restore UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Початковий UI відновлення</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="111"/>
@@ -1549,85 +1563,85 @@
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="115"/>
         <source>The specified storage directory path has not been set!</source>
-        <translation type="unfinished"></translation>
+        <translation>Зазначений шлях каталогу зберігання не встановлено!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="117"/>
         <source>Restoration is aborted!</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновлення скасовано!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="119"/>
         <source>Restoration is completed, but an error occurred while reinstalling GRUB!</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновлення завершено, але виникла помилка при перевстановленні GRUB!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="125"/>
         <source>Restore points storage directory is not available or not writable!</source>
-        <translation type="unfinished"></translation>
+        <translation>Каталог зберігання точок відновлення недоступний або недоступний для запису!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="127"/>
         <source>This stupid terminal does not support color!</source>
-        <translation type="unfinished"></translation>
+        <translation>Цей дурний термінал не підтримує колір!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="129"/>
         <source>This terminal is too small!</source>
-        <translation type="unfinished"></translation>
+        <translation>Цей термінал занадто малий!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="142"/>
         <source>Available restore point(s):</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступні точки відновлення:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="169"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Вийти</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="231"/>
         <source>Selected restore point:</source>
-        <translation type="unfinished"></translation>
+        <translation>Обрана точка відновлення:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="307"/>
         <source>The specified storage directory path is set.</source>
-        <translation type="unfinished"></translation>
+        <translation>Зазначений шлях каталогу зберігання встановлено.</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="363"/>
         <source>Restore with the following restore point:</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити з наступної точки відновлення:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="363"/>
         <source>Restore with the following restore method:</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити з наступним способом відновлення:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="372"/>
         <source>Users configuration files restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити конфігураційні файли користувачів</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="374"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="409"/>
         <source>Complete configuration files restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити конфігураційні файли повністю</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="411"/>
         <source>Configuration files restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити конфігураційні файли</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="421"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="444"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="472"/>
         <source>You want to keep the current fstab file?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ви хочете зберегти поточний файл fstab?</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="421"/>
@@ -1639,7 +1653,7 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="506"/>
         <location filename="../systemback-cli/systemback-cli.hpp" line="63"/>
         <source>(Y/N)</source>
-        <translation type="unfinished"></translation>
+        <translation>(T/H)</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="449"/>
@@ -1647,42 +1661,42 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="477"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="500"/>
         <source>Reinstall the GRUB 2 bootloader?</source>
-        <translation type="unfinished"></translation>
+        <translation>Перевстановити завантажувач GRUB 2?</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="506"/>
         <source>Start the restore?</source>
-        <translation type="unfinished"></translation>
+        <translation>Почати відновлення?</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="539"/>
         <source>Users configuration files full restoration are completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Повне відновлення конфігураційних файлів користувачів завершено.</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="541"/>
         <source>Users configuration files restoration are completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновлення конфігураційних файлів користувачів завершено.</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="546"/>
         <source>Press &apos;ENTER&apos; key to reboot computer, or &apos;Q&apos; to quit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Натисніть клавішу &quot;ENTER&quot;, щоб перезавантажити комп&apos;ютер, або &apos;Q&apos;, щоб вийти.</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="546"/>
         <source>Press &apos;ENTER&apos; key to quit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Натисніть клавішу &quot;ENTER&quot;, щоб вийти.</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="573"/>
         <source>Deleting old restore point(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Видалення старих точок відновлення</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="581"/>
         <source>Restoring users configuration files</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновлюємо конфігураційні файли користувачів</translation>
     </message>
 </context>
 </TS>

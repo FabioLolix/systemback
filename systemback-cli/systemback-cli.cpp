@@ -243,7 +243,7 @@ uchar systemback::clistart()
             pset(2);
             progress(Start);
 
-            if(! QFile::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname))
+            if(! sb::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname))
             {
                 progress(Stop);
                 return 13;
@@ -299,7 +299,7 @@ uchar systemback::storagedir()
 
         if(! sb::isdir(sb::sdir[1]) && ! sb::crtdir(sb::sdir[1]))
         {
-            QFile::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
+            sb::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
             sb::crtdir(sb::sdir[1]);
         }
 
@@ -337,7 +337,7 @@ bool systemback::newrpnt()
         if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
         {
             if(prun.type != 4) pset(4);
-            if(! QFile::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) return end(false);
+            if(! sb::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) return end(false);
         }
 
     pset(5);
@@ -345,9 +345,9 @@ bool systemback::newrpnt()
     if(! sb::crtrpoint(dtime)) return end(false);
 
     for(uchar a(0) ; a < 9 && sb::isdir(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a]) ; ++a)
-        if(! QFile::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return end(false);
+        if(! sb::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return end(false);
 
-    if(! QFile::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return end(false);
+    if(! sb::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return end(false);
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
     emptycache();
     return end();

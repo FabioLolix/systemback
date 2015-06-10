@@ -76,6 +76,7 @@ private:
     QStr guname();
     QStr ckname();
     ushort ss(ushort dsize);
+    template<typename T> bool cfmod(const T &path, ushort mode);
     bool minside(cQRect &rct);
     bool minside(QWdt *wgt);
     void dialogopen(ushort dlg = 0, cbstr &dev = nullptr, schar snum = -1);
@@ -90,7 +91,6 @@ private:
     void emptycache();
     void statustart();
     void systemcopy();
-    void prntdbgmsg();
     void livewrite();
     void rmntcheck();
     void stschange();
@@ -302,5 +302,10 @@ private slots:
     void on_hourup_clicked();
     void on_dayup_clicked();
 };
+
+template<typename T> bool systemback::cfmod(const T &path, ushort mode)
+{
+    return chmod(bstr(path), mode) == 0 ? true : sb::error("\n " % tr("An error occurred while changing the access permissions of the following file:") % "\n\n  " % QStr(path) % "\n\n");
+}
 
 #endif

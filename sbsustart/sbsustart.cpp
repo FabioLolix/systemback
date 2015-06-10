@@ -33,7 +33,7 @@ void sustart::main()
                 {
                     QFile file("/etc/passwd");
 
-                    if(file.open(QIODevice::ReadOnly))
+                    if(sb::fopen(file))
                         while(! file.atEnd())
                         {
                             QStr line(file.readLine().trimmed());

@@ -39,12 +39,13 @@ public:
            Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknown = 5,
            Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4,
            Sblock = 0, Dpkglock = 1, Schdlrlock = 2,
+           Crtdir = 0, Rmfile = 1, Crthlnk = 2,
            False = 0, True = 1, Empty = 2,
            Read = 0, Write = 1, Exec = 2,
            Norm = 0, All = 1, Mixed = 2 };
 
     static sb SBThrd;
-    static QStr ThrdStr[3], ThrdDbg, sdir[3], schdlr[2], pnames[15], lang, style, wsclng;
+    static QStr ThrdStr[3], sdir[3], schdlr[2], pnames[15], lang, style, wsclng;
     static ullong ThrdLng[2];
     static uchar pnumber, ismpnt, schdle[6], waot, incrmtl, xzcmpr, autoiso, ecache;
     static schar Progress;
@@ -83,6 +84,7 @@ public:
     template<typename T> static bool exist(const T &path);
     static bool access(cQStr &path, uchar mode = Read);
     static bool copy(cQStr &srcfile, cQStr &newfile);
+    static bool rename(cQStr &opath, cQStr &npath);
     static bool setpflag(cQStr &part, cQStr &flag);
     static fnln bool islink(cQStr &path);
     static fnln bool isfile(cQStr &path);
@@ -92,7 +94,9 @@ public:
     static bool remove(cQStr &path);
     static bool mcheck(cQStr &item);
     static bool lvprpr(bool iudata);
+    static bool fopen(QFile &file);
     static bool umount(cQStr &dev);
+    static bool error(cQStr &txt);
     static bool isnum(cQStr &txt);
     static bool lock(uchar type);
     static void readprttns(QSL &strlst);
@@ -102,7 +106,6 @@ public:
     static void unlock(uchar type);
     static void delay(ushort msec);
     static void print(cQStr &txt);
-    static void error(cQStr &txt);
     static void pupgrade();
     static void thrdelay();
     static void cfgread();
@@ -125,6 +128,7 @@ private:
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden = false, uchar oplen = 0);
     static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
     static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
+    static bool cerr(uchar type, cQStr &str1, cQStr &str2 = nullptr);
     static bool odir(QBAL &balst, cQStr &path, bool hidden = false);
     static bool rodir(QUCL &ucl, cQStr &path, uchar oplen = 0);
     static bool rodir(QBA &ba, cQStr &path, uchar oplen = 0);
@@ -231,12 +235,12 @@ template<typename T1, typename T2> inline bool sb::issmfs(const T1 &item1, const
 
 template<typename T> inline bool sb::crtdir(const T &path)
 {
-    return mkdir(bstr(path), 0755) == 0;
+    return mkdir(bstr(path), 0755) == 0 ? true : cerr(Crtdir, path);
 }
 
 template<typename T> inline bool sb::rmfile(const T &file)
 {
-    return unlink(bstr(file)) == 0;
+    return unlink(bstr(file)) == 0 ? true : cerr(Rmfile, file);
 }
 
 inline bool sb::isnum(cQStr &txt)

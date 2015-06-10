@@ -21,6 +21,121 @@
     </message>
 </context>
 <context>
+    <name>sb</name>
+    <message>
+        <source>An error occurred while opening the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating the following directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while removing the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating the following hard link:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reference file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while renaming the following item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New path:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while executing the following command:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit code:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to detect the device for installing the GRUB!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This file could not be copied because it does not exist:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The following partition has no UUID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating a new partition on the following device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while mounting the following partition/image:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while setting a flag on the following partition:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating partition table on the following device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while unmounting the following partition/image/mount point:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning properties of the following item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning the following symbolic link:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target symlink:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning the following directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while deleting the following directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>scheduler</name>
     <message>
         <source>Cannot start Systemback scheduler daemon!</source>
@@ -1005,10 +1120,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Systemback worker thread error because the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>(Y/N)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1140,6 +1251,10 @@
     </message>
     <message>
         <source>Press &apos;ENTER&apos; key to quit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while changing the access permissions of the following file:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1048,7 +1048,7 @@ void systemback::pset(uchar type, cbstr &tend)
             case 3:
                 return tr("Restoring the system files");
             case 4:
-                return tr("Restoring user(s) configuration files");
+                return tr("Restoring the user(s) configuration files");
             case 5:
                 return tr("Repairing the system files");
             case 6:
@@ -1060,7 +1060,7 @@ void systemback::pset(uchar type, cbstr &tend)
             case 9:
                 return tr("Installing the system");
             case 10:
-                return tr("Writing Live image to target device");
+                return tr("Writing Live image to the target device");
             case 11:
                 return tr("Upgrading the system");
             case 12:
@@ -2584,7 +2584,7 @@ void systemback::dialogopen(ushort dlg, cbstr &dev, schar snum)
                 case 106:
                     return tr("Install the system, using the following restore point:") % "<p><b>" % pname;
                 case 107:
-                    return tr("Restore complete system to the following restore point:") % "<p><b>" % pname;
+                    return tr("Restore the complete system to the following restore point:") % "<p><b>" % pname;
                 case 108:
                     return tr("Format the %1, and write the following Live system image:").arg(" <b>" % ui->livedevices->item(ui->livedevices->currentRow(), 0)->text() % "</b>") % "<p><b>" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % "</b>";
                 default:
@@ -2609,43 +2609,43 @@ void systemback::dialogopen(ushort dlg, cbstr &dev, schar snum)
                         if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
                         for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
-                        return tr("User(s) configuration files full restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
+                        return tr("The user(s) configuration files full restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
                     case 201:
                         if(ui->dialogok->text() != tr("X restart")) ui->dialogok->setText(tr("X restart"));
                         for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
-                        return tr("User(s) configuration files restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
+                        return tr("The user(s) configuration files restoration are completed.") % "<p>" % tr("The X server will restart automatically within 30 seconds.");
                     case 202:
                         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                        return tr("Full system repair is completed.");
+                        return tr("The full system repair is completed.");
                     case 203:
                         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                        return tr("System repair is completed.");
+                        return tr("The system repair is completed.");
                     case 204:
                         if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
                         for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
-                        return tr("System files restoration are completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
+                        return tr("The system files restoration are completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
                     case 205:
                         if(ui->dialogok->text() != tr("Reboot")) ui->dialogok->setText(tr("Reboot"));
                         for(QWdt *wdgt : QWL{ui->dialogcancel, ui->dialognumber}) wdgt->show();
                         cntd = true;
-                        return tr("Full system restoration is completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
+                        return tr("The full system restoration is completed.") % "<p>" % tr("The computer will restart automatically within 30 seconds.");
                     case 206:
                         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                        return tr("System copy is completed.");
+                        return tr("The system copy is completed.");
                     case 207:
                         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                        return tr("Live system creation is completed.") % "<p>" % tr("The created .sblive file can be written to pendrive.");
+                        return tr("The Live system creation is completed.") % "<p>" % tr("The created .sblive file can be written to pendrive.");
                     case 208:
                         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                        return tr("GRUB 2 repair is completed.");
+                        return tr("The GRUB 2 repair is completed.");
                     case 209:
                         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                        return tr("System install is completed.");
+                        return tr("The system install is completed.");
                     default:
                         if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
-                        return tr("Live system image write is completed.");
+                        return tr("The Live system image write is completed.");
                     }
                 }());
 
@@ -2664,85 +2664,85 @@ void systemback::dialogopen(ushort dlg, cbstr &dev, schar snum)
             ui->dialogtext->setText([&, dlg]() -> QStr {
                     switch(dlg) {
                     case 300:
-                        return tr("Another systemback process is currently running, please wait until it finishes.");
+                        return tr("An another systemback process is currently running, please wait until it finishes.");
                     case 301:
                         return tr("Unable to get exclusive lock!") % "<p>" % tr("First, close all package manager.");
                     case 302:
                         return tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name.");
                     case 303:
-                        return tr("System files repair are completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)");
+                        return tr("The system files repair are completed, but an error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
                     case 304:
-                        return tr("Restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
+                        return tr("The restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
                     case 305:
-                        return tr("Root privileges are required for running Systemback!");
+                        return tr("Root privileges are required for running the Systemback!");
                     case 306:
-                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.");
+                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.");
                     case 307:
-                        return tr("System copy is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader.");
+                        return tr("The system copy is completed, but an error occurred while installing the GRUB!") % ' ' % tr("You need to manually install a bootloader.");
                     case 308:
-                        return tr("System restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling GRUB.");
+                        return tr("The system restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling the GRUB.");
                     case 309:
-                        return tr("Full system repair is completed, but an error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)");
+                        return tr("The full system repair is completed, but an error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
                     case 310:
-                        return tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating file system image.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the file system image.");
                     case 311:
-                        return tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating container file.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the container file.");
                     case 312:
-                        return tr("Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
                     case 313:
-                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
+                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 314:
-                        return tr("System install is completed, but an error occurred while installing GRUB!") % ' ' % tr("Need to manually install a bootloader.");
+                        return tr("The system install is completed, but an error occurred while installing the GRUB!") % ' ' % tr("You need to manually install a bootloader.");
                     case 315:
-                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.");
+                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.");
                     case 316:
-                        return tr("System copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
+                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 317:
-                        return tr("An error occurred while reinstalling GRUB!") % ' ' % tr("System may not bootable! (In general, the different architecture is causing the problem.)");
+                        return tr("An error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
                     case 318:
-                        return tr("Restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 319:
-                        return tr("System copying is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The system copy is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 320:
-                        return tr("System installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The system installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 321:
-                        return tr("Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system.");
+                        return tr("The Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system.");
                     case 322:
-                        return tr("Live write is aborted!") % "<p>" % tr("An error occurred while unpacking Live system files.");
+                        return tr("The Live write is aborted!") % "<p>" % tr("An error occurred while unpacking the Live system files.");
                     case 323:
-                        return tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming essential Live files.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming the essential Live files.");
                     case 324:
-                        return tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while creating .iso image.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while creating the .iso image.");
                     case 325:
-                        return tr("Live conversion is aborted!") % "<p>" % tr("An error occurred while reading .sblive image.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while reading the .sblive image.");
                     case 326:
-                        return tr("Live system creation is aborted!") % "<p>" % tr("An error occurred while creating new initramfs image.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the new initramfs image.");
                     case 327:
-                        return tr("Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 328:
-                        return tr("Restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process.");
+                        return tr("The restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process.");
                     case 329:
-                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
+                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 330:
-                        return tr("System installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
+                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 331:
-                        return tr("System copy is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                        return tr("The system copy is aborted!") % "<p>" % tr("The Live image could not be mounted.");
                     case 332:
-                        return tr("System installation is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                        return tr("The system installation is aborted!") % "<p>" % tr("The Live image could not be mounted.");
                     case 333:
-                        return tr("System repair is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                        return tr("The system repair is aborted!") % "<p>" % tr("The Live image could not be mounted.");
                     case 334:
-                        return tr("Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 335:
-                        return tr("Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 336:
-                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
+                        return tr("The Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 337:
-                        return tr("Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
+                        return tr("The Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 338:
-                        return tr("System restoration is aborted!") % "<p>" % tr("There is not enough free space.");
+                        return tr("The system restoration is aborted!") % "<p>" % tr("There is not enough free space.");
                     default:
-                        return tr("System repair is aborted!") % "<p>" % tr("There is not enough free space.");
+                        return tr("The system repair is aborted!") % "<p>" % tr("There is not enough free space.");
                     }
                 }());
         }

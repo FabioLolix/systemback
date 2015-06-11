@@ -38,10 +38,10 @@ void systemback::main()
             return tr("Usage: systemback-cli [option]\n\n"
                 " Options:\n\n"
                 "  -n, --newbackup          create a new restore point\n\n"
-                "  -s, --storagedir <path>  get or set restore points storage directory path\n\n"
-                "  -u, --upgrade            upgrade current system\n"
-                "                           remove unnecessary files and packages\n\n"
-                "  -v, --version            output Systemback version number\n\n"
+                "  -s, --storagedir <path>  get or set the restore points storage directory path\n\n"
+                "  -u, --upgrade            upgrade the current system\n"
+                "                           remove the unnecessary files and packages\n\n"
+                "  -v, --version            output the Systemback version number\n\n"
                 "  -h, --help               show this help");
         });
 
@@ -106,29 +106,29 @@ void systemback::main()
             case 1:
                 return help();
             case 2:
-                return tr("Root privileges are required for running Systemback!");
+                return tr("Root privileges are required for running the Systemback!");
             case 3:
-                return tr("Another Systemback process is currently running, please wait until it\n finishes.");
+                return tr("An another Systemback process is currently running, please wait until it\n finishes.");
             case 4:
                 return tr("Unable to get exclusive lock!") % "\n\n " % tr("First, close all package manager.");
             case 5:
                 return tr("The specified storage directory path has not been set!");
             case 6:
-                return tr("Restoration is aborted!");
+                return tr("The restoration is aborted!");
             case 7:
-                return tr("Restoration is completed, but an error occurred while reinstalling GRUB!");
+                return tr("The restoration is completed, but an error occurred while reinstalling the GRUB!");
             case 8:
-                return tr("Restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process.");
+                return tr("The restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process.");
             case 9:
-                return tr("Restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation.");
+                return tr("The restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation.");
             case 10:
-                return tr("Restore points storage directory is not available or not writable!");
+                return tr("The restore points storage directory is not available or not writable!");
             case 11:
                 return tr("This stupid terminal does not support color!");
             case 12:
                 return tr("This terminal is too small!") % " (< 80x24)";
             default:
-                return tr("Restore point deletion is aborted!") % "\n\n " % tr("An error occurred while during the process.");
+                return tr("The restore point deletion is aborted!") % "\n\n " % tr("An error occurred while during the process.");
             }
         }() % "\n\n");
 
@@ -532,18 +532,18 @@ uchar systemback::restore()
     printw(bstr("\n\n " % [mthd] {
             switch(mthd) {
             case 1:
-                return tr("Full system restoration is completed.");
+                return tr("The full system restoration is completed.");
             case 2:
-                return tr("System files restoration are completed.");
+                return tr("The system files restoration are completed.");
             case 3:
-                return tr("Users configuration files full restoration are completed.");
+                return tr("The users configuration files full restoration are completed.");
             default:
-                return tr("Users configuration files restoration are completed.");
+                return tr("The users configuration files restoration are completed.");
             }
         }()));
 
     attron(COLOR_PAIR(3));
-    printw(bstr("\n\n " % (mthd < 3 ? tr("Press 'ENTER' key to reboot computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit."))));
+    printw(bstr("\n\n " % (mthd < 3 ? tr("Press 'ENTER' key to reboot the computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit."))));
     attron(COLOR_PAIR(2));
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
@@ -578,7 +578,7 @@ void systemback::pset(uchar type)
             case 7:
                 return tr("Restoring the system files");
             default:
-                return tr("Restoring users configuration files");
+                return tr("Restoring the users configuration files");
             }
         }();
 

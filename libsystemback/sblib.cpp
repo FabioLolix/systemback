@@ -1014,7 +1014,7 @@ bool sb::lvprpr(bool iudata)
 
 bool sb::mkptable(cQStr &dev, cQStr &type)
 {
-    auto err([&dev] { return error("\n " % tr("An error occurred while creating partition table on the following device:") % "\n\n  " % dev % "\n\n"); });
+    auto err([&dev] { return error("\n " % tr("An error occurred while creating the partition table on the following device:") % "\n\n  " % dev % "\n\n"); });
     if(dev.length() > (dev.contains("mmc") ? 12 : 8) || stype(dev) != Isblock) return false;
     ThrdType = Mkptable,
     ThrdStr[0] = dev,
@@ -1093,7 +1093,7 @@ uchar sb::fcomp(cQStr &file1, cQStr &file2)
 
 bool sb::cpertime(cQStr &srcitem, cQStr &newitem, bool skel)
 {
-    auto err([&] { return error("\n " % tr("An error occurred while cloning properties of the following item:") % "\n\n  " % srcitem % "\n\n " % tr("Target item:") % "\n\n  " % newitem % "\n\n"); });
+    auto err([&] { return error("\n " % tr("An error occurred while cloning the properties of the following item:") % "\n\n  " % srcitem % "\n\n " % tr("Target item:") % "\n\n  " % newitem % "\n\n"); });
     struct stat istat[2];
     if(stat(bstr(srcitem), &istat[0]) == -1) return err();
     bstr nitem(newitem);

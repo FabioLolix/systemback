@@ -37,7 +37,7 @@ void scheduler::main()
 
         if(rv > 0)
         {
-            if(rv < 255) sb::error("\n " % tr("Cannot start Systemback scheduler daemon!") % "\n\n " % [rv] {
+            if(rv < 255) sb::error("\n " % tr("Cannot start the Systemback scheduler daemon!") % "\n\n " % [rv] {
                     switch(rv) {
                     case 1:
                         return tr("Missing, wrong or too much argument(s).");

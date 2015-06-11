@@ -91,7 +91,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while creating partition table on the following device:</source>
+        <source>An error occurred while creating the partition table on the following device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -99,7 +99,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while cloning properties of the following item:</source>
+        <source>An error occurred while cloning the properties of the following item:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -138,7 +138,7 @@
 <context>
     <name>scheduler</name>
     <message>
-        <source>Cannot start Systemback scheduler daemon!</source>
+        <source>Cannot start the Systemback scheduler daemon!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -177,15 +177,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unable to connect to X server.</source>
+        <source>Unable to connect to the X server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot start Systemback graphical user interface!</source>
+        <source>Cannot start the Systemback graphical user interface!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot start Systemback scheduler daemon!</source>
+        <source>Cannot start the Systemback scheduler daemon!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -228,7 +228,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name of Live system</source>
+        <source>Name of the Live system</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -244,7 +244,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Include user data files</source>
+        <source>Include the user data files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -268,7 +268,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mount the faulty system partition(s) to &apos;/mnt&apos; directory according to the original structure.&lt;br&gt;(&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, etc.)</source>
+        <source>Mount the faulty system partition(s) to the &apos;/mnt&apos; directory according to the original structure.&lt;br&gt;(&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, etc.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -304,7 +304,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do not repair fstab file</source>
+        <source>Do not repair the fstab file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -324,11 +324,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Remove item from exclusion list</source>
+        <source>Remove item from the exclusion list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add item to exclusion list</source>
+        <source>Add item to the exclusion list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -516,7 +516,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do not restore fstab file</source>
+        <source>Do not restore the fstab file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -748,7 +748,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restoring user(s) configuration files</source>
+        <source>Restoring the user(s) configuration files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -776,7 +776,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Writing Live image to target device</source>
+        <source>Writing Live image to the target device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -844,7 +844,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restore complete system to the following restore point:</source>
+        <source>Restore the complete system to the following restore point:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -856,7 +856,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>User(s) configuration files full restoration are completed.</source>
+        <source>The user(s) configuration files full restoration are completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -864,19 +864,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>User(s) configuration files restoration are completed.</source>
+        <source>The user(s) configuration files restoration are completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Full system repair is completed.</source>
+        <source>The full system repair is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System repair is completed.</source>
+        <source>The system repair is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System files restoration are completed.</source>
+        <source>The system files restoration are completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -884,15 +884,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Full system restoration is completed.</source>
+        <source>The full system restoration is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System copy is completed.</source>
+        <source>The system copy is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Live system creation is completed.</source>
+        <source>The Live system creation is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -900,19 +900,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>GRUB 2 repair is completed.</source>
+        <source>The GRUB 2 repair is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System install is completed.</source>
+        <source>The system install is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Live system image write is completed.</source>
+        <source>The Live system image write is completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Another systemback process is currently running, please wait until it finishes.</source>
+        <source>An another systemback process is currently running, please wait until it finishes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -932,15 +932,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System files repair are completed, but an error occurred while reinstalling GRUB!</source>
+        <source>The system files repair are completed, but an error occurred while reinstalling the GRUB!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System may not bootable! (In general, the different architecture is causing the problem.)</source>
+        <source>The system may not bootable! (In general, the different architecture is causing the problem.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restore point creation is aborted!</source>
+        <source>The restore point creation is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -948,11 +948,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Root privileges are required for running Systemback!</source>
+        <source>Root privileges are required for running the Systemback!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System copy is aborted!</source>
+        <source>The system copy is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -960,35 +960,35 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System copy is completed, but an error occurred while installing GRUB!</source>
+        <source>The system copy is completed, but an error occurred while installing the GRUB!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Need to manually install a bootloader.</source>
+        <source>You need to manually install a bootloader.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System restoration is aborted!</source>
+        <source>The system restoration is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while reinstalling GRUB.</source>
+        <source>An error occurred while reinstalling the GRUB.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Full system repair is completed, but an error occurred while reinstalling GRUB!</source>
+        <source>The full system repair is completed, but an error occurred while reinstalling the GRUB!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Live system creation is aborted!</source>
+        <source>The Live system creation is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while creating file system image.</source>
+        <source>An error occurred while creating the file system image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while creating container file.</source>
+        <source>An error occurred while creating the container file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -996,11 +996,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System install is completed, but an error occurred while installing GRUB!</source>
+        <source>The system install is completed, but an error occurred while installing the GRUB!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System installation is aborted!</source>
+        <source>The system installation is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1012,7 +1012,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while reinstalling GRUB!</source>
+        <source>An error occurred while reinstalling the GRUB!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1020,11 +1020,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System copying is aborted!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Live write is aborted!</source>
+        <source>The Live write is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1032,31 +1028,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while unpacking Live system files.</source>
+        <source>An error occurred while unpacking the Live system files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Live conversion is aborted!</source>
+        <source>The Live conversion is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while renaming essential Live files.</source>
+        <source>An error occurred while renaming the essential Live files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while creating .iso image.</source>
+        <source>An error occurred while creating the .iso image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while reading .sblive image.</source>
+        <source>An error occurred while reading the .sblive image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while creating new initramfs image.</source>
+        <source>An error occurred while creating the new initramfs image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restore point deletion is aborted!</source>
+        <source>The restore point deletion is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1068,7 +1064,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>System repair is aborted!</source>
+        <source>The system repair is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1124,41 +1120,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Usage: systemback-cli [option]
-
- Options:
-
-  -n, --newbackup          create a new restore point
-
-  -s, --storagedir &lt;path&gt;  get or set restore points storage directory path
-
-  -u, --upgrade            upgrade current system
-                           remove unnecessary files and packages
-
-  -v, --version            output Systemback version number
-
-  -h, --help               show this help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Another Systemback process is currently running, please wait until it
- finishes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The specified storage directory path has not been set!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restoration is aborted!</source>
+        <source>The restoration is aborted!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restoration is completed, but an error occurred while reinstalling GRUB!</source>
+        <source>The restoration is completed, but an error occurred while reinstalling the GRUB!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restore points storage directory is not available or not writable!</source>
+        <source>The restore points storage directory is not available or not writable!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1234,19 +1208,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Restoring users configuration files</source>
+        <source>Restoring the users configuration files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Users configuration files full restoration are completed.</source>
+        <source>The users configuration files full restoration are completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Users configuration files restoration are completed.</source>
+        <source>The users configuration files restoration are completed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Press &apos;ENTER&apos; key to reboot computer, or &apos;Q&apos; to quit.</source>
+        <source>Press &apos;ENTER&apos; key to reboot the computer, or &apos;Q&apos; to quit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1255,6 +1229,28 @@
     </message>
     <message>
         <source>An error occurred while changing the access permissions of the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Usage: systemback-cli [option]
+
+ Options:
+
+  -n, --newbackup          create a new restore point
+
+  -s, --storagedir &lt;path&gt;  get or set the restore points storage directory path
+
+  -u, --upgrade            upgrade the current system
+                           remove the unnecessary files and packages
+
+  -v, --version            output the Systemback version number
+
+  -h, --help               show this help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An another Systemback process is currently running, please wait until it
+ finishes.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

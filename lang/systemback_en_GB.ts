@@ -2,194 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_GB">
 <context>
-    <name>QTrn</name>
-    <message>
-        <source>Unsafe X Window authorization!</source>
-        <translation>Unsafe X Window authorisation!</translation>
-    </message>
-    <message>
-        <source>An error occurred while upgrading the system!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restart upgrade ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Please do not use &apos;sudo&apos; command.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>sb</name>
-    <message>
-        <source>An error occurred while opening the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while creating the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while removing the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while creating the following hard link:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reference file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while creating the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while renaming the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New path:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while executing the following command:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit code:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to detect the device for installing the GRUB!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This file could not be copied because it does not exist:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The following partition has no UUID:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while creating a new partition on the following device:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while mounting the following partition/image:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while setting a flag on the following partition:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flag:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while creating the partition table on the following device:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while unmounting the following partition/image/mount point:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while cloning the properties of the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while cloning the following symbolic link:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target symlink:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while cloning the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while cloning the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error occurred while deleting the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>scheduler</name>
-    <message>
-        <source>Cannot start the Systemback scheduler daemon!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Missing, wrong or too much argument(s).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The process is disabled for this user.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Root privileges are required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This system is a Live.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Already running.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to daemonize.</source>
-        <translation>Unable to daemonise.</translation>
-    </message>
-</context>
-<context>
-    <name>sustart</name>
-    <message>
-        <source>Missing, wrong or too much argument(s).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to get root permissions.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to connect to the X server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot start the Systemback graphical user interface!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot start the Systemback scheduler daemon!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>systemback</name>
     <message>
         <source>Full name of the new user:</source>
@@ -1251,6 +1063,166 @@
     <message>
         <source>An another Systemback process is currently running, please wait until it
  finishes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while opening the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating the following directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while removing the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating the following hard link:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reference file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while renaming the following item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New path:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while executing the following command:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit code:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to detect the device for installing the GRUB!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This file could not be copied because it does not exist:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The following partition has no UUID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating a new partition on the following device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while mounting the following partition/image:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while setting a flag on the following partition:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while creating the partition table on the following device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while unmounting the following partition/image/mount point:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning the properties of the following item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target item:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning the following symbolic link:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target symlink:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning the following file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while cloning the following directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while deleting the following directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot start the Systemback scheduler daemon!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing, wrong or too much argument(s).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The process is disabled for this user.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Root privileges are required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This system is a Live.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to daemonize.</source>
+        <translation>Unable to daemonise.</translation>
+    </message>
+    <message>
+        <source>Cannot start the Systemback graphical user interface!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to get root permissions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to connect to the X server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsafe X Window authorization!</source>
+        <translation>Unsafe X Window authorisation!</translation>
+    </message>
+    <message>
+        <source>Please do not use &apos;sudo&apos; command.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

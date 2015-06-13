@@ -18,7 +18,6 @@
  */
 
 #include "sbsustart.hpp"
-#include <QCoreApplication>
 #include <QTimer>
 
 uint sustart::uid(getuid());
@@ -48,11 +47,9 @@ int main(int argc, char *argv[])
 #endif
 
     QCoreApplication a(argc, argv);
-    QTrn *tltr(sb::ldtltr());
-    if(tltr) a.installTranslator(tltr);
+    sb::ldtltr();
     sustart s;
     QTimer::singleShot(0, &s, SLOT(main()));
     uchar rv(a.exec());
-    if(tltr) delete tltr;
     return rv;
 }

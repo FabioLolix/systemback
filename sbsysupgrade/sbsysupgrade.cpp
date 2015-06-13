@@ -18,14 +18,11 @@
  */
 
 #include "../libsystemback/sblib.hpp"
-#include <QCoreApplication>
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QTrn *tltr(sb::ldtltr());
-    if(tltr) a.installTranslator(tltr);
-    sb::supgrade({QTrn::tr("An error occurred while upgrading the system!"), QTrn::tr("Restart upgrade ...")});
-    if(tltr) delete tltr;
+    sb::ldtltr();
+    sb::supgrade();
     return 0;
 }

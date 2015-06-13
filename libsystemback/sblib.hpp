@@ -23,6 +23,7 @@
 
 #include "sblib_global.hpp"
 #include "bstr.hpp"
+#include <QCoreApplication>
 #include <QStringBuilder>
 #include <QTemporaryFile>
 #include <QFileInfo>
@@ -33,6 +34,8 @@
 
 class SHARED_EXPORT_IMPORT sb : public QThread
 {
+    Q_DECLARE_TR_FUNCTIONS(systemback)
+
 public:
     enum { Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvdevs = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Delpart = 11, Crtrpoint = 12, Srestore = 13, Scopy = 14, Lvprpr = 15,
            MSDOS = 0, GPT = 1, Clear = 2, Primary = 3, Extended = 4, Logical = 5, Freespace = 6, Emptyspace = 7,
@@ -51,7 +54,6 @@ public:
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
-    static QTrn *ldtltr();
     static QStr mid(cQStr &txt, ushort start, ushort len);
     static QStr fload(cQStr &path, bool ascnt);
     static QStr right(cQStr &txt, short len);
@@ -102,21 +104,24 @@ public:
     static void readprttns(QSL &strlst);
     static void readlvdevs(QSL &strlst);
     static void delpart(cQStr &part);
-    static void supgrade(cQSL &estr);
     static void unlock(uchar type);
     static void delay(ushort msec);
     static void print(cQStr &txt);
+    static void supgrade();
     static void pupgrade();
     static void thrdelay();
     static void cfgread();
     static void fssync();
+    static void ldtltr();
 
 protected:
     void run();
 
 private:
     sb();
+    ~sb();
 
+    static QTrn *SBtr;
     static QSL *ThrdSlst;
     static int sblock[3];
     static uchar ThrdType, ThrdChr;

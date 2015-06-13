@@ -18,16 +18,13 @@
  */
 
 #include "systemback-cli.hpp"
-#include <QCoreApplication>
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QTrn *tltr(sb::ldtltr());
-    if(tltr) a.installTranslator(tltr);
+    sb::ldtltr();
     systemback c;
     QTimer::singleShot(0, &c, SLOT(main()));
     uchar rv(a.exec());
-    if(tltr) delete tltr;
     return rv;
 }

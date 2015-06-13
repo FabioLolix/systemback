@@ -18,7 +18,6 @@
  */
 
 #include "sbscheduler.hpp"
-#include <QCoreApplication>
 #include <QDir>
 
 void scheduler::main()
@@ -37,20 +36,20 @@ void scheduler::main()
 
         if(rv > 0)
         {
-            if(rv < 255) sb::error("\n " % tr("Cannot start the Systemback scheduler daemon!") % "\n\n " % [rv] {
+            if(rv < 255) sb::error("\n " % sb::tr("Cannot start the Systemback scheduler daemon!") % "\n\n " % [rv] {
                     switch(rv) {
                     case 1:
-                        return tr("Missing, wrong or too much argument(s).");
+                        return sb::tr("Missing, wrong or too much argument(s).");
                     case 2:
-                        return tr("The process is disabled for this user.");
+                        return sb::tr("The process is disabled for this user.");
                     case 3:
-                        return tr("Root privileges are required.");
+                        return sb::tr("Root privileges are required.");
                     case 4:
-                        return tr("This system is a Live.");
+                        return sb::tr("This system is a Live.");
                     case 5:
-                        return tr("Already running.");
+                        return sb::tr("Already running.");
                     default:
-                        return tr("Unable to daemonize.");
+                        return sb::tr("Unable to daemonize.");
                     }
                 }() % "\n\n");
 

@@ -18,7 +18,6 @@
  */
 
 #include "sblib.hpp"
-#include <QCoreApplication>
 #include <QProcess>
 #include <QTime>
 #include <QDir>
@@ -44,6 +43,7 @@
 #endif
 
 sb sb::SBThrd;
+QTrn *sb::SBtr(nullptr);
 QSL *sb::ThrdSlst;
 QStr sb::ThrdStr[3], sb::sdir[3], sb::schdlr[2], sb::pnames[15], sb::lang, sb::style, sb::wsclng;
 ullong sb::ThrdLng[]{0, 0};
@@ -59,7 +59,12 @@ sb::sb()
     umask(0);
 }
 
-QTrn *sb::ldtltr()
+sb::~sb()
+{
+    if(SBtr) delete SBtr;
+}
+
+void sb::ldtltr()
 {
     QTrn *tltr(new QTrn);
     cfgread();
@@ -74,9 +79,7 @@ QTrn *sb::ldtltr()
     if(tltr->isEmpty())
         delete tltr;
     else
-        return tltr;
-
-    return nullptr;
+        qApp->installTranslator(SBtr = tltr);
 }
 
 void sb::print(cQStr &txt)
@@ -814,7 +817,7 @@ void sb::pupgrade()
     } while(rerun);
 }
 
-void sb::supgrade(cQSL &estr)
+void sb::supgrade()
 {
     exec("apt-get update");
 
@@ -897,8 +900,8 @@ void sb::supgrade(cQSL &estr)
 
         for(uchar a(3) ; a > 0 ; --a)
         {
-            error("\n " % estr.at(0) % '\n');
-            print("\n " % estr.at(1) % ' ' % QStr::number(a));
+            error("\n " % tr("An error occurred while upgrading the system!") % '\n');
+            print("\n " % tr("Restart upgrade ...") % ' ' % QStr::number(a));
             sleep(1);
             exec("tput cup 0 0");
         }

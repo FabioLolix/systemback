@@ -18,7 +18,6 @@
  */
 
 #include "sbscheduler.hpp"
-#include <QCoreApplication>
 #include <QTimer>
 
 QDateTime scheduler::cfglmd;
@@ -26,11 +25,9 @@ QDateTime scheduler::cfglmd;
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QTrn *tltr(sb::ldtltr());
-    if(tltr) a.installTranslator(tltr);
+    sb::ldtltr();
     scheduler s;
     QTimer::singleShot(0, &s, SLOT(main()));
     uchar rv(a.exec());
-    if(tltr) delete tltr;
     return rv;
 }

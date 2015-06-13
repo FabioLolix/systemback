@@ -18,7 +18,6 @@
  */
 
 #include "sbsustart.hpp"
-#include <QCoreApplication>
 #include <QProcess>
 
 void sustart::main()
@@ -92,10 +91,10 @@ void sustart::main()
         if(rv > 0)
         {
             if(rv == 2)
-                sb::error("\n " % tr("Missing, wrong or too much argument(s).") % "\n\n");
+                sb::error("\n " % sb::tr("Missing, wrong or too much argument(s).") % "\n\n");
             else
             {
-                QStr emsg((qApp->arguments().at(1) == "systemback" ? tr("Cannot start the Systemback graphical user interface!") : tr("Cannot start the Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? tr("Unable to get root permissions.") : tr("Unable to connect to the X server.")));
+                QStr emsg((qApp->arguments().at(1) == "systemback" ? sb::tr("Cannot start the Systemback graphical user interface!") : sb::tr("Cannot start the Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? sb::tr("Unable to get root permissions.") : sb::tr("Unable to connect to the X server.")));
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
                 if(uid != geteuid() && seteuid(uid) == -1)

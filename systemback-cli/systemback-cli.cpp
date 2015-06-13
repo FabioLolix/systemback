@@ -18,7 +18,6 @@
  */
 
 #include "systemback-cli.hpp"
-#include <QCoreApplication>
 #include <QTextStream>
 #include <QDateTime>
 #include <QDir>
@@ -54,7 +53,7 @@ void systemback::main()
                     else if(sb::like(qApp->arguments().at(1), {"_-u_", "_--upgrade_"}))
                     {
                         sb::unlock(sb::Dpkglock);
-                        sb::supgrade({tr("An error occurred while upgrading the system!"), tr("Restart upgrade ...")});
+                        sb::supgrade();
                     }
                     else
                         return true;

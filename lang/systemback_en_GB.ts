@@ -1126,14 +1126,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error occurred while setting a flag on the following partition:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flag:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1223,6 +1215,14 @@
     </message>
     <message>
         <source>Please do not use &apos;sudo&apos; command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error occurred while setting one or more flags on the following partition:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flag(s):</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

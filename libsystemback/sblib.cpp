@@ -289,7 +289,7 @@ bool sb::lock(uchar type)
             default:
                 return isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock";
             }
-    }(), O_RDWR | O_CREAT, 0644)) > -1 && lockf(sblock[type], F_TLOCK, 0) == 0;
+        }(), O_RDWR | O_CREAT, 0644)) > -1 && lockf(sblock[type], F_TLOCK, 0) == 0;
 }
 
 void sb::unlock(uchar type)
@@ -591,8 +591,8 @@ bool sb::execsrch(cQStr &fname, cQStr &ppath)
 
 uchar sb::exec(cQStr &cmd, cQStr &envv, uchar flag)
 {
-    auto exit([&](uchar rv) -> uchar {
-            if(rv > 0) error("\n " % tr("An error occurred while executing the following command:") % "\n\n  " % cmd % "\n\n " % tr("Exit code:") % ' ' % QStr::number(rv) % "\n\n");
+    auto exit([&cmd](uchar rv) -> uchar {
+            if(! ExecKill && rv > 0) error("\n " % tr("An error occurred while executing the following command:") % "\n\n  " % cmd % "\n\n " % tr("Exit code:") % ' ' % QStr::number(rv) % "\n\n");
             return rv;
         });
 
@@ -993,14 +993,14 @@ bool sb::crtrpoint(cQStr &pname)
     return ThrdRslt;
 }
 
-bool sb::setpflag(cQStr &part, cQStr &flag)
+bool sb::setpflag(cQStr &part, cQStr &flags)
 {
-    auto err([&] { return error("\n " % tr("An error occurred while setting a flag on the following partition:") % "\n\n  " % part % "\n\n " % tr("Flag:") % "\n\n  " % flag % "\n\n"); });
+    auto err([&] { return error("\n " % tr("An error occurred while setting one or more flags on the following partition:") % "\n\n  " % part % "\n\n " % tr("Flag(s):") % ' ' % flags % "\n\n"); });
     { bool ismmc(part.contains("mmc"));
     if(part.length() < (ismmc ? 14 : 9) || stype(part) != Isblock || stype(left(part, (ismmc ? 12 : 8))) != Isblock) return err(); }
     ThrdType = Setpflag,
     ThrdStr[0] = part,
-    ThrdStr[1] = flag;
+    ThrdStr[1] = flags;
     SBThrd.start();
     thrdelay();
     return ThrdRslt ? true : err();
@@ -1145,8 +1145,7 @@ bool sb::cpfile(cQStr &srcfile, cQStr &newfile, bool skel)
     int src, dst;
     struct stat fstat;
     { bstr sfile(srcfile);
-    if(stat(sfile, &fstat) == -1) return err();
-    if((src = open(sfile, O_RDONLY | O_NOATIME)) == -1) return err(); }
+    if(like(-1, {stat(sfile, &fstat), src = open(sfile, O_RDONLY | O_NOATIME)})) return err(); }
     bstr nfile(newfile);
     bool herr;
 
@@ -1671,8 +1670,13 @@ void sb::run()
         while(! ThrdKill && (prt = ped_disk_next_partition(dsk, prt)))
             if(QStr(ped_partition_get_path(prt)) == ThrdStr[0])
             {
-                if(like(1, {ped_partition_set_flag(prt, ped_partition_flag_get_by_name(bstr(ThrdStr[1])), 1), ped_disk_commit_to_dev(dsk)}, true)) ThrdRslt = true;
+                for(cQStr &flag : ThrdStr[1].split(' '))
+                    if(ped_partition_set_flag(prt, ped_partition_flag_get_by_name(bstr(flag)), 1) == 0) goto err;
+
+                if(ped_disk_commit_to_dev(dsk) == 1) ThrdRslt = true;
+            err:
                 ped_disk_commit_to_os(dsk);
+                break;
             }
 
         ped_disk_destroy(dsk);

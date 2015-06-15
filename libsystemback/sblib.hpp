@@ -86,8 +86,8 @@ public:
     template<typename T> static bool exist(const T &path);
     static bool access(cQStr &path, uchar mode = Read);
     static bool copy(cQStr &srcfile, cQStr &newfile);
+    static bool setpflag(cQStr &part, cQStr &flags);
     static bool rename(cQStr &opath, cQStr &npath);
-    static bool setpflag(cQStr &part, cQStr &flag);
     static fnln bool islink(cQStr &path);
     static fnln bool isfile(cQStr &path);
     static fnln bool isdir(cQStr &path);

@@ -1750,6 +1750,7 @@ void systemback::repair()
         QSL mlst{"dev", "dev/pts", "proc", "sys"};
         for(cQStr &bpath : (sb::mcheck("/run") ? mlst << "/run" : mlst)) sb::mount('/' % bpath, "/mnt/" % bpath);
         dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText()) % '\"') == 0 ? 208 : 317;
+        mlst.move(0, 1);
         for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
         if(intrrpt) return exit();
     }
@@ -1805,6 +1806,7 @@ void systemback::repair()
                 sb::exec("chroot /mnt update-grub");
                 if(intrrpt) return exit();
                 if((fcmp < 2 || (! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto")) && sb::exec("chroot /mnt grub-install --force " % (grub.isEFI ? nullptr : ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText())) > 0) dialog = ui->fullrepair->isChecked() ? 309 : 303;
+                mlst.move(0, 1);
                 for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
                 if(intrrpt) return exit();
             }
@@ -2488,6 +2490,7 @@ void systemback::livewrite()
     }
 
     if(! sb::mkptable(ldev) || intrrpt) return err(337);
+    sb::delay(100);
     QStr lrdir;
 
     {
@@ -2496,22 +2499,25 @@ void systemback::livewrite()
         if(isize < 4294967295)
         {
             if(! sb::mkpart(ldev) || intrrpt) return err(337);
+            sb::delay(100);
             lrdir = "sblive";
         }
-        else if(! sb::mkpart(ldev, 1048576, 104857600) || ! sb::mkpart(ldev)
-                || intrrpt || sb::exec("mkfs.ext2 -FL SBROOT " % ldev % (ismmc ? "p" : nullptr) % '2') > 0
-                || intrrpt)
-            return err(337);
         else
+        {
+            if(! sb::mkpart(ldev, 1048576, 104857600) || ! sb::mkpart(ldev) || intrrpt) return err(337);
+            sb::delay(100);
+            if(sb::exec("mkfs.ext2 -FL SBROOT " % ldev % (ismmc ? "p" : nullptr) % '2') > 0 || intrrpt) return err(337);
             lrdir = "sbroot";
+        }
 
         if(sb::exec("mkfs.vfat -F 32 -n SBLIVE " % ldev % (ismmc ? "p" : nullptr) % '1') > 0 || intrrpt) return err(337);
 
-        if(sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ismmc ? "p" : nullptr) % '1', "boot") || ! sb::setpflag(ldev % (ismmc ? "p" : nullptr) % '1', "lba")
+        if(sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") > 0 || ! sb::setpflag(ldev % (ismmc ? "p" : nullptr) % '1', "boot lba")
             || intrrpt || (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite")))
             || intrrpt || ! sb::crtdir("/.sblivesystemwrite") || ! sb::crtdir("/.sblivesystemwrite/sblive")
             || intrrpt) return err();
 
+        sb::delay(100);
         if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '1', "/.sblivesystemwrite/sblive") || intrrpt) return err(336);
 
         if(lrdir == "sbroot")
@@ -5123,7 +5129,8 @@ void systemback::on_livedelete_clicked()
 {
     busy();
     QStr path(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1));
-    for(cQStr &ext : {".sblive", ".iso"}) sb::remove(path % ext);
+    sb::remove(path % ".sblive");
+    if(sb::exist(path % ".iso")) sb::remove(path % ".iso");
     on_livecreatemenu_clicked();
     busy(false);
 }

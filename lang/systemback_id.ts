@@ -34,12 +34,12 @@
         <location filename="../systemback/systemback.ui" line="1465"/>
         <location filename="../systemback/systemback.ui" line="1798"/>
         <location filename="../systemback/systemback.ui" line="2092"/>
-        <location filename="../systemback/systemback.ui" line="2790"/>
-        <location filename="../systemback/systemback.ui" line="2918"/>
-        <location filename="../systemback/systemback.ui" line="3950"/>
-        <location filename="../systemback/systemback.ui" line="5107"/>
-        <location filename="../systemback/systemback.ui" line="5338"/>
-        <location filename="../systemback/systemback.ui" line="6145"/>
+        <location filename="../systemback/systemback.ui" line="2793"/>
+        <location filename="../systemback/systemback.ui" line="2921"/>
+        <location filename="../systemback/systemback.ui" line="3953"/>
+        <location filename="../systemback/systemback.ui" line="5110"/>
+        <location filename="../systemback/systemback.ui" line="5341"/>
+        <location filename="../systemback/systemback.ui" line="6148"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="234"/>
         <source>Back</source>
         <translation>Kembali</translation>
@@ -47,9 +47,9 @@
     <message>
         <location filename="../systemback/systemback.ui" line="250"/>
         <location filename="../systemback/systemback.ui" line="1538"/>
-        <location filename="../systemback/systemback.ui" line="3979"/>
-        <location filename="../systemback/systemback.ui" line="5136"/>
-        <location filename="../systemback/systemback.ui" line="5370"/>
+        <location filename="../systemback/systemback.ui" line="3982"/>
+        <location filename="../systemback/systemback.ui" line="5139"/>
+        <location filename="../systemback/systemback.ui" line="5373"/>
         <source>Next</source>
         <translation>Berikutnya</translation>
     </message>
@@ -73,8 +73,8 @@
         <location filename="../systemback/systemback.ui" line="682"/>
         <location filename="../systemback/systemback.ui" line="1345"/>
         <location filename="../systemback/systemback.ui" line="1987"/>
-        <location filename="../systemback/systemback.ui" line="5006"/>
-        <location filename="../systemback/systemback.ui" line="5243"/>
+        <location filename="../systemback/systemback.ui" line="5009"/>
+        <location filename="../systemback/systemback.ui" line="5246"/>
         <source>Options</source>
         <translation>Pilihan</translation>
     </message>
@@ -100,7 +100,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="906"/>
-        <location filename="../systemback/systemback.ui" line="3447"/>
+        <location filename="../systemback/systemback.ui" line="3450"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="234"/>
         <source>Delete</source>
         <translation>Hapus</translation>
@@ -117,7 +117,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="972"/>
-        <location filename="../systemback/systemback.ui" line="3381"/>
+        <location filename="../systemback/systemback.ui" line="3384"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="168"/>
         <source>Create new</source>
         <translation>Buat baru</translation>
@@ -155,13 +155,13 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1427"/>
-        <location filename="../systemback/systemback.ui" line="5066"/>
+        <location filename="../systemback/systemback.ui" line="5069"/>
         <source>Reinstall GRUB 2 bootloader:</source>
         <translation>Pasang ulang bootloader GRUB 2:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1446"/>
-        <location filename="../systemback/systemback.ui" line="5028"/>
+        <location filename="../systemback/systemback.ui" line="5031"/>
         <source>Auto detection</source>
         <translation>Deteksi otomatis</translation>
     </message>
@@ -292,52 +292,52 @@
         <translation>Versi Sytemback:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="2819"/>
+        <location filename="../systemback/systemback.ui" line="2822"/>
         <location filename="../systemback/systemback.cpp" line="4195"/>
         <source>License</source>
         <translation>Lisensi</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="2970"/>
+        <location filename="../systemback/systemback.ui" line="2973"/>
         <source>Re-read directories</source>
         <translation>Baca ulang direktori</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3002"/>
+        <location filename="../systemback/systemback.ui" line="3005"/>
         <source>Writable Linux filesystem!</source>
         <translation>Filesystem Linux yang dapat ditulisi!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3040"/>
-        <location filename="../systemback/systemback.ui" line="7080"/>
-        <location filename="../systemback/systemback.ui" line="7346"/>
+        <location filename="../systemback/systemback.ui" line="3043"/>
+        <location filename="../systemback/systemback.ui" line="7083"/>
+        <location filename="../systemback/systemback.ui" line="7349"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="373"/>
         <source>Cancel</source>
         <translation>Batal</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3133"/>
-        <location filename="../systemback/systemback.ui" line="3155"/>
-        <location filename="../systemback/systemback.ui" line="3177"/>
-        <location filename="../systemback/systemback.ui" line="3199"/>
-        <location filename="../systemback/systemback.ui" line="3224"/>
-        <location filename="../systemback/systemback.ui" line="3249"/>
-        <location filename="../systemback/systemback.ui" line="3271"/>
-        <location filename="../systemback/systemback.ui" line="3293"/>
+        <location filename="../systemback/systemback.ui" line="3136"/>
+        <location filename="../systemback/systemback.ui" line="3158"/>
+        <location filename="../systemback/systemback.ui" line="3180"/>
+        <location filename="../systemback/systemback.ui" line="3202"/>
+        <location filename="../systemback/systemback.ui" line="3227"/>
+        <location filename="../systemback/systemback.ui" line="3252"/>
+        <location filename="../systemback/systemback.ui" line="3274"/>
+        <location filename="../systemback/systemback.ui" line="3296"/>
         <source>Maximum number of temporary restore points</source>
         <translation>Jumlah maksimal titik pemulihan sementara</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4119"/>
-        <location filename="../systemback/systemback.ui" line="4147"/>
-        <location filename="../systemback/systemback.ui" line="4175"/>
-        <location filename="../systemback/systemback.ui" line="4203"/>
-        <location filename="../systemback/systemback.ui" line="4231"/>
-        <location filename="../systemback/systemback.ui" line="4399"/>
-        <location filename="../systemback/systemback.ui" line="4427"/>
-        <location filename="../systemback/systemback.ui" line="4455"/>
-        <location filename="../systemback/systemback.ui" line="4483"/>
-        <location filename="../systemback/systemback.ui" line="4511"/>
+        <location filename="../systemback/systemback.ui" line="4122"/>
+        <location filename="../systemback/systemback.ui" line="4150"/>
+        <location filename="../systemback/systemback.ui" line="4178"/>
+        <location filename="../systemback/systemback.ui" line="4206"/>
+        <location filename="../systemback/systemback.ui" line="4234"/>
+        <location filename="../systemback/systemback.ui" line="4402"/>
+        <location filename="../systemback/systemback.ui" line="4430"/>
+        <location filename="../systemback/systemback.ui" line="4458"/>
+        <location filename="../systemback/systemback.ui" line="4486"/>
+        <location filename="../systemback/systemback.ui" line="4514"/>
         <location filename="../systemback/systemback.cpp" line="1654"/>
         <location filename="../systemback/systemback.cpp" line="1655"/>
         <location filename="../systemback/systemback.cpp" line="1659"/>
@@ -347,11 +347,11 @@
         <translation>kosong</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4259"/>
-        <location filename="../systemback/systemback.ui" line="4287"/>
-        <location filename="../systemback/systemback.ui" line="4315"/>
-        <location filename="../systemback/systemback.ui" line="4343"/>
-        <location filename="../systemback/systemback.ui" line="4371"/>
+        <location filename="../systemback/systemback.ui" line="4262"/>
+        <location filename="../systemback/systemback.ui" line="4290"/>
+        <location filename="../systemback/systemback.ui" line="4318"/>
+        <location filename="../systemback/systemback.ui" line="4346"/>
+        <location filename="../systemback/systemback.ui" line="4374"/>
         <location filename="../systemback/systemback.cpp" line="1652"/>
         <location filename="../systemback/systemback.cpp" line="3381"/>
         <location filename="../systemback/systemback.cpp" line="3384"/>
@@ -359,51 +359,51 @@
         <translation>tidak digunakan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3312"/>
+        <location filename="../systemback/systemback.ui" line="3315"/>
         <source>Restore points</source>
         <translation>Titik pemulihan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3334"/>
+        <location filename="../systemback/systemback.ui" line="3337"/>
         <source>Highlighted restore points</source>
         <translation>Titik pemulihan yang ditandai</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3356"/>
+        <location filename="../systemback/systemback.ui" line="3359"/>
         <source>Point operations</source>
         <translation>Titik operasi</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3403"/>
+        <location filename="../systemback/systemback.ui" line="3406"/>
         <source>Highlight</source>
         <translation>Tanda</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3425"/>
+        <location filename="../systemback/systemback.ui" line="3428"/>
         <source>Rename</source>
         <translation>Ubah nama</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3469"/>
-        <location filename="../systemback/systemback.ui" line="3491"/>
-        <location filename="../systemback/systemback.ui" line="3513"/>
-        <location filename="../systemback/systemback.ui" line="3535"/>
-        <location filename="../systemback/systemback.ui" line="3557"/>
-        <location filename="../systemback/systemback.ui" line="4539"/>
-        <location filename="../systemback/systemback.ui" line="4561"/>
-        <location filename="../systemback/systemback.ui" line="4583"/>
-        <location filename="../systemback/systemback.ui" line="4605"/>
-        <location filename="../systemback/systemback.ui" line="4627"/>
-        <location filename="../systemback/systemback.ui" line="4649"/>
-        <location filename="../systemback/systemback.ui" line="4671"/>
-        <location filename="../systemback/systemback.ui" line="4693"/>
-        <location filename="../systemback/systemback.ui" line="4715"/>
-        <location filename="../systemback/systemback.ui" line="4737"/>
+        <location filename="../systemback/systemback.ui" line="3472"/>
+        <location filename="../systemback/systemback.ui" line="3494"/>
+        <location filename="../systemback/systemback.ui" line="3516"/>
+        <location filename="../systemback/systemback.ui" line="3538"/>
+        <location filename="../systemback/systemback.ui" line="3560"/>
+        <location filename="../systemback/systemback.ui" line="4542"/>
+        <location filename="../systemback/systemback.ui" line="4564"/>
+        <location filename="../systemback/systemback.ui" line="4586"/>
+        <location filename="../systemback/systemback.ui" line="4608"/>
+        <location filename="../systemback/systemback.ui" line="4630"/>
+        <location filename="../systemback/systemback.ui" line="4652"/>
+        <location filename="../systemback/systemback.ui" line="4674"/>
+        <location filename="../systemback/systemback.ui" line="4696"/>
+        <location filename="../systemback/systemback.ui" line="4718"/>
+        <location filename="../systemback/systemback.ui" line="4740"/>
         <source>Select restore point</source>
         <translation>Pilih titik pemulihan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3576"/>
+        <location filename="../systemback/systemback.ui" line="3579"/>
         <location filename="../systemback/systemback.cpp" line="4740"/>
         <location filename="../systemback/systemback.cpp" line="4783"/>
         <location filename="../systemback/systemback.cpp" line="4908"/>
@@ -413,19 +413,19 @@
         <translation>Direktori penampungan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3598"/>
+        <location filename="../systemback/systemback.ui" line="3601"/>
         <source>Function menu</source>
         <translation>Menu fungsi</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3855"/>
+        <location filename="../systemback/systemback.ui" line="3858"/>
         <location filename="../systemback/systemback.cpp" line="3563"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="234"/>
         <source>System restore</source>
         <translation>Pemulihan sistem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3887"/>
+        <location filename="../systemback/systemback.ui" line="3890"/>
         <location filename="../systemback/systemback.cpp" line="3610"/>
         <location filename="../systemback/systemback.cpp" line="4109"/>
         <location filename="../systemback/systemback.cpp" line="5808"/>
@@ -433,13 +433,13 @@
         <translation>Duplikasi sistem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3759"/>
+        <location filename="../systemback/systemback.ui" line="3762"/>
         <location filename="../systemback/systemback.cpp" line="3631"/>
         <source>System install</source>
         <translation>Pemasangan sistem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3791"/>
+        <location filename="../systemback/systemback.ui" line="3794"/>
         <location filename="../systemback/systemback.cpp" line="3646"/>
         <location filename="../systemback/systemback.cpp" line="4963"/>
         <location filename="../systemback/systemback.cpp" line="5010"/>
@@ -447,53 +447,53 @@
         <translation>Membuat Live system</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3823"/>
+        <location filename="../systemback/systemback.ui" line="3826"/>
         <location filename="../systemback/systemback.cpp" line="3677"/>
         <source>System repair</source>
         <translation>Perbaikan sistem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3737"/>
+        <location filename="../systemback/systemback.ui" line="3740"/>
         <source>System upgrade</source>
         <translation>Pembaharuan sistem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3919"/>
+        <location filename="../systemback/systemback.ui" line="3922"/>
         <location filename="../systemback/systemback.cpp" line="3717"/>
         <source>Exclude</source>
         <translation>Pengecualian</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3641"/>
+        <location filename="../systemback/systemback.ui" line="3644"/>
         <location filename="../systemback/systemback.cpp" line="3727"/>
         <source>Schedule</source>
         <translation>Penjadwalan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3673"/>
+        <location filename="../systemback/systemback.ui" line="3676"/>
         <location filename="../systemback/systemback.cpp" line="3735"/>
         <location filename="../systemback/systemback.cpp" line="4187"/>
         <source>About</source>
         <translation>Tentang</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3705"/>
+        <location filename="../systemback/systemback.ui" line="3708"/>
         <location filename="../systemback/systemback.cpp" line="3743"/>
         <source>Settings</source>
         <translation>Pengaturan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4081"/>
+        <location filename="../systemback/systemback.ui" line="4084"/>
         <source>Change path</source>
         <translation>Ubah jalur</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4864"/>
+        <location filename="../systemback/systemback.ui" line="4867"/>
         <source>Restore type</source>
         <translation>Tipe pemulihan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4886"/>
+        <location filename="../systemback/systemback.ui" line="4889"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="369"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="404"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="443"/>
@@ -503,7 +503,7 @@
         <translation>Pemulihan penuh</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4908"/>
+        <location filename="../systemback/systemback.ui" line="4911"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="369"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="406"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="443"/>
@@ -513,33 +513,33 @@
         <translation>Pemulihan file-file sistem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4927"/>
+        <location filename="../systemback/systemback.ui" line="4930"/>
         <source>User(s) configuration files restore</source>
         <translation>Pemulihan berkas-berkas konfigurasi pengguna</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4949"/>
+        <location filename="../systemback/systemback.ui" line="4952"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="373"/>
         <source>Keep newly installed configuration files</source>
         <translation>Tetapkan berkas konfigurasi yang baru terpasang</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="4962"/>
+        <location filename="../systemback/systemback.ui" line="4965"/>
         <source>Include user(s):</source>
         <translation>Masukkan pengguna:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5053"/>
+        <location filename="../systemback/systemback.ui" line="5056"/>
         <source>Do not restore the fstab file</source>
         <translation>Jangan memulihkan berkas fstab</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5221"/>
+        <location filename="../systemback/systemback.ui" line="5224"/>
         <source>Partition settings</source>
         <translation>Pengaturan partisi</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5265"/>
+        <location filename="../systemback/systemback.ui" line="5268"/>
         <location filename="../systemback/systemback.cpp" line="1602"/>
         <location filename="../systemback/systemback.cpp" line="1612"/>
         <location filename="../systemback/systemback.cpp" line="5277"/>
@@ -548,32 +548,32 @@
         <translation>Transfer konfigurasi berkas-berkas pengguna</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5287"/>
+        <location filename="../systemback/systemback.ui" line="5290"/>
         <source>Copy user data files</source>
         <translation>Duplikat berkas-berkas data pengguna</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5322"/>
+        <location filename="../systemback/systemback.ui" line="5325"/>
         <source>Install GRUB 2 bootloader:</source>
         <translation>Pasang bootloader GRUB 2:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5546"/>
+        <location filename="../systemback/systemback.ui" line="5549"/>
         <location filename="../systemback/systemback.cpp" line="433"/>
         <location filename="../systemback/systemback.cpp" line="439"/>
         <source>Format</source>
         <translation>Format</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5568"/>
-        <location filename="../systemback/systemback.ui" line="5743"/>
-        <location filename="../systemback/systemback.ui" line="5876"/>
+        <location filename="../systemback/systemback.ui" line="5571"/>
+        <location filename="../systemback/systemback.ui" line="5746"/>
+        <location filename="../systemback/systemback.ui" line="5879"/>
         <source>Reset partitions settings</source>
         <translation>Kembalikan pengaturan partisi</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5600"/>
-        <location filename="../systemback/systemback.ui" line="5809"/>
+        <location filename="../systemback/systemback.ui" line="5603"/>
+        <location filename="../systemback/systemback.ui" line="5812"/>
         <location filename="../systemback/systemback.cpp" line="3197"/>
         <location filename="../systemback/systemback.cpp" line="3783"/>
         <location filename="../systemback/systemback.cpp" line="3978"/>
@@ -583,22 +583,22 @@
         <translation>Lepaskan kaitan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5647"/>
+        <location filename="../systemback/systemback.ui" line="5650"/>
         <source>Change partition settings</source>
         <translation>Ubah pengaturan partisi</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5673"/>
+        <location filename="../systemback/systemback.ui" line="5676"/>
         <source>Filesystem:</source>
         <translation>Filesystem:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5711"/>
+        <location filename="../systemback/systemback.ui" line="5714"/>
         <source>Mount point:</source>
         <translation>Titik kait:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5781"/>
+        <location filename="../systemback/systemback.ui" line="5784"/>
         <location filename="../systemback/systemback.cpp" line="1607"/>
         <location filename="../systemback/systemback.cpp" line="3781"/>
         <location filename="../systemback/systemback.cpp" line="4014"/>
@@ -608,114 +608,114 @@
         <translation>! Hapus !</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5844"/>
+        <location filename="../systemback/systemback.ui" line="5847"/>
         <source>Add new partition</source>
         <translation>Tambah partisi baru</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5902"/>
+        <location filename="../systemback/systemback.ui" line="5905"/>
         <source>Create new:</source>
         <translation>Buat baru:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5947"/>
+        <location filename="../systemback/systemback.ui" line="5950"/>
         <source>Need to set the mount point as &apos;/boot/efi&apos;!</source>
         <translation>Perlu untuk menempatkan titik kait sebagai &apos;/boot/efi&apos;!</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="5983"/>
+        <location filename="../systemback/systemback.ui" line="5986"/>
         <source>Window DPI scaling</source>
         <translation>Skala jendela DPI</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6032"/>
+        <location filename="../systemback/systemback.ui" line="6035"/>
         <source>Multiplier factor for scaling the window contents</source>
         <translation>Faktor pengali untuk penyekalaan isi-isi jendela</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6174"/>
+        <location filename="../systemback/systemback.ui" line="6177"/>
         <source>User interface</source>
         <translation>Antarmuka pengguna</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6246"/>
+        <location filename="../systemback/systemback.ui" line="6249"/>
         <source>Window always on top</source>
         <translation>Jendela selalu diatas</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6265"/>
+        <location filename="../systemback/systemback.ui" line="6268"/>
         <source>System</source>
         <translation>Sistem</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6287"/>
+        <location filename="../systemback/systemback.ui" line="6290"/>
         <source>Disable scheduler daemon starting for the following users:</source>
         <translation>Mencegah mulainya daemon terjadwal untuk pengguna berikut:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6306"/>
+        <location filename="../systemback/systemback.ui" line="6309"/>
         <source>Use XZ compressor for squashfs filesystems</source>
         <translation>Gunakan kompresi XZ untuk sistemfile squashfs</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6325"/>
+        <location filename="../systemback/systemback.ui" line="6328"/>
         <source>Override auto-detected language:</source>
         <translation>Mencegah deteksi bahasa secara otomatis:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6344"/>
+        <location filename="../systemback/systemback.ui" line="6347"/>
         <source>Override the used style:</source>
         <translation>Mencegah gunakan gaya:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6363"/>
+        <location filename="../systemback/systemback.ui" line="6366"/>
         <source>Disable incremental restore points (do not use hard links between backups)</source>
         <translation>Nonaktifkan penambahan file cadangan (jangan gunakan hardlink ketika mencadangkan)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6475"/>
+        <location filename="../systemback/systemback.ui" line="6478"/>
         <source>Create Live ISO images automatically (faster than the conversion)</source>
         <translation>Membuat file Live ISO secara otomatis (lebih cepat daripada penggantian)</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6494"/>
+        <location filename="../systemback/systemback.ui" line="6497"/>
         <source>Do not empty memory cache at the end of some processes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6669"/>
+        <location filename="../systemback/systemback.ui" line="6672"/>
         <source>! Interrupt !</source>
         <translation>! Interupsi !</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6820"/>
+        <location filename="../systemback/systemback.ui" line="6823"/>
         <source>Creates a scheduled restore point within few seconds.</source>
         <translation>Buat sebuah jadwal titik pemulihan dalam hitungan detik.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6848"/>
+        <location filename="../systemback/systemback.ui" line="6851"/>
         <location filename="../systemback/systemback.cpp" line="2574"/>
         <location filename="../systemback/systemback.cpp" line="4625"/>
         <source>Start</source>
         <translation>Mulai</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="6873"/>
+        <location filename="../systemback/systemback.ui" line="6876"/>
         <source>Later</source>
         <translation>Nanti</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7194"/>
+        <location filename="../systemback/systemback.ui" line="7197"/>
         <source>Systemback user authentication</source>
         <translation>Otentikasi pengguna Systemback</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7213"/>
+        <location filename="../systemback/systemback.ui" line="7216"/>
         <source>Administrator:</source>
         <translation>Administrator:</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="7248"/>
+        <location filename="../systemback/systemback.ui" line="7251"/>
         <source>Password:</source>
         <translation>Sandi:</translation>
     </message>
@@ -840,7 +840,7 @@
         <translation>Semua orang</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="600"/>
+        <location filename="../systemback/systemback.cpp" line="601"/>
         <location filename="../systemback/systemback.cpp" line="1597"/>
         <location filename="../systemback/systemback.cpp" line="1602"/>
         <location filename="../systemback/systemback.cpp" line="1612"/>

@@ -584,7 +584,8 @@ void systemback::unitimer()
                     ui->schedulerusers->setCursorPosition(0);
                 }
 
-                for(QLbl *lbl : QLbL{ui->includeuserstext, ui->grubreinstallrestoretext, ui->grubinstalltext, ui->grubreinstallrepairtext, ui->schedulerstatetext, ui->schedulersecondtext, ui->windowpositiontext, ui->homepage1, ui->homepage2, ui->email, ui->donate, ui->filesystemwarning}) lbl->resize(lbl->fontMetrics().width(lbl->text()) + ss(7), lbl->height());
+                ui->version->setText(sb::appver());
+                for(QLbl *lbl : QLbL{ui->includeuserstext, ui->grubreinstallrestoretext, ui->grubinstalltext, ui->grubreinstallrepairtext, ui->schedulerstatetext, ui->schedulersecondtext, ui->windowpositiontext, ui->homepage1, ui->homepage2, ui->email, ui->donate, ui->version, ui->filesystemwarning}) lbl->resize(lbl->fontMetrics().width(lbl->text()) + ss(7), lbl->height());
                 ui->includeusers->move(ui->includeuserstext->x() + ui->includeuserstext->width(), ui->includeusers->y());
                 ui->includeusers->setMaximumWidth(width() - ui->includeusers->x() - ss(8));
                 ui->grubreinstallrestore->move(ui->grubreinstallrestoretext->x() + ui->grubreinstallrestoretext->width(), ui->grubreinstallrestore->y());
@@ -610,7 +611,6 @@ void systemback::unitimer()
                 for(cQStr &fs : {"btrfs", "reiserfs", "jfs", "xfs"})
                     if(sb::execsrch("mkfs." % fs)) ui->filesystem->addItem(fs);
 
-                ui->systembackversion->setText(sb::appver());
                 ui->repairmountpoint->addItems({nullptr, "/mnt", "/mnt/home", "/mnt/boot"});
 #ifdef __amd64__
                 if(sb::isdir("/sys/firmware/efi")) goto isefi;
@@ -6791,7 +6791,7 @@ void systemback::on_livecreatenew_clicked()
     QStr ifname(ui->livename->text() == "auto" ? "systemback_live_" % QDateTime().currentDateTime().toString("yyyy-MM-dd") : ui->livename->text()), ckernel;
     { uchar ncount(0);
     while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) ncount == 0 ? ifname.append("_1") : ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(++ncount); }
-    if(intrrpt || ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::right(ui->systembackversion->text(), -sb::rinstr(ui->systembackversion->text(), "_")) % '\n') || ! sb::copy("/boot/vmlinuz-" % (ckernel = ckname()), sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz") || intrrpt) return err();
+    if(intrrpt || ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::right(ui->version->text(), -sb::rinstr(ui->version->text(), "_")) % '\n') || ! sb::copy("/boot/vmlinuz-" % (ckernel = ckname()), sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz") || intrrpt) return err();
     irblck = true;
 
     if(lvtype == "casper")

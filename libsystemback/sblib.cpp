@@ -592,7 +592,7 @@ bool sb::execsrch(cQStr &fname, cQStr &ppath)
 uchar sb::exec(cQStr &cmd, cQStr &envv, uchar flag)
 {
     auto exit([&cmd](uchar rv) -> uchar {
-            if(! ExecKill && rv > 0 && ! like(cmd, {"_apt*", "_dpkg*"})) error("\n " % tr("An error occurred while executing the following command:") % "\n\n  " % cmd % "\n\n " % tr("Exit code:") % ' ' % QStr::number(rv) % "\n\n");
+            if(! ExecKill && rv > 0 && ! like(cmd, {"_apt*", "_dpkg*", "_sbscheduler*"})) error("\n " % tr("An error occurred while executing the following command:") % "\n\n  " % cmd % "\n\n " % tr("Exit code:") % ' ' % QStr::number(rv) % "\n\n");
             return rv;
         });
 

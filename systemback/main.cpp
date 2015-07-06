@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
             }
 
             systemback w;
-            w.show();
+            w.fscrn ? w.showFullScreen() : w.show();
             return a.exec();
         }());
 

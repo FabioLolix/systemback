@@ -33,7 +33,6 @@ public:
 
     static uint uid;
 
-public slots:
     void main();
 
 private:

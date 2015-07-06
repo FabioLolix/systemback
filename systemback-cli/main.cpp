@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     sb::ldtltr();
     systemback c;
-    QTimer::singleShot(0, &c, SLOT(main()));
+    QTimer::singleShot(0, &c, &systemback::main);
     uchar rv(a.exec());
     return rv;
 }

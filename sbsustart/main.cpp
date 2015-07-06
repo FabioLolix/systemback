@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     sb::ldtltr();
     sustart s;
-    QTimer::singleShot(0, &s, SLOT(main()));
+    QTimer::singleShot(0, &s, &sustart::main);
     uchar rv(a.exec());
     return rv;
 }

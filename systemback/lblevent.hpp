@@ -46,6 +46,7 @@ signals:
     void Mouse_Released();
     void Mouse_DblClick();
     void Mouse_Pressed();
+    void Mouse_Click();
     void Mouse_Enter();
     void Mouse_Leave();
     void Mouse_Move();
@@ -74,6 +75,8 @@ inline void lblevent::mouseReleaseEvent(QMouseEvent *ev)
         MousePressed = false;
         emit Mouse_Released();
     }
+
+    emit Mouse_Click();
 }
 
 inline void lblevent::mouseDoubleClickEvent(QMouseEvent *ev)

@@ -31,8 +31,6 @@ public:
     systemback();
     ~systemback();
 
-public slots:
-    void progress(uchar status = Inprog);
     void main();
 
 private:
@@ -55,6 +53,9 @@ private:
     bool newrpnt();
     void pset(uchar type);
     void emptycache();
+
+private slots:
+    void progress(uchar status = Inprog);
 };
 
 inline systemback::systemback() : ptimer(nullptr)

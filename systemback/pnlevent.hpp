@@ -20,6 +20,7 @@
 #ifndef PNLEVENT_HPP
 #define PNLEVENT_HPP
 
+#include <QMouseEvent>
 #include <QWidget>
 
 class pnlevent : public QWidget
@@ -31,16 +32,30 @@ public:
 
 protected:
     void mouseMoveEvent(QMouseEvent *);
+    void resizeEvent(QResizeEvent *);
+    void moveEvent(QMoveEvent *);
     void leaveEvent(QEvent *);
 
 signals:
     void Mouse_Leave();
     void Mouse_Move();
+    void Resize();
+    void Move();
 };
 
 inline void pnlevent::mouseMoveEvent(QMouseEvent *)
 {
     emit Mouse_Move();
+}
+
+inline void pnlevent::resizeEvent(QResizeEvent *)
+{
+    emit Resize();
+}
+
+inline void pnlevent::moveEvent(QMoveEvent *)
+{
+    emit Move();
 }
 
 inline void pnlevent::leaveEvent(QEvent *)

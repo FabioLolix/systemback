@@ -43,6 +43,8 @@ public:
     systemback();
     ~systemback();
 
+    bool fscrn;
+
 protected:
     bool eventFilter(QObject *, QEvent *ev);
     void keyReleaseEvent(QKeyEvent *ev);
@@ -64,6 +66,7 @@ private:
         bool isEFI;
     } grub;
 
+    QWdt *wndw, *fwdgt;
     QTimer utimer, *shdltimer, *dlgtimer, *intrptimer;
     QStr cpoint, pname, hash;
     ushort dialog;
@@ -87,6 +90,8 @@ private:
     void setwontop(bool state = true);
     void busy(bool state = true);
     void pnmchange(uchar num);
+    void schedulertimer();
+    void dialogtimer();
     void pntupgrade();
     void emptycache();
     void statustart();
@@ -96,39 +101,23 @@ private:
     void stschange();
     void bttnsshow();
     void bttnshide();
+    void unitimer();
     void restore();
     void repair();
 
 private slots:
     void benter(bool click = false);
-    void schedulertimer();
-    void sbttnreleased();
     void abtreleased();
-    void dialogtimer();
-    void foutpsttngs();
-    void finpsttngs();
-    void sbttnleave();
     void wbreleased();
     void wreleased();
     void rreleased();
-    void sbttnmove();
-    void hmpg1move();
-    void hmpg2move();
-    void emailmove();
-    void umntleave();
     void mpressed();
     void rpressed();
-    void unitimer();
     void wpressed();
-    void wdblclck();
     void bpressed();
     void wbenter();
     void wbleave();
-    void dntmove();
     void foutpnt();
-    void bleave();
-    void center();
-    void cleave();
     void renter();
     void rleave();
     void wmove();

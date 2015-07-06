@@ -1225,5 +1225,9 @@
         <source>Flag(s):</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Install the system</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

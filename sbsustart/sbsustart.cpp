@@ -23,7 +23,7 @@
 void sustart::main()
 {
     {
-        uchar rv(! sb::like(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().at(1), {"_systemback_", "_scheduler_"}) ? 2 : [&] {
+        uchar rv(! sb::like(qApp->arguments().count(), {2, 3}) || ! sb::like(qApp->arguments().at(1), {"_systemback_", "_finstall_", "_scheduler_"}) ? 2 : [&] {
                 QStr uname, usrhm;
 
                 if(uid == 0)
@@ -67,23 +67,26 @@ void sustart::main()
                             return true;
                         });
 
-                    if(qApp->arguments().at(1) == "systemback")
+                    if(qApp->arguments().at(1) == "scheduler")
+                    {
+                        if(! clrenv(usrhm.toUtf8())) return 3;
+                        cmd = new QStr("sbscheduler " % uname);
+                    }
+                    else
                     {
                         QStr xauth("/tmp/sbXauthority-" % sb::rndstr());
                         if((qEnvironmentVariableIsEmpty("XAUTHORITY") || ! QFile(qgetenv("XAUTHORITY")).copy(xauth)) && (! sb::isfile("/home/" % uname % "/.Xauthority") || ! QFile("/home/" % uname % "/.Xauthority").copy(xauth)) && (! sb::isfile(usrhm % "/.Xauthority") || ! QFile(usrhm % "/.Xauthority").copy(xauth))) return 4;
                         if(! clrenv("/root", xauth)) return 3;
-                        cmd = new QStr("systemback authorization " % uname);
+                        cmd = new QStr("systemback " % (qApp->arguments().at(1) == "systemback" ? "authorization " % uname : QStr("finstall ")));
                     }
-                    else if(! clrenv(usrhm.toUtf8()))
-                        return 3;
-                    else
-                        cmd = new QStr("sbscheduler " % uname);
                 }
                 else
-                    cmd = new QStr(qApp->arguments().at(1) == "systemback" ? "systemback" : [&]() -> QStr {
+                {
+                    cmd = new QStr(qApp->arguments().at(1) == "scheduler" ? [&]() -> QStr {
                             qputenv("HOME", usrhm.toUtf8());
                             return "sbscheduler " % uname;
-                        }());
+                        }() : "systemback" % QStr(qApp->arguments().at(1) == "finstall" ? " finstall" : nullptr));
+                }
 
                 return 0;
             }());
@@ -94,7 +97,7 @@ void sustart::main()
                 sb::error("\n " % sb::tr("Missing, wrong or too much argument(s).") % "\n\n");
             else
             {
-                QStr emsg((qApp->arguments().at(1) == "systemback" ? sb::tr("Cannot start the Systemback graphical user interface!") : sb::tr("Cannot start the Systemback scheduler daemon!")) % "\n\n" % (rv == 3 ? sb::tr("Unable to get root permissions.") : sb::tr("Unable to connect to the X server.")));
+                QStr emsg((qApp->arguments().at(1) == "scheduler" ? sb::tr("Cannot start the Systemback scheduler daemon!") : sb::tr("Cannot start the Systemback graphical user interface!")) % "\n\n" % (rv == 3 ? sb::tr("Unable to get root permissions.") : sb::tr("Unable to connect to the X server.")));
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
                 if(uid != geteuid() && seteuid(uid) == -1)

@@ -34,7 +34,6 @@ public:
 
     static QDateTime cfglmd;
 
-public slots:
     void main();
 
 private:

@@ -6972,7 +6972,7 @@ void systemback::on_livecreatenew_clicked()
     }
     else
     {
-        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", "#!/bin/sh\nif [ \"$BOOT\" = live ] && [ ! -e /root/etc/fstab ]\nthen touch /root/etc/fstab\nfi\n");
+        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", "#!/bin/sh\nif [ \"$1\" != prereqs ] && [ \"$BOOT\" = live ] && [ ! -e /root/etc/fstab ]\nthen touch /root/etc/fstab\nfi\n");
         if(! cfmod("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab", 0755)) return err();
     }
 
@@ -6980,12 +6980,12 @@ void systemback::on_livecreatenew_clicked()
 
     if((xmntry = sb::isfile("/etc/X11/xorg.conf")))
     {
-        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", "#!/bin/sh\nif [ -s /root/etc/X11/xorg.conf ] && grep noxconf /proc/cmdline >/dev/null 2>&1\nthen rm /root/etc/X11/xorg.conf\nfi\n");
+        sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", "#!/bin/sh\nif [ \"$1\" != prereqs ] && [ -s /root/etc/X11/xorg.conf ] && grep noxconf /proc/cmdline >/dev/null 2>&1\nthen rm /root/etc/X11/xorg.conf\nfi\n");
         if(! cfmod("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf", 0755)) return err();
     }
 
     sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall", [this]() -> QStr {
-            QStr ftxt("#!/bin/sh\n");
+            QStr ftxt("#!/bin/sh\nif [ \"$1\" != prereqs ]\nthen\nif [ -f /root/home/" % guname() % "/.config/autostart/dropbox.desktop ]\nthen rm /root/home/" % guname() % "/.config/autostart/dropbox.desktop\nfi\n");
 
             for(uchar a(0) ; a < 5 ; ++a)
             {
@@ -7020,8 +7020,8 @@ void systemback::on_livecreatenew_clicked()
                     }());
             }
 
-            QStr txt[]{"\ncat << EOF >/root/etc/xdg/autostart/sbfinstall", "[Desktop Entry]\nEncoding=UTF-8\nVersion=1.0\nName=Systemback installer\n", "Type=Application\nIcon=systemback\nTerminal=false\n", "NoDisplay=true\nEOF\n"};
-            return ftxt % "\nif grep finstall /proc/cmdline >/dev/null 2>&1\nthen" % txt[0] % ".desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall gtk+\n" % txt[2] % "NotShowIn=KDE;\n" % txt[3] % txt[0] % "-kde.desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall\n" % txt[2] % "OnlyShowIn=KDE;\n" % txt[3] % "fi\n";
+            QStr txt[]{"cat << EOF >/root/etc/xdg/autostart/sbfinstall", "[Desktop Entry]\nEncoding=UTF-8\nVersion=1.0\nName=Systemback installer\n", "Type=Application\nIcon=systemback\nTerminal=false\n", "NoDisplay=true\nEOF\n"};
+            return ftxt % "\nif grep finstall /proc/cmdline >/dev/null 2>&1\nthen\n" % txt[0] % ".desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall gtk+\n" % txt[2] % "NotShowIn=KDE;\n" % txt[3] % txt[0] % "-kde.desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall\n" % txt[2] % "OnlyShowIn=KDE;\n" % txt[3] % "fi\nfi\n";
         }());
 
     if(! cfmod("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall", 0755)) return err();

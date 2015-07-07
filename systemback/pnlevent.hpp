@@ -20,7 +20,6 @@
 #ifndef PNLEVENT_HPP
 #define PNLEVENT_HPP
 
-#include <QMouseEvent>
 #include <QWidget>
 
 class pnlevent : public QWidget

@@ -886,7 +886,7 @@
     <message>
         <location filename="../systemback/systemback.cpp" line="1250"/>
         <source>Installing the system</source>
-        <translation>A rendszer telepitese</translation>
+        <translation>A rendszer telepítése</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1268"/>
@@ -1388,7 +1388,7 @@
         <location filename="../systemback/systemback.cpp" line="7144"/>
         <location filename="../systemback/systemback.cpp" line="7146"/>
         <source>Install the system</source>
-        <translation>A rendszer telepítése</translation>
+        <translation>A rendszer telepitese</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7143"/>

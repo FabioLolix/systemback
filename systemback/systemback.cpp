@@ -407,7 +407,14 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 {
                     ui->passwordpanel->hide();
                     busy();
-                    QTimer::singleShot(0, this, &systemback::unitimer);
+
+                    QTimer::singleShot(0, this,
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+                        SLOT(unitimer())
+#else
+                        &systemback::unitimer
+#endif
+                        );
 
                     if(sstart)
                     {
@@ -430,7 +437,15 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
                         setFixedSize((wgeom[2] = ss(402)), (wgeom[3] = ss(161)));
                         move(wgeom[0], wgeom[1]);
-                        QTimer::singleShot(0, this, &systemback::schedulertimer);
+
+                        QTimer::singleShot(0, this,
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+                            SLOT(schedulertimer())
+#else
+                            &systemback::schedulertimer
+#endif
+                            );
+
                         setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
                     }
                     else
@@ -3357,7 +3372,15 @@ void systemback::on_startcancel_clicked()
 void systemback::on_passwordinputok_clicked()
 {
     busy();
-    QTimer::singleShot(0, this, &systemback::unitimer);
+
+    QTimer::singleShot(0, this,
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+        SLOT(unitimer())
+#else
+        &systemback::unitimer
+#endif
+        );
+
     ui->passwordpanel->hide();
     ui->mainpanel->show();
     ui->sbpanel->isVisible() ? ui->functionmenunext->setFocus() : ui->fullname->setFocus();

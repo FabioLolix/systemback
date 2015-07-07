@@ -27,7 +27,15 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     sb::ldtltr();
     scheduler s;
-    QTimer::singleShot(0, &s, &scheduler::main);
+
+    QTimer::singleShot(0, &s,
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+        SLOT(main())
+#else
+        &scheduler::main
+#endif
+        );
+
     uchar rv(a.exec());
     return rv;
 }

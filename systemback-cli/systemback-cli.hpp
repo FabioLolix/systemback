@@ -31,6 +31,9 @@ public:
     systemback();
     ~systemback();
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+public slots:
+#endif
     void main();
 
 private:

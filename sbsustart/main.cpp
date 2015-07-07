@@ -49,7 +49,15 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     sb::ldtltr();
     sustart s;
-    QTimer::singleShot(0, &s, &sustart::main);
+
+    QTimer::singleShot(0, &s,
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+        SLOT(main())
+#else
+        &sustart::main
+#endif
+        );
+
     uchar rv(a.exec());
     return rv;
 }

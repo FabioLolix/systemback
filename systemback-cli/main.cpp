@@ -24,7 +24,15 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     sb::ldtltr();
     systemback c;
-    QTimer::singleShot(0, &c, &systemback::main);
+
+    QTimer::singleShot(0, &c,
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+        SLOT(main())
+#else
+        &systemback::main
+#endif
+        );
+
     uchar rv(a.exec());
     return rv;
 }

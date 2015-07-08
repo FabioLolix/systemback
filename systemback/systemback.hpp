@@ -90,7 +90,6 @@ private:
     void setwontop(bool state = true);
     void busy(bool state = true);
     void pnmchange(uchar num);
-    void dialogtimer();
     void pntupgrade();
     void emptycache();
     void statustart();
@@ -108,6 +107,11 @@ private slots:
 #endif
     void schedulertimer();
     void unitimer();
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+private slots:
+#endif
+    void dialogtimer();
 
 private slots:
     void benter(bool click = false);

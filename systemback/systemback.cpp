@@ -901,7 +901,15 @@ void systemback::unitimer()
             pntupgrade();
             if(sstart) ui->schedulerstart->setEnabled(true);
             busy(false);
-            connect(&utimer, &QTimer::timeout, this, &systemback::unitimer);
+
+            connect(&utimer,
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+                SIGNAL(timeout()), this, SLOT(unitimer())
+#else
+                &QTimer::timeout, this, &systemback::unitimer
+#endif
+                );
+
             utimer.start(500);
         }
         else if(! ui->statuspanel->isVisibleTo(ui->wpanel))
@@ -1328,7 +1336,15 @@ void systemback::schedulertimer()
     if(ui->schedulernumber->text().isEmpty())
     {
         ui->schedulernumber->setText(QStr::number(sb::schdle[4]) % 's');
-        connect((shdltimer = new QTimer), &QTimer::timeout, this, &systemback::schedulertimer);
+
+        connect((shdltimer = new QTimer),
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+            SIGNAL(timeout()), this, SLOT(schedulertimer())
+#else
+            &QTimer::timeout, this, &systemback::schedulertimer
+#endif
+            );
+
         shdltimer->start(1000);
     }
     else if(ui->schedulernumber->text() == "1s")
@@ -2732,7 +2748,14 @@ void systemback::dialogopen(ushort dlg, cbstr &dev, schar snum)
 
             if(cntd)
             {
-                connect((dlgtimer = new QTimer), &QTimer::timeout, this, &systemback::dialogtimer);
+                connect((dlgtimer = new QTimer),
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+                    SIGNAL(timeout()), this, SLOT(dialogtimer())
+#else
+                    &QTimer::timeout, this, &systemback::dialogtimer
+#endif
+                    );
+
                 dlgtimer->start(1000);
             }
         }
@@ -6681,7 +6704,14 @@ void systemback::on_interrupt_clicked()
                 sb::error("\n " % tr("Systemback worker thread is interrupted by the user.") % "\n\n");
             }
 
-            connect((intrptimer = new QTimer), &QTimer::timeout, this, &systemback::on_interrupt_clicked);
+            connect((intrptimer = new QTimer),
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+                SIGNAL(timeout()), this, SLOT(on_interrupt_clicked())
+#else
+                &QTimer::timeout, this, &systemback::on_interrupt_clicked
+#endif
+                );
+
             intrptimer->start(100);
         }
         else if(sstart)

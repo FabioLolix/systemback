@@ -102,16 +102,16 @@ private:
     void restore();
     void repair();
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+private slots:
+#endif
+    void dialogtimer();
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
 private slots:
 #endif
     void schedulertimer();
     void unitimer();
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
-private slots:
-#endif
-    void dialogtimer();
 
 private slots:
     void benter(bool click = false);

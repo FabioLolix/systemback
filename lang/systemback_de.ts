@@ -4,6 +4,213 @@
 <context>
     <name>systemback</name>
     <message>
+        <location filename="../libsystemback/sblib.cpp" line="122"/>
+        <source>An error occurred while opening the following file:</source>
+        <translation>Beim Öffnen der folgenden Datei ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="251"/>
+        <source>An error occurred while creating the following directory:</source>
+        <translation>Beim Erstellen der folgenden Verzeichnisses ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="253"/>
+        <source>An error occurred while removing the following file:</source>
+        <translation>Beim Entfernen der folgenden Datei ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="255"/>
+        <source>An error occurred while creating the following hard link:</source>
+        <translation>Beim Erstellen des folgenden &quot;Hardlink&quot; ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="255"/>
+        <source>Reference file:</source>
+        <translation>Referenzdatei:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="262"/>
+        <source>An error occurred while creating the following file:</source>
+        <translation>Beim Erstellen der folgenden Datei ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="273"/>
+        <source>An error occurred while renaming the following item:</source>
+        <translation>Beim Umbennen des folgenden Punktes ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="273"/>
+        <source>New path:</source>
+        <translation>Neuer Verzeichnispfad:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="595"/>
+        <source>An error occurred while executing the following command:</source>
+        <translation>Bei der Ausführung des folgenden Befehls ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="595"/>
+        <source>Exit code:</source>
+        <translation>Exit-Code:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="778"/>
+        <source>Failed to detect the device for installing the GRUB!</source>
+        <translation>Das Gerät zur Installation von GRUB konnte nicht gefunden werden!</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="903"/>
+        <source>An error occurred while upgrading the system!</source>
+        <translation>Während der Systemaktualisierung ist ein Fehler aufgetreten!</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="904"/>
+        <source>Restart upgrade ...</source>
+        <translation>Aktualisierung erneut starten …</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="915"/>
+        <source>This file could not be copied because it does not exist:</source>
+        <translation>Diese Datei konnte nicht kopiert werden, da sie nicht existiert:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="930"/>
+        <source>The following partition has no UUID:</source>
+        <translation>Die nachfolgende Partition besitzt keine UUID:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="949"/>
+        <source>An error occurred while creating a new partition on the following device:</source>
+        <translation>Während der Erstellung einer neuen Partition auf dem folgenden Gerät ist ein
+ Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="963"/>
+        <source>An error occurred while mounting the following partition/image:</source>
+        <translation>Während des Mountvorgangs der(s) folgenden Partition/Abbildes ist ein Fehler
+ aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="998"/>
+        <source>An error occurred while setting one or more flags on the following partition:</source>
+        <translation>Bei Setzen einer oder mehrer Flags auf der folgenden Partition ist ein Fehler
+ aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="998"/>
+        <source>Flag(s):</source>
+        <translation>Flag(s):</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1020"/>
+        <source>An error occurred while creating the partition table on the following device:</source>
+        <translation>Beim Erstellen einer Partitionstabelle auf dem folgenden Gerät ist ein Fehler
+ aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1045"/>
+        <source>An error occurred while unmounting the following partition/image/mount point:</source>
+        <translation>Beim Aushängen der(s) folgenden Partition/Abbildes/Einhängepunktes ist ein
+ Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1099"/>
+        <source>An error occurred while cloning the properties of the following item:</source>
+        <translation>Beim Klonen der Eigenschaften des folgenden Punktes ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1099"/>
+        <source>Target item:</source>
+        <translation>Zielpunkt:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1131"/>
+        <source>An error occurred while cloning the following symbolic link:</source>
+        <translation>Beim Klonen der folgenden symbolischen Verknüpfung ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1131"/>
+        <source>Target symlink:</source>
+        <translation>Zielsymlink:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1144"/>
+        <source>An error occurred while cloning the following file:</source>
+        <translation>Beim Klonen der folgenden Datei ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1144"/>
+        <source>Target file:</source>
+        <translation>Zieldatei:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1195"/>
+        <source>An error occurred while cloning the following directory:</source>
+        <translation>Beim Klonen des folgenden Verzeichnisses ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1195"/>
+        <source>Target directory:</source>
+        <translation>Zielverzeichnis:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1409"/>
+        <source>An error occurred while deleting the following directory:</source>
+        <translation>Beim Entfernen des folgenden Verzeichnisses ist ein Fehler aufgetreten:</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="39"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
+        <source>Cannot start the Systemback scheduler daemon!</source>
+        <translation>Systembacks Planungsdienst kann nicht gestartet werden!</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="97"/>
+        <source>Missing, wrong or too much argument(s).</source>
+        <translation>Fehlende(s), falsche(s) Argument(e) oder falsche Anzahl.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
+        <source>The process is disabled for this user.</source>
+        <translation>Der Prozess ist für diesen Benutzer dekativiert.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
+        <source>Root privileges are required.</source>
+        <translation>Root-Benutzerrechte erforderlich.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="48"/>
+        <source>This system is a Live.</source>
+        <translation>Dieses System ist ein Live-System.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="50"/>
+        <source>Already running.</source>
+        <translation>Bereits ausgeführt.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="52"/>
+        <source>Unable to daemonize.</source>
+        <translation>Kann nicht als Dienst laufen.</translation>
+    </message>
+    <message>
+        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
+        <source>Cannot start the Systemback graphical user interface!</source>
+        <translation>Systembacks grafische Benutzeroberfläche kann nicht gestartet werden!</translation>
+    </message>
+    <message>
+        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
+        <source>Unable to get root permissions.</source>
+        <translation>Keine Root-Rechte verfügbar.</translation>
+    </message>
+    <message>
+        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
+        <source>Unable to connect to the X server.</source>
+        <translation>Verbindung zum X-Server fehlgeschlagen.</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.ui" line="162"/>
         <source>Full name of the new user:</source>
         <translation>Vollständiger Name des neuen Benutzers:</translation>
@@ -113,7 +320,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="959"/>
         <source>Convert to ISO</source>
-        <translation>Zu ISO-Datei umwandeln</translation>
+        <translation>In eine ISO umwandeln</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="981"/>
@@ -408,7 +615,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="3749"/>
         <source>System upgrade</source>
-        <translation>System-Upgrade</translation>
+        <translation>Systemwartung</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3771"/>
@@ -720,6 +927,26 @@
         <translation>Passwort:</translation>
     </message>
     <message>
+        <location filename="../systemback/main.cpp" line="31"/>
+        <source>Unsafe X Window authorization!</source>
+        <translation>Unsichere X-Window-Legitimierung!</translation>
+    </message>
+    <message>
+        <location filename="../systemback/main.cpp" line="31"/>
+        <source>Please do not use &apos;sudo&apos; command.</source>
+        <translation>Bitte sudo-Befehl nicht benutzen.</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="363"/>
+        <location filename="../systemback/systemback.cpp" line="364"/>
+        <location filename="../systemback/systemback.cpp" line="787"/>
+        <location filename="../systemback/systemback.cpp" line="1680"/>
+        <location filename="../systemback/systemback.cpp" line="5391"/>
+        <location filename="../systemback/systemback.cpp" line="5399"/>
+        <source>Transfer user configuration and data files</source>
+        <translation>Übertrage Nutzerkonfiguration und Dateien</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="425"/>
         <location filename="../systemback/systemback.cpp" line="2844"/>
         <location filename="../systemback/systemback.cpp" line="3395"/>
@@ -833,16 +1060,6 @@
         <location filename="../systemback/systemback.cpp" line="7467"/>
         <source>Everyone</source>
         <translation>Alle Benutzer</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="363"/>
-        <location filename="../systemback/systemback.cpp" line="364"/>
-        <location filename="../systemback/systemback.cpp" line="787"/>
-        <location filename="../systemback/systemback.cpp" line="1680"/>
-        <location filename="../systemback/systemback.cpp" line="5391"/>
-        <location filename="../systemback/systemback.cpp" line="5399"/>
-        <source>Transfer user configuration and data files</source>
-        <translation>Übertrage Nutzerkonfiguration und Dateien</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="897"/>
@@ -1383,6 +1600,13 @@
         <location filename="../systemback/systemback.cpp" line="7142"/>
         <location filename="../systemback/systemback.cpp" line="7144"/>
         <location filename="../systemback/systemback.cpp" line="7146"/>
+        <source>Install the system</source>
+        <translation>Installiere das System</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="7142"/>
+        <location filename="../systemback/systemback.cpp" line="7144"/>
+        <location filename="../systemback/systemback.cpp" line="7146"/>
         <source>Boot Live system</source>
         <translation>Start des Live Systems</translation>
     </message>
@@ -1401,13 +1625,6 @@
         <translation>Start des Live Systems im Debug Modus</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7142"/>
-        <location filename="../systemback/systemback.cpp" line="7144"/>
-        <location filename="../systemback/systemback.cpp" line="7146"/>
-        <source>Install the system</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="7143"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>&apos;E&apos; Taste zum Editieren drücken</translation>
@@ -1418,159 +1635,10 @@
         <translation>TAB Taste zum Editieren drücken</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="122"/>
-        <source>An error occurred while opening the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="251"/>
-        <source>An error occurred while creating the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="253"/>
-        <source>An error occurred while removing the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="255"/>
-        <source>An error occurred while creating the following hard link:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="255"/>
-        <source>Reference file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="262"/>
-        <source>An error occurred while creating the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="273"/>
-        <source>An error occurred while renaming the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="273"/>
-        <source>New path:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="595"/>
-        <source>An error occurred while executing the following command:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="595"/>
-        <source>Exit code:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="778"/>
-        <source>Failed to detect the device for installing the GRUB!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="903"/>
-        <source>An error occurred while upgrading the system!</source>
-        <translation>Während der Systemaktualisierung ist ein Fehler aufgetreten!</translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="904"/>
-        <source>Restart upgrade ...</source>
-        <translation>Aktualisierung erneut starten …</translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="915"/>
-        <source>This file could not be copied because it does not exist:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="930"/>
-        <source>The following partition has no UUID:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="949"/>
-        <source>An error occurred while creating a new partition on the following device:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="963"/>
-        <source>An error occurred while mounting the following partition/image:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="998"/>
-        <source>An error occurred while setting one or more flags on the following partition:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="998"/>
-        <source>Flag(s):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1020"/>
-        <source>An error occurred while creating the partition table on the following device:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1045"/>
-        <source>An error occurred while unmounting the following partition/image/mount point:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1099"/>
-        <source>An error occurred while cloning the properties of the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1099"/>
-        <source>Target item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1131"/>
-        <source>An error occurred while cloning the following symbolic link:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1131"/>
-        <source>Target symlink:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1144"/>
-        <source>An error occurred while cloning the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1144"/>
-        <source>Target file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1195"/>
-        <source>An error occurred while cloning the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1195"/>
-        <source>Target directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1409"/>
-        <source>An error occurred while deleting the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="85"/>
-        <source>basic restore UI</source>
-        <translation>grundlegendes Wiederherstellungsbenutzerinterface</translation>
+        <location filename="../systemback/systemback.hpp" line="301"/>
+        <source>An error occurred while changing the access permissions of the following file:</source>
+        <translation>Während der Änderung der Zugriffsrechte der folgenden Datei ist ein Fehler
+ aufgetreten:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="37"/>
@@ -1602,6 +1670,11 @@
   -v, --version            Ausgabe der Systemback Versionsnummer
 
   -h, --help               Hilfe anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="85"/>
+        <source>basic restore UI</source>
+        <translation>grundlegendes Wiederherstellungsbenutzerinterface</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="110"/>
@@ -1749,73 +1822,6 @@
         <location filename="../systemback-cli/systemback-cli.cpp" line="580"/>
         <source>Restoring the users configuration files</source>
         <translation>Wiederherstellung der Nutzerkonfigurationsdateien</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.hpp" line="301"/>
-        <source>An error occurred while changing the access permissions of the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="39"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
-        <source>Cannot start the Systemback scheduler daemon!</source>
-        <translation>Systembacks Planungsdienst kann nicht gestartet werden!</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="42"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="97"/>
-        <source>Missing, wrong or too much argument(s).</source>
-        <translation>Fehlende(s), falsche(s) Argument(e) oder falsche Anzahl.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
-        <source>The process is disabled for this user.</source>
-        <translation>Der Prozess ist für diesen Benutzer dekativiert.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
-        <source>Root privileges are required.</source>
-        <translation>Root-Benutzerrechte erforderlich.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="48"/>
-        <source>This system is a Live.</source>
-        <translation>Dieses System ist ein Live-System.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="50"/>
-        <source>Already running.</source>
-        <translation>Bereits ausgeführt.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="52"/>
-        <source>Unable to daemonize.</source>
-        <translation>Kann nicht als Dienst laufen.</translation>
-    </message>
-    <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
-        <source>Cannot start the Systemback graphical user interface!</source>
-        <translation>Systembacks grafische Benutzeroberfläche kann nicht gestartet werden!</translation>
-    </message>
-    <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
-        <source>Unable to get root permissions.</source>
-        <translation>Keine Root-Rechte verfügbar.</translation>
-    </message>
-    <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="100"/>
-        <source>Unable to connect to the X server.</source>
-        <translation>Verbindung zum X-Server fehlgeschlagen.</translation>
-    </message>
-    <message>
-        <location filename="../systemback/main.cpp" line="31"/>
-        <source>Unsafe X Window authorization!</source>
-        <translation>Unsichere X-Window-Legitimierung!</translation>
-    </message>
-    <message>
-        <location filename="../systemback/main.cpp" line="31"/>
-        <source>Please do not use &apos;sudo&apos; command.</source>
-        <translation>Bitte sudo-Befehl nicht benutzen.</translation>
     </message>
 </context>
 </TS>

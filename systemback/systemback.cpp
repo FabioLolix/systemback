@@ -2928,7 +2928,7 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
         }
 
         wndw->setMinimumSize(0, 0);
-        wndw->setMaximumSize(qApp->desktop()->availableGeometry(snum).size());
+        wndw->setMaximumSize(qApp->desktop()->availableGeometry(snum).width() < wndw->width() ? wndw->width() : qApp->desktop()->availableGeometry(snum).width(), qApp->desktop()->availableGeometry(snum).height() < wndw->height() ? wndw->height() : qApp->desktop()->availableGeometry(snum).height());
         wmblck = true;
         int vls[4]{qAbs(wgeom[0] - wndw->x()) / 6, qAbs(wgeom[1] - wndw->y()) / 6, qAbs(wgeom[2] - wndw->width()) / 6, qAbs(wgeom[3] - wndw->height()) / 6};
         ui->resizepanel->show();

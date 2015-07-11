@@ -23,8 +23,10 @@
 void scheduler::main()
 {
     {
-        uchar rv(qApp->arguments().count() != 2 ? 1
-            : sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(qApp->arguments().at(1))) ? 2
+        QSL args(qApp->arguments());
+
+        uchar rv(args.count() != 2 ? 1
+            : sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(args.at(1))) ? 2
             : getuid() + getgid() > 0 ? 3
             : sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? 4
             : ! sb::lock(sb::Schdlrlock) ? 5
@@ -96,7 +98,10 @@ void scheduler::main()
                 {
                     QStr xauth("/tmp/sbXauthority-" % sb::rndstr()), usrhm(qgetenv("HOME"));
 
-                    if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || (sb::isfile("/home/" % qApp->arguments().at(1) % "/.Xauthority") && QFile("/home/" % qApp->arguments().at(1) % "/.Xauthority").copy(xauth)) || (sb::isfile(usrhm % "/.Xauthority") && QFile(usrhm % "/.Xauthority").copy(xauth)))
+                    if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || [&] {
+                            QStr path("/home/" % qApp->arguments().at(1) % "/.Xauthority");
+                            return (sb::isfile(path) && QFile(path).copy(xauth)) || (sb::isfile((path = usrhm % "/.Xauthority")) && QFile(path).copy(xauth));
+                        }())
                     {
                         sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
                         sb::rmfile(xauth);

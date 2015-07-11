@@ -66,7 +66,7 @@ private:
         bool isEFI;
     } grub;
 
-    QWdt *wndw, *fwdgt;
+    QWdt wndw, fwdgt;
     QTimer utimer, *shdltimer, *dlgtimer, *intrptimer;
     QStr cpoint, pname, hash;
     ushort dialog;
@@ -74,16 +74,17 @@ private:
     uchar busycnt, ppipe, sfctr, icnt;
     bool sislive, wismax, wmblck, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy[2], sstart, cfgupdt, intrrpt;
 
-    QLE *getpoint(uchar num);
-    QCB *getppipe(uchar num);
+    QLE getpoint(uchar num);
+    QCB getppipe(uchar num);
     QStr guname();
     QStr ckname();
+    QRect sgeom(bool rdc = false, QDW dtp = nullptr);
     ushort ss(ushort dsize);
     template<typename T> bool cfmod(const T &path, ushort mode);
     bool minside(cQRect &rct);
-    bool minside(QWdt *wgt);
-    void dialogopen(ushort dlg = 0, cbstr &dev = nullptr, schar snum = -1);
+    bool minside(QWdt wgt);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
+    void dialogopen(ushort dlg = 0, cbstr &dev = nullptr);
     void pset(uchar type, cbstr &tend = nullptr);
     void ptxtchange(uchar num, cQStr &txt);
     void ilstupdt(cQStr &dir = nullptr);

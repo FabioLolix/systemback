@@ -45,12 +45,14 @@ void systemback::main()
         });
 
     uchar rv([&] {
-            if(qApp->arguments().count() == 1 || [&] {
-                    if(sb::like(qApp->arguments().at(1), {"_-h_", "_--help_"}))
+            QSL args(qApp->arguments());
+
+            if(args.count() == 1 || [&] {
+                    if(sb::like(args.at(1), {"_-h_", "_--help_"}))
                         sb::print("\n " % help() % "\n\n");
-                    else if(sb::like(qApp->arguments().at(1), {"_-v_", "_--version_"}))
+                    else if(sb::like(args.at(1), {"_-v_", "_--version_"}))
                         sb::print("\n " % sb::appver() % "\n\n");
-                    else if(sb::like(qApp->arguments().at(1), {"_-u_", "_--upgrade_"}))
+                    else if(sb::like(args.at(1), {"_-u_", "_--upgrade_"}))
                     {
                         sb::unlock(sb::Dpkglock);
                         sb::supgrade();
@@ -92,9 +94,9 @@ void systemback::main()
                                     return crv;
                                 });
 
-                            return qApp->arguments().count() == 1 ? startui()
-                                : sb::like(qApp->arguments().at(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 10
-                                : sb::like(qApp->arguments().at(1), {"_-s_", "_--storagedir_"}) ? storagedir() : 1;
+                            return args.count() == 1 ? startui()
+                                : sb::like(args.at(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 10
+                                : sb::like(args.at(1), {"_-s_", "_--storagedir_"}) ? storagedir(args) : 1;
                         }();
 
             return 0;
@@ -262,19 +264,19 @@ uchar systemback::clistart()
         }
 }
 
-uchar systemback::storagedir()
+uchar systemback::storagedir(cQSL &args)
 {
-    if(qApp->arguments().count() == 2)
+    if(args.count() == 2)
         sb::print("\n " % sb::sdir[0] % "\n\n");
     else
     {
         QStr ndir;
 
         {
-            QStr cpath, idir(qApp->arguments().at(2));
+            QStr cpath, idir(args.at(2));
 
-            if(qApp->arguments().count() > 3)
-                for(uchar a(3) ; a < qApp->arguments().count() ; ++a) idir.append(' ' % qApp->arguments().at(a));
+            if(args.count() > 3)
+                for(uchar a(3) ; a < args.count() ; ++a) idir.append(' ' % args.at(a));
 
             QSL excl{"*/Systemback_", "*/Systemback/*", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"};
             if(sb::like((ndir = QDir::cleanPath(idir)), excl) || sb::like((cpath = QDir(idir).canonicalPath()), excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 5;

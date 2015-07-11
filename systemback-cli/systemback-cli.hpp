@@ -50,7 +50,7 @@ private:
     bstr sbtxt;
     uchar blgn;
 
-    uchar storagedir();
+    uchar storagedir(cQSL &args);
     uchar clistart();
     uchar restore();
     bool newrpnt();

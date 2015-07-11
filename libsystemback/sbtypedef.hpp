@@ -20,6 +20,7 @@
 #ifndef SBTYPEDEF_HPP
 #define SBTYPEDEF_HPP
 
+#include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QPushButton>
@@ -34,13 +35,16 @@
 class bstr;
 
 typedef QTranslator QTrn;
-typedef QTableWidget QTblW;
-typedef QPushButton QPB;
-typedef QLineEdit QLE;
-typedef QComboBox QCbB;
-typedef QRadioButton QRB;
-typedef QCheckBox QCB;
-typedef QLabel QLbl;
+typedef QCursor *QCr;
+typedef QDesktopWidget *QDW;
+typedef QWidget *QWdt;
+typedef QTableWidget *QTblW;
+typedef QPushButton *QPB;
+typedef QLineEdit *QLE;
+typedef QComboBox *QCbB;
+typedef QRadioButton *QRB;
+typedef QCheckBox *QCB;
+typedef QLabel *QLbl;
 typedef QTextStream QTS;
 typedef QList<QWidget *> QWL;
 typedef QList<QComboBox *> QCbBL;
@@ -53,7 +57,6 @@ typedef QList<long long> QLIL;
 typedef const QList<uchar> cQUCL;
 typedef QList<uchar> QUCL;
 typedef const std::initializer_list<int> cSIL;
-typedef QWidget QWdt;
 typedef const QString cQStr;
 typedef QString QStr;
 typedef const QByteArray cQBA;

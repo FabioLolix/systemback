@@ -62,7 +62,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             return true;
         }();
 
-    shdltimer = dlgtimer = intrptimer = nullptr, wmblck = wismax = nrxth = false;
+    shdltimer = dlgtimer = intrptimer = nullptr, wmblck = wismax = fscrn = nrxth = false;
     ui->setupUi(this);
     ui->dialogpanel->move(0, 0);
     for(QWdt wdgt : QWL{ui->statuspanel, ui->scalingbuttonspanel, ui->buttonspanel, ui->resizepanel}) wdgt->hide();
@@ -477,16 +477,16 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
                         if(sislive && args.count() == 2 && args.at(1) == "finstall")
                         {
-                            ui->wpanel->setGeometry((wgeom[0] = sgm.x() + sgm.width() / 2 - ss(349)), (wgeom[1] = sgm.y() + sgm.height() / 2 - ss(232)), (wgeom[2] = ss(698)), (wgeom[3] = ss(465)));
-                            ui->wallpaper->setGeometry(0, 0, sgm.width(), sgm.height());
-                            ui->logo->setGeometry(ui->wallpaper->geometry());
-                            ui->logo->setPixmap(QPixmap("/usr/share/systemback/logo.png").scaledToWidth((ui->wallpaper->width() > ui->wallpaper->height() ? ui->wallpaper->height() : ui->wallpaper->width()) / 2));
+                            fscrn = true;
+                            resize(sgm.size());
+                            for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->move(0, 0);
+                            ui->wpanel->setGeometry((wgeom[0] = sgm.x() + width() / 2 - ss(349)), (wgeom[1] = sgm.y() + height() / 2 - ss(232)), (wgeom[2] = ss(698)), (wgeom[3] = ss(465)));
 
                             connect(ui->wpanel, &pnlevent::Move, [this] {
                                     if(fscrn && ! wismax && ! wmblck)
                                     {
-                                        if(wgeom[0] != wndw->x()) wgeom[0] = wndw->x();
-                                        if(wgeom[1] != wndw->y()) wgeom[1] = wndw->y();
+                                        if(wgeom[0] != ui->wpanel->x()) wgeom[0] = ui->wpanel->x();
+                                        if(wgeom[1] != ui->wpanel->y()) wgeom[1] = ui->wpanel->y();
                                     }
                                 });
 
@@ -521,7 +521,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             ui->windowbutton1->move(wndw->width() - ui->windowbutton1->height(), 0);
             ui->subpanel->resize(wndw->width() - ui->subpanel->x(), wndw->height() - ss(24));
 
-            if(ui->copypanel->isVisible())
+            if(ui->copypanel->isVisibleTo(ui->wpanel))
             {
                 ui->copypanel->resize(wndw->width() - ui->copypanel->x() * 2, wndw->height() - ss(25));
                 ui->partitionsettingstext->resize(ui->copypanel->width(), ui->partitionsettingstext->height());
@@ -548,7 +548,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             }
         });
 
-    if(! (fscrn = wndw == ui->wpanel))
+    if(! fscrn)
     {
         for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->hide();
         if(sb::waot == sb::True && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
@@ -558,8 +558,9 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         XChangeProperty(dsply, winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 5);
         XFlush(dsply);
         XCloseDisplay(dsply);
-        installEventFilter(this);
     }
+
+    installEventFilter(this);
 }
 
 systemback::~systemback()
@@ -1146,6 +1147,7 @@ void systemback::unitimer()
 
 QRect systemback::sgeom(bool rdc, QDW dtp)
 {
+    if(fscrn) return geometry();
     if(dtp == nullptr) dtp = qApp->desktop();
     return rdc ? dtp->availableGeometry(dtp->screenNumber(this)) : dtp->screenGeometry(dtp->screenNumber(this));
 }
@@ -1337,14 +1339,7 @@ void systemback::stschange()
             }
 
             wismax = true;
-
-            if(fscrn)
-            {
-                wndw->setMaximumSize(size());
-                return geometry();
-            }
-
-            setMaximumSize(agm.size());
+            wndw->setMaximumSize(agm.size());
             return agm;
         }());
 
@@ -1505,7 +1500,7 @@ void systemback::bttnsshow()
     ui->buttonspanel->move(wndw->width() - ui->buttonspanel->width(), -ui->buttonspanel->height() + ss(27));
     ui->buttonspanel->show();
     uchar a(ss(1));
-    QRect rct({(fscrn ? wndw->x() : 0) + wndw->width() - ui->buttonspanel->width(), fscrn ? wndw->y() : 0, ui->buttonspanel->width(), ui->buttonspanel->height()});
+    QRect rct({(fscrn ? ui->wpanel->x() : 0) + wndw->width() - ui->buttonspanel->width(), fscrn ? ui->wpanel->y() : 0, ui->buttonspanel->width(), ui->buttonspanel->height()});
 
     do {
         ui->buttonspanel->move(ui->buttonspanel->x(), ui->buttonspanel->y() + a);
@@ -1520,7 +1515,7 @@ void systemback::bttnsshow()
 void systemback::bttnshide()
 {
     schar a(ss(1)), b(-ui->buttonspanel->height() + ss(24) + a);
-    QRect rct({(fscrn ? wndw->x() : 0) + wndw->width() - ui->buttonspanel->width(), fscrn ? wndw->y() : 0, ui->buttonspanel->width(), ui->buttonspanel->height()});
+    QRect rct({(fscrn ? ui->wpanel->x() : 0) + wndw->width() - ui->buttonspanel->width(), fscrn ? ui->wpanel->y() : 0, ui->buttonspanel->width(), ui->buttonspanel->height()});
 
     do {
         ui->buttonspanel->move(ui->buttonspanel->x(), ui->buttonspanel->y() - a);
@@ -1534,7 +1529,7 @@ void systemback::bttnshide()
 
 void systemback::bmove()
 {
-    if(minside({(fscrn ? wndw->x() : 0) + wndw->width() - ui->buttonspanel->width(), fscrn ? wndw->y() : 0, ui->buttonspanel->width(), ui->buttonspanel->height()}))
+    if(minside({(fscrn ? ui->wpanel->x() : 0) + wndw->width() - ui->buttonspanel->width(), fscrn ? ui->wpanel->y() : 0, ui->buttonspanel->width(), ui->buttonspanel->height()}))
     {
         if(ui->windowmaximize->isVisibleTo(ui->buttonspanel))
         {
@@ -1686,7 +1681,7 @@ void systemback::rreleased()
 {
     QCr csr(qApp->overrideCursor());
 
-    if(csr && csr->shape() != Qt::SizeFDiagCursor)
+    if(csr && csr->shape() == Qt::SizeFDiagCursor)
     {
         qApp->restoreOverrideCursor();
         if(busycnt > 0) qApp->setOverrideCursor(Qt::WaitCursor);
@@ -3015,14 +3010,14 @@ void systemback::wmove()
 
                 if(npos.x() < 0)
                     rpos.setX(0);
-                else if(npos.x() > (bpos = width() - wndw->width()))
+                else if(npos.x() > (bpos = width() - ui->wpanel->width()))
                     rpos.setX(bpos);
                 else
                     rpos.setX(npos.x());
 
                 if(npos.y() < 0)
                     rpos.setY(0);
-                else if(npos.y() > (bpos = height() - wndw->height()))
+                else if(npos.y() > (bpos = height() - ui->wpanel->height()))
                     rpos.setY(bpos);
                 else
                     rpos.setY(npos.y());
@@ -3070,153 +3065,163 @@ void systemback::on_functionmenuback_clicked()
 
 bool systemback::eventFilter(QObject *, QEvent *ev)
 {
-    switch(ev->type()) {
-    case QEvent::WindowActivate:
-        if(ui->function3->foregroundRole() == QPalette::Dark)
-        {
-            for(QWdt wdgt : QWL{ui->scalingbutton, ui->function1, ui->windowbutton1, ui->function2, ui->windowbutton2, ui->function3, ui->windowbutton3, ui->function4, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Base);
-            goto gcheck;
-        }
-
-        return false;
-    case QEvent::WindowDeactivate:
-        if(ui->function3->foregroundRole() == QPalette::Base)
-        {
-            for(QWdt wdgt : QWL{ui->scalingbutton, ui->function1, ui->windowbutton1, ui->function2, ui->windowbutton2, ui->function3, ui->windowbutton3, ui->function4, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Dark);
-
-            if(ui->copypanel->isVisible())
+    if(! fscrn)
+    {
+        switch(ev->type()) {
+        case QEvent::WindowActivate:
+            if(ui->function3->foregroundRole() == QPalette::Dark)
             {
-                if(ui->partitionsettings->hasFocus() && ui->partitionsettings->currentRow() == -1) ui->copyback->setFocus();
+                for(QWdt wdgt : QWL{ui->scalingbutton, ui->function1, ui->windowbutton1, ui->function2, ui->windowbutton2, ui->function3, ui->windowbutton3, ui->function4, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Base);
+                goto gcheck;
             }
-            else if(ui->livecreatepanel->isVisible())
+
+            return false;
+        case QEvent::WindowDeactivate:
+            if(ui->function3->foregroundRole() == QPalette::Base)
             {
-                if((ui->livelist->hasFocus() && ui->livelist->currentRow() == -1) || (ui->livedevices->hasFocus() && ui->livedevices->currentRow() == -1)) ui->livecreateback->setFocus();
+                for(QWdt wdgt : QWL{ui->scalingbutton, ui->function1, ui->windowbutton1, ui->function2, ui->windowbutton2, ui->function3, ui->windowbutton3, ui->function4, ui->windowbutton4}) wdgt->setForegroundRole(QPalette::Dark);
+
+                if(ui->copypanel->isVisible())
+                {
+                    if(ui->partitionsettings->hasFocus() && ui->partitionsettings->currentRow() == -1) ui->copyback->setFocus();
+                }
+                else if(ui->livecreatepanel->isVisible())
+                {
+                    if((ui->livelist->hasFocus() && ui->livelist->currentRow() == -1) || (ui->livedevices->hasFocus() && ui->livedevices->currentRow() == -1)) ui->livecreateback->setFocus();
+                }
+                else if(ui->excludepanel->isVisible())
+                {
+                    if((ui->itemslist->hasFocus() && ! ui->itemslist->currentItem()) || (ui->excludedlist->hasFocus() && ui->excludedlist->currentRow() == -1)) ui->excludeback->setFocus();
+                }
+                else if(ui->choosepanel->isVisible() && ui->dirchoose->hasFocus() && ! ui->dirchoose->currentItem())
+                    ui->dirchoosecancel->setFocus();
+
+                goto gcheck;
+            }
+
+            return false;
+        case QEvent::Resize:
+            if(wismax && ! wmblck)
+            {
+                QRect agm(sgeom(true));
+
+                if(geometry() != agm)
+                {
+                    setGeometry(agm);
+                    return true;
+                }
+            }
+
+            ui->wpanel->resize(size());
+
+            if(ui->choosepanel->isVisible())
+            {
+                ui->choosepanel->resize(width() - ui->choosepanel->x() * 2, height() - ss(25));
+                ui->dirpath->resize(ui->choosepanel->width() - ss(40), ui->dirpath->height());
+                ui->dirrefresh->move(ui->choosepanel->width() - ui->dirrefresh->width(), 0);
+                ui->dirchoose->resize(ui->choosepanel->width(), ui->choosepanel->height() - ss(80));
+                ui->dirchooseok->move(ui->choosepanel->width() - ss(120), ui->choosepanel->height() - ss(40));
+                ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - ss(40));
+                ui->filesystemwarning->move(ui->filesystemwarning->x(), ui->choosepanel->height() - ss(41));
+                ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
             }
             else if(ui->excludepanel->isVisible())
             {
-                if((ui->itemslist->hasFocus() && ! ui->itemslist->currentItem()) || (ui->excludedlist->hasFocus() && ui->excludedlist->currentRow() == -1)) ui->excludeback->setFocus();
+                ui->excludepanel->resize(width() - ui->excludepanel->x() * 2, height() - ss(25));
+                ui->itemstext->resize(ui->excludepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->itemstext->height());
+                ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedtext->y(), ui->itemstext->width(), ui->excludedtext->height());
+                ui->itemslist->resize(ui->itemstext->width(), ui->excludepanel->height() - ss(160));
+                ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedlist->y(), ui->itemslist->width(), ui->itemslist->height());
+                ui->additem->move(ui->excludepanel->width() / 2 - ss(24), ui->itemslist->height() / 2 + ss(36));
+                ui->removeitem->move(ui->additem->x(), ui->itemslist->height() / 2 + ss(108));
+                ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - ss(48));
+                ui->kendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
+                ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
             }
-            else if(ui->choosepanel->isVisible() && ui->dirchoose->hasFocus() && ! ui->dirchoose->currentItem())
-                ui->dirchoosecancel->setFocus();
 
-            goto gcheck;
-        }
-
-        return false;
-    case QEvent::Resize:
-        if(wismax && ! wmblck)
-        {
-            QRect agm(sgeom(true));
-
-            if(geometry() != agm)
+            if(! wismax)
             {
-                setGeometry(agm);
-                return true;
+                if(! wmblck)
+                {
+                    if(wgeom[2] != width()) wgeom[2] = width();
+                    if(wgeom[3] != height()) wgeom[3] = height();
+                }
+
+                goto bcheck;
             }
-        }
 
-        ui->wpanel->resize(size());
-
-        if(ui->choosepanel->isVisible())
-        {
-            ui->choosepanel->resize(width() - ui->choosepanel->x() * 2, height() - ss(25));
-            ui->dirpath->resize(ui->choosepanel->width() - ss(40), ui->dirpath->height());
-            ui->dirrefresh->move(ui->choosepanel->width() - ui->dirrefresh->width(), 0);
-            ui->dirchoose->resize(ui->choosepanel->width(), ui->choosepanel->height() - ss(80));
-            ui->dirchooseok->move(ui->choosepanel->width() - ss(120), ui->choosepanel->height() - ss(40));
-            ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - ss(40));
-            ui->filesystemwarning->move(ui->filesystemwarning->x(), ui->choosepanel->height() - ss(41));
-            ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
-        }
-        else if(ui->excludepanel->isVisible())
-        {
-            ui->excludepanel->resize(width() - ui->excludepanel->x() * 2, height() - ss(25));
-            ui->itemstext->resize(ui->excludepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->itemstext->height());
-            ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedtext->y(), ui->itemstext->width(), ui->excludedtext->height());
-            ui->itemslist->resize(ui->itemstext->width(), ui->excludepanel->height() - ss(160));
-            ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedlist->y(), ui->itemslist->width(), ui->itemslist->height());
-            ui->additem->move(ui->excludepanel->width() / 2 - ss(24), ui->itemslist->height() / 2 + ss(36));
-            ui->removeitem->move(ui->additem->x(), ui->itemslist->height() / 2 + ss(108));
-            ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - ss(48));
-            ui->kendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
-            ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
-        }
-
-        if(! wismax)
-        {
-            if(! wmblck)
+            return false;
+        case QEvent::Move:
+            if(! wismax)
             {
-                if(wgeom[2] != width()) wgeom[2] = width();
-                if(wgeom[3] != height()) wgeom[3] = height();
+                if(! wmblck)
+                {
+                    if(wgeom[0] != x()) wgeom[0] = x();
+                    if(wgeom[1] != y()) wgeom[1] = y();
+                }
+
+                goto bcheck;
             }
-
-            goto bcheck;
-        }
-
-        return false;
-    case QEvent::Move:
-        if(! wismax)
-        {
-            if(! wmblck)
+            else if(! wmblck)
             {
-                if(wgeom[0] != x()) wgeom[0] = x();
-                if(wgeom[1] != y()) wgeom[1] = y();
+                QRect agm(sgeom(true));
+
+                if(geometry() != agm)
+                {
+                    setGeometry(agm);
+                    return true;
+                }
             }
 
-            goto bcheck;
-        }
-        else if(! wmblck)
+            return false;
+        case QEvent::WindowStateChange:
         {
-            QRect agm(sgeom(true));
-
-            if(geometry() != agm)
-            {
-                setGeometry(agm);
-                return true;
-            }
+            QEvent nev(isMinimized() ? QEvent::WindowDeactivate : QEvent::WindowActivate);
+            qApp->sendEvent(this, &nev);
         }
-
-        return false;
-    case QEvent::WindowStateChange:
-    {
-        QEvent nev(isMinimized() ? QEvent::WindowDeactivate : QEvent::WindowActivate);
-        qApp->sendEvent(this, &nev);
-    }
-    default:
-        return false;
-    }
-
-gcheck:
-    if(! wismax && ! wmblck)
-    {
-        QRect sgm(sgeom());
-        short scrxy(sgm.x());
-
-        if(x() < scrxy && x() > scrxy - width())
-            wgeom[0] = scrxy + ss(30);
-        else
-        {
-            short scrw(sgm.width());
-            if(x() > scrxy + scrw - width() && x() < scrxy + scrw + width()) wgeom[0] = scrxy + scrw - width() - ss(30);
-        }
-
-        if(y() < (scrxy = sgm.y()) && y() > scrxy - height())
-            wgeom[1] = scrxy + ss(30);
-        else
-        {
-            short scrh(sgm.height());
-            if(y() > scrxy + scrh - height() && y() < scrxy + scrh + height()) wgeom[1] = scrxy + scrh - height() - ss(30);
-        }
-
-        if(pos() != QPoint(wgeom[0], wgeom[1]))
-        {
-            move(wgeom[0], wgeom[1]);
+        default:
             return false;
         }
-    }
+
+gcheck:
+        if(! wismax && ! wmblck)
+        {
+            QRect sgm(sgeom());
+            short scrxy(sgm.x());
+
+            if(x() < scrxy && x() > scrxy - width())
+                wgeom[0] = scrxy + ss(30);
+            else
+            {
+                short scrw(sgm.width());
+                if(x() > scrxy + scrw - width() && x() < scrxy + scrw + width()) wgeom[0] = scrxy + scrw - width() - ss(30);
+            }
+
+            if(y() < (scrxy = sgm.y()) && y() > scrxy - height())
+                wgeom[1] = scrxy + ss(30);
+            else
+            {
+                short scrh(sgm.height());
+                if(y() > scrxy + scrh - height() && y() < scrxy + scrh + height()) wgeom[1] = scrxy + scrh - height() - ss(30);
+            }
+
+            if(pos() != QPoint(wgeom[0], wgeom[1]))
+            {
+                move(wgeom[0], wgeom[1]);
+                return false;
+            }
+        }
 
 bcheck:
-    if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0) ui->buttonspanel->hide();
+        if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0) ui->buttonspanel->hide();
+    }
+    else if(ev->type() == QEvent::Resize)
+    {
+        for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->resize(size());
+        ui->logo->setPixmap(QPixmap("/usr/share/systemback/logo.png").scaledToWidth((ui->wallpaper->width() > ui->wallpaper->height() ? ui->wallpaper->height() : ui->wallpaper->width()) / 2));
+        if(ui->copypanel->isVisibleTo(ui->wpanel)) ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
+    }
+
     return false;
 }
 
@@ -3475,44 +3480,58 @@ void systemback::on_schedulerstart_clicked()
 
 void systemback::on_dialogcancel_clicked()
 {
-    if(dialog != 108)
+    if(! fscrn)
     {
-        if(dlgtimer)
+        if(dialog != 108)
         {
-            if(dialog == 211) return void(close());
-            delete dlgtimer;
-            dlgtimer = nullptr;
-            if(ui->dialognumber->text() != "30s") ui->dialognumber->setText("30s");
-        }
-
-        if(! ui->sbpanel->isVisibleTo(ui->mainpanel))
-        {
-            if(ui->restorepanel->isVisibleTo(ui->mainpanel))
-                ui->restorepanel->hide();
-            else if(ui->copypanel->isVisibleTo(ui->mainpanel))
-                ui->copypanel->hide();
-            else if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
-                ui->livecreatepanel->hide();
-            else if(ui->repairpanel->isVisibleTo(ui->mainpanel))
-                ui->repairpanel->hide();
-
-            ui->sbpanel->show();
-            ui->function1->setText("Systemback");
-        }
-
-        for(QCB ckbx : ui->sbpanel->findChildren<QCB>())
-            if(ckbx->isChecked())
+            if(dlgtimer)
             {
-                ckbx->click();
-                break;
+                if(dialog == 211) return void(close());
+                delete dlgtimer;
+                dlgtimer = nullptr;
+                if(ui->dialognumber->text() != "30s") ui->dialognumber->setText("30s");
             }
-    }
 
-    ui->dialogpanel->hide();
-    ui->mainpanel->show();
-    ui->functionmenunext->setFocus();
-    windowmove(ss(698), ss(465));
-    setwontop(false);
+            if(! ui->sbpanel->isVisibleTo(ui->mainpanel))
+            {
+                if(ui->restorepanel->isVisibleTo(ui->mainpanel))
+                    ui->restorepanel->hide();
+                else if(ui->copypanel->isVisibleTo(ui->mainpanel))
+                    ui->copypanel->hide();
+                else if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
+                    ui->livecreatepanel->hide();
+                else if(ui->repairpanel->isVisibleTo(ui->mainpanel))
+                    ui->repairpanel->hide();
+
+                ui->sbpanel->show();
+                ui->function1->setText("Systemback");
+            }
+
+            for(QCB ckbx : ui->sbpanel->findChildren<QCB>())
+                if(ckbx->isChecked())
+                {
+                    ckbx->click();
+                    break;
+                }
+        }
+
+        ui->dialogpanel->hide();
+        ui->mainpanel->show();
+        ui->functionmenunext->setFocus();
+        windowmove(ss(698), ss(465));
+        setwontop(false);
+    }
+    else if(ui->dialogok->text() == tr("Reboot"))
+        close();
+    else
+    {
+        ui->dialogpanel->hide();
+        ui->mainpanel->show();
+        short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
+        windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false);
+        ui->wpanel->setMinimumSize(ss(698), ss(465));
+        ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
+    }
 }
 
 void systemback::pnmchange(uchar num)
@@ -6784,9 +6803,8 @@ void systemback::on_interrupt_clicked()
                 ui->mainpanel->show();
                 short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
                 windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false);
-                wndw->setMinimumSize(ss(698), ss(465));
-                QRect agm(sgeom(true));
-                wndw->setMaximumSize(agm.width() - ss(60), agm.height() - ss(60));
+                ui->wpanel->setMinimumSize(ss(698), ss(465));
+                ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
             }
             else
             {

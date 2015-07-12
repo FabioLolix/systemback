@@ -52,11 +52,6 @@ void systemback::main()
                         sb::print("\n " % help() % "\n\n");
                     else if(sb::like(args.at(1), {"_-v_", "_--version_"}))
                         sb::print("\n " % sb::appver() % "\n\n");
-                    else if(sb::like(args.at(1), {"_-u_", "_--upgrade_"}))
-                    {
-                        sb::unlock(sb::Dpkglock);
-                        sb::supgrade();
-                    }
                     else
                         return true;
 
@@ -96,7 +91,12 @@ void systemback::main()
 
                             return args.count() == 1 ? startui()
                                 : sb::like(args.at(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 10
-                                : sb::like(args.at(1), {"_-s_", "_--storagedir_"}) ? storagedir(args) : 1;
+                                : sb::like(args.at(1), {"_-s_", "_--storagedir_"}) ? storagedir(args)
+                                : sb::like(args.at(1), {"_-u_", "_--upgrade_"}) ? [] {
+                                        sb::unlock(sb::Dpkglock);
+                                        sb::supgrade();
+                                        return 0;
+                                    }() : 1;
                         }();
 
             return 0;

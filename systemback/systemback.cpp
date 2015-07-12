@@ -567,12 +567,13 @@ systemback::~systemback()
 {
     if(cfgupdt) sb::cfgwrite();
 
-    if(fscrn)
+    if(fscrn && sb::isfile("/usr/bin/ksplashqml"))
     {
-        if(sb::isfile("/usr/bin/plasmashell"))
-            chmod("/usr/bin/plasmashell", 0755);
-        else if(sb::isfile("/usr/bin/plasma-desktop"))
-            chmod("/usr/bin/plasma-desktop", 0755);
+        for(cQStr &item : QDir("/usr/bin").entryList(QDir::Files))
+            if(sb::like(item, {"_ksplash*", "_plasma*"})) chmod(bstr(item), 0755);
+
+        if(sb::isfile("/usr/share/autostart/plasma-desktop.desktop_")) sb::rename("/usr/share/autostart/plasma-desktop.desktop_", "/usr/share/autostart/plasma-desktop.desktop");
+        if(sb::isfile("/usr/share/autostart/plasma-netbook.desktop_")) sb::rename("/usr/share/autostart/plasma-netbook.desktop_", "/usr/share/autostart/plasma-netbook.desktop");
     }
 
     if(! nrxth)
@@ -7087,7 +7088,7 @@ void systemback::on_livecreatenew_clicked()
     }
 
     sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall", [this]() -> QStr {
-            QStr ftxt("#!/bin/sh\nif [ \"$1\" != prereqs ]\nthen\nif [ -f /root/home/" % guname() % "/.config/autostart/dropbox.desktop ]\nthen rm /root/home/" % guname() % "/.config/autostart/dropbox.desktop\nfi\nif [ -f /root/usr/bin/ksplashqml ]\nthen chmod -x /root/usr/bin/ksplash* /root/usr/bin/plasma*\nfi\n");
+            QStr ftxt("#!/bin/sh\nif [ \"$1\" != prereqs ]\nthen\nif [ -f /root/home/" % guname() % "/.config/autostart/dropbox.desktop ]\nthen rm /root/home/" % guname() % "/.config/autostart/dropbox.desktop\nfi\nif [ -f /root/usr/bin/ksplashqml ]\nthen\nchmod -x /root/usr/bin/ksplash* /root/usr/bin/plasma*\nif [ -f /root/usr/share/autostart/plasma-desktop ]\nthen mv /root/usr/share/autostart/plasma-desktop.desktop /root/usr/share/autostart/plasma-desktop.desktop_\nfi\nif [ -f /root/usr/share/autostart/plasma-netbook.desktop ]\nthen mv /root/usr/share/autostart/plasma-netbook.desktop /root/usr/share/autostart/plasma-netbook.desktop_\nfi\nfi\n");
 
             for(uchar a(0) ; a < 5 ; ++a)
             {

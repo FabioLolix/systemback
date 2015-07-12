@@ -4850,7 +4850,14 @@ void systemback::on_dialogok_clicked()
     else if(ui->dialogok->text() == tr("Reboot"))
     {
         sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", sb::Bckgrnd);
-        fscrn ? qApp->exit(1) : void(close());
+
+        if(fscrn)
+        {
+            fscrn = false;
+            qApp->exit(1);
+        }
+        else
+            close();
     }
     else if(ui->dialogok->text() == tr("X restart"))
     {

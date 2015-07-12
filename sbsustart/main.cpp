@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         if(seteuid(sustart::uid) == -1)
             sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
         else
-            sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
+            sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', sb::Bckgrnd);
 
         return 1;
     }

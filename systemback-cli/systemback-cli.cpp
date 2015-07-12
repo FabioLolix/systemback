@@ -523,7 +523,7 @@ uchar systemback::restore()
     progress(Start);
     bool sfstab(fsave == 1);
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
-    { bool err(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', nullptr, sb::Silent) > 0);
+    { bool err(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', sb::Silent) > 0);
     progress(Stop);
     if(err) return 7; }
     clear();
@@ -552,7 +552,7 @@ uchar systemback::restore()
     forever
         switch(getch()) {
         case '\n':
-            if(mthd < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, sb::Bckgrnd);
+            if(mthd < 3) sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", sb::Bckgrnd);
             return 0;
         case 'q':
         case 'Q':

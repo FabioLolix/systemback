@@ -70,7 +70,7 @@ void scheduler::main()
         if(! sb::isfile(*pfile) || (pflmd != QFileInfo(*pfile).lastModified() && sb::fload(*pfile) != QBA::number(qApp->applicationPid())))
         {
             sb::unlock(sb::Schdlrlock);
-            sb::exec("sbscheduler " % qApp->arguments().at(1), nullptr, sb::Silent | sb::Bckgrnd);
+            sb::exec("sbscheduler " % qApp->arguments().at(1), sb::Silent | sb::Bckgrnd);
             break;
         }
 
@@ -103,7 +103,7 @@ void scheduler::main()
                             return (sb::isfile(path) && QFile(path).copy(xauth)) || (sb::isfile((path = usrhm % "/.Xauthority")) && QFile(path).copy(xauth));
                         }())
                     {
-                        sb::exec("systemback schedule", "XAUTHORITY=" % xauth);
+                        sb::exec("systemback schedule", sb::Wait, "XAUTHORITY=" % xauth);
                         sb::rmfile(xauth);
                     }
                 }

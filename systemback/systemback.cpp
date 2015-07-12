@@ -301,7 +301,17 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                         sb::cfgwrite();
                         if(cfgupdt) cfgupdt = false;
                         sb::unlock(sb::Sblock);
-                        sb::exec("systemback" % QStr(fscrn ? " finstall" : nullptr), nullptr, sb::Bckgrnd);
+                        sb::unlock(sb::Dpkglock);
+
+                        if(fscrn)
+                        {
+                            utimer.stop();
+                            hide();
+                            sb::exec("systemback finstall", sb::Wait);
+                        }
+                        else
+                            sb::exec("systemback", sb::Bckgrnd);
+
                         close();
                     }
                 });
@@ -371,7 +381,16 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         wndw = [&]() -> QWdt  {
                 QSL args(qApp->arguments());
 
-                if(args.count() == 3 && args.at(1) == "authorization" && (ui->sbpanel->isVisibleTo(ui->mainpanel) || ! sb::like(sb::fload("/proc/self/mounts"), {"* / overlay *","* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
+                if([&args] {
+                        switch(args.count()) {
+                        case 2:
+                            return args.at(1) == "finstall";
+                        case 3:
+                            return args.at(1) == "authorization";
+                        default:
+                            return false;
+                        }
+                    }() && ! (sislive && sb::like(sb::fload("/proc/self/mounts"), {"* / overlay *","* / overlayfs *", "* / aufs *", "* / unionfs *", "* / fuse.unionfs-fuse *"})))
                 {
                     for(QWdt wdgt : QWL{ui->mainpanel, ui->schedulerpanel, ui->adminpasswordpipe, ui->adminpassworderror}) wdgt->hide();
                     ui->passwordpanel->move(0, 0);
@@ -546,6 +565,14 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 systemback::~systemback()
 {
     if(cfgupdt) sb::cfgwrite();
+
+    if(fscrn)
+    {
+        if(sb::isfile("/usr/bin/plasmashell"))
+            chmod("/usr/bin/plasmashell", 0755);
+        else if(sb::isfile("/usr/bin/plasma-desktop"))
+            chmod("/usr/bin/plasma-desktop", 0755);
+    }
 
     if(! nrxth)
     {
@@ -825,7 +852,7 @@ void systemback::unitimer()
                             while(! file.atEnd())
                             {
                                 QBA cline(file.readLine().trimmed());
-                                if(cline.endsWith("efivars.ko") && sb::isfile("/lib/modules/" % ckernel % '/' % cline) && sb::exec("modprobe efivars", nullptr, sb::Silent) == 0 && sb::isdir("/sys/firmware/efi")) goto isefi;
+                                if(cline.endsWith("efivars.ko") && sb::isfile("/lib/modules/" % ckernel % '/' % cline) && sb::exec("modprobe efivars", sb::Silent) == 0 && sb::isdir("/sys/firmware/efi")) goto isefi;
                             }
                     }
                 }
@@ -875,9 +902,9 @@ void systemback::unitimer()
                 ui->storagedirbutton->show();
                 for(QWdt wdgt : QWL{ui->repairmenu, ui->aboutmenu, ui->settingsmenu, ui->pnumber3, ui->pnumber4, ui->pnumber5, ui->pnumber6, ui->pnumber7, ui->pnumber8, ui->pnumber9, ui->pnumber10}) wdgt->setEnabled(true);
 
-                if(ui->installpanel->isHidden())
+                if(! sislive)
                 {
-                    if(! sislive) ickernel = [this] {
+                    ickernel = [this] {
                             QStr ckernel(ckname()), fend[]{"order", "builtin"};
 
                             for(uchar a(0) ; a < 2 ; ++a)
@@ -915,6 +942,9 @@ void systemback::unitimer()
                 );
 
             utimer.start(500);
+
+            if(sislive && sb::exist("/etc/xdg/autostart/sbfinstall.desktop"))
+                for(cchar *file : {"/etc/xdg/autostart/sbfinstall.desktop", "/etc/xdg/autostart/sbfinstall-kde.desktop"}) unlink(file);
         }
         else if(! ui->statuspanel->isVisibleTo(ui->wpanel))
         {
@@ -1325,13 +1355,12 @@ void systemback::stschange()
     for(uchar a(0) ; a < 6 ; ++a)
     {
         wndw->setGeometry(qAbs(rct.x() - wndw->x()) > vls[0] ? wndw->x() - (rct.x() < wndw->x() ? vls[0] : -vls[0]) : rct.x(), qAbs(rct.y() - wndw->y()) > vls[1] ? wndw->y() - (rct.y() < wndw->y() ? vls[1] : -vls[1]) : rct.y(), qAbs(rct.width() - wndw->width()) > vls[2] ? wndw->width() - (rct.width() < wndw->width() ? vls[2] : -vls[2]) : rct.width(), qAbs(rct.height() - wndw->height()) > vls[3] ? wndw->height() - (rct.height() < wndw->height() ? vls[3] : -vls[3]) : rct.height());
-        repaint();
         QThread::msleep(1);
+        repaint();
     }
 
     wndw->setGeometry(rct.x(), rct.y(), rct.width(), rct.height());
     ui->resizepanel->hide();
-    repaint();
     wmblck = false;
 
     if(! wismax)
@@ -1674,22 +1703,22 @@ void systemback::abtreleased()
     if(ui->homepage1->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage1->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), nullptr, sb::Bckgrnd);
+        sb::exec("su -c \"xdg-open https://sourceforge.net/projects/systemback &\" " % guname(), sb::Bckgrnd);
     }
     else if(ui->homepage2->foregroundRole() == QPalette::Highlight)
     {
         ui->homepage2->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open https://launchpad.net/systemback &\" " % guname(), nullptr, sb::Bckgrnd);
+        sb::exec("su -c \"xdg-open https://launchpad.net/systemback &\" " % guname(), sb::Bckgrnd);
     }
     else if(ui->email->foregroundRole() == QPalette::Highlight)
     {
         ui->email->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-email nemh@freemail.hu &\" " % guname(), nullptr, sb::Bckgrnd);
+        sb::exec("su -c \"xdg-email nemh@freemail.hu &\" " % guname(), sb::Bckgrnd);
     }
     else if(ui->donate->foregroundRole() == QPalette::Highlight)
     {
         ui->donate->setForegroundRole(QPalette::Text);
-        sb::exec("su -c \"xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), nullptr, sb::Bckgrnd);
+        sb::exec("su -c \"xdg-open 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZQ668BBR7UCEQ' &\" " % guname(), sb::Bckgrnd);
     }
 }
 
@@ -2636,9 +2665,9 @@ void systemback::livewrite()
 
     if(lrdir == "sblive")
     {
-        if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions", nullptr, sb::Prgrss) > 0) return err(322);
+        if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions", sb::Prgrss) > 0) return err(322);
     }
-    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-owner --no-same-permissions") > 0 || sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions", nullptr, sb::Prgrss) > 0)
+    else if(sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-owner --no-same-permissions") > 0 || sb::exec("tar -xf " % sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions", sb::Prgrss) > 0)
         return err(322);
 
     pset(1);
@@ -2961,15 +2990,14 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
         for(uchar a(0) ; a < 6 ; ++a)
         {
             wndw->setGeometry(qAbs(wgeom[0] - wndw->x()) > vls[0] ? wndw->x() - (wgeom[0] < wndw->x() ? vls[0] : -vls[0]) : wgeom[0], qAbs(wgeom[1] - wndw->y()) > vls[1] ? wndw->y() - (wgeom[1] < wndw->y() ? vls[1] : -vls[1]) : wgeom[1], qAbs(wgeom[2] - wndw->width()) > vls[2] ? wndw->width() - (wgeom[2] < wndw->width() ? vls[2] : -vls[2]) : wgeom[2], qAbs(wgeom[3] - wndw->height()) > vls[3] ? wndw->height() - (wgeom[3] < wndw->height() ? vls[3] : -vls[3]) : wgeom[3]);
-            repaint();
             QThread::msleep(1);
+            repaint();
         }
 
         wndw->setGeometry(wgeom[0], wgeom[1], wgeom[2], wgeom[3]);
-        ui->resizepanel->hide();
-        repaint();
         wmblck = false;
         if(fxdw) wndw->setFixedSize(wgeom[2], wgeom[3]);
+        ui->resizepanel->hide();
     }
     else if(fxdw && minimumSize() != maximumSize())
         wndw->setFixedSize(wgeom[2], wgeom[3]);
@@ -3840,7 +3868,7 @@ void systemback::on_systemupgrade_clicked()
         {
             nrxth = true;
             sb::unlock(sb::Sblock);
-            sb::exec("systemback", nullptr, sb::Bckgrnd);
+            sb::exec("systemback", sb::Bckgrnd);
             close();
         }
         else if(sb::lock(sb::Dpkglock))
@@ -4801,8 +4829,8 @@ void systemback::on_dialogok_clicked()
         }
     else if(ui->dialogok->text() == tr("Reboot"))
     {
-        sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", nullptr, sb::Bckgrnd);
-        close();
+        sb::exec(sb::execsrch("reboot") ? "reboot" : "systemctl reboot", sb::Bckgrnd);
+        fscrn ? qApp->exit(1) : void(close());
     }
     else if(ui->dialogok->text() == tr("X restart"))
     {
@@ -7041,7 +7069,7 @@ void systemback::on_livecreatenew_clicked()
     }
 
     sb::crtfile("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall", [this]() -> QStr {
-            QStr ftxt("#!/bin/sh\nif [ \"$1\" != prereqs ]\nthen\nif [ -f /root/home/" % guname() % "/.config/autostart/dropbox.desktop ]\nthen rm /root/home/" % guname() % "/.config/autostart/dropbox.desktop\nfi\n");
+            QStr ftxt("#!/bin/sh\nif [ \"$1\" != prereqs ]\nthen\nif [ -f /root/home/" % guname() % "/.config/autostart/dropbox.desktop ]\nthen rm /root/home/" % guname() % "/.config/autostart/dropbox.desktop\nfi\nif [ -f /root/usr/bin/ksplashqml ]\nthen chmod -x /root/usr/bin/ksplash* /root/usr/bin/plasma*\nfi\n");
 
             for(uchar a(0) ; a < 5 ; ++a)
             {
@@ -7077,7 +7105,7 @@ void systemback::on_livecreatenew_clicked()
             }
 
             QStr txt[]{"cat << EOF >/root/etc/xdg/autostart/sbfinstall", "[Desktop Entry]\nEncoding=UTF-8\nVersion=1.0\nName=Systemback installer\n", "Type=Application\nIcon=systemback\nTerminal=false\n", "NoDisplay=true\nEOF\n"};
-            return ftxt % "\nif grep finstall /proc/cmdline >/dev/null 2>&1\nthen\n" % txt[0] % ".desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall gtk+\n" % txt[2] % "NotShowIn=KDE;\n" % txt[3] % txt[0] % "-kde.desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall\n" % txt[2] % "OnlyShowIn=KDE;\n" % txt[3] % "fi\nfi\n";
+            return ftxt % "\nif grep finstall /proc/cmdline >/dev/null 2>&1\nthen\n" % txt[0] % ".desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall gtk+\n" % txt[2] % "NotShowIn=KDE;\n" % txt[3] % txt[0] % "-kde.desktop\n" % txt[1] % "Exec=sh -c \"/usr/lib/systemback/sbsustart finstall && if [ -f /usr/bin/plasmashell ] ; then plasmashell --shut-up & elif [ -f /usr/bin/plasma-desktop ] ; then plasma-desktop & fi\"\n" % txt[2] % "OnlyShowIn=KDE;\n" % txt[3] % "fi\nfi\n";
         }());
 
     if(! cfmod("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall", 0755)) return err();
@@ -7090,7 +7118,7 @@ void systemback::on_livecreatenew_clicked()
             QSL incl{"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"};
 
             for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
-                if(! sb::like(item, incl) && ! cfmod(bstr("/usr/share/initramfs-tools/scripts/casper-bottom/" % item), 0755)) return err();
+                if(! sb::like(item, incl) && ! cfmod("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, 0755)) return err();
         }
         else if(! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab"))
             return err();
@@ -7140,7 +7168,7 @@ void systemback::on_livecreatenew_clicked()
                 for(cQStr &item : QDir(cdir).entryList(QDir::Files))
                     if(item.contains("cryptdisks")) elist.append(" -e " % cdir % '/' % item);
 
-        if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr == sb::True ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, nullptr, sb::Prgrss) > 0) return err(310);
+        if(sb::exec("mksquashfs" % ide % ' ' % sb::sdir[2] % "/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var " % sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr == sb::True ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, sb::Prgrss) > 0) return err(310);
     }
 
     pset(19, " 3/3");
@@ -7209,13 +7237,13 @@ void systemback::on_livecreatenew_clicked()
     sb::ThrdStr[0] = sb::sdir[2] % '/' % ifname % ".sblive";
     ui->progressbar->setValue(0);
 
-    if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .", nullptr, sb::Prgrss) > 0)
+    if(sb::exec("tar -cf " % sb::sdir[2] % '/' % ifname % ".sblive -C " % sb::sdir[2] % "/.sblivesystemcreate .", sb::Prgrss) > 0)
     {
         if(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) sb::remove(sb::sdir[2] % '/' % ifname % ".sblive");
         return err(311);
     }
 
-    if(! cfmod(bstr(sb::sdir[2] % '/' % ifname % ".sblive"), 0666)) return err();
+    if(! cfmod(sb::sdir[2] % '/' % ifname % ".sblive", 0666)) return err();
 
     if(sb::autoiso == sb::True)
     {
@@ -7228,13 +7256,13 @@ void systemback::on_livecreatenew_clicked()
             if(! sb::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") || ! sb::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux") || intrrpt) return err();
             ui->progressbar->setValue(0);
 
-            if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate", nullptr, sb::Prgrss) > 0)
+            if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate", sb::Prgrss) > 0)
             {
                 if(sb::isfile(sb::sdir[2] % '/' % ifname % ".iso")) sb::remove(sb::sdir[2] % '/' % ifname % ".iso");
                 return err(311);
             }
 
-            if(sb::exec("isohybrid " % sb::sdir[2] % '/' % ifname % ".iso") > 0 || ! cfmod(bstr(sb::sdir[2] % '/' % ifname % ".iso"), 0666) || intrrpt) return err();
+            if(sb::exec("isohybrid " % sb::sdir[2] % '/' % ifname % ".iso") > 0 || ! cfmod(sb::sdir[2] % '/' % ifname % ".iso", 0666) || intrrpt) return err();
         }
     }
 
@@ -7262,13 +7290,13 @@ void systemback::on_liveconvert_clicked()
 
     if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemconvert")) return err();
     sb::ThrdLng[0] = sb::fsize(path % ".sblive"), sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
-    if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions", nullptr, sb::Prgrss) > 0) return err(335);
-    if(! sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") || ! sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux") || intrrpt) return err();
+    if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions", sb::Prgrss) > 0) return err(325);
+    if(! sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") || ! sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux") || intrrpt) return err(323);
     pset(21, " 2/2");
     sb::Progress = -1;
     ui->progressbar->setValue(0);
-    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % path % ".iso " % sb::sdir[2] % "/.sblivesystemconvert", nullptr, sb::Prgrss) > 0) return err(324);
-    if(sb::exec("isohybrid " % path % ".iso") > 0 || ! cfmod(bstr(path % ".iso"), 0666)) return err();
+    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % path % ".iso " % sb::sdir[2] % "/.sblivesystemconvert", sb::Prgrss) > 0) return err(324);
+    if(sb::exec("isohybrid " % path % ".iso") > 0 || ! cfmod(path % ".iso", 0666)) return err();
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(intrrpt) return err();
     emptycache();

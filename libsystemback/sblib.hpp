@@ -40,7 +40,7 @@ public:
     enum { Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvdevs = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Delpart = 11, Crtrpoint = 12, Srestore = 13, Scopy = 14, Lvprpr = 15,
            MSDOS = 0, GPT = 1, Clear = 2, Primary = 3, Extended = 4, Logical = 5, Freespace = 6, Emptyspace = 7,
            Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknown = 5,
-           Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4,
+           Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4, Wait = 8,
            Sblock = 0, Dpkglock = 1, Schdlrlock = 2,
            Crtdir = 0, Rmfile = 1, Crthlnk = 2,
            False = 0, True = 1, Empty = 2,
@@ -67,7 +67,7 @@ public:
     static fnln ullong fsize(cQStr &path);
     static fnln ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
     static fnln ushort rinstr(cQStr &txt, cQStr &stxt);
-    static uchar exec(cQStr &cmd, cQStr &envv = nullptr, uchar flag = Noflag);
+    static uchar exec(cQStr &cmd, uchar flag = Noflag, cQStr &envv = nullptr);
     template<typename T> static uchar stype(const T &path);
     static uchar exec(cQSL &cmds);
     static bool srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);

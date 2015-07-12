@@ -589,7 +589,7 @@ bool sb::execsrch(cQStr &fname, cQStr &ppath)
     return false;
 }
 
-uchar sb::exec(cQStr &cmd, cQStr &envv, uchar flag)
+uchar sb::exec(cQStr &cmd, uchar flag, cQStr &envv)
 {
     auto exit([&cmd](uchar rv) -> uchar {
             if(! ExecKill && rv > 0 && ! like(cmd, {"_apt*", "_dpkg*", "_sbscheduler*"})) error("\n " % tr("An error occurred while executing the following command:") % "\n\n  " % cmd % "\n\n " % tr("Exit code:") % ' ' % QStr::number(rv) % "\n\n");
@@ -597,15 +597,15 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, uchar flag)
         });
 
     if(ExecKill) ExecKill = false;
-    bool silent, bckgrnd;
+    bool silent, bckgrnd, wait;
     uchar rprcnt;
 
     if(flag == Noflag)
-        silent = bckgrnd = false, rprcnt = 0;
+        silent = bckgrnd = wait = false, rprcnt = 0;
     else
     {
-        silent = flag != (flag & ~Silent), bckgrnd = flag != (flag & ~Bckgrnd);
-        if((rprcnt = bckgrnd || flag == (flag & ~Prgrss) ? 0 : cmd.startsWith("mksquashfs") ? 1 : cmd.startsWith("genisoimage") ? 2 : cmd.startsWith("tar -cf") ? 3 : cmd.startsWith("tar -xf") ? 4 : 0) > 0) Progress = 0;
+        silent = flag != (flag & ~Silent), wait = flag != (flag & ~Wait);
+        if((rprcnt = (bckgrnd = flag != (flag & ~Bckgrnd)) || wait || flag == (flag & ~Prgrss) ? 0 : cmd.startsWith("mksquashfs") ? 1 : cmd.startsWith("genisoimage") ? 2 : cmd.startsWith("tar -cf") ? 3 : cmd.startsWith("tar -xf") ? 4 : 0) > 0) Progress = 0;
     }
 
     QProcess proc;
@@ -633,79 +633,85 @@ uchar sb::exec(cQStr &cmd, cQStr &envv, uchar flag)
     }
 
     if(proc.error() == QProcess::FailedToStart) return exit(255);
-    if(rprcnt == 1) setpriority(0, proc.pid(), 10);
-    ullong inum(0);
-    uchar cperc;
 
-    while(proc.state() == QProcess::Running)
+    if(wait)
+        proc.waitForFinished(-1);
+    else
     {
-        msleep(10);
-        qApp->processEvents();
-        if(ExecKill) proc.kill();
+        if(rprcnt == 1) setpriority(0, proc.pid(), 10);
+        ullong inum(0);
+        uchar cperc;
 
-        switch(rprcnt) {
-        case 1:
-            if(Progress < (cperc = ((inum += proc.readAllStandardOutput().count('\n')) * 100 + 50) / ThrdLng[0])) Progress = cperc;
-            QTS(stderr) << proc.readAllStandardError();
-
-            if(dfree(sdir[2]) < 104857600)
-            {
-                proc.kill();
-                return exit(255);
-            }
-
-            break;
-        case 2:
+        while(proc.state() == QProcess::Running)
         {
-            QStr pout(proc.readAllStandardError());
-            if(Progress < (cperc = mid(pout, rinstr(pout, "%") - 5, 2).toUShort())) Progress = cperc;
-            break;
-        }
-        case 3:
-            if(ThrdLng[0] == 0)
+            msleep(10);
+            qApp->processEvents();
+            if(ExecKill) proc.kill();
+
+            switch(rprcnt) {
+            case 1:
+                if(Progress < (cperc = ((inum += proc.readAllStandardOutput().count('\n')) * 100 + 50) / ThrdLng[0])) Progress = cperc;
+                QTS(stderr) << proc.readAllStandardError();
+
+                if(dfree(sdir[2]) < 104857600)
+                {
+                    proc.kill();
+                    return exit(255);
+                }
+
+                break;
+            case 2:
             {
+                QStr pout(proc.readAllStandardError());
+                if(Progress < (cperc = mid(pout, rinstr(pout, "%") - 5, 2).toUShort())) Progress = cperc;
+                break;
+            }
+            case 3:
+                if(ThrdLng[0] == 0)
+                {
+                    QBA itms;
+                    itms.reserve(10000);
+                    QUCL itmst;
+                    itmst.reserve(500);
+                    ushort lcnt(0);
+                    rodir(itms, itmst, sdir[2] % "/.sblivesystemcreate");
+
+                    if(! itmst.isEmpty())
+                    {
+                        QTS in(&itms, QIODevice::ReadOnly);
+
+                        while(! in.atEnd())
+                        {
+                            QStr item(in.readLine());
+                            if(itmst.at(lcnt++) == Isfile) ThrdLng[0] += fsize(sdir[2] % "/.sblivesystemcreate/" % item);
+                        }
+                    }
+                }
+                else if(isfile(ThrdStr[0]) && Progress < (cperc = (fsize(ThrdStr[0]) * 100 + 50) / ThrdLng[0]))
+                    Progress = cperc;
+
+                break;
+            case 4:
                 QBA itms;
                 itms.reserve(10000);
                 QUCL itmst;
                 itmst.reserve(500);
                 ushort lcnt(0);
-                rodir(itms, itmst, sdir[2] % "/.sblivesystemcreate");
+                rodir(itms, itmst, ThrdStr[0]);
 
                 if(! itmst.isEmpty())
                 {
                     QTS in(&itms, QIODevice::ReadOnly);
+                    ullong size(0);
 
                     while(! in.atEnd())
                     {
                         QStr item(in.readLine());
-                        if(itmst.at(lcnt++) == Isfile) ThrdLng[0] += fsize(sdir[2] % "/.sblivesystemcreate/" % item);
+                        if(itmst.at(lcnt++) == Isfile) size += fsize(ThrdStr[0] % '/' % item);
                     }
+
+                    if(Progress < (cperc = (size * 100 + 50) / ThrdLng[0])) Progress = cperc;
                 }
-            }
-            else if(isfile(ThrdStr[0]) && Progress < (cperc = (fsize(ThrdStr[0]) * 100 + 50) / ThrdLng[0]))
-                Progress = cperc;
-
-            break;
-        case 4:
-            QBA itms;
-            itms.reserve(10000);
-            QUCL itmst;
-            itmst.reserve(500);
-            ushort lcnt(0);
-            rodir(itms, itmst, ThrdStr[0]);
-
-            if(! itmst.isEmpty())
-            {
-                QTS in(&itms, QIODevice::ReadOnly);
-                ullong size(0);
-
-                while(! in.atEnd())
-                {
-                    QStr item(in.readLine());
-                    if(itmst.at(lcnt++) == Isfile) size += fsize(ThrdStr[0] % '/' % item);
-                }
-
-                if(Progress < (cperc = (size * 100 + 50) / ThrdLng[0])) Progress = cperc;
             }
         }
     }

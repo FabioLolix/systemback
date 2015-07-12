@@ -106,7 +106,7 @@ void sustart::main()
                     sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
                 else
 #endif
-                sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', nullptr, sb::Bckgrnd);
+                sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', sb::Bckgrnd);
             }
 
             qApp->exit(rv);
@@ -116,5 +116,5 @@ void sustart::main()
         if(args.count() == 3 && args.at(2) == "gtk+") qputenv("QT_STYLE_OVERRIDE", "gtk+");
     }
 
-    qApp->exit(sb::exec(*cmd));
+    qApp->exit(sb::exec(*cmd, sb::Wait));
 }

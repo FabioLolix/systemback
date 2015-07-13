@@ -570,7 +570,7 @@ systemback::~systemback()
     if(fscrn && sb::isfile("/usr/bin/ksplashqml"))
     {
         for(cQStr &item : QDir("/usr/bin").entryList(QDir::Files))
-            if(sb::like(item, {"_ksplash*", "_plasma*"})) chmod(bstr(item), 0755);
+            if(sb::like(item, {"_ksplash*", "_plasma*"})) cfmod(bstr("/usr/bin/" % item), 0755);
 
         if(sb::isfile("/usr/share/autostart/plasma-desktop.desktop_")) sb::rename("/usr/share/autostart/plasma-desktop.desktop_", "/usr/share/autostart/plasma-desktop.desktop");
         if(sb::isfile("/usr/share/autostart/plasma-netbook.desktop_")) sb::rename("/usr/share/autostart/plasma-netbook.desktop_", "/usr/share/autostart/plasma-netbook.desktop");
@@ -946,7 +946,7 @@ void systemback::unitimer()
             utimer.start(500);
 
             if(sislive && sb::exist("/etc/xdg/autostart/sbfinstall.desktop"))
-                for(cchar *file : {"/etc/xdg/autostart/sbfinstall.desktop", "/etc/xdg/autostart/sbfinstall-kde.desktop"}) unlink(file);
+                for(cchar *file : {"/etc/xdg/autostart/sbfinstall.desktop", "/etc/xdg/autostart/sbfinstall-kde.desktop"}) sb::rmfile(file);
         }
         else if(! ui->statuspanel->isVisibleTo(ui->wpanel))
         {
@@ -7116,7 +7116,7 @@ void systemback::on_livecreatenew_clicked()
                         }
                     }());
 
-                if(sb::isfile(fpath)) ftxt.append([&, a]() -> QStr {
+                if(sb::isfile(fpath) || sb::isdir(sb::left(fpath, sb::rinstr(fpath, "/") - 1))) ftxt.append([&, a]() -> QStr {
                         switch(a) {
                         case 0:
                             return "cat << EOF >/root/etc/lightdm/lightdm.conf\n[SeatDefaults]\nautologin-guest=false\nautologin-user=" % guname() % "\nautologin-user-timeout=0\nautologin-session=lightdm-autologin\nEOF";

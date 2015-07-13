@@ -7127,11 +7127,11 @@ void systemback::on_livecreatenew_clicked()
                         default:
                             return "cat << EOF >/root" % fpath % "\n[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=" % guname() % "\nEOF";
                         }
-                    }());
+                    }() % '\n');
             }
 
             QStr txt[]{"cat << EOF >/root/etc/xdg/autostart/sbfinstall", "[Desktop Entry]\nEncoding=UTF-8\nVersion=1.0\nName=Systemback installer\n", "Type=Application\nIcon=systemback\nTerminal=false\n", "NoDisplay=true\nEOF\n"};
-            return ftxt % "\nif grep finstall /proc/cmdline >/dev/null 2>&1\nthen\n" % txt[0] % ".desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall gtk+\n" % txt[2] % "NotShowIn=KDE;\n" % txt[3] % txt[0] % "-kde.desktop\n" % txt[1] % "Exec=sh -c \"/usr/lib/systemback/sbsustart finstall && if [ -f /usr/bin/plasmashell ] ; then plasmashell --shut-up & elif [ -f /usr/bin/plasma-desktop ] ; then plasma-desktop & fi\"\n" % txt[2] % "OnlyShowIn=KDE;\n" % txt[3] % "fi\nfi\n";
+            return ftxt % "if grep finstall /proc/cmdline >/dev/null 2>&1\nthen\n" % txt[0] % ".desktop\n" % txt[1] % "Exec=/usr/lib/systemback/sbsustart finstall gtk+\n" % txt[2] % "NotShowIn=KDE;\n" % txt[3] % txt[0] % "-kde.desktop\n" % txt[1] % "Exec=sh -c \"/usr/lib/systemback/sbsustart finstall && if [ -f /usr/bin/plasmashell ] ; then plasmashell --shut-up & elif [ -f /usr/bin/plasma-desktop ] ; then plasma-desktop & fi\"\n" % txt[2] % "OnlyShowIn=KDE;\n" % txt[3] % "fi\nfi\n";
         }());
 
     if(! cfmod("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall", 0755)) return err();

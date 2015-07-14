@@ -1416,23 +1416,17 @@ void systemback::wreleased()
     if(! fscrn && ! wismax)
     {
         QRect sgm(sgeom());
-        short scrxy(sgm.x());
+        short bnd;
 
-        if(x() < scrxy)
-            wgeom[0] = scrxy + ss(30);
-        else
-        {
-            short scrw(sgm.width());
-            if(x() > scrxy + scrw - width()) wgeom[0] = scrxy + scrw - width() - ss(30);
-        }
+        if(x() < sgm.x())
+            wgeom[0] = sgm.x() + ss(30);
+        else if(x() > (bnd = sgm.x() + sgm.width() - width()))
+            wgeom[0] = bnd - ss(30);
 
-        if(y() < (scrxy = sgm.y()))
-            wgeom[1] = scrxy + ss(30);
-        else
-        {
-            short scrh(sgm.height());
-            if(y() > scrxy + scrh - height()) wgeom[1] = scrxy + scrh - height() - ss(30);
-        }
+        if(y() < sgm.y())
+            wgeom[1] = sgm.y() + ss(30);
+        else if(y() > (bnd = sgm.y() + sgm.height() - height()))
+            wgeom[1] = bnd - ss(30);
 
         if(pos() != QPoint(wgeom[0], wgeom[1])) move(wgeom[0], wgeom[1]);
     }
@@ -1686,6 +1680,31 @@ void systemback::rreleased()
     {
         qApp->restoreOverrideCursor();
         if(busycnt > 0) qApp->setOverrideCursor(Qt::WaitCursor);
+        QRect sgm(sgeom());
+
+        bool algn[]{[&] {
+                ushort wdth(sgm.width() - wndw->x());
+
+                if(wndw->width() > wdth)
+                {
+                    wgeom[2] = wdth;
+                    return true;
+                }
+
+                return false;
+            }(), [&] {
+                ushort hght(sgm.height() - wndw->y());
+
+                if(wndw->height() > hght)
+                {
+                    wgeom[3] = hght;
+                    return true;
+                }
+
+                return false;
+            }()};
+
+        if(algn[0] || algn[1]) wndw->resize(wgeom[2], wgeom[3]);
     }
 }
 
@@ -2950,35 +2969,15 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
     if(wndw->size() != QSize((wgeom[2] = nwidth), (wgeom[3] = nheight)))
     {
         wgeom[0] = wndw->x() + (wndw->width() - wgeom[2]) / 2;
-
-        {
-            QDW dtp(qApp->desktop());
-            QRect sgm(sgeom(false, dtp));
-            short scrxy(sgm.x());
-
-            if(wgeom[0] < scrxy + ss(30))
-                wgeom[0] = scrxy + ss(30);
-            else
-            {
-                short rghtlmt(scrxy + sgm.width() - wgeom[2] - ss(30));
-                if(wgeom[0] > rghtlmt) wgeom[0]= rghtlmt;
-            }
-
-            wgeom[1] = wndw->y() + (wndw->height() - wgeom[3]) / 2;
-
-            if(wgeom[1] < (scrxy = sgm.y()) + ss(30))
-                wgeom[1] = scrxy + ss(30);
-            else
-            {
-                short bttmlmt(scrxy + sgm.height() - wgeom[3] - ss(30));
-                if(wgeom[1] > bttmlmt) wgeom[1] = bttmlmt;
-            }
-
-            wndw->setMinimumSize(0, 0);
-            QRect agm(sgeom(true, dtp));
-            wndw->setMaximumSize(agm.width() < wndw->width() ? wndw->width() : agm.width(), agm.height() < wndw->height() ? wndw->height() : agm.height());
-        }
-
+        { QDW dtp(qApp->desktop());
+        QRect sgm(sgeom(false, dtp));
+        short bnd(sgm.x() + ss(30));
+        if(wgeom[0] < bnd || wgeom[0] > (bnd = sgm.x() + sgm.width() - wgeom[2] - ss(30))) wgeom[0] = bnd;
+        wgeom[1] = wndw->y() + (wndw->height() - wgeom[3]) / 2;
+        if(wgeom[1] < (bnd = sgm.y() + ss(30)) || wgeom[1] > (bnd = sgm.y() + sgm.height() - wgeom[3] - ss(30))) wgeom[1] = bnd;
+        wndw->setMinimumSize(0, 0);
+        QRect agm(sgeom(true, dtp));
+        wndw->setMaximumSize(agm.width() < wndw->width() ? wndw->width() : agm.width(), agm.height() < wndw->height() ? wndw->height() : agm.height()); }
         wmblck = true;
         int vls[4]{qAbs(wgeom[0] - wndw->x()) / 6, qAbs(wgeom[1] - wndw->y()) / 6, qAbs(wgeom[2] - wndw->width()) / 6, qAbs(wgeom[3] - wndw->height()) / 6};
         ui->resizepanel->show();
@@ -3188,23 +3187,17 @@ gcheck:
         if(! wismax && ! wmblck)
         {
             QRect sgm(sgeom());
-            short scrxy(sgm.x());
+            short bnd[2];
 
-            if(x() < scrxy && x() > scrxy - width())
-                wgeom[0] = scrxy + ss(30);
-            else
-            {
-                short scrw(sgm.width());
-                if(x() > scrxy + scrw - width() && x() < scrxy + scrw + width()) wgeom[0] = scrxy + scrw - width() - ss(30);
-            }
+            if(x() < sgm.x() && x() > sgm.x() - width())
+                wgeom[0] = sgm.x() + ss(30);
+            else if(x() > (bnd[0] = (bnd[1] = sgm.x() + sgm.width()) - width()) && x() < bnd[1] + width())
+                wgeom[0] = bnd[0] - ss(30);
 
-            if(y() < (scrxy = sgm.y()) && y() > scrxy - height())
-                wgeom[1] = scrxy + ss(30);
-            else
-            {
-                short scrh(sgm.height());
-                if(y() > scrxy + scrh - height() && y() < scrxy + scrh + height()) wgeom[1] = scrxy + scrh - height() - ss(30);
-            }
+            if(y() < sgm.y() && y() > sgm.y() - height())
+                wgeom[1] = sgm.y() + ss(30);
+            else if(y() > (bnd[0] = (bnd[1] = sgm.y() + sgm.height()) - height()) && y() < bnd[1] + height())
+                wgeom[1] = bnd[0] - ss(30);
 
             if(pos() != QPoint(wgeom[0], wgeom[1]))
             {

@@ -1236,6 +1236,13 @@
         <translation>Imaginea Live nu este montabil.</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="7245"/>
+        <location filename="../systemback/systemback.cpp" line="7247"/>
+        <location filename="../systemback/systemback.cpp" line="7249"/>
+        <source>Boot system installer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="2796"/>
         <source>The GRUB 2 repair is completed.</source>
         <translation>Repararea GRUB 2 este finalizată.</translation>
@@ -1383,13 +1390,6 @@
         <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>Boot Live in debug mode</source>
         <translation>Poenire Live în modul de depanare</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7245"/>
-        <location filename="../systemback/systemback.cpp" line="7247"/>
-        <location filename="../systemback/systemback.cpp" line="7249"/>
-        <source>Install the system</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7246"/>

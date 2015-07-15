@@ -1236,6 +1236,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="7245"/>
+        <location filename="../systemback/systemback.cpp" line="7247"/>
+        <location filename="../systemback/systemback.cpp" line="7249"/>
+        <source>Boot system installer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="2796"/>
         <source>The GRUB 2 repair is completed.</source>
         <translation>GRUB 2:n korjaus on valmis.</translation>
@@ -1383,13 +1390,6 @@
         <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>Boot Live in debug mode</source>
         <translation>Boot Live:n debug-tilassa</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7245"/>
-        <location filename="../systemback/systemback.cpp" line="7247"/>
-        <location filename="../systemback/systemback.cpp" line="7249"/>
-        <source>Install the system</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7246"/>

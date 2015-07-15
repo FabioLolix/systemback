@@ -1226,7 +1226,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Install the system</source>
+        <source>Boot system installer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

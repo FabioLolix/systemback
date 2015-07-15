@@ -840,6 +840,13 @@
         <translation>Semua orang</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="7245"/>
+        <location filename="../systemback/systemback.cpp" line="7247"/>
+        <location filename="../systemback/systemback.cpp" line="7249"/>
+        <source>Boot system installer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="375"/>
         <location filename="../systemback/systemback.cpp" line="376"/>
         <location filename="../systemback/systemback.cpp" line="820"/>
@@ -1400,13 +1407,6 @@
         <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>Boot Live in debug mode</source>
         <translation>Boot Live dalam mode debug</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7245"/>
-        <location filename="../systemback/systemback.cpp" line="7247"/>
-        <location filename="../systemback/systemback.cpp" line="7249"/>
-        <source>Install the system</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7246"/>

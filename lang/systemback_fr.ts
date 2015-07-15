@@ -1236,6 +1236,13 @@
         <translation>L&apos;image Live ne pourra pas être montée.</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="7245"/>
+        <location filename="../systemback/systemback.cpp" line="7247"/>
+        <location filename="../systemback/systemback.cpp" line="7249"/>
+        <source>Boot system installer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="2796"/>
         <source>The GRUB 2 repair is completed.</source>
         <translation>La réparation de GRUB2 s&apos;est achevée sans erreur.</translation>
@@ -1383,13 +1390,6 @@
         <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>Boot Live in debug mode</source>
         <translation>Demarrage du Live en mode debug</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7245"/>
-        <location filename="../systemback/systemback.cpp" line="7247"/>
-        <location filename="../systemback/systemback.cpp" line="7249"/>
-        <source>Install the system</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7246"/>

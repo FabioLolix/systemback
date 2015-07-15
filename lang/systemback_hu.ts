@@ -1236,6 +1236,13 @@
         <translation>Az Live rendszerképet nem sikerűlt csatolni.</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="7245"/>
+        <location filename="../systemback/systemback.cpp" line="7247"/>
+        <location filename="../systemback/systemback.cpp" line="7249"/>
+        <source>Boot system installer</source>
+        <translation>Rendszertelepito inditasa</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="2796"/>
         <source>The GRUB 2 repair is completed.</source>
         <translation>A GRUB 2 javítása befejeződött.</translation>
@@ -1383,13 +1390,6 @@
         <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>Boot Live in debug mode</source>
         <translation>Live inditasa debug modban</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7245"/>
-        <location filename="../systemback/systemback.cpp" line="7247"/>
-        <location filename="../systemback/systemback.cpp" line="7249"/>
-        <source>Install the system</source>
-        <translation>A rendszer telepitese</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7246"/>

@@ -1601,13 +1601,6 @@
         <location filename="../systemback/systemback.cpp" line="7245"/>
         <location filename="../systemback/systemback.cpp" line="7247"/>
         <location filename="../systemback/systemback.cpp" line="7249"/>
-        <source>Install the system</source>
-        <translation>Installiere das System</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7245"/>
-        <location filename="../systemback/systemback.cpp" line="7247"/>
-        <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>Boot Live system</source>
         <translation>Start des Live Systems</translation>
     </message>
@@ -1624,6 +1617,13 @@
         <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>Boot Live in debug mode</source>
         <translation>Start des Live Systems im Debug Modus</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="7245"/>
+        <location filename="../systemback/systemback.cpp" line="7247"/>
+        <location filename="../systemback/systemback.cpp" line="7249"/>
+        <source>Boot system installer</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7246"/>

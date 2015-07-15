@@ -1405,7 +1405,7 @@
         <location filename="../systemback/systemback.cpp" line="7245"/>
         <location filename="../systemback/systemback.cpp" line="7247"/>
         <location filename="../systemback/systemback.cpp" line="7249"/>
-        <source>Install the system</source>
+        <source>Boot system installer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

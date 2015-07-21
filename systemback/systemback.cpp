@@ -904,7 +904,6 @@ void systemback::unitimer()
                 on_partitionrefresh_clicked();
                 on_livedevicesrefresh_clicked();
                 on_pointexclude_clicked();
-                ilstupdt(true);
 
                 {
                     QFile file(incfile);
@@ -913,6 +912,7 @@ void systemback::unitimer()
                         while(! file.atEnd()) ui->includedlist->addItem(file.readLine().trimmed());
                 }
 
+                ilstupdt(true);
                 ui->storagedir->resize(ss(210), ss(28));
                 ui->storagedirbutton->show();
                 for(QWdt wdgt : QWL{ui->repairmenu, ui->aboutmenu, ui->settingsmenu, ui->pnumber3, ui->pnumber4, ui->pnumber5, ui->pnumber6, ui->pnumber7, ui->pnumber8, ui->pnumber9, ui->pnumber10}) wdgt->setEnabled(true);

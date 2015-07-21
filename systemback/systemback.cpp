@@ -90,11 +90,15 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     dialog = getuid() + getgid() > 0 ? 305 : [this] {
             QSL args(qApp->arguments());
 
-            if(args.count() == 2 && args.at(1) == "schedule")
+            if(args.count() == 2 && args.at(1) == "schedule" && [] {
+                    QStr ppath(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid");
+                    return sb::isfile(ppath) && getppid() == sb::fload(ppath).toUShort();
+                }())
+
                 sstart = true;
             else if(! sb::lock(sb::Sblock))
                 return 300;
-            else if(sb::lock(sb::Dpkglock))
+            else if((sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")) || sb::lock(sb::Dpkglock))
                 sstart = false;
             else
                 return 301;
@@ -148,7 +152,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                     for(QCbB cmbx : findChildren<QCbB>()) cmbx->setMinimumSize(nsize); }
                     ui->partitionsettings->verticalScrollBar()->adjustSize();
                     QStr nsize(QStr::number(ss(ui->partitionsettings->verticalScrollBar()->width())));
-                    for(QWdt wdgt : QWL{ui->partitionsettings, ui->livelist, ui->livedevices, ui->itemslist, ui->excludedlist, ui->license, ui->dirchoose}) wdgt->setStyleSheet("QScrollBar::vertical{width: " % nsize % "px}\nQScrollBar::horizontal{height: " % nsize % "px}");
+                    for(QWdt wdgt : QWL{ui->partitionsettings, ui->livelist, ui->livedevices, ui->excludeitemslist, ui->excludedlist, ui->includeitemslist, ui->includedlist, ui->license, ui->dirchoose}) wdgt->setStyleSheet("QScrollBar::vertical{width: " % nsize % "px}\nQScrollBar::horizontal{height: " % nsize % "px}");
                     QStyleOption optn;
                     optn.init(ui->pointpipe1);
                     nsize = QStr::number(ss(ui->pointpipe1->style()->subElementRect(QStyle::SE_CheckBoxClickRect, &optn).width()));
@@ -210,7 +214,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         if(! sstart)
         {
             icnt = 0, cpos = -1, nohmcpy[1] = uchkd = false;
-            for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->installpanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel, ui->storagedirbutton, ui->fullnamepipe, ui->usernamepipe, ui->usernameerror, ui->passwordpipe, ui->passworderror, ui->rootpasswordpipe, ui->rootpassworderror, ui->hostnamepipe, ui->hostnameerror}) wdgt->hide();
+            for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->installpanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->includepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel, ui->storagedirbutton, ui->fullnamepipe, ui->usernamepipe, ui->usernameerror, ui->passwordpipe, ui->passworderror, ui->rootpasswordpipe, ui->rootpassworderror, ui->hostnamepipe, ui->hostnameerror}) wdgt->hide();
             ui->storagedir->resize(ss(236), ss(28));
             ui->installpanel->move(ui->sbpanel->pos());
             ui->mainpanel->setBackgroundRole(QPalette::Foreground);
@@ -239,7 +243,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 connect(wdgt, SIGNAL(Mouse_Released()), this, SLOT(wbreleased()));
             }
 
-            for(QWdt wdgt : QWL{ui->chooseresize, ui->copyresize, ui->excluderesize})
+            for(QWdt wdgt : QWL{ui->chooseresize, ui->copyresize, ui->excluderesize, ui->includeresize})
             {
                 connect(wdgt, SIGNAL(Mouse_Enter()), this, SLOT(renter()));
                 connect(wdgt, SIGNAL(Mouse_Leave()), this, SLOT(rleave()));
@@ -251,7 +255,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             connect(ui->function1, &lblevent::Mouse_Pressed, this, &systemback::wpressed);
             connect(ui->function1, &lblevent::Mouse_Move, this, &systemback::wmove);
             connect(ui->function1, &lblevent::Mouse_Released, this, &systemback::wreleased);
-            connect(ui->function1, &lblevent::Mouse_DblClick, [this] { if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible()) stschange(); });
+            connect(ui->function1, &lblevent::Mouse_DblClick, [this] { if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->includepanel->isVisible() || ui->choosepanel->isVisible()) stschange(); });
             connect(ui->windowbutton1, SIGNAL(Mouse_Enter()), this, SLOT(benter()));
             connect(ui->windowbutton1, &lblevent::Mouse_Pressed, this, &systemback::bpressed);
 
@@ -375,7 +379,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             connect(ui->usersettingscopy, &chckbxevent::Mouse_Enter, [this] { if(ui->usersettingscopy->checkState() == Qt::PartiallyChecked) ui->usersettingscopy->setText(tr("Transfer user configuration and data files")); });
             connect(ui->usersettingscopy, &chckbxevent::Mouse_Leave, [this] { if(ui->usersettingscopy->checkState() == Qt::PartiallyChecked && ui->usersettingscopy->text() == tr("Transfer user configuration and data files")) ui->usersettingscopy->setText(tr("Transfer user configuration files")); });
             connect(ui->unmountdelete, &bttnevent::Mouse_Leave, [this] { if(! ui->unmountdelete->isEnabled() && ui->unmountdelete->text() == tr("! Delete !") && (ui->partitionsettings->item(ui->partitionsettings->currentRow(), 4)->text().isEmpty() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 5)->text() != "btrfs")) ui->unmountdelete->setEnabled(true); });
-            if((sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")) && sb::isdir("/.systemback")) on_installmenu_clicked();
+            if(sislive && sb::isdir("/.systemback")) on_installmenu_clicked();
         }
 
         wndw = [&]() -> QWdt  {
@@ -639,7 +643,7 @@ void systemback::unitimer()
                 ui->liveworkdir->setToolTip(sb::sdir[2]);
                 for(QLE ldt : QList<QLE>{ui->storagedir, ui->liveworkdir}) ldt->setCursorPosition(0);
 
-                for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel})
+                for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->includepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel})
                 {
                     wdgt->move(ui->sbpanel->pos());
                     wdgt->setBackgroundRole(QPalette::Background);
@@ -900,6 +904,15 @@ void systemback::unitimer()
                 on_partitionrefresh_clicked();
                 on_livedevicesrefresh_clicked();
                 on_pointexclude_clicked();
+                ilstupdt(true);
+
+                {
+                    QFile file(incfile);
+
+                    if(sb::fopen(file))
+                        while(! file.atEnd()) ui->includedlist->addItem(file.readLine().trimmed());
+                }
+
                 ui->storagedir->resize(ss(210), ss(28));
                 ui->storagedirbutton->show();
                 for(QWdt wdgt : QWL{ui->repairmenu, ui->aboutmenu, ui->settingsmenu, ui->pnumber3, ui->pnumber4, ui->pnumber5, ui->pnumber6, ui->pnumber7, ui->pnumber8, ui->pnumber9, ui->pnumber10}) wdgt->setEnabled(true);
@@ -926,13 +939,12 @@ void systemback::unitimer()
                             return sb::execsrch("unionfs-fuse");
                         }();
 
-                    for(QWdt wdgt : QWL{ui->copymenu, ui->installmenu, ui->systemupgrade, ui->excludemenu, ui->schedulemenu}) wdgt->setEnabled(true);
+                    for(QWdt wdgt : QWL{ui->copymenu, ui->installmenu, ui->systemupgrade, ui->excludemenu, ui->includemenu, ui->schedulemenu}) wdgt->setEnabled(true);
                     pname = tr("Currently running system");
                 }
             }
 
             pntupgrade();
-            if(sstart) ui->schedulerstart->setEnabled(true);
             busy(false);
 
             connect(&utimer,
@@ -945,7 +957,9 @@ void systemback::unitimer()
 
             utimer.start(500);
 
-            if(sislive && sb::exist("/etc/xdg/autostart/sbfinstall.desktop"))
+            if(sstart)
+                ui->schedulerstart->setEnabled(true);
+            else if(sislive && sb::exist("/etc/xdg/autostart/sbfinstall.desktop"))
                 for(cchar *file : {"/etc/xdg/autostart/sbfinstall.desktop", "/etc/xdg/autostart/sbfinstall-kde.desktop"}) sb::rmfile(file);
         }
         else if(! ui->statuspanel->isVisibleTo(ui->wpanel))
@@ -1447,7 +1461,7 @@ void systemback::benter(bool click)
             if(ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->hide();
             if(ui->buttonspanel->width() != ui->buttonspanel->height()) ui->buttonspanel->resize(ui->buttonspanel->height(), ui->buttonspanel->height());
         }
-        else if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->choosepanel->isVisible())
+        else if(ui->copypanel->isVisible() || ui->excludepanel->isVisible() || ui->includepanel->isVisible() || ui->choosepanel->isVisible())
         {
             if(! ui->windowmaximize->isVisibleTo(ui->buttonspanel))
             {
@@ -1642,7 +1656,7 @@ void systemback::wbreleased()
 
 void systemback::renter()
 {
-    QWdt wdgt(ui->copypanel->isVisible() ? ui->copyresize : ui->choosepanel->isVisible() ? ui->chooseresize : ui->excluderesize);
+    QWdt wdgt(ui->copypanel->isVisible() ? ui->copyresize : ui->choosepanel->isVisible() ? ui->chooseresize : ui->excludepanel->isVisible() ? ui->excluderesize : ui->includeresize);
 
     if(! wismax)
     {
@@ -1655,7 +1669,7 @@ void systemback::renter()
 
 void systemback::rleave()
 {
-    QWdt wdgt(ui->copypanel->isVisible() ? ui->copyresize : ui->choosepanel->isVisible() ? ui->chooseresize : ui->excluderesize);
+    QWdt wdgt(ui->copypanel->isVisible() ? ui->copyresize : ui->choosepanel->isVisible() ? ui->chooseresize : ui->excludepanel->isVisible() ? ui->excluderesize : ui->includeresize);
 
     if(wdgt->width() == ss(30) && [] {
             QCr csr(qApp->overrideCursor());
@@ -2002,7 +2016,7 @@ void systemback::systemcopy()
 
             if(sb::isdir("/.sbmountpoints"))
             {
-                for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) rmdir(bstr("/.sbmountpoints/" % item));
+                for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot)) rmdir(bstr("/.sbmountpoints/" % item));
                 rmdir("/.sbmountpoints");
             }
 
@@ -2148,8 +2162,8 @@ void systemback::systemcopy()
             else
             {
                 if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint")) return err();
-                QBA cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
-                if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) return err();
+                QBA cfg(sb::fload("/.sbsystemcopy" cfgfile));
+                if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy" cfgfile, cfg.replace("enabled=true", "enabled=false"))) return err();
             }
 
             sb::umount("/.systembacklivepoint");
@@ -2168,14 +2182,14 @@ void systemback::systemcopy()
                     }
                 }(), guname(), nullptr)) return err();
         }
-        else if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) || (sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy/etc/systemback.conf")))
+        else if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) || (sb::schdle[0] == sb::True && ! sb::cfgwrite("/.sbsystemcopy" cfgfile)))
             return err();
     }
     else if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
     {
         if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname)) return err();
-        QBA cfg(sb::fload("/.sbsystemcopy/etc/systemback.conf"));
-        if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy/etc/systemback.conf", cfg.replace("enabled=true", "enabled=false"))) return err();
+        QBA cfg(sb::fload("/.sbsystemcopy" cfgfile));
+        if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy" cfgfile, cfg.replace("enabled=true", "enabled=false"))) return err();
     }
     else if(! sb::scopy(ui->usersettingscopy->isChecked() ? 4 : 5, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname))
         return err();
@@ -2580,7 +2594,7 @@ void systemback::systemcopy()
 
     if(sb::isdir("/.sbmountpoints"))
     {
-        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoDotAndDotDot)) rmdir(bstr("/.sbmountpoints/" % item));
+        for(cQStr &item : QDir("/.sbmountpoints").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot)) rmdir(bstr("/.sbmountpoints/" % item));
         rmdir("/.sbmountpoints");
     }
 
@@ -3091,7 +3105,11 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 }
                 else if(ui->excludepanel->isVisible())
                 {
-                    if((ui->itemslist->hasFocus() && ! ui->itemslist->currentItem()) || (ui->excludedlist->hasFocus() && ui->excludedlist->currentRow() == -1)) ui->excludeback->setFocus();
+                    if((ui->excludeitemslist->hasFocus() && ! ui->excludeitemslist->currentItem()) || (ui->excludedlist->hasFocus() && ui->excludedlist->currentRow() == -1)) ui->excludeback->setFocus();
+                }
+                else if(ui->includepanel->isVisible())
+                {
+                    if((ui->includeitemslist->hasFocus() && ! ui->includeitemslist->currentItem()) || (ui->includedlist->hasFocus() && ui->includedlist->currentRow() == -1)) ui->includeback->setFocus();
                 }
                 else if(ui->choosepanel->isVisible() && ui->dirchoose->hasFocus() && ! ui->dirchoose->currentItem())
                     ui->dirchoosecancel->setFocus();
@@ -3128,15 +3146,28 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             else if(ui->excludepanel->isVisible())
             {
                 ui->excludepanel->resize(width() - ui->excludepanel->x() * 2, height() - ss(25));
-                ui->itemstext->resize(ui->excludepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->itemstext->height());
-                ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedtext->y(), ui->itemstext->width(), ui->excludedtext->height());
-                ui->itemslist->resize(ui->itemstext->width(), ui->excludepanel->height() - ss(160));
-                ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedlist->y(), ui->itemslist->width(), ui->itemslist->height());
-                ui->additem->move(ui->excludepanel->width() / 2 - ss(24), ui->itemslist->height() / 2 + ss(36));
-                ui->removeitem->move(ui->additem->x(), ui->itemslist->height() / 2 + ss(108));
+                ui->excludeitemstext->resize(ui->excludepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->excludeitemstext->height());
+                ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedtext->y(), ui->excludeitemstext->width(), ui->excludedtext->height());
+                ui->excludeitemslist->resize(ui->excludeitemstext->width(), ui->excludepanel->height() - ss(160));
+                ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedlist->y(), ui->excludeitemslist->width(), ui->excludeitemslist->height());
+                ui->excludeadditem->move(ui->excludepanel->width() / 2 - ss(24), ui->excludeitemslist->height() / 2 + ss(36));
+                ui->excluderemoveitem->move(ui->excludeadditem->x(), ui->excludeitemslist->height() / 2 + ss(108));
                 ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - ss(48));
-                ui->kendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
+                ui->excludekendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
                 ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
+            }
+            else if(ui->includepanel->isVisible())
+            {
+                ui->includepanel->resize(width() - ui->includepanel->x() * 2, height() - ss(25));
+                ui->includeitemstext->resize(ui->includepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->includeitemstext->height());
+                ui->includedtext->setGeometry(ui->includepanel->width() / 2 + ss(36), ui->includedtext->y(), ui->includeitemstext->width(), ui->includedtext->height());
+                ui->includeitemslist->resize(ui->includeitemstext->width(), ui->includepanel->height() - ss(144));
+                ui->includedlist->setGeometry(ui->includepanel->width() / 2 + ss(36), ui->includedlist->y(), ui->includeitemslist->width(), ui->includeitemslist->height());
+                ui->includeadditem->move(ui->includepanel->width() / 2 - ss(24), ui->includeitemslist->height() / 2 + ss(19));
+                ui->includeremoveitem->move(ui->includeadditem->x(), ui->includeitemslist->height() / 2 + ss(91));
+                ui->includeback->move(ui->includeback->x(), ui->includepanel->height() - ss(48));
+                ui->includekendektext->move(ui->includepanel->width() - ss(306), ui->includepanel->height() - ss(24));
+                ui->includeresize->move(ui->includepanel->width() - ui->includeresize->width(), ui->includepanel->height() - ui->includeresize->height());
             }
 
             if(! wismax)
@@ -3259,20 +3290,38 @@ void systemback::keyPressEvent(QKeyEvent *ev)
                     if(! ui->repairmountpoint->hasFocus()) ui->repairmountpoint->setFocus();
                 }
             }
-            else if(ui->itemslist->hasFocus())
+            else if(ui->excludeitemslist->hasFocus())
             {
-                if(ui->itemslist->currentItem()->isSelected())
+                if(ui->excludeadditem->isEnabled())
                 {
-                    if(ui->itemslist->currentItem()->childCount() == 0)
-                        on_additem_clicked();
-                    else if(ui->itemslist->currentItem()->isExpanded())
-                        ui->itemslist->currentItem()->setExpanded(false);
+                    if(ui->excludeitemslist->currentItem()->childCount() == 0)
+                        on_excludeadditem_clicked();
+                    else if(ui->excludeitemslist->currentItem()->isExpanded())
+                        ui->excludeitemslist->currentItem()->setExpanded(false);
                     else
-                        ui->itemslist->currentItem()->setExpanded(true);
+                        ui->excludeitemslist->currentItem()->setExpanded(true);
                 }
             }
             else if(ui->excludedlist->hasFocus())
-                on_removeitem_clicked();
+            {
+                if(ui->excluderemoveitem->isEnabled()) on_excluderemoveitem_clicked();
+            }
+            else if(ui->includeitemslist->hasFocus())
+            {
+                if(ui->includeadditem->isEnabled())
+                {
+                    if(ui->includeitemslist->currentItem()->childCount() == 0)
+                        on_includeadditem_clicked();
+                    else if(ui->includeitemslist->currentItem()->isExpanded())
+                        ui->includeitemslist->currentItem()->setExpanded(false);
+                    else
+                        ui->includeitemslist->currentItem()->setExpanded(true);
+                }
+            }
+            else if(ui->includedlist->hasFocus())
+            {
+                if(ui->includeremoveitem->isEnabled()) on_includeremoveitem_clicked();
+            }
             else if(ui->copypanel->isVisible())
             {
                 if(ui->mountpoint->hasFocus())
@@ -3347,8 +3396,10 @@ void systemback::keyPressEvent(QKeyEvent *ev)
                 on_dirrefresh_clicked();
             else if(ui->repairmountpoint->hasFocus())
                 on_repairpartitionrefresh_clicked();
-            else if(ui->itemslist->hasFocus())
+            else if(ui->excludeitemslist->hasFocus())
                 ilstupdt();
+            else if(ui->includeitemslist->hasFocus())
+                ilstupdt(true);
 
             break;
         case Qt::Key_Delete:
@@ -3360,10 +3411,20 @@ void systemback::keyPressEvent(QKeyEvent *ev)
             {
                 if(ui->livedelete->isEnabled()) on_livedelete_clicked();
             }
-            else if(ui->itemslist->hasFocus())
-                on_additem_clicked();
+            else if(ui->excludeitemslist->hasFocus())
+            {
+                if(ui->excludeadditem->isEnabled()) on_excludeadditem_clicked();
+            }
             else if(ui->excludedlist->hasFocus())
-                on_removeitem_clicked();
+            {
+                if(ui->excluderemoveitem->isEnabled()) on_excluderemoveitem_clicked();
+            }
+            else if(ui->includeitemslist->hasFocus())
+            {
+                if(ui->includeadditem->isEnabled()) on_includeadditem_clicked();
+            }
+            else if(ui->includedlist->hasFocus() && ui->includeremoveitem->isEnabled())
+                on_includeremoveitem_clicked();
         }
 }
 
@@ -3909,6 +3970,16 @@ void systemback::on_excludemenu_clicked()
     setMaximumSize(agm.width() - ss(60), agm.height() - ss(60));
 }
 
+void systemback::on_includemenu_clicked()
+{
+    ui->sbpanel->hide();
+    ui->includepanel->show();
+    ui->function1->setText(tr("Include"));
+    ui->includeback->setFocus();
+    QRect agm(sgeom(true));
+    setMaximumSize(agm.width() - ss(60), agm.height() - ss(60));
+}
+
 void systemback::on_schedulemenu_clicked()
 {
     ui->sbpanel->hide();
@@ -4358,10 +4429,22 @@ void systemback::on_repairback_clicked()
 
 void systemback::on_excludeback_clicked()
 {
-    if(ui->copycover->isHidden())
+    if(ui->excludecover->isHidden())
     {
         windowmove(ss(698), ss(465));
         ui->excludepanel->hide();
+        ui->sbpanel->show();
+        ui->function1->setText("Systemback");
+        ui->functionmenunext->setFocus();
+    }
+}
+
+void systemback::on_includeback_clicked()
+{
+    if(ui->includecover->isHidden())
+    {
+        windowmove(ss(698), ss(465));
+        ui->includepanel->hide();
         ui->sbpanel->show();
         ui->function1->setText("Systemback");
         ui->functionmenunext->setFocus();
@@ -4624,39 +4707,70 @@ void systemback::on_livedevicesrefresh_clicked()
     busy(false);
 }
 
-void systemback::ilstupdt(cQStr &dir)
+void systemback::ilstupdt(bool inc, cQStr &dir)
 {
     if(dir.isEmpty())
     {
         busy();
 
-        if(! ui->excludecover->isVisibleTo(ui->excludepanel))
+        if(inc)
         {
-            ui->excludecover->show();
-            if(ui->itemslist->topLevelItemCount() > 0) ui->itemslist->clear();
-            if(ui->additem->isEnabled()) ui->additem->setDisabled(true);
+            if(! ui->includecover->isVisibleTo(ui->includepanel))
+            {
+                ui->includecover->show();
+                if(ui->includeadditem->isEnabled()) ui->includeadditem->setDisabled(true);
+            }
+
+            if(ui->includeitemslist->topLevelItemCount() > 0) ui->includeitemslist->clear();
+        }
+        else
+        {
+            if(! ui->excludecover->isVisibleTo(ui->excludepanel))
+            {
+                ui->excludecover->show();
+                if(ui->excludeadditem->isEnabled()) ui->excludeadditem->setDisabled(true);
+            }
+
+            if(ui->excludeitemslist->topLevelItemCount() > 0) ui->excludeitemslist->clear();
         }
 
-        ilstupdt("/root");
+        ilstupdt(inc, "/root");
         QFile file("/etc/passwd");
 
         if(sb::fopen(file))
             while(! file.atEnd())
             {
                 QStr usr(file.readLine().trimmed());
-                if(usr.contains(":/home/") && sb::isdir("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)))) ilstupdt("/home/" % usr);
+                if(usr.contains(":/home/") && sb::isdir("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)))) ilstupdt(inc, "/home/" % usr);
             }
 
-        ui->itemslist->sortItems(0, Qt::AscendingOrder);
-        if(ui->excludepanel->isVisible() && ! ui->excludeback->hasFocus()) ui->excludeback->setFocus();
-        ui->excludecover->hide();
+        if(inc)
+        {
+            ui->includeitemslist->sortItems(0, Qt::AscendingOrder);
+            if(ui->includepanel->isVisible() && ! ui->includeback->hasFocus()) ui->includeback->setFocus();
+            ui->includecover->hide();
+        }
+        else
+        {
+            ui->excludeitemslist->sortItems(0, Qt::AscendingOrder);
+            if(ui->excludepanel->isVisible() && ! ui->excludeback->hasFocus()) ui->excludeback->setFocus();
+            ui->excludecover->hide();
+        }
+
         busy(false);
     }
     else
+    {
+        QTreeWidget *ilst;
+        QLW dlst;
+        inc ? (ilst = ui->includeitemslist, dlst = ui->includedlist) : (ilst = ui->excludeitemslist, dlst = ui->excludedlist);
+
         for(cQStr &item : QDir(dir).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-            if((ui->pointexclude->isChecked() ? item.startsWith('.') && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}) : ! item.startsWith('.')) && ui->excludedlist->findItems(item, Qt::MatchExactly).isEmpty())
+            if((inc || ui->liveexclude->isChecked() ? ! item.startsWith('.') : item.startsWith('.') && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"})) && dlst->findItems(item, Qt::MatchExactly).isEmpty())
             {
-                if(ui->itemslist->findItems(item, Qt::MatchExactly).isEmpty())
+                QList<QTrWI *> flst(ilst->findItems(item, Qt::MatchExactly));
+
+                if(flst.isEmpty())
                 {
                     QTrWI *twi(new QTrWI);
                     twi->setText(0, item);
@@ -4664,59 +4778,67 @@ void systemback::ilstupdt(cQStr &dir)
                     if(sb::access(dir % '/' % item) && sb::stype(dir % '/' % item) == sb::Isdir)
                     {
                         twi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-                        ui->itemslist->addTopLevelItem(twi);
-                        QSL sdlst(QDir(dir % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
+                        ilst->addTopLevelItem(twi);
 
-                        for(cQStr &sitem : sdlst)
-                            if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
-                            {
-                                QTrWI *ctwi(new QTrWI);
-                                ctwi->setText(0, sitem);
-                                twi->addChild(ctwi);
-                            }
+                        if(dlst->findItems(item % '/', Qt::MatchExactly).isEmpty())
+                        {
+                            QSL sdlst(QDir(dir % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
+
+                            for(cQStr &sitem : sdlst)
+                                if(dlst->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                                {
+                                    QTrWI *ctwi(new QTrWI);
+                                    ctwi->setText(0, sitem);
+                                    twi->addChild(ctwi);
+                                }
+                        }
                     }
                     else
-                        ui->itemslist->addTopLevelItem(twi);
+                        ilst->addTopLevelItem(twi);
                 }
                 else if(sb::access(dir % '/' % item) && sb::stype(dir % '/' % item) == sb::Isdir)
                 {
-                    QTrWI *ctwi(ui->itemslist->findItems(item, Qt::MatchExactly).at(0));
+                    QTrWI *ctwi(flst.at(0));
                     if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(":pictures/dir.png"));
-                    QSL sdlst(QDir(dir % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
-                    for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
 
-                    for(cQStr &sitem : sdlst)
+                    if(dlst->findItems(item % '/', Qt::MatchExactly).isEmpty())
                     {
-                        if(ui->excludedlist->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                        QSL sdlst(QDir(dir % '/' % item).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot)), itmlst;
+                        for(ushort a(0) ; a < ctwi->childCount() ; ++a) itmlst.append(ctwi->child(a)->text(0));
+
+                        for(cQStr &sitem : sdlst)
                         {
-                            for(cQStr &citem : itmlst)
-                                if(citem == sitem) goto next;
+                            if(dlst->findItems(item % '/' % sitem, Qt::MatchExactly).isEmpty() && item % '/' % sitem != ".cache/gvfs")
+                            {
+                                for(cQStr &citem : itmlst)
+                                    if(citem == sitem) goto next;
 
-                            QTrWI *sctwi(new QTrWI);
-                            sctwi->setText(0, sitem);
-                            ctwi->addChild(sctwi);
+                                QTrWI *sctwi(new QTrWI);
+                                sctwi->setText(0, sitem);
+                                ctwi->addChild(sctwi);
+                            }
+
+                        next:;
                         }
-
-                    next:;
                     }
                 }
             }
+    }
 }
 
 void systemback::on_pointexclude_clicked()
 {
     busy();
     if(! ui->excludecover->isVisibleTo(ui->excludepanel)) ui->excludecover->show();
-    if(ui->itemslist->topLevelItemCount() > 0) ui->itemslist->clear();
     if(ui->excludedlist->count() > 0) ui->excludedlist->clear();
 
-    if(ui->additem->isEnabled())
-        ui->additem->setDisabled(true);
-    else if(ui->removeitem->isEnabled())
-        ui->removeitem->setDisabled(true);
+    if(ui->excludeadditem->isEnabled())
+        ui->excludeadditem->setDisabled(true);
+    else if(ui->excluderemoveitem->isEnabled())
+        ui->excluderemoveitem->setDisabled(true);
 
     {
-        QFile file("/etc/systemback.excludes");
+        QFile file(excfile);
 
         if(sb::fopen(file))
             while(! file.atEnd())
@@ -4751,7 +4873,7 @@ void systemback::on_dialogok_clicked()
         {
             statustart();
 
-            for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
+            for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot))
                 if(item.startsWith(".S00_"))
                 {
                     pset(12);
@@ -6184,34 +6306,37 @@ void systemback::on_livename_textChanged(cQStr &arg1)
     }
 }
 
-void systemback::on_itemslist_itemExpanded(QTrWI *item)
+void systemback::dirxpnd(QTrWI *item, bool inc)
 {
-    if(item->backgroundColor(0) != Qt::transparent)
-    {
-        item->setBackgroundColor(0, Qt::transparent);
-        busy();
-        cQTrWI *twi(item);
-        QStr path('/' % twi->text(0));
-        while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
+    item->setBackgroundColor(0, Qt::transparent);
+    busy();
+    cQTrWI *twi(item);
+    QStr path('/' % twi->text(0));
+    while(twi->parent()) path.prepend('/' % (inc ? (twi = twi->parent())->text(0) : sb::left((twi = twi->parent())->text(0), -1)));
+    QLW clw(inc ? ui->includedlist : ui->excludedlist);
 
-        auto itmxpnd([&](cQStr &pdir) {
-                QStr fpath(pdir % path);
+    auto itmxpnd([&](cQStr &pdir) {
+            QStr fpath(pdir % path);
 
-                for(ushort a(0) ; a < item->childCount() ; ++a)
+            for(ushort a(0) ; a < item->childCount() ; ++a)
+            {
+                QTrWI *ctwi(item->child(a));
+                QStr iname(ctwi->text(0)), ipath(fpath % '/' % iname);
+
+                if(sb::stype(ipath) == sb::Isdir)
                 {
-                    QTrWI *ctwi(item->child(a));
-                    QStr iname(ctwi->text(0));
+                    if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                    QStr epath(sb::right(path, -1) % '/' % iname % '/');
 
-                    if(sb::stype(fpath % '/' % iname) == sb::Isdir)
+                    if(clw->findItems(epath, Qt::MatchExactly).isEmpty())
                     {
-                        if(ctwi->icon(0).isNull()) ctwi->setIcon(0, QIcon(QPixmap(":pictures/dir.png").scaled(ss(12), ss(9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                         QSL itmlst;
                         itmlst.reserve(ctwi->childCount());
                         for(ushort b(0) ; b < ctwi->childCount() ; ++b) itmlst.append(ctwi->child(b)->text(0));
 
-                        for(cQStr &siname : QDir(fpath % '/' % iname).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
+                        for(cQStr &siname : QDir(ipath).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
                         {
-                            if(ui->excludedlist->findItems(sb::right(path, -1) % '/' % iname % '/' % siname, Qt::MatchExactly).isEmpty())
+                            if(clw->findItems(epath % siname, Qt::MatchExactly).isEmpty())
                             {
                                 for(ushort b(0) ; b < itmlst.count() ; ++b)
                                     if(itmlst.at(b) == siname)
@@ -6228,106 +6353,258 @@ void systemback::on_itemslist_itemExpanded(QTrWI *item)
                         next:;
                         }
                     }
-
-                    ctwi->sortChildren(0, Qt::AscendingOrder);
                 }
-            });
 
-        if(sb::stype("/root" % path) == sb::Isdir) itmxpnd("/root");
-        QFile file("/etc/passwd");
-
-        if(sb::fopen(file))
-            while(! file.atEnd())
-            {
-                QStr usr(file.readLine().trimmed());
-                if(usr.contains(":/home/") && sb::stype("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)) % path) == sb::Isdir) itmxpnd("/home/" % usr);
+                ctwi->sortChildren(0, Qt::AscendingOrder);
             }
+        });
 
-        busy(false);
+    if(sb::stype("/root" % path) == sb::Isdir) itmxpnd("/root");
+    QFile file("/etc/passwd");
+
+    if(sb::fopen(file))
+        while(! file.atEnd())
+        {
+            QStr usr(file.readLine().trimmed());
+            if(usr.contains(":/home/") && sb::stype("/home/" % (usr = sb::left(usr, sb::instr(usr, ":") -1)) % path) == sb::Isdir) itmxpnd("/home/" % usr);
+        }
+
+    busy(false);
+}
+
+void systemback::on_excludeitemslist_itemExpanded(QTrWI *item)
+{
+    if(item->backgroundColor(0) != Qt::transparent) dirxpnd(item);
+    item->setText(0, item->text(0) % '/');
+}
+
+void systemback::on_includeitemslist_itemExpanded(QTrWI *item)
+{
+    if(item->backgroundColor(0) != Qt::transparent) dirxpnd(item, true);
+}
+
+void systemback::on_excludeitemslist_itemCollapsed(QTrWI *item)
+{
+    item->setText(0, sb::left(item->text(0), -1));
+}
+
+void systemback::on_excludeitemslist_currentItemChanged(QTrWI *crrnt)
+{
+    if(crrnt && ! ui->excludeadditem->isEnabled())
+    {
+        ui->excludeadditem->setEnabled(true);
+
+        if(ui->excluderemoveitem->isEnabled())
+        {
+            ui->excludedlist->setCurrentItem(nullptr);
+            ui->excluderemoveitem->setDisabled(true);
+        }
     }
 }
 
-void systemback::on_itemslist_currentItemChanged(QTrWI *crrnt)
+void systemback::on_includeitemslist_currentItemChanged(QTrWI *crrnt)
 {
-    if(crrnt && ! ui->additem->isEnabled())
+    if(crrnt && ! ui->includeadditem->isEnabled())
     {
-        ui->additem->setEnabled(true);
+        ui->includeadditem->setEnabled(true);
 
-        if(ui->removeitem->isEnabled())
+        if(ui->includeremoveitem->isEnabled())
         {
-            ui->excludedlist->setCurrentItem(nullptr);
-            ui->removeitem->setDisabled(true);
+            ui->includedlist->setCurrentItem(nullptr);
+            ui->includeremoveitem->setDisabled(true);
         }
     }
 }
 
 void systemback::on_excludedlist_currentItemChanged(QLWI *crrnt)
 {
-    if(crrnt && ! ui->removeitem->isEnabled())
+    if(crrnt && ! ui->excluderemoveitem->isEnabled())
     {
-        ui->removeitem->setEnabled(true);
+        ui->excluderemoveitem->setEnabled(true);
 
-        if(ui->additem->isEnabled())
+        if(ui->excludeadditem->isEnabled())
         {
-            ui->itemslist->setCurrentItem(nullptr);
-            ui->additem->setDisabled(true);
+            ui->excludeitemslist->setCurrentItem(nullptr);
+            ui->excludeadditem->setDisabled(true);
         }
     }
 }
 
-void systemback::on_additem_clicked()
+void systemback::on_includedlist_currentItemChanged(QLWI *crrnt)
+{
+    if(crrnt && ! ui->includeremoveitem->isEnabled())
+    {
+        ui->includeremoveitem->setEnabled(true);
+
+        if(ui->includeadditem->isEnabled())
+        {
+            ui->includeitemslist->setCurrentItem(nullptr);
+            ui->includeadditem->setDisabled(true);
+        }
+    }
+}
+
+void systemback::on_excludeadditem_clicked()
 {
     busy();
     ui->excludecover->show();
-    cQTrWI *twi(ui->itemslist->currentItem());
+    cQTrWI *twi(ui->excludeitemslist->currentItem());
     QStr path(twi->text(0));
-    while(twi->parent()) path.prepend((twi = twi->parent())->text(0) % '/');
-    QFile file("/etc/systemback.excludes");
+    while(twi->parent()) path.prepend((twi = twi->parent())->text(0));
+    QStr elst;
+    QFile file(excfile);
 
-    if(file.open(QIODevice::Append))
+    if(sb::fopen(file))
     {
-        file.write(QStr(path % '\n').toUtf8());
-        file.flush();
-        ui->excludedlist->addItem(path);
-        delete ui->itemslist->currentItem();
-        ui->itemslist->setCurrentItem(nullptr);
-        ui->additem->setDisabled(true);
-        ui->excludeback->setFocus();
+        while(! file.atEnd())
+        {
+            QStr cline(file.readLine().trimmed());
+            if(! cline.startsWith(path)) elst.append(cline % '\n');
+        }
+
+        file.close();
+
+        if(sb::crtfile(excfile, elst.append(path % '\n')))
+        {
+            if(ui->excludedlist->count() > 0) ui->excludedlist->clear();
+            QTS in(&elst, QIODevice::ReadOnly);
+
+            while(! in.atEnd())
+            {
+                QStr cline(in.readLine());
+
+                if(cline.startsWith('.'))
+                {
+                    if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
+                }
+                else if(ui->liveexclude->isChecked())
+                    ui->excludedlist->addItem(cline);
+            }
+
+            if(path.endsWith('/'))
+            {
+                ui->excludeitemslist->currentItem()->setExpanded(false);
+                QList<QTrWI *> ilst;
+                ilst.reserve((twi = ui->excludeitemslist->currentItem())->childCount());
+                for(ushort a(0) ; a < twi->childCount() ; ++a) ilst.append(twi->child(a));
+                for(cQTrWI *ctwi : ilst) delete ctwi;
+            }
+            else
+            {
+                QTrWI *ptwi(ui->excludeitemslist->currentItem()->parent());
+                delete ui->excludeitemslist->currentItem();
+                if(ptwi && ptwi->childCount() == 0) ptwi->setText(0, sb::left(ptwi->text(0), -1));
+            }
+
+            ui->excludeitemslist->setCurrentItem(nullptr);
+            ui->excludeadditem->setDisabled(true);
+            ui->excludeback->setFocus();
+        }
     }
 
     ui->excludecover->hide();
     busy(false);
 }
 
-void systemback::on_removeitem_clicked()
+void systemback::on_includeadditem_clicked()
 {
     busy();
-    ui->excludecover->show();
-    QFile file("/etc/systemback.excludes");
+    ui->includecover->show();
+    cQTrWI *twi(ui->includeitemslist->currentItem());
+    QStr path(twi->text(0));
+    while(twi->parent()) path.prepend((twi = twi->parent())->text(0) % '/');
+    QStr ilst;
+    QFile file(incfile);
 
     if(sb::fopen(file))
     {
-        QStr excdlst;
-
         while(! file.atEnd())
         {
             QStr cline(file.readLine().trimmed());
-            if(cline != ui->excludedlist->currentItem()->text()) excdlst.append(cline % '\n');
+            if(! cline.startsWith(path)) ilst.append(cline % '\n');
         }
 
         file.close();
 
-        if(sb::crtfile("/etc/systemback.excludes", excdlst))
+        if(sb::crtfile(incfile, ilst.append(path % '\n')))
+        {
+            if(ui->includedlist->count() > 0) ui->includedlist->clear();
+            QTS in(&ilst, QIODevice::ReadOnly);
+            while(! in.atEnd()) ui->includedlist->addItem(in.readLine());
+            QTrWI *ptwi(ui->includeitemslist->currentItem()->parent());
+            delete ui->includeitemslist->currentItem();
+            if(ptwi && ptwi->childCount() == 0) ptwi->setText(0, sb::left(ptwi->text(0), -1));
+            ui->includeitemslist->setCurrentItem(nullptr);
+            ui->includeadditem->setDisabled(true);
+            ui->includeback->setFocus();
+        }
+    }
+
+    ui->includecover->hide();
+    busy(false);
+}
+
+void systemback::on_excluderemoveitem_clicked()
+{
+    busy();
+    ui->excludecover->show();
+    QFile file(excfile);
+
+    if(sb::fopen(file))
+    {
+        QStr ctxt(ui->excludedlist->currentItem()->text()), elst;
+
+        while(! file.atEnd())
+        {
+            QStr cline(file.readLine().trimmed());
+            if(cline != ctxt) elst.append(cline % '\n');
+        }
+
+        file.close();
+
+        if(sb::crtfile(excfile, elst))
         {
             delete ui->excludedlist->currentItem();
             ui->excludedlist->setCurrentItem(nullptr);
-            ui->removeitem->setDisabled(true);
+            ui->excluderemoveitem->setDisabled(true);
             ilstupdt();
             ui->excludeback->setFocus();
         }
     }
 
     ui->excludecover->hide();
+    busy(false);
+}
+
+void systemback::on_includeremoveitem_clicked()
+{
+    busy();
+    ui->includecover->show();
+    QFile file(incfile);
+
+    if(sb::fopen(file))
+    {
+        QStr ctxt(ui->includedlist->currentItem()->text()), ilst;
+
+        while(! file.atEnd())
+        {
+            QStr cline(file.readLine().trimmed());
+            if(cline != ctxt) ilst.append(cline % '\n');
+        }
+
+        file.close();
+
+        if(sb::crtfile(incfile, ilst))
+        {
+            delete ui->includedlist->currentItem();
+            ui->includedlist->setCurrentItem(nullptr);
+            ui->includeremoveitem->setDisabled(true);
+            ilstupdt(true);
+            ui->includeback->setFocus();
+        }
+    }
+
+    ui->includecover->hide();
     busy(false);
 }
 
@@ -6896,7 +7173,7 @@ void systemback::on_newrestorepoint_clicked()
             }
         });
 
-    for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
+    for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot))
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}))
         {
             if(prun.type != 12) pset(12);

@@ -128,10 +128,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Excluded items</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1227,6 +1223,31 @@
     </message>
     <message>
         <source>Boot system installer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Include</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Systemback command line interface cannot be used on a Live system!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Included items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Excludable items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Includable items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Include user data files and directories into the restore points
+These will be defined as restorable configuration files!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

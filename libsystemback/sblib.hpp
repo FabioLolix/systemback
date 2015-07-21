@@ -20,6 +20,11 @@
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
 #define fnln __attribute__((always_inline))
+#define cfgfile "/etc/systemback/systemback.conf"
+#define oldcfgfile "/etc/systemback.conf"
+#define excfile "/etc/systemback/systemback.excludes"
+#define oldexcfile "/etc/systemback.excludes"
+#define incfile "/etc/systemback/systemback.includes"
 
 #include "sblib_global.hpp"
 #include "bstr.hpp"
@@ -41,9 +46,9 @@ public:
            MSDOS = 0, GPT = 1, Clear = 2, Primary = 3, Extended = 4, Logical = 5, Freespace = 6, Emptyspace = 7,
            Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknown = 5,
            Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4, Wait = 8,
+           False = 0, True = 1, Empty = 2, Include = 3,
            Sblock = 0, Dpkglock = 1, Schdlrlock = 2,
            Crtdir = 0, Rmfile = 1, Crthlnk = 2,
-           False = 0, True = 1, Empty = 2,
            Read = 0, Write = 1, Exec = 2,
            Norm = 0, All = 1, Mixed = 2 };
 
@@ -78,7 +83,7 @@ public:
     template<typename T> static fnln bool rmfile(const T &file);
     static bool like(cQStr &txt, cQSL &lst, uchar mode = Norm);
     static bool execsrch(cQStr &fname, cQStr &ppath = nullptr);
-    static bool cfgwrite(cQStr &file = "/etc/systemback.conf");
+    static bool cfgwrite(cQStr &file = cfgfile);
     static bool scopy(uchar mthd, cQStr &usr, cQStr &srcdir);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool crtfile(cQStr &path, cQStr &txt = nullptr);
@@ -129,17 +134,18 @@ private:
 
     static QStr rlink(cQStr &path, ushort blen);
     static uchar fcomp(cQStr &file1, cQStr &file2);
+    static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), uchar oplen = 0);
+    static bool odir(QBAL &balst, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), cQStr &ppath = nullptr);
     template<typename T1, typename T2> static fnln bool crthlnk(const T1 &srclnk, const T2 &newlnk);
-    static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, bool hidden = false, uchar oplen = 0);
     static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
     static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
     static bool cerr(uchar type, cQStr &str1, cQStr &str2 = nullptr);
-    static bool odir(QBAL &balst, cQStr &path, bool hidden = false);
     static bool rodir(QUCL &ucl, cQStr &path, uchar oplen = 0);
     static bool rodir(QBA &ba, cQStr &path, uchar oplen = 0);
     static bool cplink(cQStr &srclink, cQStr &newlink);
     static bool cpdir(cQStr &srcdir, cQStr &newdir);
     static bool exclcheck(cQSL &elist, cQStr &item);
+    static bool inclcheck(cQSL &ilist, cQStr &item);
     static bool lcomp(cQStr &link1, cQStr &link2);
     bool thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab);
     bool thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir);

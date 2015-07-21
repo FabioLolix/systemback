@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1392</width>
-    <height>3082</height>
+    <height>3446</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
       <x>0</x>
       <y>0</y>
       <width>1392</width>
-      <height>3062</height>
+      <height>3426</height>
      </rect>
     </property>
     <widget class="pnlevent" name="buttonspanel" native="true">
@@ -40,7 +40,7 @@
      <property name="geometry">
       <rect>
        <x>402</x>
-       <y>2941</y>
+       <y>3305</y>
        <width>138</width>
        <height>48</height>
       </rect>
@@ -131,7 +131,7 @@
        <x>0</x>
        <y>0</y>
        <width>1393</width>
-       <height>2740</height>
+       <height>3104</height>
       </rect>
      </property>
      <property name="autoFillBackground">
@@ -1617,8 +1617,8 @@
      <widget class="QWidget" name="excludepanel" native="true">
       <property name="geometry">
        <rect>
-        <x>697</x>
-        <y>24</y>
+        <x>1</x>
+        <y>2664</y>
         <width>696</width>
         <height>440</height>
        </rect>
@@ -1667,7 +1667,7 @@
         <string>Exclude user data files and directories from Live system</string>
        </property>
       </widget>
-      <widget class="QLabel" name="itemstext">
+      <widget class="QLabel" name="excludeitemstext">
        <property name="geometry">
         <rect>
          <x>8</x>
@@ -1683,7 +1683,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Items</string>
+        <string>Excludable items</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -1711,7 +1711,7 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QPushButton" name="removeitem">
+      <widget class="QPushButton" name="excluderemoveitem">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -1743,7 +1743,7 @@
         </size>
        </property>
       </widget>
-      <widget class="QPushButton" name="additem">
+      <widget class="QPushButton" name="excludeadditem">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -1775,7 +1775,7 @@
         </size>
        </property>
       </widget>
-      <widget class="QLabel" name="kendektext">
+      <widget class="QLabel" name="excludekendektext">
        <property name="geometry">
         <rect>
          <x>390</x>
@@ -1817,7 +1817,7 @@
         </size>
        </property>
       </widget>
-      <widget class="QTreeWidget" name="itemslist">
+      <widget class="QTreeWidget" name="excludeitemslist">
        <property name="geometry">
         <rect>
          <x>8</x>
@@ -3638,7 +3638,7 @@
          <property name="geometry">
           <rect>
            <x>224</x>
-           <y>0</y>
+           <y>40</y>
            <width>224</width>
            <height>32</height>
           </rect>
@@ -3670,7 +3670,7 @@
          <property name="geometry">
           <rect>
            <x>224</x>
-           <y>80</y>
+           <y>120</y>
            <width>224</width>
            <height>32</height>
           </rect>
@@ -3702,7 +3702,7 @@
          <property name="geometry">
           <rect>
            <x>224</x>
-           <y>40</y>
+           <y>80</y>
            <width>224</width>
            <height>32</height>
           </rect>
@@ -3929,6 +3929,38 @@
          </property>
          <property name="text">
           <string>Exclude</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pictures.qrc">
+           <normaloff>:/pictures/next.png</normaloff>:/pictures/next.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>13</width>
+           <height>13</height>
+          </size>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="includemenu">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>224</x>
+           <y>0</y>
+           <width>224</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>Include</string>
          </property>
          <property name="icon">
           <iconset resource="pictures.qrc">
@@ -5975,9 +6007,9 @@
       <zorder>copyback</zorder>
       <zorder>copynext</zorder>
       <zorder>partitionsettings</zorder>
-      <zorder>copyresize</zorder>
       <zorder>partitionsettingspanel1</zorder>
       <zorder>copycover</zorder>
+      <zorder>copyresize</zorder>
      </widget>
      <widget class="lblevent" name="scalingbutton">
       <property name="geometry">
@@ -6004,7 +6036,7 @@
      <widget class="pnlevent" name="scalingbuttonspanel" native="true">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>697</x>
         <y>2664</y>
         <width>116</width>
         <height>76</height>
@@ -6507,12 +6539,297 @@
        </property>
       </widget>
      </widget>
+     <widget class="QWidget" name="includepanel" native="true">
+      <property name="geometry">
+       <rect>
+        <x>697</x>
+        <y>24</y>
+        <width>696</width>
+        <height>440</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <widget class="QLabel" name="includeitemstext">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>48</y>
+         <width>304</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Includable items</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="includedtext">
+       <property name="geometry">
+        <rect>
+         <x>384</x>
+         <y>48</y>
+         <width>304</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Included items</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="includeremoveitem">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>324</x>
+         <y>239</y>
+         <width>48</width>
+         <height>48</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Remove item from the exclusion list</string>
+       </property>
+       <property name="icon">
+        <iconset resource="pictures.qrc">
+         <normaloff>:/pictures/leftarrow.png</normaloff>:/pictures/leftarrow.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>22</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="includeadditem">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>324</x>
+         <y>167</y>
+         <width>48</width>
+         <height>48</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Add item to the exclusion list</string>
+       </property>
+       <property name="icon">
+        <iconset resource="pictures.qrc">
+         <normaloff>:/pictures/rightarrow.png</normaloff>:/pictures/rightarrow.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>22</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QLabel" name="includekendektext">
+       <property name="geometry">
+        <rect>
+         <x>390</x>
+         <y>416</y>
+         <width>300</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string notr="true">Kendek, GPLv3</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="includeback">
+       <property name="geometry">
+        <rect>
+         <x>16</x>
+         <y>392</y>
+         <width>136</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>Back</string>
+       </property>
+       <property name="icon">
+        <iconset resource="pictures.qrc">
+         <normaloff>:/pictures/back.png</normaloff>:/pictures/back.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>13</width>
+         <height>13</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QTreeWidget" name="includeitemslist">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>80</y>
+         <width>304</width>
+         <height>296</height>
+        </rect>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="showDropIndicator" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectItems</enum>
+       </property>
+       <property name="headerHidden">
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QListWidget" name="includedlist">
+       <property name="geometry">
+        <rect>
+         <x>384</x>
+         <y>80</y>
+         <width>304</width>
+         <height>296</height>
+        </rect>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="showDropIndicator" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="lblevent" name="includeresize">
+       <property name="geometry">
+        <rect>
+         <x>686</x>
+         <y>430</y>
+         <width>10</width>
+         <height>10</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="pictures.qrc">:/pictures/resize.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QWidget" name="includecover" native="true">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>686</width>
+         <height>430</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_48">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>696</width>
+         <height>48</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Include user data files and directories into the restore points
+These will be defined as restorable configuration files!</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <zorder>includeitemstext</zorder>
+      <zorder>includedtext</zorder>
+      <zorder>includeremoveitem</zorder>
+      <zorder>includeadditem</zorder>
+      <zorder>includekendektext</zorder>
+      <zorder>includeback</zorder>
+      <zorder>includeitemslist</zorder>
+      <zorder>includedlist</zorder>
+      <zorder>label_48</zorder>
+      <zorder>includecover</zorder>
+      <zorder>includeresize</zorder>
+     </widget>
      <zorder>border</zorder>
      <zorder>function1</zorder>
      <zorder>installpanel</zorder>
      <zorder>livecreatepanel</zorder>
      <zorder>repairpanel</zorder>
      <zorder>excludepanel</zorder>
+     <zorder>includepanel</zorder>
      <zorder>schedulepanel</zorder>
      <zorder>aboutpanel</zorder>
      <zorder>licensepanel</zorder>
@@ -6529,7 +6846,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>2740</y>
+       <y>3104</y>
        <width>402</width>
        <height>161</height>
       </rect>
@@ -6714,7 +7031,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>2901</y>
+       <y>3265</y>
        <width>402</width>
        <height>161</height>
       </rect>
@@ -6914,7 +7231,7 @@
      <property name="geometry">
       <rect>
        <x>402</x>
-       <y>2740</y>
+       <y>3104</y>
        <width>506</width>
        <height>201</height>
       </rect>
@@ -7153,7 +7470,7 @@
      <property name="geometry">
       <rect>
        <x>908</x>
-       <y>2740</y>
+       <y>3104</y>
        <width>376</width>
        <height>224</height>
       </rect>
@@ -7379,7 +7696,7 @@
      <property name="geometry">
       <rect>
        <x>540</x>
-       <y>2941</y>
+       <y>3305</y>
        <width>48</width>
        <height>48</height>
       </rect>
@@ -7448,7 +7765,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>3062</y>
+      <y>3426</y>
       <width>20</width>
       <height>20</height>
      </rect>

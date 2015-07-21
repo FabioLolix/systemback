@@ -74,10 +74,10 @@ void scheduler::main()
             break;
         }
 
-        if(! sb::isfile("/etc/systemback.conf") || cfglmd != QFileInfo("/etc/systemback.conf").lastModified())
+        if(! sb::isfile(cfgfile) || cfglmd != QFileInfo(cfgfile).lastModified())
         {
             sb::cfgread();
-            cfglmd = QFileInfo("/etc/systemback.conf").lastModified();
+            cfglmd = QFileInfo(cfgfile).lastModified();
         }
 
         if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
@@ -122,7 +122,7 @@ void scheduler::newrpnt()
 {
     sb::pupgrade();
 
-    for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
+    for(cQStr &item : QDir(sb::sdir[1]).entryList(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot))
         if(sb::like(item, {"_.DELETED_*", "_.S00_*"}) && ! sb::remove(sb::sdir[1] % '/' % item)) return;
 
     for(uchar a(9) ; a > 1 ; --a)

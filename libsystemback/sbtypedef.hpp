@@ -23,6 +23,7 @@
 #include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QRadioButton>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QComboBox>
@@ -39,6 +40,7 @@ typedef QCursor *QCr;
 typedef QDesktopWidget *QDW;
 typedef QWidget *QWdt;
 typedef QTableWidget *QTblW;
+typedef QListWidget *QLW;
 typedef QPushButton *QPB;
 typedef QLineEdit *QLE;
 typedef QComboBox *QCbB;

@@ -25,8 +25,6 @@
 #define cQTrWI const QTreeWidgetItem
 
 #include "../libsystemback/sblib.hpp"
-#include <QTableWidgetItem>
-#include <QListWidgetItem>
 #include <QTreeWidgetItem>
 #include <QMainWindow>
 #include <QTimer>
@@ -85,9 +83,10 @@ private:
     bool minside(QWdt wgt);
     void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
     void dialogopen(ushort dlg = 0, cbstr &dev = nullptr);
+    void ilstupdt(bool inc = false, cQStr &dir = nullptr);
     void pset(uchar type, cbstr &tend = nullptr);
+    void dirxpnd(QTrWI *item, bool inc = false);
     void ptxtchange(uchar num, cQStr &txt);
-    void ilstupdt(cQStr &dir = nullptr);
     void setwontop(bool state = true);
     void busy(bool state = true);
     void pnmchange(uchar num);
@@ -142,17 +141,22 @@ private slots:
     void on_repairmountpoint_currentTextChanged(const QStr &arg1);
     void on_windowposition_currentIndexChanged(const QStr &arg1);
     void on_includeusers_currentIndexChanged(const QStr &arg1);
+    void on_excludeitemslist_currentItemChanged(QTrWI *crrnt);
+    void on_includeitemslist_currentItemChanged(QTrWI *crrnt);
     void on_filesystem_currentIndexChanged(const QStr &arg1);
     void on_languages_currentIndexChanged(const QStr &arg1);
     void on_mountpoint_currentTextChanged(const QStr &arg1);
     void on_excludedlist_currentItemChanged(QLWI *crrnt);
+    void on_includedlist_currentItemChanged(QLWI *crrnt);
     void on_styles_currentIndexChanged(const QStr &arg1);
     void on_admins_currentIndexChanged(const QStr &arg1);
     void on_adminpassword_textChanged(const QStr &arg1);
     void on_rootpassword1_textChanged(const QStr &arg1);
     void on_users_currentIndexChanged(const QStr &arg1);
+    void on_excludeitemslist_itemCollapsed(QTrWI *item);
     void on_dirchoose_currentItemChanged(QTrWI *crrnt);
-    void on_itemslist_currentItemChanged(QTrWI *crrnt);
+    void on_excludeitemslist_itemExpanded(QTrWI *item);
+    void on_includeitemslist_itemExpanded(QTrWI *item);
     void on_livelist_currentItemChanged(QLWI *crrnt);
     void on_password1_textChanged(const QStr &arg1);
     void on_usersettingscopy_stateChanged(int arg1);
@@ -187,7 +191,6 @@ private slots:
     void on_usexzcompressor_clicked(bool chckd);
     void on_dirchoose_itemExpanded(QTrWI *item);
     void on_configurationfilesrestore_clicked();
-    void on_itemslist_itemExpanded(QTrWI *item);
     void on_styleoverride_clicked(bool chckd);
     void on_autoisocreate_clicked(bool chckd);
     void on_repairpartitionrefresh_clicked();
@@ -198,6 +201,8 @@ private slots:
     void on_rootpassword2_textChanged();
     void on_partitionrefresh2_clicked();
     void on_partitionrefresh3_clicked();
+    void on_excluderemoveitem_clicked();
+    void on_includeremoveitem_clicked();
     void on_format_clicked(bool chckd);
     void on_functionmenunext_clicked();
     void on_functionmenuback_clicked();
@@ -217,6 +222,8 @@ private slots:
     void on_pointhighlight_clicked();
     void on_livewritestart_clicked();
     void on_schedulerlater_clicked();
+    void on_excludeadditem_clicked();
+    void on_includeadditem_clicked();
     void on_systemupgrade_clicked();
     void on_systemrestore_clicked();
     void on_password2_textChanged();
@@ -234,6 +241,7 @@ private slots:
     void on_restoremenu_clicked();
     void on_installmenu_clicked();
     void on_excludemenu_clicked();
+    void on_includemenu_clicked();
     void on_restoreback_clicked();
     void on_installback_clicked();
     void on_excludeback_clicked();
@@ -255,6 +263,7 @@ private slots:
     void on_pointdelete_clicked();
     void on_liveconvert_clicked();
     void on_scalingdown_clicked();
+    void on_includeback_clicked();
     void on_repairmenu_clicked();
     void on_repairback_clicked();
     void on_pointpipe1_clicked();
@@ -270,7 +279,6 @@ private slots:
     void on_fullrepair_clicked();
     void on_grubrepair_clicked();
     void on_repairnext_clicked();
-    void on_removeitem_clicked();
     void on_minutedown_clicked();
     void on_seconddown_clicked();
     void on_dirrefresh_clicked();
@@ -293,7 +301,6 @@ private slots:
     void on_hourdown_clicked();
     void on_minuteup_clicked();
     void on_secondup_clicked();
-    void on_additem_clicked();
     void on_daydown_clicked();
     void on_unmount_clicked();
     void on_adduser_clicked();

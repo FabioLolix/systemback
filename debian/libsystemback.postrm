@@ -1,13 +1,13 @@
 #!/bin/sh -e
 
-if [ "$1" = purge ]
+if [ "$1" = purge ] && [ -d /etc/systemback ]
 then
   echo "Deleting Systemback configuration files ..."
 
-  if [ -f /etc/systemback.conf ]
+  if [ -f /etc/systemback/systemback.conf ]
   then
-    sdir="$(grep ^storage_directory= /etc/systemback.conf | tail -c +19)"
-    rm /etc/systemback.conf
+    sdir="$(grep ^storage_directory= /etc/systemback/systemback.conf | tail -c +19)"
+    rm /etc/systemback/systemback.conf
 
     if [ "$sdir" ] && [ -d "$sdir"/Systemback ] && [ ! -d "$sdir"/Systemback/S01_* ] && [ ! -d "$sdir"/Systemback/H01_* ]
     then
@@ -16,6 +16,6 @@ then
     fi
   fi
 
-  [ ! -e /etc/systemback.excludes ] || rm /etc/systemback.excludes
+  rm -r /etc/systemback
 fi
 #DEBHELPER#

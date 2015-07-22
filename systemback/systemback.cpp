@@ -3248,7 +3248,14 @@ bcheck:
     {
         for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->resize(size());
         ui->logo->setPixmap(QPixmap("/usr/share/systemback/logo.png").scaledToWidth((ui->wallpaper->width() > ui->wallpaper->height() ? ui->wallpaper->height() : ui->wallpaper->width()) / 2));
-        if(ui->copypanel->isVisibleTo(ui->wpanel)) ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
+
+        if(wismax)
+        {
+            ui->wpanel->setMaximumSize(size());
+            if(ui->wpanel->size() != size()) ui->wpanel->resize(size());
+        }
+        else if(ui->copypanel->isVisibleTo(ui->wpanel))
+            ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
     }
 
     return false;

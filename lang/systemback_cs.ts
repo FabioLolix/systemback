@@ -56,7 +56,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="625"/>
-        <location filename="../systemback/systemback.cpp" line="5090"/>
+        <location filename="../systemback/systemback.cpp" line="5097"/>
         <source>Working directory</source>
         <translation>Pracovní složka</translation>
     </message>
@@ -130,7 +130,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1278"/>
-        <location filename="../systemback/systemback.cpp" line="6248"/>
+        <location filename="../systemback/systemback.cpp" line="6255"/>
         <source>Mount</source>
         <translation>Připojit</translation>
     </message>
@@ -215,11 +215,11 @@
         <location filename="../systemback/systemback.cpp" line="1872"/>
         <location filename="../systemback/systemback.cpp" line="1966"/>
         <location filename="../systemback/systemback.cpp" line="2578"/>
-        <location filename="../systemback/systemback.cpp" line="4073"/>
-        <location filename="../systemback/systemback.cpp" line="5556"/>
-        <location filename="../systemback/systemback.cpp" line="5570"/>
-        <location filename="../systemback/systemback.cpp" line="5571"/>
-        <location filename="../systemback/systemback.cpp" line="6870"/>
+        <location filename="../systemback/systemback.cpp" line="4080"/>
+        <location filename="../systemback/systemback.cpp" line="5563"/>
+        <location filename="../systemback/systemback.cpp" line="5577"/>
+        <location filename="../systemback/systemback.cpp" line="5578"/>
+        <location filename="../systemback/systemback.cpp" line="6877"/>
         <source>Disabled</source>
         <translation>Vypnuto</translation>
     </message>
@@ -291,7 +291,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2831"/>
-        <location filename="../systemback/systemback.cpp" line="4486"/>
+        <location filename="../systemback/systemback.cpp" line="4493"/>
         <source>License</source>
         <translation>Licence</translation>
     </message>
@@ -371,11 +371,11 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3588"/>
-        <location filename="../systemback/systemback.cpp" line="5077"/>
-        <location filename="../systemback/systemback.cpp" line="5120"/>
-        <location filename="../systemback/systemback.cpp" line="5245"/>
-        <location filename="../systemback/systemback.cpp" line="5291"/>
-        <location filename="../systemback/systemback.cpp" line="5312"/>
+        <location filename="../systemback/systemback.cpp" line="5084"/>
+        <location filename="../systemback/systemback.cpp" line="5127"/>
+        <location filename="../systemback/systemback.cpp" line="5252"/>
+        <location filename="../systemback/systemback.cpp" line="5298"/>
+        <location filename="../systemback/systemback.cpp" line="5319"/>
         <source>Storage directory</source>
         <translation>Úložná složka</translation>
     </message>
@@ -386,16 +386,16 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3867"/>
-        <location filename="../systemback/systemback.cpp" line="3817"/>
+        <location filename="../systemback/systemback.cpp" line="3824"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="239"/>
         <source>System restore</source>
         <translation>Obnovení systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3899"/>
-        <location filename="../systemback/systemback.cpp" line="3864"/>
-        <location filename="../systemback/systemback.cpp" line="4388"/>
-        <location filename="../systemback/systemback.cpp" line="6145"/>
+        <location filename="../systemback/systemback.cpp" line="3871"/>
+        <location filename="../systemback/systemback.cpp" line="4395"/>
+        <location filename="../systemback/systemback.cpp" line="6152"/>
         <source>System copy</source>
         <translation>Kopie systému</translation>
     </message>
@@ -407,21 +407,21 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3771"/>
-        <location filename="../systemback/systemback.cpp" line="3885"/>
+        <location filename="../systemback/systemback.cpp" line="3892"/>
         <source>System install</source>
         <translation>Instalace systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3803"/>
-        <location filename="../systemback/systemback.cpp" line="3900"/>
-        <location filename="../systemback/systemback.cpp" line="5300"/>
-        <location filename="../systemback/systemback.cpp" line="5347"/>
+        <location filename="../systemback/systemback.cpp" line="3907"/>
+        <location filename="../systemback/systemback.cpp" line="5307"/>
+        <location filename="../systemback/systemback.cpp" line="5354"/>
         <source>Live system create</source>
         <translation>Vytvořit živý systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3835"/>
-        <location filename="../systemback/systemback.cpp" line="3931"/>
+        <location filename="../systemback/systemback.cpp" line="3938"/>
         <source>System repair</source>
         <translation>Oprava systému</translation>
     </message>
@@ -432,13 +432,13 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3931"/>
-        <location filename="../systemback/systemback.cpp" line="3971"/>
+        <location filename="../systemback/systemback.cpp" line="3978"/>
         <source>Exclude</source>
         <translation>Vynechat</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3653"/>
-        <location filename="../systemback/systemback.cpp" line="3991"/>
+        <location filename="../systemback/systemback.cpp" line="3998"/>
         <source>Schedule</source>
         <translation>Plán</translation>
     </message>
@@ -449,20 +449,20 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3685"/>
-        <location filename="../systemback/systemback.cpp" line="3999"/>
-        <location filename="../systemback/systemback.cpp" line="4478"/>
+        <location filename="../systemback/systemback.cpp" line="4006"/>
+        <location filename="../systemback/systemback.cpp" line="4485"/>
         <source>About</source>
         <translation>O aplikaci</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3717"/>
-        <location filename="../systemback/systemback.cpp" line="4007"/>
+        <location filename="../systemback/systemback.cpp" line="4014"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3963"/>
-        <location filename="../systemback/systemback.cpp" line="3981"/>
+        <location filename="../systemback/systemback.cpp" line="3988"/>
         <source>Include</source>
         <translation type="unfinished"></translation>
     </message>
@@ -485,8 +485,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="1818"/>
         <location filename="../systemback/systemback.cpp" line="1819"/>
         <location filename="../systemback/systemback.cpp" line="1823"/>
-        <location filename="../systemback/systemback.cpp" line="3635"/>
-        <location filename="../systemback/systemback.cpp" line="3637"/>
+        <location filename="../systemback/systemback.cpp" line="3642"/>
+        <location filename="../systemback/systemback.cpp" line="3644"/>
         <source>empty</source>
         <translation>prázdné</translation>
     </message>
@@ -497,8 +497,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.ui" line="4387"/>
         <location filename="../systemback/systemback.ui" line="4415"/>
         <location filename="../systemback/systemback.cpp" line="1816"/>
-        <location filename="../systemback/systemback.cpp" line="3635"/>
-        <location filename="../systemback/systemback.cpp" line="3638"/>
+        <location filename="../systemback/systemback.cpp" line="3642"/>
+        <location filename="../systemback/systemback.cpp" line="3645"/>
         <source>not used</source>
         <translation>nepoužito</translation>
     </message>
@@ -557,8 +557,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.ui" line="5309"/>
         <location filename="../systemback/systemback.cpp" line="380"/>
         <location filename="../systemback/systemback.cpp" line="1776"/>
-        <location filename="../systemback/systemback.cpp" line="5614"/>
-        <location filename="../systemback/systemback.cpp" line="5615"/>
+        <location filename="../systemback/systemback.cpp" line="5621"/>
+        <location filename="../systemback/systemback.cpp" line="5622"/>
         <source>Transfer user configuration files</source>
         <translation>Přenést soubory s uživatelskými nastaveními</translation>
     </message>
@@ -589,11 +589,11 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="5644"/>
         <location filename="../systemback/systemback.ui" line="5853"/>
-        <location filename="../systemback/systemback.cpp" line="3412"/>
-        <location filename="../systemback/systemback.cpp" line="4047"/>
-        <location filename="../systemback/systemback.cpp" line="4242"/>
-        <location filename="../systemback/systemback.cpp" line="5797"/>
-        <location filename="../systemback/systemback.cpp" line="5848"/>
+        <location filename="../systemback/systemback.cpp" line="3419"/>
+        <location filename="../systemback/systemback.cpp" line="4054"/>
+        <location filename="../systemback/systemback.cpp" line="4249"/>
+        <location filename="../systemback/systemback.cpp" line="5804"/>
+        <location filename="../systemback/systemback.cpp" line="5855"/>
         <source>Unmount</source>
         <translation>Odpojit</translation>
     </message>
@@ -615,10 +615,10 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="5825"/>
         <location filename="../systemback/systemback.cpp" line="381"/>
-        <location filename="../systemback/systemback.cpp" line="4045"/>
-        <location filename="../systemback/systemback.cpp" line="4278"/>
-        <location filename="../systemback/systemback.cpp" line="5799"/>
-        <location filename="../systemback/systemback.cpp" line="5846"/>
+        <location filename="../systemback/systemback.cpp" line="4052"/>
+        <location filename="../systemback/systemback.cpp" line="4285"/>
+        <location filename="../systemback/systemback.cpp" line="5806"/>
+        <location filename="../systemback/systemback.cpp" line="5853"/>
         <source>! Delete !</source>
         <translation>! Smazat !</translation>
     </message>
@@ -720,7 +720,7 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="7177"/>
         <location filename="../systemback/systemback.cpp" line="2740"/>
-        <location filename="../systemback/systemback.cpp" line="4955"/>
+        <location filename="../systemback/systemback.cpp" line="4962"/>
         <source>Start</source>
         <translation>Spustit</translation>
     </message>
@@ -747,7 +747,7 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.cpp" line="452"/>
         <location filename="../systemback/systemback.cpp" line="2947"/>
-        <location filename="../systemback/systemback.cpp" line="3536"/>
+        <location filename="../systemback/systemback.cpp" line="3543"/>
         <source>scheduler</source>
         <translation>plánovač</translation>
     </message>
@@ -795,28 +795,28 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="668"/>
-        <location filename="../systemback/systemback.cpp" line="7013"/>
+        <location filename="../systemback/systemback.cpp" line="7020"/>
         <source>Top left</source>
         <translation>Vlevo nahoře</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="668"/>
         <location filename="../systemback/systemback.cpp" line="669"/>
-        <location filename="../systemback/systemback.cpp" line="7014"/>
+        <location filename="../systemback/systemback.cpp" line="7021"/>
         <source>Top right</source>
         <translation>Vpravo nahoře</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="668"/>
         <location filename="../systemback/systemback.cpp" line="669"/>
-        <location filename="../systemback/systemback.cpp" line="7015"/>
+        <location filename="../systemback/systemback.cpp" line="7022"/>
         <source>Center</source>
         <translation>Uprostřed</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="668"/>
         <location filename="../systemback/systemback.cpp" line="669"/>
-        <location filename="../systemback/systemback.cpp" line="7016"/>
+        <location filename="../systemback/systemback.cpp" line="7023"/>
         <source>Bottom left</source>
         <translation>Vlevo dole</translation>
     </message>
@@ -828,39 +828,39 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="670"/>
-        <location filename="../systemback/systemback.cpp" line="6907"/>
-        <location filename="../systemback/systemback.cpp" line="6917"/>
+        <location filename="../systemback/systemback.cpp" line="6914"/>
+        <location filename="../systemback/systemback.cpp" line="6924"/>
         <source>day(s)</source>
         <translation>dnů</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="671"/>
-        <location filename="../systemback/systemback.cpp" line="6941"/>
-        <location filename="../systemback/systemback.cpp" line="6951"/>
+        <location filename="../systemback/systemback.cpp" line="6948"/>
+        <location filename="../systemback/systemback.cpp" line="6958"/>
         <source>hour(s)</source>
         <translation>hodin</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="672"/>
-        <location filename="../systemback/systemback.cpp" line="6927"/>
-        <location filename="../systemback/systemback.cpp" line="6961"/>
-        <location filename="../systemback/systemback.cpp" line="6975"/>
-        <location filename="../systemback/systemback.cpp" line="6984"/>
+        <location filename="../systemback/systemback.cpp" line="6934"/>
+        <location filename="../systemback/systemback.cpp" line="6968"/>
+        <location filename="../systemback/systemback.cpp" line="6982"/>
+        <location filename="../systemback/systemback.cpp" line="6991"/>
         <source>minute(s)</source>
         <translation>minut</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="673"/>
-        <location filename="../systemback/systemback.cpp" line="6993"/>
-        <location filename="../systemback/systemback.cpp" line="7002"/>
+        <location filename="../systemback/systemback.cpp" line="7000"/>
+        <location filename="../systemback/systemback.cpp" line="7009"/>
         <source>seconds</source>
         <translation>sekund</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="784"/>
-        <location filename="../systemback/systemback.cpp" line="3813"/>
-        <location filename="../systemback/systemback.cpp" line="7828"/>
-        <location filename="../systemback/systemback.cpp" line="7851"/>
+        <location filename="../systemback/systemback.cpp" line="3820"/>
+        <location filename="../systemback/systemback.cpp" line="7835"/>
+        <location filename="../systemback/systemback.cpp" line="7858"/>
         <source>Everyone</source>
         <translation>Všichni</translation>
     </message>
@@ -869,8 +869,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="380"/>
         <location filename="../systemback/systemback.cpp" line="824"/>
         <location filename="../systemback/systemback.cpp" line="1776"/>
-        <location filename="../systemback/systemback.cpp" line="5614"/>
-        <location filename="../systemback/systemback.cpp" line="5622"/>
+        <location filename="../systemback/systemback.cpp" line="5621"/>
+        <location filename="../systemback/systemback.cpp" line="5629"/>
         <source>Transfer user configuration and data files</source>
         <translation>Přenést soubory s uživatelskými nastaveními a daty</translation>
     </message>
@@ -878,7 +878,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="947"/>
         <location filename="../systemback/systemback.cpp" line="1001"/>
         <location filename="../systemback/systemback.cpp" line="2142"/>
-        <location filename="../systemback/systemback.cpp" line="4558"/>
+        <location filename="../systemback/systemback.cpp" line="4565"/>
         <source>Currently running system</source>
         <translation>Nyní běžící systém</translation>
     </message>
@@ -980,8 +980,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="2797"/>
         <location filename="../systemback/systemback.cpp" line="2802"/>
         <location filename="../systemback/systemback.cpp" line="2822"/>
-        <location filename="../systemback/systemback.cpp" line="3583"/>
-        <location filename="../systemback/systemback.cpp" line="4969"/>
+        <location filename="../systemback/systemback.cpp" line="3590"/>
+        <location filename="../systemback/systemback.cpp" line="4976"/>
         <source>Reboot</source>
         <translation>Restartovat</translation>
     </message>
@@ -989,7 +989,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="1411"/>
         <location filename="../systemback/systemback.cpp" line="2781"/>
         <location filename="../systemback/systemback.cpp" line="2786"/>
-        <location filename="../systemback/systemback.cpp" line="4981"/>
+        <location filename="../systemback/systemback.cpp" line="4988"/>
         <source>X restart</source>
         <translation>Restart X</translation>
     </message>
@@ -1371,29 +1371,29 @@ These will be defined as restorable configuration files!</source>
         <translation>Není zde dostatek volného místa.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="3915"/>
-        <location filename="../systemback/systemback.cpp" line="4565"/>
+        <location filename="../systemback/systemback.cpp" line="3922"/>
+        <location filename="../systemback/systemback.cpp" line="4572"/>
         <source>Live image</source>
         <translation>Obraz média pro zavedení systému</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="4158"/>
-        <location filename="../systemback/systemback.cpp" line="4164"/>
-        <location filename="../systemback/systemback.cpp" line="4261"/>
-        <location filename="../systemback/systemback.cpp" line="5713"/>
-        <location filename="../systemback/systemback.cpp" line="5911"/>
+        <location filename="../systemback/systemback.cpp" line="4165"/>
+        <location filename="../systemback/systemback.cpp" line="4171"/>
+        <location filename="../systemback/systemback.cpp" line="4268"/>
+        <location filename="../systemback/systemback.cpp" line="5720"/>
+        <location filename="../systemback/systemback.cpp" line="5918"/>
         <source>Multiple mount points</source>
         <translation>Vícero přípojných bodů</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="6850"/>
+        <location filename="../systemback/systemback.cpp" line="6857"/>
         <source>Enabled</source>
         <translation>Zapnuto</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7526"/>
-        <location filename="../systemback/systemback.cpp" line="7528"/>
-        <location filename="../systemback/systemback.cpp" line="7530"/>
+        <location filename="../systemback/systemback.cpp" line="7533"/>
+        <location filename="../systemback/systemback.cpp" line="7535"/>
+        <location filename="../systemback/systemback.cpp" line="7537"/>
         <source>Boot system installer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1403,43 +1403,43 @@ These will be defined as restorable configuration files!</source>
         <translation>Přerušování současného procesu</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7059"/>
+        <location filename="../systemback/systemback.cpp" line="7066"/>
         <source>Systemback worker thread is interrupted by the user.</source>
         <translation>Pracovní vlákno aplikace Systemback bylo přerušeno uživatelem.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7523"/>
+        <location filename="../systemback/systemback.cpp" line="7530"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Zavést systém spouštěný z vyjímatelného média bez souboru xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7526"/>
-        <location filename="../systemback/systemback.cpp" line="7528"/>
-        <location filename="../systemback/systemback.cpp" line="7530"/>
+        <location filename="../systemback/systemback.cpp" line="7533"/>
+        <location filename="../systemback/systemback.cpp" line="7535"/>
+        <location filename="../systemback/systemback.cpp" line="7537"/>
         <source>Boot Live system</source>
         <translation>Zavést systém z vyjímatelného média</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7526"/>
-        <location filename="../systemback/systemback.cpp" line="7528"/>
-        <location filename="../systemback/systemback.cpp" line="7530"/>
+        <location filename="../systemback/systemback.cpp" line="7533"/>
+        <location filename="../systemback/systemback.cpp" line="7535"/>
+        <location filename="../systemback/systemback.cpp" line="7537"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Zavést systém z vyjímatelného média, ve slučitelném grafickém režimu</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7526"/>
-        <location filename="../systemback/systemback.cpp" line="7528"/>
-        <location filename="../systemback/systemback.cpp" line="7530"/>
+        <location filename="../systemback/systemback.cpp" line="7533"/>
+        <location filename="../systemback/systemback.cpp" line="7535"/>
+        <location filename="../systemback/systemback.cpp" line="7537"/>
         <source>Boot Live in debug mode</source>
         <translation>Zavést systém z vyjímatelného média, v ladicím režimu</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7527"/>
+        <location filename="../systemback/systemback.cpp" line="7534"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Úpravu zahájíte stiskem klávesy &apos;E&apos;</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7530"/>
+        <location filename="../systemback/systemback.cpp" line="7537"/>
         <source>Press TAB key to edit</source>
         <translation>Úpravu zahájíte stiskem klávesy TAB</translation>
     </message>

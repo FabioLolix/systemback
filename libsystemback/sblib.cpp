@@ -355,7 +355,7 @@ void sb::cfgread()
         if(fopen(file))
             while(! file.atEnd())
             {
-                QStr cline(file.readLine().trimmed()), cval(right(cline, -instr(cline, "=")));
+                QStr cline(left(file.readLine(), -1)), cval(right(cline, -instr(cline, "=")));
 
                 if(! cval.isEmpty() && ! cval.startsWith('#'))
                 {
@@ -1847,7 +1847,8 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                     while(! file.atEnd())
                     {
-                        ilst.append(file.readLine().trimmed());
+                        QStr cline(left(file.readLine(), -1));
+                        if(! cline.isEmpty()) ilst.append(cline);
                         if(ThrdKill) return false;
                     }
                 }
@@ -1893,7 +1894,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                 while(! file.atEnd())
                 {
-                    QBA cline(file.readLine().trimmed());
+                    QStr cline(left(file.readLine(), -1));
                     if(cline.startsWith('.')) elst.append(cline);
                     if(ThrdKill) return false;
                 }
@@ -2274,7 +2275,8 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
             while(! file.atEnd())
             {
-                ilst.append(file.readLine().trimmed());
+                QStr cline(left(file.readLine(), -1));
+                if(! cline.isEmpty()) ilst.append(cline);
                 if(ThrdKill) return false;
             }
         }
@@ -2632,7 +2634,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
             while(! file.atEnd())
             {
-                QBA cline(file.readLine().trimmed());
+                QStr cline(left(file.readLine(), -1));
                 if(cline.startsWith('.')) elst.append(cline);
                 if(ThrdKill) return false;
             }
@@ -2941,7 +2943,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
                 while(! file.atEnd())
                 {
-                    QBA cline(file.readLine().trimmed());
+                    QStr cline(left(file.readLine(), -1));
                     if(cline.startsWith('.')) elst.append(cline);
                     if(ThrdKill) return false;
                 }
@@ -3724,7 +3726,8 @@ bool sb::thrdlvprpr(bool iudata)
 
         while(! file.atEnd())
         {
-            elst.append(file.readLine().trimmed());
+            QStr cline(left(file.readLine(), -1));
+            if(! cline.isEmpty()) elst.append(cline);
             if(ThrdKill) return false;
         }
     }

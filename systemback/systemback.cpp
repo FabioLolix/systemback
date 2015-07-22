@@ -909,7 +909,11 @@ void systemback::unitimer()
                     QFile file(incfile);
 
                     if(sb::fopen(file))
-                        while(! file.atEnd()) ui->includedlist->addItem(file.readLine().trimmed());
+                        while(! file.atEnd())
+                        {
+                            QStr cline(sb::left(file.readLine(), -1));
+                            if(! cline.isEmpty()) ui->includedlist->addItem(cline);
+                        }
                 }
 
                 ilstupdt(true);
@@ -4843,13 +4847,13 @@ void systemback::on_pointexclude_clicked()
         if(sb::fopen(file))
             while(! file.atEnd())
             {
-                QBA cline(file.readLine().trimmed());
+                QStr cline(sb::left(file.readLine(), -1));
 
                 if(cline.startsWith('.'))
                 {
                     if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
                 }
-                else if(ui->liveexclude->isChecked())
+                else if(ui->liveexclude->isChecked() && ! cline.isEmpty())
                     ui->excludedlist->addItem(cline);
             }
     }
@@ -6458,8 +6462,8 @@ void systemback::on_excludeadditem_clicked()
     {
         while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
-            if(! cline.startsWith(path)) elst.append(cline % '\n');
+            QStr cline(sb::left(file.readLine(), -1));
+            if(! cline.isEmpty() && ! cline.startsWith(path)) elst.append(cline % '\n');
         }
 
         file.close();
@@ -6520,8 +6524,8 @@ void systemback::on_includeadditem_clicked()
     {
         while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
-            if(! cline.startsWith(path)) ilst.append(cline % '\n');
+            QStr cline(sb::left(file.readLine(), -1));
+            if(! cline.isEmpty() && ! cline.startsWith(path)) ilst.append(cline % '\n');
         }
 
         file.close();
@@ -6556,8 +6560,8 @@ void systemback::on_excluderemoveitem_clicked()
 
         while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
-            if(cline != ctxt) elst.append(cline % '\n');
+            QStr cline(sb::left(file.readLine(), -1));
+            if(! cline.isEmpty() && cline != ctxt) elst.append(cline % '\n');
         }
 
         file.close();
@@ -6588,8 +6592,8 @@ void systemback::on_includeremoveitem_clicked()
 
         while(! file.atEnd())
         {
-            QStr cline(file.readLine().trimmed());
-            if(cline != ctxt) ilst.append(cline % '\n');
+            QStr cline(sb::left(file.readLine(), -1));
+            if(! cline.isEmpty() && cline != ctxt) ilst.append(cline % '\n');
         }
 
         file.close();

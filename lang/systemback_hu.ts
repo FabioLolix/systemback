@@ -788,7 +788,7 @@ Ezek visszaállítható konfigurációs fájloknak lesznek definiálva!</transla
         <translation>Eszköz</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="452"/>
+        <location filename="../systemback/systemback.cpp" line="451"/>
         <location filename="../systemback/systemback.cpp" line="2947"/>
         <location filename="../systemback/systemback.cpp" line="3543"/>
         <source>scheduler</source>

@@ -65,6 +65,7 @@ private:
     } grub;
 
     QWdt wndw, fwdgt;
+    QFont bfnt;
     QTimer utimer, *shdltimer, *dlgtimer, *intrptimer;
     QStr cpoint, pname, hash;
     ushort dialog;

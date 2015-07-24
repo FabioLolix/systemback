@@ -31,6 +31,10 @@
 #include <dirent.h>
 #include <signal.h>
 
+#ifdef FontChange
+#undef FontChange
+#endif
+
 #ifdef KeyRelease
 #undef KeyRelease
 #endif
@@ -174,6 +178,8 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
             }
         }
     }
+
+    bfnt = font();
 
     if(dialog > 0)
     {
@@ -3083,7 +3089,25 @@ void systemback::on_functionmenuback_clicked()
 
 bool systemback::eventFilter(QObject *, QEvent *ev)
 {
-    if(! fscrn)
+    if(fscrn)
+        switch(ev->type()) {
+        case QEvent::FontChange:
+            if(font() != bfnt) qApp->setFont(bfnt);
+            return true;
+        case QEvent::Resize:
+            for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->resize(size());
+            ui->logo->setPixmap(QPixmap("/usr/share/systemback/logo.png").scaledToWidth((ui->wallpaper->width() > ui->wallpaper->height() ? ui->wallpaper->height() : ui->wallpaper->width()) / 2));
+
+            if(wismax)
+            {
+                ui->wpanel->setMaximumSize(size());
+                if(ui->wpanel->size() != size()) ui->wpanel->resize(size());
+            }
+            else if(ui->copypanel->isVisibleTo(ui->wpanel))
+                ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
+        default:;
+        }
+    else
     {
         switch(ev->type()) {
         case QEvent::WindowActivate:
@@ -3209,6 +3233,9 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             }
 
             return false;
+        case QEvent::FontChange:
+            if(font() != bfnt) qApp->setFont(bfnt);
+            return true;
         case QEvent::WindowStateChange:
         {
             QEvent nev(isMinimized() ? QEvent::WindowDeactivate : QEvent::WindowActivate);
@@ -3243,19 +3270,6 @@ gcheck:
 
 bcheck:
         if(ui->buttonspanel->isVisible() && ui->buttonspanel->y() == 0) ui->buttonspanel->hide();
-    }
-    else if(ev->type() == QEvent::Resize)
-    {
-        for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->resize(size());
-        ui->logo->setPixmap(QPixmap("/usr/share/systemback/logo.png").scaledToWidth((ui->wallpaper->width() > ui->wallpaper->height() ? ui->wallpaper->height() : ui->wallpaper->width()) / 2));
-
-        if(wismax)
-        {
-            ui->wpanel->setMaximumSize(size());
-            if(ui->wpanel->size() != size()) ui->wpanel->resize(size());
-        }
-        else if(ui->copypanel->isVisibleTo(ui->wpanel))
-            ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
     }
 
     return false;

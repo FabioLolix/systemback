@@ -489,10 +489,10 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
                         if(sislive && args.count() == 2 && args.at(1) == "finstall")
                         {
-                            fscrn = true;
                             resize(sgm.size());
                             for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->move(0, 0);
-                            ui->wpanel->setGeometry((wgeom[0] = sgm.x() + width() / 2 - ss(349)), (wgeom[1] = sgm.y() + height() / 2 - ss(232)), (wgeom[2] = ss(698)), (wgeom[3] = ss(465)));
+                            fscrn = true, wgeom[2] = ss(698), wgeom[3] = ss(465);
+                            ui->wpanel->setGeometry((wgeom[0] = sgm.width() < wgeom[2] ? 0 : sgm.x() + width() / 2 - ss(349)), (wgeom[1] = sgm.height() < wgeom[3] ? 0 : sgm.y() + height() / 2 - ss(232)), wgeom[2], wgeom[3]);
 
                             connect(ui->wpanel, &pnlevent::Move, [this] {
                                     if(fscrn && ! wismax && ! wmblck)
@@ -1782,16 +1782,16 @@ void systemback::rreleased()
 
                 return false;
             }(), [&] {
-                ushort hght(sgm.height() - wndw->y());
+                    ushort hght(sgm.height() - wndw->y());
 
-                if(wndw->height() > hght)
-                {
-                    wgeom[3] = hght;
-                    return true;
-                }
+                    if(wndw->height() > hght)
+                    {
+                        wgeom[3] = hght;
+                        return true;
+                    }
 
-                return false;
-            }()};
+                    return false;
+                }()};
 
         if(algn[0] || algn[1]) wndw->resize(wgeom[2], wgeom[3]);
     }
@@ -3141,10 +3141,10 @@ void systemback::wmove()
 
                 return QPoint{agm.width() < wgeom[2] || npos.x() < 0 ? 0 : [&] {
                         short bpos;
-                        return npos.x() > (bpos = width() - ui->wpanel->width()) ? bpos : npos.x();
+                        return npos.x() > (bpos = width() - wgeom[2]) ? bpos : npos.x();
                     }(), agm.height() < wgeom[3] || npos.y() < 0 ? 0 : [&] {
                             short bpos;
-                            return npos.y() > (bpos = height() - ui->wpanel->height()) ? bpos : npos.y();
+                            return npos.y() > (bpos = height() - wgeom[3]) ? bpos : npos.y();
                         }()};
             }() : npos);
     }
@@ -3206,10 +3206,35 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 ui->wpanel->setMaximumSize(size());
                 if(ui->wpanel->size() != size()) ui->wpanel->resize(size());
             }
-            else if(ui->copypanel->isVisibleTo(ui->wpanel))
+            else
             {
-                ushort sz(ss(60));
-                ui->wpanel->setMaximumSize(width() - sz, height() - sz);
+                if(ui->copypanel->isVisibleTo(ui->wpanel))
+                {
+                    ushort sz(ss(60));
+                    ui->wpanel->setMaximumSize(width() - sz, height() - sz);
+                }
+
+                bool algn[]{wgeom[0] > 0 && [this] {
+                        if(wgeom[0] + wgeom[2] > width())
+                        {
+                            short nx(width() - wgeom[2]);
+                            wgeom[0] = nx < 0 ? 0 : nx;
+                            return true;
+                        }
+
+                        return false;
+                    }(), wgeom[1] > 0 && [this] {
+                            if(wgeom[1] + wgeom[3] > height())
+                            {
+                                short ny(height() - wgeom[3]);
+                                wgeom[1] = ny < 0 ? 0 : ny;
+                                return true;
+                            }
+
+                            return false;
+                        }()};
+
+                if(algn[0] || algn[1]) ui->wpanel->move(wgeom[0], wgeom[1]);
             }
         default:;
         }

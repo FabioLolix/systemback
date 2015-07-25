@@ -56,7 +56,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="625"/>
-        <location filename="../systemback/systemback.cpp" line="5295"/>
+        <location filename="../systemback/systemback.cpp" line="5320"/>
         <source>Working directory</source>
         <translation>Direktori kerja</translation>
     </message>
@@ -130,7 +130,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1278"/>
-        <location filename="../systemback/systemback.cpp" line="6470"/>
+        <location filename="../systemback/systemback.cpp" line="6495"/>
         <source>Mount</source>
         <translation>Kaitkan</translation>
     </message>
@@ -215,11 +215,11 @@
         <location filename="../systemback/systemback.cpp" line="1943"/>
         <location filename="../systemback/systemback.cpp" line="2037"/>
         <location filename="../systemback/systemback.cpp" line="2649"/>
-        <location filename="../systemback/systemback.cpp" line="4272"/>
-        <location filename="../systemback/systemback.cpp" line="5767"/>
-        <location filename="../systemback/systemback.cpp" line="5781"/>
-        <location filename="../systemback/systemback.cpp" line="5782"/>
-        <location filename="../systemback/systemback.cpp" line="7092"/>
+        <location filename="../systemback/systemback.cpp" line="4297"/>
+        <location filename="../systemback/systemback.cpp" line="5792"/>
+        <location filename="../systemback/systemback.cpp" line="5806"/>
+        <location filename="../systemback/systemback.cpp" line="5807"/>
+        <location filename="../systemback/systemback.cpp" line="7117"/>
         <source>Disabled</source>
         <translation>Tidak berfungsi</translation>
     </message>
@@ -291,7 +291,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2831"/>
-        <location filename="../systemback/systemback.cpp" line="4685"/>
+        <location filename="../systemback/systemback.cpp" line="4710"/>
         <source>License</source>
         <translation>Lisensi</translation>
     </message>
@@ -327,7 +327,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3963"/>
-        <location filename="../systemback/systemback.cpp" line="4179"/>
+        <location filename="../systemback/systemback.cpp" line="4204"/>
         <source>Include</source>
         <translation type="unfinished"></translation>
     </message>
@@ -345,8 +345,8 @@
         <location filename="../systemback/systemback.cpp" line="1889"/>
         <location filename="../systemback/systemback.cpp" line="1890"/>
         <location filename="../systemback/systemback.cpp" line="1894"/>
-        <location filename="../systemback/systemback.cpp" line="3822"/>
-        <location filename="../systemback/systemback.cpp" line="3824"/>
+        <location filename="../systemback/systemback.cpp" line="3847"/>
+        <location filename="../systemback/systemback.cpp" line="3849"/>
         <source>empty</source>
         <translation>kosong</translation>
     </message>
@@ -357,8 +357,8 @@
         <location filename="../systemback/systemback.ui" line="4387"/>
         <location filename="../systemback/systemback.ui" line="4415"/>
         <location filename="../systemback/systemback.cpp" line="1887"/>
-        <location filename="../systemback/systemback.cpp" line="3822"/>
-        <location filename="../systemback/systemback.cpp" line="3825"/>
+        <location filename="../systemback/systemback.cpp" line="3847"/>
+        <location filename="../systemback/systemback.cpp" line="3850"/>
         <source>not used</source>
         <translation>tidak digunakan</translation>
     </message>
@@ -414,11 +414,11 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3588"/>
-        <location filename="../systemback/systemback.cpp" line="5281"/>
-        <location filename="../systemback/systemback.cpp" line="5327"/>
-        <location filename="../systemback/systemback.cpp" line="5455"/>
-        <location filename="../systemback/systemback.cpp" line="5502"/>
-        <location filename="../systemback/systemback.cpp" line="5523"/>
+        <location filename="../systemback/systemback.cpp" line="5306"/>
+        <location filename="../systemback/systemback.cpp" line="5352"/>
+        <location filename="../systemback/systemback.cpp" line="5480"/>
+        <location filename="../systemback/systemback.cpp" line="5527"/>
+        <location filename="../systemback/systemback.cpp" line="5548"/>
         <source>Storage directory</source>
         <translation>Direktori penampungan</translation>
     </message>
@@ -429,36 +429,36 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3867"/>
-        <location filename="../systemback/systemback.cpp" line="4004"/>
+        <location filename="../systemback/systemback.cpp" line="4029"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="239"/>
         <source>System restore</source>
         <translation>Pemulihan sistem</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3899"/>
-        <location filename="../systemback/systemback.cpp" line="4051"/>
-        <location filename="../systemback/systemback.cpp" line="4587"/>
-        <location filename="../systemback/systemback.cpp" line="6367"/>
+        <location filename="../systemback/systemback.cpp" line="4076"/>
+        <location filename="../systemback/systemback.cpp" line="4612"/>
+        <location filename="../systemback/systemback.cpp" line="6392"/>
         <source>System copy</source>
         <translation>Duplikasi sistem</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3771"/>
-        <location filename="../systemback/systemback.cpp" line="4082"/>
+        <location filename="../systemback/systemback.cpp" line="4107"/>
         <source>System install</source>
         <translation>Pemasangan sistem</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3803"/>
-        <location filename="../systemback/systemback.cpp" line="4097"/>
-        <location filename="../systemback/systemback.cpp" line="5511"/>
-        <location filename="../systemback/systemback.cpp" line="5558"/>
+        <location filename="../systemback/systemback.cpp" line="4122"/>
+        <location filename="../systemback/systemback.cpp" line="5536"/>
+        <location filename="../systemback/systemback.cpp" line="5583"/>
         <source>Live system create</source>
         <translation>Membuat Live system</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3835"/>
-        <location filename="../systemback/systemback.cpp" line="4128"/>
+        <location filename="../systemback/systemback.cpp" line="4153"/>
         <source>System repair</source>
         <translation>Perbaikan sistem</translation>
     </message>
@@ -469,13 +469,13 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3931"/>
-        <location filename="../systemback/systemback.cpp" line="4168"/>
+        <location filename="../systemback/systemback.cpp" line="4193"/>
         <source>Exclude</source>
         <translation>Pengecualian</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3653"/>
-        <location filename="../systemback/systemback.cpp" line="4190"/>
+        <location filename="../systemback/systemback.cpp" line="4215"/>
         <source>Schedule</source>
         <translation>Penjadwalan</translation>
     </message>
@@ -486,14 +486,14 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3685"/>
-        <location filename="../systemback/systemback.cpp" line="4198"/>
-        <location filename="../systemback/systemback.cpp" line="4677"/>
+        <location filename="../systemback/systemback.cpp" line="4223"/>
+        <location filename="../systemback/systemback.cpp" line="4702"/>
         <source>About</source>
         <translation>Tentang</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3717"/>
-        <location filename="../systemback/systemback.cpp" line="4206"/>
+        <location filename="../systemback/systemback.cpp" line="4231"/>
         <source>Settings</source>
         <translation>Pengaturan</translation>
     </message>
@@ -557,8 +557,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.ui" line="5309"/>
         <location filename="../systemback/systemback.cpp" line="386"/>
         <location filename="../systemback/systemback.cpp" line="1847"/>
-        <location filename="../systemback/systemback.cpp" line="5825"/>
-        <location filename="../systemback/systemback.cpp" line="5826"/>
+        <location filename="../systemback/systemback.cpp" line="5850"/>
+        <location filename="../systemback/systemback.cpp" line="5851"/>
         <source>Transfer user configuration files</source>
         <translation>Transfer konfigurasi berkas-berkas pengguna</translation>
     </message>
@@ -589,11 +589,11 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="5644"/>
         <location filename="../systemback/systemback.ui" line="5853"/>
-        <location filename="../systemback/systemback.cpp" line="3598"/>
-        <location filename="../systemback/systemback.cpp" line="4246"/>
-        <location filename="../systemback/systemback.cpp" line="4441"/>
-        <location filename="../systemback/systemback.cpp" line="6019"/>
-        <location filename="../systemback/systemback.cpp" line="6070"/>
+        <location filename="../systemback/systemback.cpp" line="3623"/>
+        <location filename="../systemback/systemback.cpp" line="4271"/>
+        <location filename="../systemback/systemback.cpp" line="4466"/>
+        <location filename="../systemback/systemback.cpp" line="6044"/>
+        <location filename="../systemback/systemback.cpp" line="6095"/>
         <source>Unmount</source>
         <translation>Lepaskan kaitan</translation>
     </message>
@@ -615,10 +615,10 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="5825"/>
         <location filename="../systemback/systemback.cpp" line="387"/>
-        <location filename="../systemback/systemback.cpp" line="4244"/>
-        <location filename="../systemback/systemback.cpp" line="4477"/>
-        <location filename="../systemback/systemback.cpp" line="6021"/>
-        <location filename="../systemback/systemback.cpp" line="6068"/>
+        <location filename="../systemback/systemback.cpp" line="4269"/>
+        <location filename="../systemback/systemback.cpp" line="4502"/>
+        <location filename="../systemback/systemback.cpp" line="6046"/>
+        <location filename="../systemback/systemback.cpp" line="6093"/>
         <source>! Delete !</source>
         <translation>! Hapus !</translation>
     </message>
@@ -720,7 +720,7 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="7177"/>
         <location filename="../systemback/systemback.cpp" line="2811"/>
-        <location filename="../systemback/systemback.cpp" line="5159"/>
+        <location filename="../systemback/systemback.cpp" line="5184"/>
         <source>Start</source>
         <translation>Mulai</translation>
     </message>
@@ -747,7 +747,7 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.cpp" line="457"/>
         <location filename="../systemback/systemback.cpp" line="3018"/>
-        <location filename="../systemback/systemback.cpp" line="3722"/>
+        <location filename="../systemback/systemback.cpp" line="3747"/>
         <source>scheduler</source>
         <translation>Penjadwalan</translation>
     </message>
@@ -795,28 +795,28 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
-        <location filename="../systemback/systemback.cpp" line="7235"/>
+        <location filename="../systemback/systemback.cpp" line="7260"/>
         <source>Top left</source>
         <translation>Kiri atas</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
         <location filename="../systemback/systemback.cpp" line="678"/>
-        <location filename="../systemback/systemback.cpp" line="7236"/>
+        <location filename="../systemback/systemback.cpp" line="7261"/>
         <source>Top right</source>
         <translation>Kanan atas</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
         <location filename="../systemback/systemback.cpp" line="678"/>
-        <location filename="../systemback/systemback.cpp" line="7237"/>
+        <location filename="../systemback/systemback.cpp" line="7262"/>
         <source>Center</source>
         <translation>Tengah</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
         <location filename="../systemback/systemback.cpp" line="678"/>
-        <location filename="../systemback/systemback.cpp" line="7238"/>
+        <location filename="../systemback/systemback.cpp" line="7263"/>
         <source>Bottom left</source>
         <translation>Kiri bawah</translation>
     </message>
@@ -828,46 +828,46 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="679"/>
-        <location filename="../systemback/systemback.cpp" line="7129"/>
-        <location filename="../systemback/systemback.cpp" line="7139"/>
+        <location filename="../systemback/systemback.cpp" line="7154"/>
+        <location filename="../systemback/systemback.cpp" line="7164"/>
         <source>day(s)</source>
         <translation>hari</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="680"/>
-        <location filename="../systemback/systemback.cpp" line="7163"/>
-        <location filename="../systemback/systemback.cpp" line="7173"/>
+        <location filename="../systemback/systemback.cpp" line="7188"/>
+        <location filename="../systemback/systemback.cpp" line="7198"/>
         <source>hour(s)</source>
         <translation>jam</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="681"/>
-        <location filename="../systemback/systemback.cpp" line="7149"/>
-        <location filename="../systemback/systemback.cpp" line="7183"/>
-        <location filename="../systemback/systemback.cpp" line="7197"/>
-        <location filename="../systemback/systemback.cpp" line="7206"/>
+        <location filename="../systemback/systemback.cpp" line="7174"/>
+        <location filename="../systemback/systemback.cpp" line="7208"/>
+        <location filename="../systemback/systemback.cpp" line="7222"/>
+        <location filename="../systemback/systemback.cpp" line="7231"/>
         <source>minute(s)</source>
         <translation>menit</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="682"/>
-        <location filename="../systemback/systemback.cpp" line="7215"/>
-        <location filename="../systemback/systemback.cpp" line="7224"/>
+        <location filename="../systemback/systemback.cpp" line="7240"/>
+        <location filename="../systemback/systemback.cpp" line="7249"/>
         <source>seconds</source>
         <translation>detik</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="793"/>
-        <location filename="../systemback/systemback.cpp" line="4000"/>
-        <location filename="../systemback/systemback.cpp" line="8051"/>
-        <location filename="../systemback/systemback.cpp" line="8074"/>
+        <location filename="../systemback/systemback.cpp" line="4025"/>
+        <location filename="../systemback/systemback.cpp" line="8076"/>
+        <location filename="../systemback/systemback.cpp" line="8099"/>
         <source>Everyone</source>
         <translation>Semua orang</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7749"/>
-        <location filename="../systemback/systemback.cpp" line="7751"/>
-        <location filename="../systemback/systemback.cpp" line="7753"/>
+        <location filename="../systemback/systemback.cpp" line="7774"/>
+        <location filename="../systemback/systemback.cpp" line="7776"/>
+        <location filename="../systemback/systemback.cpp" line="7778"/>
         <source>Boot system installer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -876,8 +876,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="386"/>
         <location filename="../systemback/systemback.cpp" line="834"/>
         <location filename="../systemback/systemback.cpp" line="1847"/>
-        <location filename="../systemback/systemback.cpp" line="5825"/>
-        <location filename="../systemback/systemback.cpp" line="5833"/>
+        <location filename="../systemback/systemback.cpp" line="5850"/>
+        <location filename="../systemback/systemback.cpp" line="5858"/>
         <source>Transfer user configuration and data files</source>
         <translation>Transfer konfigurasi pengguna dan berkas-berkas data</translation>
     </message>
@@ -885,7 +885,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="957"/>
         <location filename="../systemback/systemback.cpp" line="1011"/>
         <location filename="../systemback/systemback.cpp" line="2213"/>
-        <location filename="../systemback/systemback.cpp" line="4757"/>
+        <location filename="../systemback/systemback.cpp" line="4782"/>
         <source>Currently running system</source>
         <translation>Sistem yang sedang berjalan</translation>
     </message>
@@ -981,8 +981,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="2868"/>
         <location filename="../systemback/systemback.cpp" line="2873"/>
         <location filename="../systemback/systemback.cpp" line="2893"/>
-        <location filename="../systemback/systemback.cpp" line="3769"/>
-        <location filename="../systemback/systemback.cpp" line="5173"/>
+        <location filename="../systemback/systemback.cpp" line="3794"/>
+        <location filename="../systemback/systemback.cpp" line="5198"/>
         <source>Reboot</source>
         <translation>Muat ulang</translation>
     </message>
@@ -990,7 +990,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="1424"/>
         <location filename="../systemback/systemback.cpp" line="2852"/>
         <location filename="../systemback/systemback.cpp" line="2857"/>
-        <location filename="../systemback/systemback.cpp" line="5185"/>
+        <location filename="../systemback/systemback.cpp" line="5210"/>
         <source>X restart</source>
         <translation>Ulang X</translation>
     </message>
@@ -1378,22 +1378,22 @@ These will be defined as restorable configuration files!</source>
         <translation>Tak ada cukup ruang sisa.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="4112"/>
-        <location filename="../systemback/systemback.cpp" line="4764"/>
+        <location filename="../systemback/systemback.cpp" line="4137"/>
+        <location filename="../systemback/systemback.cpp" line="4789"/>
         <source>Live image</source>
         <translation>Image Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="4357"/>
-        <location filename="../systemback/systemback.cpp" line="4363"/>
-        <location filename="../systemback/systemback.cpp" line="4460"/>
-        <location filename="../systemback/systemback.cpp" line="5935"/>
-        <location filename="../systemback/systemback.cpp" line="6133"/>
+        <location filename="../systemback/systemback.cpp" line="4382"/>
+        <location filename="../systemback/systemback.cpp" line="4388"/>
+        <location filename="../systemback/systemback.cpp" line="4485"/>
+        <location filename="../systemback/systemback.cpp" line="5960"/>
+        <location filename="../systemback/systemback.cpp" line="6158"/>
         <source>Multiple mount points</source>
         <translation>Pengali titik kait</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7072"/>
+        <location filename="../systemback/systemback.cpp" line="7097"/>
         <source>Enabled</source>
         <translation>Diaktifkan</translation>
     </message>
@@ -1403,43 +1403,43 @@ These will be defined as restorable configuration files!</source>
         <translation>Menggagalkan proses yang sedang berjalan</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7281"/>
+        <location filename="../systemback/systemback.cpp" line="7306"/>
         <source>Systemback worker thread is interrupted by the user.</source>
         <translation>Rangkain kerja systemback diinterupsi pengguna.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7746"/>
+        <location filename="../systemback/systemback.cpp" line="7771"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Boot Live tanpa berkas xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7749"/>
-        <location filename="../systemback/systemback.cpp" line="7751"/>
-        <location filename="../systemback/systemback.cpp" line="7753"/>
+        <location filename="../systemback/systemback.cpp" line="7774"/>
+        <location filename="../systemback/systemback.cpp" line="7776"/>
+        <location filename="../systemback/systemback.cpp" line="7778"/>
         <source>Boot Live system</source>
         <translation>Boot sistem Live</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7749"/>
-        <location filename="../systemback/systemback.cpp" line="7751"/>
-        <location filename="../systemback/systemback.cpp" line="7753"/>
+        <location filename="../systemback/systemback.cpp" line="7774"/>
+        <location filename="../systemback/systemback.cpp" line="7776"/>
+        <location filename="../systemback/systemback.cpp" line="7778"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Boot Live dalam mode grafis aman</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7749"/>
-        <location filename="../systemback/systemback.cpp" line="7751"/>
-        <location filename="../systemback/systemback.cpp" line="7753"/>
+        <location filename="../systemback/systemback.cpp" line="7774"/>
+        <location filename="../systemback/systemback.cpp" line="7776"/>
+        <location filename="../systemback/systemback.cpp" line="7778"/>
         <source>Boot Live in debug mode</source>
         <translation>Boot Live dalam mode debug</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7750"/>
+        <location filename="../systemback/systemback.cpp" line="7775"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Tekan &apos;E&apos; untuk mengubah</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7753"/>
+        <location filename="../systemback/systemback.cpp" line="7778"/>
         <source>Press TAB key to edit</source>
         <translation>Tekan TAB untuk mengubah</translation>
     </message>

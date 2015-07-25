@@ -143,12 +143,12 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 if(! sstart && dialog == 0)
                 {
                     {
-                        ushort nsize[2]{ss(10), ss(20)};
+                        ushort sz[]{ss(10), ss(20)};
 
                         for(QTblW tblw : findChildren<QTblW>())
                         {
-                            tblw->horizontalHeader()->setMinimumSectionSize(nsize[0]);
-                            tblw->verticalHeader()->setDefaultSectionSize(nsize[1]);
+                            tblw->horizontalHeader()->setMinimumSectionSize(sz[0]);
+                            tblw->verticalHeader()->setDefaultSectionSize(sz[1]);
                         }
                     }
 
@@ -457,7 +457,10 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                         ui->function4->setText("Systemback " % tr("scheduler"));
 
                         if(sb::schdlr[0] == "topleft")
-                            wgeom[0] = sgm.x() + ss(30), wgeom[1] = sgm.y() + ss(30);
+                        {
+                            ushort sz(ss(30));
+                            wgeom[0] = sgm.x() + sz, wgeom[1] = sgm.y() + sz;
+                        }
                         else if(sb::schdlr[0] == "center")
                             wgeom[0] = sgm.x() + sgm.width() / 2 - ss(201), wgeom[1] = sgm.y() + sgm.height() / 2 - ss(80);
                         else if(sb::schdlr[0] == "bottomleft")
@@ -546,7 +549,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 ui->grubinstallcopydisable->move(ui->grubinstallcopy->pos());
                 ui->efiwarning->setGeometry(ui->efiwarning->x(), ui->grubinstalltext->y() - ss(4), ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
                 ui->copyback->move(ui->copyback->x(), ui->copypanel->height() - ss(48));
-                ui->copynext->move(ui->copypanel->width() - ss(152), ui->copyback->y());
+                ui->copynext->move(ui->partitionsettings->width(), ui->copyback->y());
                 ui->copyresize->move(ui->copypanel->width() - ui->copyresize->width(), ui->copypanel->height() - ui->copyresize->height());
                 ui->copycover->resize(ui->copypanel->width() - ss(10), ui->copypanel->height() - ss(10));
             }
@@ -814,9 +817,10 @@ void systemback::unitimer()
                 }
 
                 ui->version->setText(sb::appver());
-                for(QLbl lbl : QLbL{ui->includeuserstext, ui->grubreinstallrestoretext, ui->grubinstalltext, ui->grubreinstallrepairtext, ui->schedulerstatetext, ui->schedulersecondtext, ui->windowpositiontext, ui->homepage1, ui->homepage2, ui->email, ui->donate, ui->version, ui->filesystemwarning}) lbl->resize(lbl->fontMetrics().width(lbl->text()) + ss(7), lbl->height());
+                ushort sz[]{ss(7), ss(8), ss(28), ss(3)};
+                for(QLbl lbl : QLbL{ui->includeuserstext, ui->grubreinstallrestoretext, ui->grubinstalltext, ui->grubreinstallrepairtext, ui->schedulerstatetext, ui->schedulersecondtext, ui->windowpositiontext, ui->homepage1, ui->homepage2, ui->email, ui->donate, ui->version, ui->filesystemwarning}) lbl->resize(lbl->fontMetrics().width(lbl->text()) + sz[0], lbl->height());
                 ui->includeusers->move(ui->includeuserstext->x() + ui->includeuserstext->width(), ui->includeusers->y());
-                ui->includeusers->setMaximumWidth(width() - ui->includeusers->x() - ss(8));
+                ui->includeusers->setMaximumWidth(width() - ui->includeusers->x() - sz[1]);
                 ui->grubreinstallrestore->move(ui->grubreinstallrestoretext->x() + ui->grubreinstallrestoretext->width(), ui->grubreinstallrestore->y());
                 ui->grubreinstallrestoredisable->move(ui->grubreinstallrestore->pos());
                 ui->grubinstallcopy->move(ui->grubinstalltext->x() + ui->grubinstalltext->width(), ui->grubinstallcopy->y());
@@ -826,15 +830,15 @@ void systemback::unitimer()
                 ui->schedulerstate->move(ui->schedulerstatetext->x() + ui->schedulerstatetext->width(), ui->schedulerstate->y());
                 ui->schedulersecondpanel->move(ui->schedulersecondtext->x() + ui->schedulersecondtext->width(), ui->schedulersecondpanel->y());
                 ui->windowposition->move(ui->windowpositiontext->x() + ui->windowpositiontext->width(), ui->windowposition->y());
-                for(QCB ckbx : QList<QCB>{ui->format, ui->keepfiles, ui->autorestoreoptions, ui->skipfstabrestore, ui->autorepairoptions, ui->skipfstabrepair, ui->userdatafilescopy, ui->userdatainclude, ui->silentmode, ui->languageoverride, ui->styleoverride, ui->alwaysontop, ui->incrementaldisable, ui->cachemptydisable, ui->usexzcompressor, ui->autoisocreate, ui->schedulerdisable}) ckbx->resize(fontMetrics().width(ckbx->text()) + ss(28), ckbx->height());
-                ui->usersettingscopy->resize(fontMetrics().width(tr("Transfer user configuration and data files")) + ss(28), ui->usersettingscopy->height());
+                for(QCB ckbx : QList<QCB>{ui->format, ui->keepfiles, ui->autorestoreoptions, ui->skipfstabrestore, ui->autorepairoptions, ui->skipfstabrepair, ui->userdatafilescopy, ui->userdatainclude, ui->silentmode, ui->languageoverride, ui->styleoverride, ui->alwaysontop, ui->incrementaldisable, ui->cachemptydisable, ui->usexzcompressor, ui->autoisocreate, ui->schedulerdisable}) ckbx->resize(fontMetrics().width(ckbx->text()) + sz[2], ckbx->height());
+                ui->usersettingscopy->resize(fontMetrics().width(tr("Transfer user configuration and data files")) + sz[2], ui->usersettingscopy->height());
                 ui->usersettingscopy->setCheckState(Qt::PartiallyChecked);
                 ui->format->move((ui->partitionsettingspanel1->width() - ui->format->width()) / 2, ui->format->y());
-                for(QRB rbtn : QList<QRB>{ui->fullrestore, ui->systemrestore, ui->configurationfilesrestore, ui->systemrepair, ui->fullrepair, ui->grubrepair, ui->pointexclude, ui->liveexclude}) rbtn->resize(fontMetrics().width(rbtn->text()) + ss(28), rbtn->height());
-                ui->languages->move(ui->languageoverride->x() + ui->languageoverride->width() + ss(3), ui->languages->y());
-                ui->languages->setMaximumWidth(width() - ui->languages->x() - ss(8));
-                ui->styles->move(ui->styleoverride->x() + ui->styleoverride->width() + ss(3), ui->styles->y());
-                ui->styles->setMaximumWidth(width() - ui->styles->x() - ss(8));
+                for(QRB rbtn : QList<QRB>{ui->fullrestore, ui->systemrestore, ui->configurationfilesrestore, ui->systemrepair, ui->fullrepair, ui->grubrepair, ui->pointexclude, ui->liveexclude}) rbtn->resize(fontMetrics().width(rbtn->text()) + sz[2], rbtn->height());
+                ui->languages->move(ui->languageoverride->x() + ui->languageoverride->width() + sz[3], ui->languages->y());
+                ui->languages->setMaximumWidth(width() - ui->languages->x() - sz[1]);
+                ui->styles->move(ui->styleoverride->x() + ui->styleoverride->width() + sz[3], ui->styles->y());
+                ui->styles->setMaximumWidth(width() - ui->styles->x() - sz[1]);
                 ui->filesystem->addItems({"ext4", "ext3", "ext2"});
 
                 for(cQStr &fs : {"btrfs", "reiserfs", "jfs", "xfs"})
@@ -877,7 +881,7 @@ void systemback::unitimer()
                 for(QCbB cmbx : QCbBL{ui->grubinstallcopy, ui->grubreinstallrestore, ui->grubreinstallrepair}) cmbx->addItems({"EFI", tr("Disabled")});
                 ui->grubinstallcopydisable->adjustSize();
                 ui->efiwarning->move(ui->grubinstallcopydisable->x() + ui->grubinstallcopydisable->width() + ss(5), ui->grubinstallcopydisable->y() - ss(4));
-                ui->efiwarning->resize(ui->copypanel->width() - ui->efiwarning->x() - ss(8), ui->efiwarning->height());
+                ui->efiwarning->resize(ui->copypanel->width() - ui->efiwarning->x() - sz[1], ui->efiwarning->height());
                 ui->efiwarning->setForegroundRole(QPalette::Highlight);
                 goto next_1;
             noefi:
@@ -923,7 +927,7 @@ void systemback::unitimer()
                 }
 
                 ilstupdt(true);
-                ui->storagedir->resize(ss(210), ss(28));
+                ui->storagedir->resize(ss(210), sz[2]);
                 ui->storagedirbutton->show();
                 for(QWdt wdgt : QWL{ui->repairmenu, ui->aboutmenu, ui->settingsmenu, ui->pnumber3, ui->pnumber4, ui->pnumber5, ui->pnumber6, ui->pnumber7, ui->pnumber8, ui->pnumber9, ui->pnumber10}) wdgt->setEnabled(true);
 
@@ -1369,7 +1373,7 @@ void systemback::stschange()
         }());
 
     wmblck = true;
-    int vls[4]{qAbs(rct.x() - wndw->x()) / 6, qAbs(rct.y() - wndw->y()) / 6, qAbs(rct.width() - wndw->width()) / 6, qAbs(rct.height() - wndw->height()) / 6};
+    int vls[]{qAbs(rct.x() - wndw->x()) / 6, qAbs(rct.y() - wndw->y()) / 6, qAbs(rct.width() - wndw->width()) / 6, qAbs(rct.height() - wndw->height()) / 6};
     ui->resizepanel->show();
 
     for(uchar a(0) ; a < 6 ; ++a)
@@ -1384,7 +1388,10 @@ void systemback::stschange()
     wmblck = false;
 
     if(! wismax)
-        wndw->setMaximumSize(agm.width() - ss(60), agm.height() - ss(60));
+    {
+        ushort sz(ss(60));
+        wndw->setMaximumSize(agm.width() - sz, agm.height() - sz);
+    }
     else if(ui->copypanel->isVisible())
         for(uchar a(2) ; a < 5 ; ++a) ui->partitionsettings->resizeColumnToContents(a);
 }
@@ -1439,18 +1446,63 @@ void systemback::wreleased()
 
     if(! fscrn && ! wismax)
     {
-        QRect sgm(sgeom());
-        short bnd;
+        QDW dtp(qApp->desktop());
+        QRect agm(sgeom(true, dtp)), sgm;
+        ushort frm(ss(30));
 
-        if(x() < sgm.x())
-            wgeom[0] = sgm.x() + ss(30);
-        else if(x() > (bnd = sgm.x() + sgm.width() - width()))
-            wgeom[0] = bnd - ss(30);
+        if(agm.width() >= wgeom[2] + frm)
+        {
+            sgm = sgeom(false, dtp);
 
-        if(y() < sgm.y())
-            wgeom[1] = sgm.y() + ss(30);
-        else if(y() > (bnd = sgm.y() + sgm.height() - height()))
-            wgeom[1] = bnd - ss(30);
+            if(x() < sgm.x())
+            {
+                short val(sgm.x() + frm);
+                wgeom[0] = val < agm.x() ? agm.x() : val;
+            }
+            else if(x() < agm.x())
+                wgeom[0] = agm.x();
+            else
+            {
+                short bnd[2];
+
+                if(x() > (bnd[0] = sgm.x() + sgm.width() - wgeom[2]))
+                {
+                    short val(bnd[0] - frm);
+                    wgeom[0] = val < (bnd[1] = agm.x() + agm.width() - wgeom[2]) ? val : bnd[1];
+                }
+                else if(x() > (bnd[0] = agm.x() + agm.width() - wgeom[2]))
+                    wgeom[0] = bnd[0];
+            }
+        }
+        else if(wgeom[0] != agm.x())
+            wgeom[0] = agm.x();
+
+        if(agm.height() >= wgeom[3] + frm)
+        {
+            if(sgm.isEmpty()) sgm = sgeom(false, dtp);
+
+            if(y() < sgm.y())
+            {
+                short val(sgm.y() + frm);
+                wgeom[1] = val < agm.y() ? agm.y() : val;
+            }
+            else if(y() < agm.y())
+                wgeom[1] = agm.y();
+            else
+            {
+                short bnd[2];
+
+                if(y() > (bnd[0] = sgm.y() + sgm.height() - wgeom[3]))
+                {
+                    short val(bnd[0] - frm);
+                    wgeom[1] = val < (bnd[1] = agm.y() + agm.height() - wgeom[3]) ? val : bnd[1];
+                }
+                else if(y() > (bnd[0] = agm.y() + agm.height() - wgeom[3]))
+                    wgeom[1] = bnd[0];
+            }
+        }
+        else if(wgeom[1] != agm.y())
+            wgeom[1] = agm.y();
 
         if(pos() != QPoint(wgeom[0], wgeom[1])) move(wgeom[0], wgeom[1]);
     }
@@ -1465,7 +1517,8 @@ void systemback::benter(bool click)
             if(ui->windowmaximize->isVisibleTo(ui->buttonspanel))
             {
                 ui->windowmaximize->hide();
-                ui->windowminimize->move(ss(2), ss(2));
+                ushort sz(ss(2));
+                ui->windowminimize->move(sz, sz);
             }
 
             if(ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->hide();
@@ -1486,21 +1539,24 @@ void systemback::benter(bool click)
             else if(ui->windowmaximize->text() == "▭")
                 ui->windowmaximize->setText("□");
 
-            if(ui->windowclose->x() != ss(92)) ui->windowclose->move(ss(92), ss(2));
+            ushort sz(ss(92));
+            if(ui->windowclose->x() != sz) ui->windowclose->move(sz, ss(2));
             if(! ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->show();
-            if(ui->buttonspanel->width() != ss(138)) ui->buttonspanel->resize(ss(138), ui->buttonspanel->height());
+            if(ui->buttonspanel->width() != (sz = ss(138))) ui->buttonspanel->resize(sz, ui->buttonspanel->height());
         }
         else
         {
             if(ui->windowmaximize->isVisibleTo(ui->buttonspanel))
             {
                 ui->windowmaximize->hide();
-                ui->windowminimize->move(ss(2), ss(2));
+                ushort sz(ss(2));
+                ui->windowminimize->move(sz, sz);
             }
 
-            if(ui->windowclose->x() != ss(47)) ui->windowclose->move(ss(47), ss(2));
+            ushort sz(ss(47));
+            if(ui->windowclose->x() != sz) ui->windowclose->move(sz, ss(2));
             if(! ui->windowclose->isVisibleTo(ui->buttonspanel)) ui->windowclose->show();
-            if(ui->buttonspanel->width() != ss(93)) ui->buttonspanel->resize(ss(93), ui->buttonspanel->height());
+            if(ui->buttonspanel->width() != (sz = ss(93))) ui->buttonspanel->resize(sz, ui->buttonspanel->height());
         }
 
         wbleave();
@@ -1671,7 +1727,12 @@ void systemback::renter()
     if(! wismax)
     {
         if(wdgt->cursor().shape() == Qt::ArrowCursor) wdgt->setCursor(Qt::PointingHandCursor);
-        if(wdgt->width() == ss(10)) wdgt->setGeometry(wdgt->x() - ss(20), wdgt->y() - ss(20), ss(30), ss(30));
+
+        if(wdgt->width() == ss(10))
+        {
+            ushort sz[]{ss(20), ss(30)};
+            wdgt->setGeometry(wdgt->x() - sz[0], wdgt->y() - sz[0], sz[1], sz[1]);
+        }
     }
     else if(wdgt->cursor().shape() == Qt::PointingHandCursor)
         wdgt->setCursor(Qt::ArrowCursor);
@@ -1684,7 +1745,11 @@ void systemback::rleave()
     if(wdgt->width() == ss(30) && [] {
             QCr csr(qApp->overrideCursor());
             return ! csr || csr->shape() != Qt::SizeFDiagCursor;
-        }()) wdgt->setGeometry(wdgt->x() + ss(20), wdgt->y() + ss(20), ss(10), ss(10));
+        }())
+    {
+        ushort sz[]{ss(20), ss(10)};
+        wdgt->setGeometry(wdgt->x() + sz[0], wdgt->y() + sz[0], sz[1], sz[1]);
+    }
 }
 
 void systemback::rpressed()
@@ -2992,18 +3057,61 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
 
     if(wndw->size() != QSize((wgeom[2] = nwidth), (wgeom[3] = nheight)))
     {
-        wgeom[0] = wndw->x() + (wndw->width() - wgeom[2]) / 2;
-        { QDW dtp(qApp->desktop());
-        QRect sgm(sgeom(false, dtp));
-        short bnd(sgm.x() + ss(30));
-        if(wgeom[0] < bnd || wgeom[0] > (bnd = sgm.x() + sgm.width() - wgeom[2] - ss(30))) wgeom[0] = bnd;
-        wgeom[1] = wndw->y() + (wndw->height() - wgeom[3]) / 2;
-        if(wgeom[1] < (bnd = sgm.y() + ss(30)) || wgeom[1] > (bnd = sgm.y() + sgm.height() - wgeom[3] - ss(30))) wgeom[1] = bnd;
-        wndw->setMinimumSize(0, 0);
-        QRect agm(sgeom(true, dtp));
-        wndw->setMaximumSize(agm.width() < wndw->width() ? wndw->width() : agm.width(), agm.height() < wndw->height() ? wndw->height() : agm.height()); }
+        {
+            QDW dtp(fscrn ? nullptr : qApp->desktop());
+            QRect agm(sgeom(true, dtp)), sgm;
+            ushort frm(ss(30));
+
+            if(agm.width() >= wgeom[2] + frm)
+            {
+                sgm = sgeom(false, dtp);
+                short bnd(sgm.x() + frm);
+
+                if((wgeom[0] = wndw->x() + (wndw->width() - wgeom[2]) / 2) < bnd)
+                    wgeom[0] = bnd < agm.x() ? agm.x() : bnd;
+                else if(wgeom[0] < agm.x())
+                    wgeom[0] = agm.x();
+                else
+                {
+                    short bnd1;
+
+                    if(wgeom[0] > (bnd = sgm.x() + sgm.width() - wgeom[2] - frm))
+                        wgeom[0] = bnd > (bnd1 = agm.x() + agm.width() - wgeom[2]) ? bnd1 : bnd;
+                    else if(wgeom[0] > (bnd1 = agm.x() + agm.width() - wgeom[2]))
+                        wgeom[0] = bnd1;
+                }
+            }
+            else if(wgeom[0] != agm.x())
+                wgeom[0] = agm.x();
+
+            if(agm.height() >= wgeom[3] + frm)
+            {
+                if(sgm.isEmpty()) sgm = sgeom(false, dtp);
+                short bnd(sgm.y() + frm);
+
+                if((wgeom[1] = wndw->y() + (wndw->height() - wgeom[3]) / 2) < bnd)
+                    wgeom[1] = bnd < agm.y() ? agm.y() : bnd;
+                else if(wgeom[1] < agm.y())
+                    wgeom[1] = agm.y();
+                else
+                {
+                    short bnd1;
+
+                    if(wgeom[1] > (bnd = sgm.y() + sgm.height() - wgeom[3] - frm))
+                        wgeom[1] = bnd > (bnd1 = agm.y() + agm.height() - wgeom[3]) ? bnd1 : bnd;
+                    else if(wgeom[1] > (bnd1 = agm.y() + agm.height() - wgeom[3]))
+                        wgeom[1] = bnd1;
+                }
+            }
+            else if(wgeom[1] != agm.y())
+                wgeom[1] = agm.y();
+
+            wndw->setMinimumSize(0, 0);
+            wndw->setMaximumSize(agm.width() < wndw->width() ? wndw->width() : agm.width(), agm.height() < wndw->height() ? wndw->height() : agm.height());
+        }
+
         wmblck = true;
-        int vls[4]{qAbs(wgeom[0] - wndw->x()) / 6, qAbs(wgeom[1] - wndw->y()) / 6, qAbs(wgeom[2] - wndw->width()) / 6, qAbs(wgeom[3] - wndw->height()) / 6};
+        int vls[]{qAbs(wgeom[0] - wndw->x()) / 6, qAbs(wgeom[1] - wndw->y()) / 6, qAbs(wgeom[2] - wndw->width()) / 6, qAbs(wgeom[3] - wndw->height()) / 6};
         ui->resizepanel->show();
 
         for(uchar a(0) ; a < 6 ; ++a)
@@ -3029,31 +3137,26 @@ void systemback::wmove()
         QPoint npos{QCursor::pos().x() - lblevent::MouseX, QCursor::pos().y() - lblevent::MouseY};
 
         wndw->move(fscrn ? [&] {
-                QPoint rpos;
-                short bpos;
+                QRect agm(sgeom(true));
 
-                if(npos.x() < 0)
-                    rpos.setX(0);
-                else if(npos.x() > (bpos = width() - ui->wpanel->width()))
-                    rpos.setX(bpos);
-                else
-                    rpos.setX(npos.x());
-
-                if(npos.y() < 0)
-                    rpos.setY(0);
-                else if(npos.y() > (bpos = height() - ui->wpanel->height()))
-                    rpos.setY(bpos);
-                else
-                    rpos.setY(npos.y());
-
-                return rpos;
+                return QPoint{agm.width() < wgeom[2] || npos.x() < 0 ? 0 : [&] {
+                        short bpos;
+                        return npos.x() > (bpos = width() - ui->wpanel->width()) ? bpos : npos.x();
+                    }(), agm.height() < wgeom[3] || npos.y() < 0 ? 0 : [&] {
+                            short bpos;
+                            return npos.y() > (bpos = height() - ui->wpanel->height()) ? bpos : npos.y();
+                        }()};
             }() : npos);
     }
 }
 
 void systemback::rmove()
 {
-    if(! wismax) wndw->resize(QCursor::pos().x() - wndw->x() + ss(31) - lblevent::MouseX, QCursor::pos().y() - wndw->y() + ss(31) - lblevent::MouseY);
+    if(! wismax)
+    {
+        ushort sz(ss(31));
+        wndw->resize(QCursor::pos().x() - wndw->x() + sz - lblevent::MouseX, QCursor::pos().y() - wndw->y() + sz - lblevent::MouseY);
+    }
 }
 
 void systemback::on_functionmenunext_clicked()
@@ -3104,7 +3207,10 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 if(ui->wpanel->size() != size()) ui->wpanel->resize(size());
             }
             else if(ui->copypanel->isVisibleTo(ui->wpanel))
-                ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
+            {
+                ushort sz(ss(60));
+                ui->wpanel->setMaximumSize(width() - sz, height() - sz);
+            }
         default:;
         }
     else
@@ -3163,11 +3269,12 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             if(ui->choosepanel->isVisible())
             {
                 ui->choosepanel->resize(width() - ui->choosepanel->x() * 2, height() - ss(25));
-                ui->dirpath->resize(ui->choosepanel->width() - ss(40), ui->dirpath->height());
+                ushort sz(ss(40));
+                ui->dirpath->resize(ui->choosepanel->width() - sz, ui->dirpath->height());
                 ui->dirrefresh->move(ui->choosepanel->width() - ui->dirrefresh->width(), 0);
                 ui->dirchoose->resize(ui->choosepanel->width(), ui->choosepanel->height() - ss(80));
-                ui->dirchooseok->move(ui->choosepanel->width() - ss(120), ui->choosepanel->height() - ss(40));
-                ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - ss(40));
+                ui->dirchooseok->move(ui->choosepanel->width() - ss(120), ui->choosepanel->height() - sz);
+                ui->dirchoosecancel->move(ui->choosepanel->width() - ss(240), ui->choosepanel->height() - sz);
                 ui->filesystemwarning->move(ui->filesystemwarning->x(), ui->choosepanel->height() - ss(41));
                 ui->chooseresize->move(ui->choosepanel->width() - ui->chooseresize->width(), ui->choosepanel->height() - ui->chooseresize->height());
             }
@@ -3175,26 +3282,29 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
             {
                 ui->excludepanel->resize(width() - ui->excludepanel->x() * 2, height() - ss(25));
                 ui->excludeitemstext->resize(ui->excludepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->excludeitemstext->height());
-                ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedtext->y(), ui->excludeitemstext->width(), ui->excludedtext->height());
+                ushort sz[]{ss(36), ss(24)};
+                ui->excludedtext->setGeometry(ui->excludepanel->width() / 2 + sz[0], ui->excludedtext->y(), ui->excludeitemstext->width(), ui->excludedtext->height());
                 ui->excludeitemslist->resize(ui->excludeitemstext->width(), ui->excludepanel->height() - ss(160));
-                ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + ss(36), ui->excludedlist->y(), ui->excludeitemslist->width(), ui->excludeitemslist->height());
-                ui->excludeadditem->move(ui->excludepanel->width() / 2 - ss(24), ui->excludeitemslist->height() / 2 + ss(36));
+                ui->excludedlist->setGeometry(ui->excludepanel->width() / 2 + sz[0], ui->excludedlist->y(), ui->excludeitemslist->width(), ui->excludeitemslist->height());
+                ui->excludeadditem->move(ui->excludepanel->width() / 2 - sz[1], ui->excludeitemslist->height() / 2 + sz[0]);
                 ui->excluderemoveitem->move(ui->excludeadditem->x(), ui->excludeitemslist->height() / 2 + ss(108));
                 ui->excludeback->move(ui->excludeback->x(), ui->excludepanel->height() - ss(48));
-                ui->excludekendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - ss(24));
+                ui->excludekendektext->move(ui->excludepanel->width() - ss(306), ui->excludepanel->height() - sz[1]);
                 ui->excluderesize->move(ui->excludepanel->width() - ui->excluderesize->width(), ui->excludepanel->height() - ui->excluderesize->height());
             }
             else if(ui->includepanel->isVisible())
             {
                 ui->includepanel->resize(width() - ui->includepanel->x() * 2, height() - ss(25));
+                ui->includetext->resize(ui->includepanel->width(), ui->includetext->height());
                 ui->includeitemstext->resize(ui->includepanel->width() / 2 - ss(44) + (sfctr == High ? 1 : 0), ui->includeitemstext->height());
-                ui->includedtext->setGeometry(ui->includepanel->width() / 2 + ss(36), ui->includedtext->y(), ui->includeitemstext->width(), ui->includedtext->height());
+                ushort sz[]{ss(36), ss(24)};
+                ui->includedtext->setGeometry(ui->includepanel->width() / 2 + sz[0], ui->includedtext->y(), ui->includeitemstext->width(), ui->includedtext->height());
                 ui->includeitemslist->resize(ui->includeitemstext->width(), ui->includepanel->height() - ss(144));
-                ui->includedlist->setGeometry(ui->includepanel->width() / 2 + ss(36), ui->includedlist->y(), ui->includeitemslist->width(), ui->includeitemslist->height());
-                ui->includeadditem->move(ui->includepanel->width() / 2 - ss(24), ui->includeitemslist->height() / 2 + ss(19));
+                ui->includedlist->setGeometry(ui->includepanel->width() / 2 + sz[0], ui->includedlist->y(), ui->includeitemslist->width(), ui->includeitemslist->height());
+                ui->includeadditem->move(ui->includepanel->width() / 2 - sz[1], ui->includeitemslist->height() / 2 + ss(19));
                 ui->includeremoveitem->move(ui->includeadditem->x(), ui->includeitemslist->height() / 2 + ss(91));
                 ui->includeback->move(ui->includeback->x(), ui->includepanel->height() - ss(48));
-                ui->includekendektext->move(ui->includepanel->width() - ss(306), ui->includepanel->height() - ss(24));
+                ui->includekendektext->move(ui->includepanel->width() - ss(306), ui->includepanel->height() - sz[1]);
                 ui->includeresize->move(ui->includepanel->width() - ui->includeresize->width(), ui->includepanel->height() - ui->includeresize->height());
             }
 
@@ -3248,18 +3358,73 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
 gcheck:
         if(! wismax && ! wmblck)
         {
-            QRect sgm(sgeom());
-            short bnd[2];
+            QDW dtp(qApp->desktop());
+            QRect agm(sgeom(true, dtp)), sgm;
+            ushort frm(ss(30));
 
-            if(x() < sgm.x() && x() > sgm.x() - width())
-                wgeom[0] = sgm.x() + ss(30);
-            else if(x() > (bnd[0] = (bnd[1] = sgm.x() + sgm.width()) - width()) && x() < bnd[1] + width())
-                wgeom[0] = bnd[0] - ss(30);
+            if(agm.width() >= wgeom[2] + frm)
+            {
+                sgm = sgeom(false, dtp);
 
-            if(y() < sgm.y() && y() > sgm.y() - height())
-                wgeom[1] = sgm.y() + ss(30);
-            else if(y() > (bnd[0] = (bnd[1] = sgm.y() + sgm.height()) - height()) && y() < bnd[1] + height())
-                wgeom[1] = bnd[0] - ss(30);
+                if(x() < sgm.x())
+                {
+                    if(x() > sgm.x() - wgeom[2])
+                    {
+                        short val(sgm.x() + frm);
+                        wgeom[0] = val < agm.x() ? agm.x() : val;
+                    }
+                }
+                else if(x() < agm.x())
+                    wgeom[0] = agm.x();
+                else
+                {
+                    short bnd[2];
+
+                    if(x() <= (bnd[0] = (bnd[1] = sgm.x() + sgm.width()) - wgeom[2]))
+                    {
+                        if(x() > (bnd[0] = agm.x() + agm.width() - wgeom[2])) wgeom[0] = bnd[0];
+                    }
+                    else if(x() < bnd[1] + wgeom[2])
+                    {
+                        short val(bnd[0] - frm);
+                        wgeom[0] = val < (bnd[1] = agm.x() + agm.width() - wgeom[2]) ? val : bnd[1];
+                    }
+                }
+            }
+            else if(wgeom[0] != agm.x())
+                wgeom[0] = agm.x();
+
+            if(agm.height() >= wgeom[3] + frm)
+            {
+                if(sgm.isEmpty()) sgm = sgeom(false, dtp);
+
+                if(y() < sgm.y())
+                {
+                    if(y() > sgm.y() - wgeom[3])
+                    {
+                        short val(sgm.y() + frm);
+                        wgeom[1] = val < agm.y() ? agm.y() : val;
+                    }
+                }
+                else if(y() < agm.y())
+                    wgeom[1] = agm.y();
+                else
+                {
+                    short bnd[2];
+
+                    if(y() <= (bnd[0] = (bnd[1] = sgm.y() + sgm.height()) - wgeom[3]))
+                    {
+                        if(y() > (bnd[0] = agm.y() + agm.height() - wgeom[3])) wgeom[1] = bnd[0];
+                    }
+                    else if(y() < bnd[1] + wgeom[3])
+                    {
+                        short val(bnd[0] - frm);
+                        wgeom[1] = val < (bnd[1] = agm.y() + agm.height() - wgeom[3]) ? val : bnd[1];
+                    }
+                }
+            }
+            else if(wgeom[1] != agm.y())
+                wgeom[1] = agm.y();
 
             if(pos() != QPoint(wgeom[0], wgeom[1]))
             {
@@ -3608,9 +3773,10 @@ void systemback::on_dialogcancel_clicked()
         ui->dialogpanel->hide();
         ui->mainpanel->show();
         short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
-        windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false);
-        ui->wpanel->setMinimumSize(ss(698), ss(465));
-        ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
+        ushort sz[]{ss(850), ss(465), ss(60)};
+        windowmove(nwidth < sz[0] ? nwidth : sz[0], sz[1], false);
+        ui->wpanel->setMinimumSize(ss(698), sz[1]);
+        ui->wpanel->setMaximumSize(width() - sz[2], height() - sz[2]);
     }
 }
 
@@ -3884,11 +4050,21 @@ void systemback::on_copymenu_clicked()
     ui->copypanel->show();
     ui->function1->setText(tr("System copy"));
     ui->copyback->setFocus();
-    { short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
-    if(nwidth > ss(698)) windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false); }
-    setMinimumSize(ss(698), ss(465));
-    { QRect agm(sgeom(true));
-    setMaximumSize(agm.width() - ss(60), agm.height() - ss(60)); }
+
+    {
+        short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
+        ushort sz[]{ss(698), ss(465), ss(60)};
+
+        if(nwidth > sz[0])
+        {
+            ushort sz1(ss(850));
+            windowmove(nwidth < sz1 ? nwidth : sz1, sz[1], false);
+        }
+
+        setMinimumSize(sz[0], sz[1]);
+        { QRect agm(sgeom(true));
+        setMaximumSize(agm.width() - sz[2], agm.height() - sz[2]); }
+    }
 
     if(ui->partitionsettings->currentItem())
     {
@@ -3992,7 +4168,8 @@ void systemback::on_excludemenu_clicked()
     ui->function1->setText(tr("Exclude"));
     ui->excludeback->setFocus();
     QRect agm(sgeom(true));
-    setMaximumSize(agm.width() - ss(60), agm.height() - ss(60));
+    ushort sz(ss(60));
+    setMaximumSize(agm.width() - sz, agm.height() - sz);
 }
 
 void systemback::on_includemenu_clicked()
@@ -4002,7 +4179,8 @@ void systemback::on_includemenu_clicked()
     ui->function1->setText(tr("Include"));
     ui->includeback->setFocus();
     QRect agm(sgeom(true));
-    setMaximumSize(agm.width() - ss(60), agm.height() - ss(60));
+    ushort sz(ss(60));
+    setMaximumSize(agm.width() - sz, agm.height() - sz);
 }
 
 void systemback::on_schedulemenu_clicked()
@@ -4954,7 +5132,12 @@ void systemback::on_dialogok_clicked()
             {
                 ui->copyback->setFocus();
                 short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
-                if(nwidth > ss(698)) windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false);
+
+                if(nwidth > ss(698))
+                {
+                    ushort sz(ss(850));
+                    windowmove(nwidth < sz ? nwidth : sz, ss(465), false);
+                }
             }
             else
             {
@@ -5097,10 +5280,11 @@ void systemback::on_storagedirbutton_clicked()
     ui->choosepanel->show();
     ui->function1->setText(tr("Storage directory"));
     ui->dirchooseok->setFocus();
-    windowmove(ss(642), ss(481), false);
-    setMinimumSize(ss(642), ss(481));
-    { QRect agm(sgeom(true));
-    setMaximumSize(agm.width() - ss(60), agm.height() - ss(60)); }
+    { ushort sz[]{ss(642), ss(481), ss(60)};
+    windowmove(sz[0], sz[1], false);
+    setMinimumSize(sz[0], sz[1]);
+    QRect agm(sgeom(true));
+    setMaximumSize(agm.width() - sz[2], agm.height() - sz[2]); }
     on_dirrefresh_clicked();
 }
 
@@ -5110,10 +5294,11 @@ void systemback::on_liveworkdirbutton_clicked()
     ui->choosepanel->show();
     ui->function1->setText(tr("Working directory"));
     ui->dirchooseok->setFocus();
-    windowmove(ss(642), ss(481), false);
-    setMinimumSize(ss(642), ss(481));
-    { QRect agm(sgeom(true));
-    setMaximumSize(agm.width() - ss(60), agm.height() - ss(60)); }
+    { ushort sz[]{ss(642), ss(481), ss(60)};
+    windowmove(sz[0], sz[1], false);
+    setMinimumSize(sz[0], sz[1]);
+    QRect agm(sgeom(true));
+    setMaximumSize(agm.width() - sz[2], agm.height() - sz[2]); }
     on_dirrefresh_clicked();
 }
 
@@ -5133,7 +5318,8 @@ void systemback::on_dirrefresh_clicked()
         if(excl.contains(item) || excl.contains(sb::right(cpath, -1)) || pwdrs.contains(':' % cpath % ':') || ! sb::islnxfs('/' % item))
         {
             twi->setTextColor(0, Qt::red);
-            twi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+            ushort sz(ss(12));
+            twi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
             ui->dirchoose->addTopLevelItem(twi);
         }
         else
@@ -5141,7 +5327,8 @@ void systemback::on_dirrefresh_clicked()
             if(ui->function1->text() == tr("Storage directory") && sb::isfile('/' % item % "/Systemback/.sbschedule"))
             {
                 twi->setTextColor(0, Qt::green);
-                twi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                ushort sz(ss(12));
+                twi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
             }
 
             ui->dirchoose->addTopLevelItem(twi);
@@ -5160,7 +5347,8 @@ void systemback::on_dirrefresh_clicked()
                 if(excl.contains(sb::right((cpath = QDir('/' % item % '/' % sitem).canonicalPath()), -1)) || pwdrs.contains(':' % cpath % ':') || (item == "home" && pwdrs.contains(":/home/" % sitem % ":")))
                 {
                     ctwi->setTextColor(0, Qt::red);
-                    ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                    ushort sz(ss(12));
+                    ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                 }
 
                 twi->addChild(ctwi);
@@ -5259,14 +5447,16 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                     else if(iname == "Systemback" || pwdrs.contains(':' % QDir(path % '/' % iname).canonicalPath() % ':') || ! sb::islnxfs(path % '/' % iname))
                     {
                         ctwi->setTextColor(0, Qt::red);
-                        ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                        ushort sz(ss(12));
+                        ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                     }
                     else
                     {
                         if(ui->function1->text() == tr("Storage directory") && sb::isfile(path % '/' % iname % '/' % "/Systemback/.sbschedule"))
                         {
                             ctwi->setTextColor(0, Qt::green);
-                            ctwi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(ss(12), ss(12), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+                            ushort sz(ss(12));
+                            ctwi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                         }
 
                         for(cQStr &cdir : QDir(path % '/' % iname).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
@@ -5652,11 +5842,22 @@ void systemback::on_installnext_clicked()
     ui->installpanel->hide();
     ui->copypanel->show();
     ui->copyback->setFocus();
-    { short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
-    if(nwidth > ss(698)) windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false); }
-    wndw->setMinimumSize(ss(698), ss(465));
-    { QRect agm(sgeom(true));
-    wndw->setMaximumSize(agm.width() - ss(60), agm.height() - ss(60)); }
+
+    {
+        short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
+        ushort sz[]{ss(698), ss(465), ss(60)};
+
+        if(nwidth > sz[0])
+        {
+            ushort sz1(ss(850));
+            windowmove(nwidth < sz1 ? nwidth : sz1, sz[1], false);
+        }
+
+        wndw->setMinimumSize(sz[0], sz[1]);
+        QRect agm(sgeom(true));
+        wndw->setMaximumSize(agm.width() - sz[2], agm.height() - sz[2]);
+    }
+
     if(ui->mountpoint->currentText().startsWith("/home/")) ui->mountpoint->setCurrentText(nullptr);
 
     if(ui->partitionsettings->currentItem())
@@ -7105,9 +7306,10 @@ void systemback::on_interrupt_clicked()
                 ui->statuspanel->hide();
                 ui->mainpanel->show();
                 short nwidth(ss(154) + ui->partitionsettings->width() - ui->partitionsettings->contentsRect().width() + ui->partitionsettings->columnWidth(0) + ui->partitionsettings->columnWidth(1) + ui->partitionsettings->columnWidth(2) + ui->partitionsettings->columnWidth(3) + ui->partitionsettings->columnWidth(4) + ui->partitionsettings->columnWidth(5) + ui->partitionsettings->columnWidth(6));
-                windowmove(nwidth < ss(850) ? nwidth : ss(850), ss(465), false);
-                ui->wpanel->setMinimumSize(ss(698), ss(465));
-                ui->wpanel->setMaximumSize(width() - ss(60), height() - ss(60));
+                ushort sz[]{ss(850), ss(465), ss(60)};
+                windowmove(nwidth < sz[0] ? nwidth : sz[0], sz[1], false);
+                ui->wpanel->setMinimumSize(ss(698), sz[1]);
+                ui->wpanel->setMaximumSize(width() - sz[2], height() - sz[2]);
             }
             else
             {

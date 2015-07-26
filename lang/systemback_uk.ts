@@ -130,7 +130,7 @@
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1278"/>
-        <location filename="../systemback/systemback.cpp" line="6495"/>
+        <location filename="../systemback/systemback.cpp" line="6497"/>
         <source>Mount</source>
         <translation>Змонтувати</translation>
     </message>
@@ -221,10 +221,10 @@
         <location filename="../systemback/systemback.cpp" line="2037"/>
         <location filename="../systemback/systemback.cpp" line="2649"/>
         <location filename="../systemback/systemback.cpp" line="4297"/>
-        <location filename="../systemback/systemback.cpp" line="5792"/>
-        <location filename="../systemback/systemback.cpp" line="5806"/>
-        <location filename="../systemback/systemback.cpp" line="5807"/>
-        <location filename="../systemback/systemback.cpp" line="7117"/>
+        <location filename="../systemback/systemback.cpp" line="5794"/>
+        <location filename="../systemback/systemback.cpp" line="5808"/>
+        <location filename="../systemback/systemback.cpp" line="5809"/>
+        <location filename="../systemback/systemback.cpp" line="7119"/>
         <source>Disabled</source>
         <translation>Вимкнено</translation>
     </message>
@@ -444,7 +444,7 @@
         <location filename="../systemback/systemback.ui" line="3899"/>
         <location filename="../systemback/systemback.cpp" line="4076"/>
         <location filename="../systemback/systemback.cpp" line="4612"/>
-        <location filename="../systemback/systemback.cpp" line="6392"/>
+        <location filename="../systemback/systemback.cpp" line="6394"/>
         <source>System copy</source>
         <translation>Копіювання системи</translation>
     </message>
@@ -551,8 +551,8 @@
         <location filename="../systemback/systemback.ui" line="5309"/>
         <location filename="../systemback/systemback.cpp" line="386"/>
         <location filename="../systemback/systemback.cpp" line="1847"/>
-        <location filename="../systemback/systemback.cpp" line="5850"/>
-        <location filename="../systemback/systemback.cpp" line="5851"/>
+        <location filename="../systemback/systemback.cpp" line="5852"/>
+        <location filename="../systemback/systemback.cpp" line="5853"/>
         <source>Transfer user configuration files</source>
         <translation>Перенести конфігураційні файли користувача</translation>
     </message>
@@ -586,8 +586,8 @@
         <location filename="../systemback/systemback.cpp" line="3623"/>
         <location filename="../systemback/systemback.cpp" line="4271"/>
         <location filename="../systemback/systemback.cpp" line="4466"/>
-        <location filename="../systemback/systemback.cpp" line="6044"/>
-        <location filename="../systemback/systemback.cpp" line="6095"/>
+        <location filename="../systemback/systemback.cpp" line="6046"/>
+        <location filename="../systemback/systemback.cpp" line="6097"/>
         <source>Unmount</source>
         <translation>Демонтувати</translation>
     </message>
@@ -611,8 +611,8 @@
         <location filename="../systemback/systemback.cpp" line="387"/>
         <location filename="../systemback/systemback.cpp" line="4269"/>
         <location filename="../systemback/systemback.cpp" line="4502"/>
-        <location filename="../systemback/systemback.cpp" line="6046"/>
-        <location filename="../systemback/systemback.cpp" line="6093"/>
+        <location filename="../systemback/systemback.cpp" line="6048"/>
+        <location filename="../systemback/systemback.cpp" line="6095"/>
         <source>! Delete !</source>
         <translation>! Видалити !</translation>
     </message>
@@ -790,28 +790,28 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
-        <location filename="../systemback/systemback.cpp" line="7260"/>
+        <location filename="../systemback/systemback.cpp" line="7262"/>
         <source>Top left</source>
         <translation>Згори зліва</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
         <location filename="../systemback/systemback.cpp" line="678"/>
-        <location filename="../systemback/systemback.cpp" line="7261"/>
+        <location filename="../systemback/systemback.cpp" line="7263"/>
         <source>Top right</source>
         <translation>Згори справа</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
         <location filename="../systemback/systemback.cpp" line="678"/>
-        <location filename="../systemback/systemback.cpp" line="7262"/>
+        <location filename="../systemback/systemback.cpp" line="7264"/>
         <source>Center</source>
         <translation>У центрі</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="677"/>
         <location filename="../systemback/systemback.cpp" line="678"/>
-        <location filename="../systemback/systemback.cpp" line="7263"/>
+        <location filename="../systemback/systemback.cpp" line="7265"/>
         <source>Bottom left</source>
         <translation>Знизу зліва</translation>
     </message>
@@ -823,39 +823,39 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="679"/>
-        <location filename="../systemback/systemback.cpp" line="7154"/>
-        <location filename="../systemback/systemback.cpp" line="7164"/>
+        <location filename="../systemback/systemback.cpp" line="7156"/>
+        <location filename="../systemback/systemback.cpp" line="7166"/>
         <source>day(s)</source>
         <translation>день(днів)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="680"/>
-        <location filename="../systemback/systemback.cpp" line="7188"/>
-        <location filename="../systemback/systemback.cpp" line="7198"/>
+        <location filename="../systemback/systemback.cpp" line="7190"/>
+        <location filename="../systemback/systemback.cpp" line="7200"/>
         <source>hour(s)</source>
         <translation>год</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="681"/>
-        <location filename="../systemback/systemback.cpp" line="7174"/>
-        <location filename="../systemback/systemback.cpp" line="7208"/>
-        <location filename="../systemback/systemback.cpp" line="7222"/>
-        <location filename="../systemback/systemback.cpp" line="7231"/>
+        <location filename="../systemback/systemback.cpp" line="7176"/>
+        <location filename="../systemback/systemback.cpp" line="7210"/>
+        <location filename="../systemback/systemback.cpp" line="7224"/>
+        <location filename="../systemback/systemback.cpp" line="7233"/>
         <source>minute(s)</source>
         <translation>хв</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="682"/>
-        <location filename="../systemback/systemback.cpp" line="7240"/>
-        <location filename="../systemback/systemback.cpp" line="7249"/>
+        <location filename="../systemback/systemback.cpp" line="7242"/>
+        <location filename="../systemback/systemback.cpp" line="7251"/>
         <source>seconds</source>
         <translation>секунд</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="793"/>
         <location filename="../systemback/systemback.cpp" line="4025"/>
-        <location filename="../systemback/systemback.cpp" line="8076"/>
-        <location filename="../systemback/systemback.cpp" line="8099"/>
+        <location filename="../systemback/systemback.cpp" line="8078"/>
+        <location filename="../systemback/systemback.cpp" line="8101"/>
         <source>Everyone</source>
         <translation>Усі</translation>
     </message>
@@ -864,8 +864,8 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="386"/>
         <location filename="../systemback/systemback.cpp" line="834"/>
         <location filename="../systemback/systemback.cpp" line="1847"/>
-        <location filename="../systemback/systemback.cpp" line="5850"/>
-        <location filename="../systemback/systemback.cpp" line="5858"/>
+        <location filename="../systemback/systemback.cpp" line="5852"/>
+        <location filename="../systemback/systemback.cpp" line="5860"/>
         <source>Transfer user configuration and data files</source>
         <translation>Перенести файли даних та конфігурації користувача</translation>
     </message>
@@ -1385,61 +1385,61 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="4382"/>
         <location filename="../systemback/systemback.cpp" line="4388"/>
         <location filename="../systemback/systemback.cpp" line="4485"/>
-        <location filename="../systemback/systemback.cpp" line="5960"/>
-        <location filename="../systemback/systemback.cpp" line="6158"/>
+        <location filename="../systemback/systemback.cpp" line="5962"/>
+        <location filename="../systemback/systemback.cpp" line="6160"/>
         <source>Multiple mount points</source>
         <translation>Декілька точок монтування</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7097"/>
+        <location filename="../systemback/systemback.cpp" line="7099"/>
         <source>Enabled</source>
         <translation>Увімкнено</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7306"/>
+        <location filename="../systemback/systemback.cpp" line="7308"/>
         <source>Systemback worker thread is interrupted by the user.</source>
         <translation>Systemback &quot;worker thread&quot; перервано користувачем.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7771"/>
+        <location filename="../systemback/systemback.cpp" line="7773"/>
         <source>Boot Live without xorg.conf file</source>
         <translation>Завантажити &quot;Live&quot; без файлу xorg.conf</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7774"/>
         <location filename="../systemback/systemback.cpp" line="7776"/>
         <location filename="../systemback/systemback.cpp" line="7778"/>
+        <location filename="../systemback/systemback.cpp" line="7780"/>
         <source>Boot Live system</source>
         <translation>Завантажити систему &quot;Live&quot;</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7774"/>
         <location filename="../systemback/systemback.cpp" line="7776"/>
         <location filename="../systemback/systemback.cpp" line="7778"/>
+        <location filename="../systemback/systemback.cpp" line="7780"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Завантажити &quot;Live&quot; у безпечному графічному режимі</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7774"/>
         <location filename="../systemback/systemback.cpp" line="7776"/>
         <location filename="../systemback/systemback.cpp" line="7778"/>
+        <location filename="../systemback/systemback.cpp" line="7780"/>
         <source>Boot Live in debug mode</source>
         <translation>Завантажити &quot;Live&quot; в режимі налагодження</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7774"/>
         <location filename="../systemback/systemback.cpp" line="7776"/>
         <location filename="../systemback/systemback.cpp" line="7778"/>
+        <location filename="../systemback/systemback.cpp" line="7780"/>
         <source>Boot system installer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7775"/>
+        <location filename="../systemback/systemback.cpp" line="7777"/>
         <source>Press &apos;E&apos; key to edit</source>
         <translation>Натисніть клавішу &apos;E&apos; для редагування</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="7778"/>
+        <location filename="../systemback/systemback.cpp" line="7780"/>
         <source>Press TAB key to edit</source>
         <translation>Натисніть клавішу TAB для редагування</translation>
     </message>

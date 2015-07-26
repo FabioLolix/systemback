@@ -1152,7 +1152,7 @@
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QWidget" name="livecreatecover" native="true">
+      <widget class="QWidget" name="livecover" native="true">
        <property name="geometry">
         <rect>
          <x>5</x>
@@ -1182,7 +1182,7 @@
       <zorder>livecreatenew</zorder>
       <zorder>livedevices</zorder>
       <zorder>livelist</zorder>
-      <zorder>livecreatecover</zorder>
+      <zorder>livecover</zorder>
      </widget>
      <widget class="QWidget" name="repairpanel" native="true">
       <property name="geometry">

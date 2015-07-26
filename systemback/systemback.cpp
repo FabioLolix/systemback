@@ -4635,7 +4635,7 @@ void systemback::on_installback_clicked()
 
 void systemback::on_livecreateback_clicked()
 {
-    if(ui->livecreatecover->isHidden())
+    if(ui->livecover->isHidden())
     {
         ui->livecreatepanel->hide();
         ui->sbpanel->show();
@@ -4903,7 +4903,7 @@ void systemback::on_pointpipe15_clicked()
 void systemback::on_livedevicesrefresh_clicked()
 {
     busy();
-    if(! ui->livecreatecover->isVisibleTo(ui->livecreatepanel)) ui->livecreatecover->show();
+    if(! ui->livecover->isVisibleTo(ui->livecreatepanel)) ui->livecover->show();
     if(ui->livedevices->rowCount() > 0) ui->livedevices->clearContents();
     QSL dlst;
     sb::readlvdevs(dlst);
@@ -4931,7 +4931,7 @@ void systemback::on_livedevicesrefresh_clicked()
     if(ui->livedevices->columnWidth(0) + ui->livedevices->columnWidth(1) + ui->livedevices->columnWidth(2) + ui->livedevices->columnWidth(3) > ui->livedevices->contentsRect().width()) ui->livedevices->setColumnWidth(2, ui->livedevices->contentsRect().width() - ui->livedevices->columnWidth(0) - ui->livedevices->columnWidth(1) - ui->livedevices->columnWidth(3));
     if(ui->livewritestart->isEnabled()) ui->livewritestart->setDisabled(true);
     if(ui->livecreatepanel->isVisible() && ! ui->livecreateback->hasFocus()) ui->livecreateback->setFocus();
-    ui->livecreatecover->hide();
+    ui->livecover->hide();
     busy(false);
 }
 
@@ -5701,9 +5701,11 @@ void systemback::on_livelist_currentItemChanged(QLWI *crrnt)
 void systemback::on_livedelete_clicked()
 {
     busy();
+    ui->livecover->show();
     QStr path(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1));
     sb::remove(path % ".sblive");
     if(sb::exist(path % ".iso")) sb::remove(path % ".iso");
+    ui->livecover->hide();
     on_livecreatemenu_clicked();
     busy(false);
 }

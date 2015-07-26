@@ -218,8 +218,6 @@ private slots:
     void on_newrestorepoint_clicked();
     void on_partitiondelete_clicked();
     void on_schedulerstart_clicked();
-    void on_livecreatemenu_clicked();
-    void on_livecreateback_clicked();
     void on_schedulerstate_clicked();
     void on_pointhighlight_clicked();
     void on_livewritestart_clicked();
@@ -229,7 +227,6 @@ private slots:
     void on_systemupgrade_clicked();
     void on_systemrestore_clicked();
     void on_password2_textChanged();
-    void on_livecreatenew_clicked();
     void on_schedulerback_clicked();
     void on_unmountdelete_clicked();
     void on_dialogcancel_clicked();
@@ -298,11 +295,14 @@ private slots:
     void on_pnumber9_clicked();
     void on_copymenu_clicked();
     void on_copyback_clicked();
+    void on_livemenu_clicked();
+    void on_liveback_clicked();
     void on_dialogok_clicked();
     void on_copynext_clicked();
     void on_hourdown_clicked();
     void on_minuteup_clicked();
     void on_secondup_clicked();
+    void on_livenew_clicked();
     void on_daydown_clicked();
     void on_unmount_clicked();
     void on_adduser_clicked();

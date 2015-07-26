@@ -594,7 +594,7 @@
       <zorder>fullname</zorder>
       <zorder>fullnamepipe</zorder>
      </widget>
-     <widget class="QWidget" name="livecreatepanel" native="true">
+     <widget class="QWidget" name="livepanel" native="true">
       <property name="geometry">
        <rect>
         <x>1</x>
@@ -822,7 +822,7 @@
         <string>Include the user data files</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="livecreateback">
+      <widget class="QPushButton" name="liveback">
        <property name="geometry">
         <rect>
          <x>16</x>
@@ -959,7 +959,7 @@
         <string>Convert to ISO</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="livecreatenew">
+      <widget class="QPushButton" name="livenew">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -1173,13 +1173,13 @@
       <zorder>label_19</zorder>
       <zorder>livename</zorder>
       <zorder>userdatainclude</zorder>
-      <zorder>livecreateback</zorder>
+      <zorder>liveback</zorder>
       <zorder>label_20</zorder>
       <zorder>livedevicesrefresh</zorder>
       <zorder>livedelete</zorder>
       <zorder>livewritestart</zorder>
       <zorder>liveconvert</zorder>
-      <zorder>livecreatenew</zorder>
+      <zorder>livenew</zorder>
       <zorder>livedevices</zorder>
       <zorder>livelist</zorder>
       <zorder>livecover</zorder>
@@ -3781,7 +3781,7 @@
           </size>
          </property>
         </widget>
-        <widget class="QPushButton" name="livecreatemenu">
+        <widget class="QPushButton" name="livemenu">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -6826,7 +6826,7 @@ These will be defined as restorable configuration files!</string>
      <zorder>border</zorder>
      <zorder>function1</zorder>
      <zorder>installpanel</zorder>
-     <zorder>livecreatepanel</zorder>
+     <zorder>livepanel</zorder>
      <zorder>repairpanel</zorder>
      <zorder>excludepanel</zorder>
      <zorder>includepanel</zorder>
@@ -7827,7 +7827,7 @@ These will be defined as restorable configuration files!</string>
   <tabstop>hostname</tabstop>
   <tabstop>installnext</tabstop>
   <tabstop>installback</tabstop>
-  <tabstop>livecreateback</tabstop>
+  <tabstop>liveback</tabstop>
   <tabstop>repairback</tabstop>
   <tabstop>excludeback</tabstop>
   <tabstop>schedulerback</tabstop>

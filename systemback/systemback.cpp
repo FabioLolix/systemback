@@ -220,7 +220,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         if(! sstart)
         {
             icnt = 0, cpos = -1, nohmcpy[1] = uchkd = false;
-            for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->installpanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->includepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel, ui->storagedirbutton, ui->fullnamepipe, ui->usernamepipe, ui->usernameerror, ui->passwordpipe, ui->passworderror, ui->rootpasswordpipe, ui->rootpassworderror, ui->hostnamepipe, ui->hostnameerror}) wdgt->hide();
+            for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->installpanel, ui->livepanel, ui->repairpanel, ui->excludepanel, ui->includepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel, ui->storagedirbutton, ui->fullnamepipe, ui->usernamepipe, ui->usernameerror, ui->passwordpipe, ui->passworderror, ui->rootpasswordpipe, ui->rootpassworderror, ui->hostnamepipe, ui->hostnameerror}) wdgt->hide();
             ui->storagedir->resize(ss(236), ss(28));
             ui->installpanel->move(ui->sbpanel->pos());
             ui->mainpanel->setBackgroundRole(QPalette::Foreground);
@@ -652,7 +652,7 @@ void systemback::unitimer()
                 ui->liveworkdir->setToolTip(sb::sdir[2]);
                 for(QLE ldt : QList<QLE>{ui->storagedir, ui->liveworkdir}) ldt->setCursorPosition(0);
 
-                for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->livecreatepanel, ui->repairpanel, ui->excludepanel, ui->includepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel})
+                for(QWdt wdgt : QWL{ui->restorepanel, ui->copypanel, ui->livepanel, ui->repairpanel, ui->excludepanel, ui->includepanel, ui->schedulepanel, ui->aboutpanel, ui->licensepanel, ui->settingspanel, ui->choosepanel})
                 {
                     wdgt->move(ui->sbpanel->pos());
                     wdgt->setBackgroundRole(QPalette::Background);
@@ -1043,30 +1043,30 @@ void systemback::unitimer()
                 {
                     if(ui->installmenu->isEnabled() && ui->fullnamepipe->isVisible() && ui->usernamepipe->isVisible() && ui->hostnamepipe->isVisible() && ui->passwordpipe->isVisible() && (ui->rootpassword1->text().isEmpty() || ui->rootpasswordpipe->isVisible()) && ! ui->installnext->isEnabled()) ui->installnext->setEnabled(true);
                 }
-                else if(ui->livecreatepanel->isVisible())
+                else if(ui->livepanel->isVisible())
                 {
                     if(ui->livenameerror->isVisible() || ui->liveworkdir->text().isEmpty())
                     {
-                        if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
+                        if(ui->livenew->isEnabled()) ui->livenew->setDisabled(true);
                     }
                     else if(ui->livenamepipe->isVisible() || ui->livename->text() == "auto")
                     {
                         if(sb::isdir(sb::sdir[2]) && sb::access(sb::sdir[2], sb::Write))
                         {
                             if(! ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet(nullptr);
-                            if(ickernel && ! ui->livecreatenew->isEnabled()) ui->livecreatenew->setEnabled(true);
+                            if(ickernel && ! ui->livenew->isEnabled()) ui->livenew->setEnabled(true);
 
                             if(! ui->livelist->isEnabled())
                             {
                                 ui->livelist->setEnabled(true);
-                                on_livecreatemenu_clicked();
+                                on_livemenu_clicked();
                             }
                         }
                         else
                         {
                             if(ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
 
-                            for(QWdt wdgt : QWL{ui->livecreatenew, ui->livedelete, ui->liveconvert, ui->livewritestart})
+                            for(QWdt wdgt : QWL{ui->livenew, ui->livedelete, ui->liveconvert, ui->livewritestart})
                                 if(wdgt->isEnabled()) wdgt->setDisabled(true);
 
                             if(ui->livelist->isEnabled())
@@ -3258,9 +3258,9 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
                 {
                     if(ui->partitionsettings->hasFocus() && ui->partitionsettings->currentRow() == -1) ui->copyback->setFocus();
                 }
-                else if(ui->livecreatepanel->isVisible())
+                else if(ui->livepanel->isVisible())
                 {
-                    if((ui->livelist->hasFocus() && ui->livelist->currentRow() == -1) || (ui->livedevices->hasFocus() && ui->livedevices->currentRow() == -1)) ui->livecreateback->setFocus();
+                    if((ui->livelist->hasFocus() && ui->livelist->currentRow() == -1) || (ui->livedevices->hasFocus() && ui->livedevices->currentRow() == -1)) ui->liveback->setFocus();
                 }
                 else if(ui->excludepanel->isVisible())
                 {
@@ -3593,7 +3593,7 @@ void systemback::keyPressEvent(QKeyEvent *ev)
             }
             else if(ui->partitionsettings->hasFocus() || ui->mountpoint->hasFocus() || ui->partitionsize->hasFocus())
                 on_partitionrefresh2_clicked();
-            else if(ui->livecreatepanel->isVisible())
+            else if(ui->livepanel->isVisible())
             {
                 if(ui->livename->hasFocus())
                 {
@@ -3603,8 +3603,8 @@ void systemback::keyPressEvent(QKeyEvent *ev)
                     on_livedevicesrefresh_clicked();
                 else if(ui->livelist->hasFocus())
                 {
-                    on_livecreatemenu_clicked();
-                    ui->livecreateback->setFocus();
+                    on_livemenu_clicked();
+                    ui->liveback->setFocus();
                 }
             }
             else if(ui->dirchoose->hasFocus())
@@ -3768,8 +3768,8 @@ void systemback::on_dialogcancel_clicked()
                     ui->restorepanel->hide();
                 else if(ui->copypanel->isVisibleTo(ui->mainpanel))
                     ui->copypanel->hide();
-                else if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
-                    ui->livecreatepanel->hide();
+                else if(ui->livepanel->isVisibleTo(ui->mainpanel))
+                    ui->livepanel->hide();
                 else if(ui->repairpanel->isVisibleTo(ui->mainpanel))
                     ui->repairpanel->hide();
 
@@ -4108,7 +4108,7 @@ void systemback::on_installmenu_clicked()
     ui->fullname->setFocus();
 }
 
-void systemback::on_livecreatemenu_clicked()
+void systemback::on_livemenu_clicked()
 {
     if(ui->livelist->count() > 0) ui->livelist->clear();
 
@@ -4118,9 +4118,9 @@ void systemback::on_livecreatemenu_clicked()
     if(ui->sbpanel->isVisible())
     {
         ui->sbpanel->hide();
-        ui->livecreatepanel->show();
+        ui->livepanel->show();
         ui->function1->setText(tr("Live system create"));
-        ui->livecreateback->setFocus();
+        ui->liveback->setFocus();
     }
 
     if(sb::isdir(sb::sdir[2]))
@@ -4633,11 +4633,11 @@ void systemback::on_installback_clicked()
     ui->functionmenunext->setFocus();
 }
 
-void systemback::on_livecreateback_clicked()
+void systemback::on_liveback_clicked()
 {
     if(ui->livecover->isHidden())
     {
-        ui->livecreatepanel->hide();
+        ui->livepanel->hide();
         ui->sbpanel->show();
         ui->function1->setText("Systemback");
         ui->functionmenunext->setFocus();
@@ -4776,7 +4776,7 @@ void systemback::on_pointpipe1_clicked()
         pname = [this]() -> QStr {
                 if(! sislive)
                 {
-                    for(QWdt wdgt : QWL{ui->newrestorepoint, ui->livecreatemenu})
+                    for(QWdt wdgt : QWL{ui->newrestorepoint, ui->livemenu})
                         if(! wdgt->isEnabled()) wdgt->setEnabled(true);
 
                     return tr("Currently running system");
@@ -4818,7 +4818,7 @@ void systemback::on_pointpipe1_clicked()
                 for(QWdt wdgt : QWL{ui->copymenu, ui->installmenu}) wdgt->setEnabled(true);
 
             if(! sislive && ! ui->restoremenu->isEnabled()) ui->restoremenu->setEnabled(true);
-            if(ui->livecreatemenu->isEnabled()) ui->livecreatemenu->setDisabled(true);
+            if(ui->livemenu->isEnabled()) ui->livemenu->setDisabled(true);
             if(! ui->repairmenu->isEnabled()) ui->repairmenu->setEnabled(true);
         }
         else
@@ -4903,7 +4903,7 @@ void systemback::on_pointpipe15_clicked()
 void systemback::on_livedevicesrefresh_clicked()
 {
     busy();
-    if(! ui->livecover->isVisibleTo(ui->livecreatepanel)) ui->livecover->show();
+    if(! ui->livecover->isVisibleTo(ui->livepanel)) ui->livecover->show();
     if(ui->livedevices->rowCount() > 0) ui->livedevices->clearContents();
     QSL dlst;
     sb::readlvdevs(dlst);
@@ -4930,7 +4930,7 @@ void systemback::on_livedevicesrefresh_clicked()
     for(uchar a(0) ; a < 4 ; ++a) ui->livedevices->resizeColumnToContents(a);
     if(ui->livedevices->columnWidth(0) + ui->livedevices->columnWidth(1) + ui->livedevices->columnWidth(2) + ui->livedevices->columnWidth(3) > ui->livedevices->contentsRect().width()) ui->livedevices->setColumnWidth(2, ui->livedevices->contentsRect().width() - ui->livedevices->columnWidth(0) - ui->livedevices->columnWidth(1) - ui->livedevices->columnWidth(3));
     if(ui->livewritestart->isEnabled()) ui->livewritestart->setDisabled(true);
-    if(ui->livecreatepanel->isVisible() && ! ui->livecreateback->hasFocus()) ui->livecreateback->setFocus();
+    if(ui->livepanel->isVisible() && ! ui->liveback->hasFocus()) ui->liveback->setFocus();
     ui->livecover->hide();
     busy(false);
 }
@@ -5168,8 +5168,8 @@ void systemback::on_dialogok_clicked()
             {
                 if(ui->sbpanel->isVisible())
                     ui->functionmenunext->isEnabled() ? ui->functionmenunext->setFocus() : ui->functionmenuback->setFocus();
-                else if(ui->livecreatepanel->isVisible())
-                    ui->livecreateback->setFocus();
+                else if(ui->livepanel->isVisible())
+                    ui->liveback->setFocus();
 
                 windowmove(ss(698), ss(465));
             }
@@ -5315,7 +5315,7 @@ void systemback::on_storagedirbutton_clicked()
 
 void systemback::on_liveworkdirbutton_clicked()
 {
-    for(QWdt wdgt : QWL{ui->livecreatepanel, ui->scalingbutton}) wdgt->hide();
+    for(QWdt wdgt : QWL{ui->livepanel, ui->scalingbutton}) wdgt->hide();
     ui->choosepanel->show();
     ui->function1->setText(tr("Working directory"));
     ui->dirchooseok->setFocus();
@@ -5532,9 +5532,9 @@ void systemback::on_dirchoosecancel_clicked()
     }
     else
     {
-        ui->livecreatepanel->show();
+        ui->livepanel->show();
         ui->function1->setText(tr("Live system create"));
-        ui->livecreateback->setFocus();
+        ui->liveback->setFocus();
     }
 
     windowmove(ss(698), ss(465));
@@ -5579,9 +5579,9 @@ void systemback::on_dirchooseok_clicked()
         else
         {
             ui->choosepanel->hide();
-            ui->livecreatepanel->show();
+            ui->livepanel->show();
             ui->function1->setText(tr("Live system create"));
-            ui->livecreateback->setFocus();
+            ui->liveback->setFocus();
 
             if(sb::sdir[2] != ui->dirpath->text())
             {
@@ -5590,7 +5590,7 @@ void systemback::on_dirchooseok_clicked()
                 ui->liveworkdir->setText(sb::sdir[2]);
                 ui->liveworkdir->setToolTip(sb::sdir[2]);
                 ui->liveworkdir->setCursorPosition(0);
-                on_livecreatemenu_clicked();
+                on_livemenu_clicked();
             }
         }
 
@@ -5693,7 +5693,7 @@ void systemback::on_livelist_currentItemChanged(QLWI *crrnt)
             for(QWdt wdgt : QWL{ui->livedelete, ui->liveconvert, ui->livewritestart})
                 if(wdgt->isEnabled()) wdgt->setDisabled(true);
 
-            ui->livecreateback->setFocus();
+            ui->liveback->setFocus();
         }
     }
 }
@@ -5705,8 +5705,9 @@ void systemback::on_livedelete_clicked()
     QStr path(sb::sdir[2] % '/' % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1));
     sb::remove(path % ".sblive");
     if(sb::exist(path % ".iso")) sb::remove(path % ".iso");
+    on_livemenu_clicked();
+    ui->liveback->setFocus();
     ui->livecover->hide();
-    on_livecreatemenu_clicked();
     busy(false);
 }
 
@@ -6419,8 +6420,8 @@ void systemback::on_repairpartitionrefresh_clicked()
     rmntcheck();
     on_partitionrefresh2_clicked();
     on_repairmountpoint_currentTextChanged("/mnt");
-    ui->repaircover->hide();
     if(ui->repairpanel->isVisible() && ! ui->repairback->hasFocus()) ui->repairback->setFocus();
+    ui->repaircover->hide();
     busy(false);
 }
 
@@ -6535,7 +6536,7 @@ void systemback::on_livename_textChanged(cQStr &arg1)
         }
         else
         {
-            if(ui->livecreatenew->isEnabled()) ui->livecreatenew->setDisabled(true);
+            if(ui->livenew->isEnabled()) ui->livenew->setDisabled(true);
             if(ui->livename->fontInfo().italic()) ui->livename->setFont(font());
 
             if(! arg1.isEmpty())
@@ -7346,8 +7347,8 @@ void systemback::on_interrupt_clicked()
                 on_pointpipe1_clicked();
                 ui->statuspanel->hide();
 
-                if(ui->livecreatepanel->isVisibleTo(ui->mainpanel))
-                    ui->livecreateback->setFocus();
+                if(ui->livepanel->isVisibleTo(ui->mainpanel))
+                    ui->liveback->setFocus();
                 else if(! ui->sbpanel->isVisibleTo(ui->mainpanel))
                 {
                     ui->sbpanel->show();
@@ -7516,7 +7517,7 @@ void systemback::on_pointdelete_clicked()
     windowmove(ss(698), ss(465));
 }
 
-void systemback::on_livecreatenew_clicked()
+void systemback::on_livenew_clicked()
 {
     statustart();
     pset(17, " 1/3");
@@ -7533,7 +7534,7 @@ void systemback::on_livecreatenew_clicked()
             for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/var/.sblvtmp", "/home/.sbuserdata", "/root/.sbuserdata"})
                 if(sb::isdir(dir)) sb::remove(dir);
 
-            if(sb::autoiso == sb::True) on_livecreatemenu_clicked();
+            if(sb::autoiso == sb::True) on_livemenu_clicked();
 
             if(intrrpt)
                 intrrpt = false;
@@ -7818,7 +7819,7 @@ void systemback::on_livecreatenew_clicked()
 
     emptycache();
     sb::remove(sb::sdir[2] % "/.sblivesystemcreate");
-    on_livecreatemenu_clicked();
+    on_livemenu_clicked();
     dialogopen(207);
 }
 
@@ -7854,7 +7855,7 @@ void systemback::on_liveconvert_clicked()
     ui->liveconvert->setDisabled(true);
     ui->statuspanel->hide();
     ui->mainpanel->show();
-    ui->livecreateback->setFocus();
+    ui->liveback->setFocus();
     windowmove(ss(698), ss(465));
 }
 

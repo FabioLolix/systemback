@@ -5176,7 +5176,7 @@ void systemback::on_dialogok_clicked()
 
             setwontop(false);
         }
-        else if(sislive && dialog == 209)
+        else if(sislive && sb::like(dialog, {206, 209}))
             fscrn ? dialogopen(211) : void(close());
         else
             on_dialogcancel_clicked();

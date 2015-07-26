@@ -19,12 +19,6 @@
 
 #ifndef SBLIB_HPP
 #define SBLIB_HPP
-#define fnln __attribute__((always_inline))
-#define cfgfile "/etc/systemback/systemback.conf"
-#define oldcfgfile "/etc/systemback.conf"
-#define excfile "/etc/systemback/systemback.excludes"
-#define oldexcfile "/etc/systemback.excludes"
-#define incfile "/etc/systemback/systemback.includes"
 
 #include "sblib_global.hpp"
 #include "bstr.hpp"
@@ -36,6 +30,13 @@
 #include <sys/statvfs.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#define fnln __attribute__((always_inline))
+#define cfgfile "/etc/systemback/systemback.conf"
+#define oldcfgfile "/etc/systemback.conf"
+#define excfile "/etc/systemback/systemback.excludes"
+#define oldexcfile "/etc/systemback.excludes"
+#define incfile "/etc/systemback/systemback.includes"
 
 class SHARED_EXPORT_IMPORT sb : public QThread
 {

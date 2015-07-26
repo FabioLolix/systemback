@@ -5333,6 +5333,7 @@ void systemback::on_dirrefresh_clicked()
     if(ui->dirchoose->topLevelItemCount() > 0) ui->dirchoose->clear();
     QStr pwdrs(sb::fload("/etc/passwd"));
     QSL excl{"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "srv", "sys", "tmp", "usr", "var"};
+    ushort sz(ss(12));
 
     for(cQStr &item : QDir("/").entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
     {
@@ -5343,7 +5344,6 @@ void systemback::on_dirrefresh_clicked()
         if(excl.contains(item) || excl.contains(sb::right(cpath, -1)) || pwdrs.contains(':' % cpath % ':') || ! sb::islnxfs('/' % item))
         {
             twi->setTextColor(0, Qt::red);
-            ushort sz(ss(12));
             twi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
             ui->dirchoose->addTopLevelItem(twi);
         }
@@ -5352,7 +5352,6 @@ void systemback::on_dirrefresh_clicked()
             if(ui->function1->text() == tr("Storage directory") && sb::isfile('/' % item % "/Systemback/.sbschedule"))
             {
                 twi->setTextColor(0, Qt::green);
-                ushort sz(ss(12));
                 twi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
             }
 
@@ -5372,7 +5371,6 @@ void systemback::on_dirrefresh_clicked()
                 if(excl.contains(sb::right((cpath = QDir('/' % item % '/' % sitem).canonicalPath()), -1)) || pwdrs.contains(':' % cpath % ':') || (item == "home" && pwdrs.contains(":/home/" % sitem % ":")))
                 {
                     ctwi->setTextColor(0, Qt::red);
-                    ushort sz(ss(12));
                     ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                 }
 
@@ -5456,9 +5454,12 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
         cQTrWI *twi(item);
         QStr path('/' % twi->text(0));
         while(twi->parent()) path.prepend('/' % (twi = twi->parent())->text(0));
-        QStr pwdrs(sb::fload("/etc/passwd"));
 
         if(sb::isdir(path))
+        {
+            QStr pwdrs(sb::fload("/etc/passwd"));
+            ushort sz(ss(12));
+
             for(ushort a(0) ; a < item->childCount() ; ++a)
             {
                 QTrWI *ctwi(item->child(a));
@@ -5472,7 +5473,6 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                     else if(iname == "Systemback" || pwdrs.contains(':' % QDir(path % '/' % iname).canonicalPath() % ':') || ! sb::islnxfs(path % '/' % iname))
                     {
                         ctwi->setTextColor(0, Qt::red);
-                        ushort sz(ss(12));
                         ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                     }
                     else
@@ -5480,7 +5480,6 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                         if(ui->function1->text() == tr("Storage directory") && sb::isfile(path % '/' % iname % '/' % "/Systemback/.sbschedule"))
                         {
                             ctwi->setTextColor(0, Qt::green);
-                            ushort sz(ss(12));
                             ctwi->setIcon(0, QIcon(QPixmap(":pictures/isdir.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
                         }
 
@@ -5493,6 +5492,7 @@ void systemback::on_dirchoose_itemExpanded(QTrWI *item)
                     }
                 }
             }
+        }
         else
         {
             item->setDisabled(true);

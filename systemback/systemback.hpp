@@ -19,15 +19,16 @@
 
 #ifndef SYSTEMBACK_HPP
 #define SYSTEMBACK_HPP
-#define QTblWI QTableWidgetItem
-#define QLWI QListWidgetItem
-#define QTrWI QTreeWidgetItem
-#define cQTrWI const QTreeWidgetItem
 
 #include "../libsystemback/sblib.hpp"
 #include <QTreeWidgetItem>
 #include <QMainWindow>
 #include <QTimer>
+
+#define QTblWI QTableWidgetItem
+#define QLWI QListWidgetItem
+#define QTrWI QTreeWidgetItem
+#define cQTrWI const QTreeWidgetItem
 
 namespace Ui {
 class systemback;

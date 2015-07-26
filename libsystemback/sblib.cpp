@@ -355,7 +355,7 @@ void sb::cfgread()
         if(fopen(file))
             while(! file.atEnd())
             {
-                QStr cline(left(file.readLine(), -1)), cval(right(cline, -instr(cline, "=")));
+                QStr cline(file.readLine().trimmed()), cval(right(cline, -instr(cline, "=")));
 
                 if(! cval.isEmpty() && ! cval.startsWith('#'))
                 {

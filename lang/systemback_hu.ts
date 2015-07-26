@@ -1782,7 +1782,7 @@ Ezek visszaállítható konfigurációs fájloknak lesznek definiálva!</transla
         <translation>A kilépéshez nyomd meg az &apos;ENTER&apos; billentyűt.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.hpp" line="314"/>
+        <location filename="../systemback/systemback.hpp" line="315"/>
         <source>An error occurred while changing the access permissions of the following file:</source>
         <translation>Az alábbi fájl hozzáférési jogosultságainak módosítása közben hiba történt:</translation>
     </message>

@@ -131,7 +131,7 @@ private:
     static QSL *ThrdSlst;
     static int sblock[3];
     static uchar ThrdType, ThrdChr;
-    static bool ThrdBool, ThrdRslt;
+    static bool init, ThrdBool, ThrdRslt;
 
     static QStr rlink(cQStr &path, ushort blen);
     static uchar fcomp(cQStr &file1, cQStr &file2);

@@ -50,7 +50,7 @@ ullong sb::ThrdLng[]{0, 0};
 int sb::sblock[3];
 uchar sb::ThrdType, sb::ThrdChr, sb::pnumber(0), sb::ismpnt(sb::Empty), sb::schdle[]{sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty}, sb::waot(sb::Empty), sb::incrmtl(sb::Empty), sb::xzcmpr(sb::Empty), sb::autoiso(sb::Empty), sb::ecache(sb::Empty);
 schar sb::Progress(-1);
-bool sb::ThrdBool, sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdRslt;
+bool sb::init(true), sb::ThrdBool, sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdRslt;
 
 sb::sb()
 {
@@ -89,7 +89,7 @@ void sb::print(cQStr &txt)
 
 bool sb::error(cQStr &txt)
 {
-    QTS(stderr) << "\033[1;31m" % txt % "\033[0m";
+    if(! init) QTS(stderr) << "\033[1;31m" % txt % "\033[0m";
     return false;
 }
 
@@ -580,6 +580,8 @@ void sb::cfgread()
 
     for(cQStr &file : {excfile, incfile})
         if(! isfile(file)) crtfile(file);
+
+    if(init) init = false;
 }
 
 bool sb::execsrch(cQStr &fname, cQStr &ppath)

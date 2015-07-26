@@ -1515,112 +1515,112 @@ Ezek visszaállítható konfigurációs fájloknak lesznek definiálva!</transla
         <translation>Új útvonal:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="599"/>
+        <location filename="../libsystemback/sblib.cpp" line="601"/>
         <source>An error occurred while executing the following command:</source>
         <translation>Az alábbi parancs végrehajtása közben hiba történt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="599"/>
+        <location filename="../libsystemback/sblib.cpp" line="601"/>
         <source>Exit code:</source>
         <translation>Kilépési kód:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="788"/>
+        <location filename="../libsystemback/sblib.cpp" line="790"/>
         <source>Failed to detect the device for installing the GRUB!</source>
         <translation>Nem sikerült eszközt detektálni a GRUB telepítéséhez!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="913"/>
+        <location filename="../libsystemback/sblib.cpp" line="915"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>A rendszer frissítése közben hibák léptek fel!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="914"/>
+        <location filename="../libsystemback/sblib.cpp" line="916"/>
         <source>Restart upgrade ...</source>
         <translation>Frissítés újrakezdése ...</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="925"/>
+        <location filename="../libsystemback/sblib.cpp" line="927"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation>Az alábbi fájl nem másolható, mivel nem létezik:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="940"/>
+        <location filename="../libsystemback/sblib.cpp" line="942"/>
         <source>The following partition has no UUID:</source>
         <translation>Az alábbi partíció nem rendelkezik UUID-vel:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="959"/>
+        <location filename="../libsystemback/sblib.cpp" line="961"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation>Az alábbi eszközön nem sikerült új partíciót létrehozni:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="973"/>
+        <location filename="../libsystemback/sblib.cpp" line="975"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation>Az alábbi partíció/kép csatolása közben hiba történt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1008"/>
+        <location filename="../libsystemback/sblib.cpp" line="1010"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation>Az alábbi partíción nem sikerült egy vagy több új jelzőt beállítani:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1008"/>
+        <location filename="../libsystemback/sblib.cpp" line="1010"/>
         <source>Flag(s):</source>
         <translation>Jelző(k):</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1030"/>
+        <location filename="../libsystemback/sblib.cpp" line="1032"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation>Az alábbi eszközön nem sikerült partíciós táblát létrehozni:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1055"/>
+        <location filename="../libsystemback/sblib.cpp" line="1057"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation>Az alábbi partíció/kép/csatolási pont leválasztása közben hiba történt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1109"/>
+        <location filename="../libsystemback/sblib.cpp" line="1111"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation>Az alábbi elem tulajdonságainak klónozása közben hiba történt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1109"/>
+        <location filename="../libsystemback/sblib.cpp" line="1111"/>
         <source>Target item:</source>
         <translation>Cél elem:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1141"/>
+        <location filename="../libsystemback/sblib.cpp" line="1143"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation>Az alábbi szimbolikus link klónozása közben hiba történt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1141"/>
+        <location filename="../libsystemback/sblib.cpp" line="1143"/>
         <source>Target symlink:</source>
         <translation>Cél szimlink:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1154"/>
+        <location filename="../libsystemback/sblib.cpp" line="1156"/>
         <source>An error occurred while cloning the following file:</source>
         <translation>Az alábbi fájl klónozása közben hiba történt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1154"/>
+        <location filename="../libsystemback/sblib.cpp" line="1156"/>
         <source>Target file:</source>
         <translation>Célfájl:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1205"/>
+        <location filename="../libsystemback/sblib.cpp" line="1207"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation>Az alábbi könyvtár klónozása közben hiba történt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1205"/>
+        <location filename="../libsystemback/sblib.cpp" line="1207"/>
         <source>Target directory:</source>
         <translation>Célkönyvtár:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1451"/>
+        <location filename="../libsystemback/sblib.cpp" line="1453"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation>Az alábbi könyvtár törlése közben hiba történt:</translation>
     </message>

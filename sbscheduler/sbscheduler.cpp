@@ -27,16 +27,16 @@ void scheduler::main()
 
         uchar rv(args.count() != 2 ? 1
             : sb::schdlr[1] != "false" && (sb::schdlr[1] == "everyone" || sb::right(sb::schdlr[1], -1).split(',').contains(args.at(1))) ? 2
-            : getuid() + getgid() > 0 ? 3
+            : getuid() + getgid() ? 3
             : sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? 4
             : ! sb::lock(sb::Schdlrlock) ? 5
-            : daemon(0, 0) == -1 ? 6
+            : daemon(0, 0) ? 6
             : [&]() -> uchar {
                     sb::delay(100);
                     return sb::lock(sb::Schdlrlock) && sb::crtfile(*(pfile = new QStr(sb::isdir("/run") ? "/run/sbscheduler.pid" : "/var/run/sbscheduler.pid")), QStr::number(qApp->applicationPid())) ? 0 : 255;
                 }());
 
-        if(rv > 0)
+        if(rv)
         {
             if(rv < 255) sb::error("\n " % sb::tr("Cannot start the Systemback scheduler daemon!") % "\n\n " % [rv] {
                     switch(rv) {
@@ -84,7 +84,7 @@ void scheduler::main()
             sleep(50);
         else if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
-        else if(sb::schdle[0] == sb::False)
+        else if(! sb::schdle[0])
             sleep(1790);
         else if(QFileInfo(sb::sdir[1] % "/.sbschedule").lastModified().secsTo(QDateTime::currentDateTime()) / 60 >= sb::schdle[1] * 1440 + sb::schdle[2] * 60 + sb::schdle[3] && sb::lock(sb::Sblock))
         {
@@ -92,7 +92,7 @@ void scheduler::main()
                 sb::unlock(sb::Sblock);
             else
             {
-                if(sb::schdle[5] == sb::True || ! sb::execsrch("systemback"))
+                if(sb::schdle[5] || ! sb::execsrch("systemback"))
                     newrpnt();
                 else
                 {
@@ -144,5 +144,5 @@ void scheduler::newrpnt()
 
     sb::crtfile(sb::sdir[1] % "/.sbschedule");
     sb::fssync();
-    if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    if(sb::ecache) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }

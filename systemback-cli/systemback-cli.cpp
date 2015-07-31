@@ -57,7 +57,7 @@ void systemback::main()
 
                     return false;
                 }()) return sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs") ? 2
-                    : getuid() + getgid() > 0 ? 3
+                    : getuid() + getgid() ? 3
                     : ! sb::lock(sb::Sblock) ? 4
                     : ! sb::lock(sb::Dpkglock) ? 5
                     : [&] {
@@ -291,7 +291,7 @@ uchar systemback::storagedir(cQSL &args)
             {
                 QSL dlst(QDir(sb::sdir[1]).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot));
 
-                if(dlst.count() == 0)
+                if(! dlst.count())
                     rmdir(bstr(sb::sdir[1]));
                 else if(dlst.count() == 1 && sb::isfile(sb::sdir[1] % "/.sbschedule"))
                     sb::remove(sb::sdir[1]);
@@ -318,7 +318,7 @@ void systemback::emptycache()
 {
     pset(1);
     sb::fssync();
-    if(sb::ecache == sb::True) sb::crtfile("/proc/sys/vm/drop_caches", "3");
+    if(sb::ecache) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }
 
 bool systemback::newrpnt()
@@ -391,7 +391,7 @@ uchar systemback::restore()
             case '1' ... '4':
                 mthd = QStr(gtch).toUShort();
             }
-        } while(mthd == 0);
+        } while(! mthd);
 
         clear();
         mvprintw(0, blgn, sbtxt);
@@ -434,7 +434,7 @@ uchar systemback::restore()
                         fsave = 1;
                     else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
                         fsave = 2;
-                } while(fsave == 0);
+                } while(! fsave);
 
                 clear();
                 mvprintw(0, blgn, sbtxt);
@@ -462,7 +462,7 @@ uchar systemback::restore()
                             greinst = 1;
                         else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
                             greinst = 2;
-                    } while(greinst == 0);
+                    } while(! greinst);
 
                     clear();
                     mvprintw(0, blgn, sbtxt);
@@ -490,7 +490,7 @@ uchar systemback::restore()
                         greinst = 1;
                     else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
                         greinst = 2;
-                } while(greinst == 0);
+                } while(! greinst);
 
                 clear();
                 mvprintw(0, blgn, sbtxt);
@@ -526,7 +526,7 @@ uchar systemback::restore()
     progress(Start);
     bool sfstab(fsave == 1);
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
-    { bool err(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', sb::Silent) > 0);
+    { bool err(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', sb::Silent));
     progress(Stop);
     if(err) return 10; }
     clear();
@@ -568,7 +568,7 @@ void systemback::pset(uchar type)
     prun.txt = [type]() -> QStr {
             switch(type) {
             case 1:
-                return sb::ecache == sb::True ? tr("Emptying cache") : tr("Flushing filesystem buffers");
+                return sb::ecache ? tr("Emptying cache") : tr("Flushing filesystem buffers");
             case 2:
                 return tr("Deleting restore point");
             case 3:
@@ -612,7 +612,7 @@ void systemback::progress(uchar status)
                 }
                 else if(prun.cperc < cperc)
                     prun.pbar = " (" % QStr::number((prun.cperc = cperc)) % "%)";
-                else if(prun.cperc == 0 && prun.pbar != " (0%)")
+                else if(! prun.cperc && prun.pbar != " (0%)")
                     prun.pbar = " (0%)";
                 else if(sb::like(99, {cperc, prun.cperc}, true))
                     prun.pbar = " (100%)", prun.cperc = 100;
@@ -654,7 +654,7 @@ void systemback::progress(uchar status)
         ptimer = nullptr;
         prun.txt.clear();
         if(! prun.pbar.isEmpty()) prun.pbar.clear();
-        if(prun.cperc > 0) prun.cperc = 0;
+        if(prun.cperc) prun.cperc = 0;
         if(sb::Progress > -1) sb::Progress = -1;
     }
 }

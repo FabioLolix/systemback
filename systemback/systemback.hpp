@@ -312,7 +312,7 @@ private slots:
 
 template<typename T> bool systemback::cfmod(const T &path, ushort mode)
 {
-    return chmod(bstr(path), mode) == 0 ? true : sb::error("\n " % tr("An error occurred while changing the access permissions of the following file:") % "\n\n  " % QStr(path) % "\n\n");
+    return chmod(bstr(path), mode) ? sb::error("\n " % tr("An error occurred while changing the access permissions of the following file:") % "\n\n  " % QStr(path) % "\n\n") : true;
 }
 
 #endif

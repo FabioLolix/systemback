@@ -28,7 +28,7 @@ void sustart::main()
         uchar rv(! sb::like(args.count(), {2, 3}) || ! sb::like(args.at(1), {"_systemback_", "_finstall_", "_scheduler_"}) ? 2 : [&] {
                 QStr uname, usrhm;
 
-                if(uid == 0)
+                if(! uid)
                     uname = "root", usrhm = "/root";
                 else
                 {
@@ -50,11 +50,11 @@ void sustart::main()
                     if(uname.isEmpty() || usrhm.isEmpty()) return 3;
                 }
 
-                bool uidinr(getuid() > 0), gidinr(getgid() > 0);
+                bool uidinr(getuid()), gidinr(getgid());
 
                 if(uidinr || gidinr)
                 {
-                    if((uidinr && setuid(0) == -1) || (gidinr && setgid(0) == -1)) return 3;
+                    if((uidinr && setuid(0)) || (gidinr && setgid(0))) return 3;
 
                     auto clrenv([](cQBA &uhm, cQStr &xpath = nullptr) {
                             QSL excl{"_DISPLAY_", "_PATH_", "_LANG_", "_XAUTHORITY_"};
@@ -93,7 +93,7 @@ void sustart::main()
                 return 0;
             }());
 
-        if(rv > 0)
+        if(rv)
         {
             if(rv == 2)
                 sb::error("\n " % sb::tr("Missing, wrong or too much argument(s).") % "\n\n");
@@ -102,7 +102,7 @@ void sustart::main()
                 QStr emsg((args.at(1) == "scheduler" ? sb::tr("Cannot start the Systemback scheduler daemon!") : sb::tr("Cannot start the Systemback graphical user interface!")) % "\n\n" % (rv == 3 ? sb::tr("Unable to get root permissions.") : sb::tr("Unable to connect to the X server.")));
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
-                if(uid != geteuid() && seteuid(uid) == -1)
+                if(uid != geteuid() && seteuid(uid))
                     sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
                 else
 #endif

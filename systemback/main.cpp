@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     sb::ldtltr();
 
     uchar rv([&a] {
-            if(qgetenv("XAUTHORITY").startsWith("/home/") && getuid() == 0)
+            if(qgetenv("XAUTHORITY").startsWith("/home/") && ! getuid())
             {
                 sb::error("\n " % sb::tr("Unsafe X Window authorization!") % "\n\n " % sb::tr("Please do not use 'sudo' command.") % "\n\n");
                 return 1;

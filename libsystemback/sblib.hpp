@@ -134,25 +134,26 @@ private:
     static bool init, ThrdBool, ThrdRslt;
 
     static QStr rlink(cQStr &path, ushort blen);
-    static uchar fcomp(cQStr &file1, cQStr &file2);
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), uchar oplen = 0);
-    static bool odir(QBAL &balst, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), cQStr &ppath = nullptr);
-    template<typename T1, typename T2> static fnln bool crthlnk(const T1 &srclnk, const T2 &newlnk);
-    static bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
-    static bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
     static bool cerr(uchar type, cQStr &str1, cQStr &str2 = nullptr);
     static bool rodir(QUCL &ucl, cQStr &path, uchar oplen = 0);
     static bool rodir(QBA &ba, cQStr &path, uchar oplen = 0);
-    static bool cplink(cQStr &srclink, cQStr &newlink);
-    static bool cpdir(cQStr &srcdir, cQStr &newdir);
-    static bool exclcheck(cQSL &elist, cQStr &item);
     static bool inclcheck(cQSL &ilist, cQStr &item);
-    static bool lcomp(cQStr &link1, cQStr &link2);
+    uchar fcomp(cQStr &file1, cQStr &file2);
+    bool odir(QBAL &balst, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), cQStr &ppath = nullptr);
+    template<typename T1, typename T2> fnln bool crthlnk(const T1 &srclnk, const T2 &newlnk);
     bool thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab);
+    bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
+    bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
     bool thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir);
     bool recrmdir(cQStr &path, bool slimit = false);
+    bool cplink(cQStr &srclink, cQStr &newlink);
+    bool cpdir(cQStr &srcdir, cQStr &newdir);
+    bool exclcheck(cQSL &elist, cQStr &item);
+    bool lcomp(cQStr &link1, cQStr &link2);
     bool thrdcrtrpoint(cQStr &trgt);
     bool thrdlvprpr(bool iudata);
+    void edetect(QSL &elst, bool spath = false);
 };
 
 inline QStr sb::left(cQStr &txt, short len)
@@ -191,7 +192,7 @@ inline bool sb::like(int num, cSIL &lst, bool all)
 template<typename T> inline bool sb::exist(const T &path)
 {
     struct stat istat;
-    return lstat(bstr(path), &istat) == 0;
+    return ! lstat(bstr(path), &istat);
 }
 
 inline bool sb::islink(cQStr &path)
@@ -212,7 +213,7 @@ inline bool sb::isdir(cQStr &path)
 template<typename T> inline uchar sb::stype(const T &path)
 {
     struct stat istat;
-    if(lstat(bstr(path), &istat) == -1) return Notexist;
+    if(lstat(bstr(path), &istat)) return Notexist;
 
     switch(istat.st_mode & S_IFMT) {
     case S_IFREG:
@@ -236,23 +237,23 @@ inline ullong sb::fsize(cQStr &path)
 template<typename T> ullong sb::dfree(const T &path)
 {
     struct statvfs dstat;
-    return statvfs(bstr(path), &dstat) == -1 ? 0 : dstat.f_bavail * dstat.f_bsize;
+    return statvfs(bstr(path), &dstat) ? 0 : dstat.f_bavail * dstat.f_bsize;
 }
 
 template<typename T1, typename T2> inline bool sb::issmfs(const T1 &item1, const T2 &item2)
 {
     struct stat istat[2];
-    return ! like(-1, {stat(bstr(item1), &istat[0]), stat(bstr(item2), &istat[1])}) && istat[0].st_dev == istat[1].st_dev;
+    return ! (stat(bstr(item1), &istat[0]) || stat(bstr(item2), &istat[1])) && istat[0].st_dev == istat[1].st_dev;
 }
 
 template<typename T> inline bool sb::crtdir(const T &path)
 {
-    return mkdir(bstr(path), 0755) == 0 ? true : cerr(Crtdir, path);
+    return mkdir(bstr(path), 0755) ? cerr(Crtdir, path) : true;
 }
 
 template<typename T> inline bool sb::rmfile(const T &file)
 {
-    return unlink(bstr(file)) == 0 ? true : cerr(Rmfile, file);
+    return unlink(bstr(file)) ? cerr(Rmfile, file) : true;
 }
 
 inline bool sb::isnum(cQStr &txt)

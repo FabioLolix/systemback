@@ -25,7 +25,7 @@ uint sustart::uid(getuid());
 int main(int argc, char *argv[])
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
-    if(sustart::uid > 0 && setuid(0) == -1 && sustart::uid != geteuid())
+    if(sustart::uid && setuid(0) && sustart::uid != geteuid())
     {
         QStr arg1(argv[1]);
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
         QStr emsg("Cannot start Systemback " % QStr(arg1 == "systemback" ? "graphical user interface" : "scheduler daemon") % "!\n\nUnable to get root permissions.");
 
-        if(seteuid(sustart::uid) == -1)
+        if(seteuid(sustart::uid))
             sb::error("\n " % emsg.replace("\n\n", "\n\n ") % "\n\n");
         else
             sb::exec((sb::execsrch("zenity") ? "zenity --title=Systemback --error --text=\"" : "kdialog --title=Systemback --error=\"") % emsg % '\"', sb::Bckgrnd);

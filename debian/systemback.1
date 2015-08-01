@@ -1,4 +1,4 @@
-.TH Systemback 1 "11.06.2015."
+.TH Systemback 1 "01.08.2015."
 
 .SH NAME
 Systemback - Simple system backup and restore application with extra
@@ -16,16 +16,19 @@ state of the system. There are extra features like system copying, system
 installation and Live system creation.
 
 .SH FILES
-.SS /etc/systemback.conf
+.SS /etc/systemback/systemback.conf
 configuration of GUI and CLI
 .br
 the possible variables and values are indicated in the file, all other changes
 are lost
 
-.SS /etc/systemback.excludes
+.SS /etc/systemback/systemback.excludes
 exclude hidden user files and directories from restore points
 .br
 exclude user data files and directories from Live system
+
+.SS /etc/systemback/systemback.includes
+include user data files and directories into the restore points
 
 .SH AUTHOR
 Krisztián Kende (nemh@freemail.hu)

@@ -1963,7 +1963,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                     if(! (cditmst = &homeitmst[a])->isEmpty())
                     {
                         lcnt = 0;
-                        QTS in((cditms = &homeitms[a]), QIODevice::ReadOnly);
+                        QTS in(cditms = &homeitms[a], QIODevice::ReadOnly);
 
                         while(! in.atEnd())
                         {
@@ -2107,7 +2107,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                 if(! (cditmst = &sysitmst[a])->isEmpty())
                 {
                     lcnt = 0;
-                    QTS in((cditms = &sysitms[a]), QIODevice::ReadOnly);
+                    QTS in(cditms = &sysitms[a], QIODevice::ReadOnly);
 
                     while(! in.atEnd())
                     {
@@ -2474,7 +2474,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                     if(! (cditmst = &sysitmst[a])->isEmpty())
                     {
                         lcnt = 0;
-                        QTS in((cditms = &sysitms[a]), QIODevice::ReadOnly);
+                        QTS in(cditms = &sysitms[a], QIODevice::ReadOnly);
 
                         while(! in.atEnd())
                         {
@@ -2748,7 +2748,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                 if(! (cditmst = &homeitmst[a])->isEmpty() && anum)
                 {
                     lcnt = 0;
-                    QTS in((cditms = &homeitms[a]), QIODevice::ReadOnly);
+                    QTS in(cditms = &homeitms[a], QIODevice::ReadOnly);
 
                     while(! in.atEnd())
                     {
@@ -3022,7 +3022,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     if(! (cditmst = &homeitmst[mthd == 5 ? 0 : a])->isEmpty())
                     {
                         lcnt = 0;
-                        QTS in((cditms = &homeitms[mthd == 5 ? 0 : a]), QIODevice::ReadOnly);
+                        QTS in(cditms = &homeitms[mthd == 5 ? 0 : a], QIODevice::ReadOnly);
 
                         while(! in.atEnd())
                         {
@@ -3278,7 +3278,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                 if(! (cditmst = &sysitmst[a])->isEmpty())
                 {
                     lcnt = 0;
-                    QTS in((cditms = &sysitms[a]), QIODevice::ReadOnly);
+                    QTS in(cditms = &sysitms[a], QIODevice::ReadOnly);
 
                     while(! in.atEnd())
                     {

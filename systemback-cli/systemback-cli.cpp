@@ -282,7 +282,7 @@ uchar systemback::storagedir(cQSL &args)
                 for(uchar a(3) ; a < args.count() ; ++a) idir.append(' ' % args.at(a));
 
             QSL excl{"*/Systemback_", "*/Systemback/*", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"};
-            if(sb::like((ndir = QDir::cleanPath(idir)), excl) || sb::like((cpath = QDir(idir).canonicalPath()), excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 8;
+            if(sb::like(ndir = QDir::cleanPath(idir), excl) || sb::like(cpath = QDir(idir).canonicalPath(), excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 8;
         }
 
         if(sb::sdir[0] != ndir)
@@ -593,7 +593,7 @@ void systemback::progress(uchar status)
 {
     switch(status) {
     case Start:
-        connect((ptimer = new QTimer), SIGNAL(timeout()), this, SLOT(progress()));
+        connect(ptimer = new QTimer, SIGNAL(timeout()), this, SLOT(progress()));
         QTimer::singleShot(0, this, SLOT(progress()));
         return ptimer->start(2000);
     case Inprog:
@@ -611,7 +611,7 @@ void systemback::progress(uchar status)
                     if(prun.cperc < 100) prun.cperc = 100, prun.pbar = " (100%)";
                 }
                 else if(prun.cperc < cperc)
-                    prun.pbar = " (" % QStr::number((prun.cperc = cperc)) % "%)";
+                    prun.pbar = " (" % QStr::number(prun.cperc = cperc) % "%)";
                 else if(! prun.cperc && prun.pbar != " (0%)")
                     prun.pbar = " (0%)";
                 else if(sb::like(99, {cperc, prun.cperc}, true))

@@ -275,7 +275,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                         short px(ui->scalingbuttonspanel->x());
 
                         do {
-                            ui->scalingbuttonspanel->move((px += a), ui->scalingbuttonspanel->y() < -a ? ui->scalingbuttonspanel->y() + a : 0);
+                            ui->scalingbuttonspanel->move(px += a, ui->scalingbuttonspanel->y() < -a ? ui->scalingbuttonspanel->y() + a : 0);
                             qApp->processEvents();
                         } while(px < 0 && px == ui->scalingbuttonspanel->x());
                     }
@@ -431,8 +431,8 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                         if(i > 0) ui->admins->setCurrentIndex(i);
                     }
 
-                    setFixedSize((wgeom[2] = ss(376)), (wgeom[3] = ss(224)));
-                    move((wgeom[0] = sgm.x() + sgm.width() / 2 - ss(188)), (wgeom[1] = sgm.y() + sgm.height() / 2 - ss(112)));
+                    setFixedSize(wgeom[2] = ss(376), wgeom[3] = ss(224));
+                    move(wgeom[0] = sgm.x() + sgm.width() / 2 - ss(188), wgeom[1] = sgm.y() + sgm.height() / 2 - ss(112));
                     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
                 }
                 else
@@ -470,7 +470,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                         else
                             wgeom[0] = sgm.x() + sgm.width() - ss(432), wgeom[1] = sgm.y() + ss(30);
 
-                        setFixedSize((wgeom[2] = ss(402)), (wgeom[3] = ss(161)));
+                        setFixedSize(wgeom[2] = ss(402), wgeom[3] = ss(161));
                         move(wgeom[0], wgeom[1]);
 
                         QTimer::singleShot(0, this,
@@ -492,7 +492,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                             resize(sgm.size());
                             for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->move(0, 0);
                             fscrn = true, wgeom[2] = ss(698), wgeom[3] = ss(465);
-                            ui->wpanel->setGeometry((wgeom[0] = sgm.width() < wgeom[2] ? 0 : sgm.x() + width() / 2 - ss(349)), (wgeom[1] = sgm.height() < wgeom[3] ? 0 : sgm.y() + height() / 2 - ss(232)), wgeom[2], wgeom[3]);
+                            ui->wpanel->setGeometry(wgeom[0] = sgm.width() < wgeom[2] ? 0 : sgm.x() + width() / 2 - ss(349), wgeom[1] = sgm.height() < wgeom[3] ? 0 : sgm.y() + height() / 2 - ss(232), wgeom[2], wgeom[3]);
 
                             connect(ui->wpanel, &pnlevent::Move, [this] {
                                     if(fscrn && ! wismax && ! wmblck)
@@ -518,8 +518,8 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                         }
                         else
                         {
-                            setFixedSize((wgeom[2] = ss(698)), (wgeom[3] = ss(465)));
-                            move((wgeom[0] = sgm.x() + sgm.width() / 2 - ss(349)), (wgeom[1] = sgm.y() + sgm.height() / 2 - ss(232)));
+                            setFixedSize(wgeom[2] = ss(698), wgeom[3] = ss(465));
+                            move(wgeom[0] = sgm.x() + sgm.width() / 2 - ss(349), wgeom[1] = sgm.y() + sgm.height() / 2 - ss(232));
                         }
                     }
                 }
@@ -803,7 +803,7 @@ void systemback::unitimer()
                             while(! file.atEnd())
                             {
                                 QStr usr(file.readLine().trimmed());
-                                if(usr.contains(":/home/") && ! susr.contains((usr = sb::left(usr, sb::instr(usr, ":") -1))) && sb::isdir("/home/" % usr)) ui->users->addItem(usr);
+                                if(usr.contains(":/home/") && ! susr.contains(usr = sb::left(usr, sb::instr(usr, ":") -1)) && sb::isdir("/home/" % usr)) ui->users->addItem(usr);
                             }
 
                         if(ui->users->count())
@@ -1402,7 +1402,7 @@ void systemback::schedulertimer()
     {
         ui->schedulernumber->setText(QStr::number(sb::schdle[4]) % 's');
 
-        connect((shdltimer = new QTimer),
+        connect(shdltimer = new QTimer,
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
             SIGNAL(timeout()), this, SLOT(schedulertimer())
 #else
@@ -2899,7 +2899,7 @@ void systemback::dialogopen(ushort dlg, cbstr &dev)
 
             if(cntd)
             {
-                connect((dlgtimer = new QTimer),
+                connect(dlgtimer = new QTimer,
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
                     SIGNAL(timeout()), this, SLOT(dialogtimer())
 #else
@@ -3016,9 +3016,9 @@ void systemback::dialogopen(ushort dlg, cbstr &dev)
         else
         {
             if(sstart && ! sb::like(dialog, {300, 301, 305}) && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
-            setFixedSize((wgeom[2] = ui->dialogpanel->width()), (wgeom[3] = ui->dialogpanel->height()));
+            setFixedSize(wgeom[2] = ui->dialogpanel->width(), wgeom[3] = ui->dialogpanel->height());
             QRect sgm(sgeom());
-            move((wgeom[0] = sgm.x() + sgm.width() / 2 - ss(253)), (wgeom[1] = sgm.y() + sgm.height() / 2 - ss(100)));
+            move(wgeom[0] = sgm.x() + sgm.width() / 2 - ss(253), wgeom[1] = sgm.y() + sgm.height() / 2 - ss(100));
         }
     }
 
@@ -3055,7 +3055,7 @@ void systemback::windowmove(ushort nwidth, ushort nheight, bool fxdw)
 {
     if(wismax) stschange();
 
-    if(wndw->size() != QSize((wgeom[2] = nwidth), (wgeom[3] = nheight)))
+    if(wndw->size() != QSize(wgeom[2] = nwidth, wgeom[3] = nheight))
     {
         {
             QDW dtp(fscrn ? nullptr : qApp->desktop());
@@ -3693,7 +3693,7 @@ void systemback::on_admins_currentIndexChanged(cQStr &arg1)
 
 void systemback::on_adminpassword_textChanged(cQStr &arg1)
 {
-    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+    uchar ccnt(icnt == 100 ? icnt = 0 : ++icnt);
 
     if(arg1.isEmpty())
     {
@@ -5368,7 +5368,7 @@ void systemback::on_dirrefresh_clicked()
                 QTrWI *ctwi(new QTrWI);
                 ctwi->setText(0, sitem);
 
-                if(excl.contains(sb::right((cpath = QDir('/' % item % '/' % sitem).canonicalPath()), -1)) || pwdrs.contains(':' % cpath % ':') || (item == "home" && pwdrs.contains(":/home/" % sitem % ":")))
+                if(excl.contains(sb::right(cpath = QDir('/' % item % '/' % sitem).canonicalPath(), -1)) || pwdrs.contains(':' % cpath % ':') || (item == "home" && pwdrs.contains(":/home/" % sitem % ":")))
                 {
                     ctwi->setTextColor(0, Qt::red);
                     ctwi->setIcon(0, QIcon(QPixmap(":pictures/dirx.png").scaled(sz, sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
@@ -6335,7 +6335,7 @@ void systemback::on_format_clicked(bool chckd)
 
 void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
 {
-    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+    uchar ccnt(icnt == 100 ? icnt = 0 : ++icnt);
 
     if(ui->mountpoint->isEnabled())
     {
@@ -6433,7 +6433,7 @@ void systemback::on_repairpartition_currentIndexChanged(cQStr &arg1)
 
 void systemback::on_repairmountpoint_currentTextChanged(cQStr &arg1)
 {
-    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+    uchar ccnt(icnt == 100 ? icnt = 0 : ++icnt);
 
     if(! arg1.isEmpty() && (! sb::like(arg1, {"_/_", "_/m_", "_/mn_", "_/mnt_", "_/mnt/*"}) || sb::like(arg1, {"* *", "*//*"})))
         ui->repairmountpoint->setCurrentText(sb::left(arg1, -1));
@@ -6504,7 +6504,7 @@ void systemback::on_repairmount_clicked()
 
 void systemback::on_livename_textChanged(cQStr &arg1)
 {
-    uchar ccnt(icnt == 100 ? (icnt = 0) : ++icnt);
+    uchar ccnt(icnt == 100 ? icnt = 0 : ++icnt);
 
     if(cpos > -1)
     {
@@ -6522,7 +6522,7 @@ void systemback::on_livename_textChanged(cQStr &arg1)
             return false;
         }() || arg1.toUtf8().length() > 32 || arg1.toLower().endsWith(".iso"))
 
-        ui->livename->setText(QStr(arg1).replace((cpos = ui->livename->cursorPosition() - 1), 1, nullptr));
+        ui->livename->setText(QStr(arg1).replace(cpos = ui->livename->cursorPosition() - 1, 1, nullptr));
     else
     {
         if(ui->livenamepipe->isVisible()) ui->livenamepipe->hide();
@@ -6887,7 +6887,7 @@ void systemback::on_fullname_textChanged(cQStr &arg1)
             return false;
         }() || sb::like(arg1, {"_ *", "*  *", "*ß*"}))
 
-        ui->fullname->setText(QStr(arg1).replace((cpos = ui->fullname->cursorPosition() - 1), 1, nullptr));
+        ui->fullname->setText(QStr(arg1).replace(cpos = ui->fullname->cursorPosition() - 1, 1, nullptr));
     else if(arg1.at(0).isLower())
     {
         cpos = ui->fullname->cursorPosition();
@@ -6955,7 +6955,7 @@ void systemback::on_username_textChanged(cQStr &arg1)
             return false;
         }() || (arg1.contains('$') && (arg1.count('$') > 1 || ! arg1.endsWith('$'))))
 
-        ui->username->setText(QStr(arg1).replace((cpos = ui->username->cursorPosition() - 1), 1, nullptr));
+        ui->username->setText(QStr(arg1).replace(cpos = ui->username->cursorPosition() - 1, 1, nullptr));
     else if(ui->usernamepipe->isHidden())
     {
         if(ui->usernameerror->isVisible()) ui->usernameerror->hide();
@@ -7004,7 +7004,7 @@ void systemback::on_hostname_textChanged(cQStr &arg1)
             return false;
         }() || (arg1.length() > 1 && sb::like(arg1, {"*..*", "*--*", "*.-*", "*-.*"})))
 
-        ui->hostname->setText(QStr(arg1).replace((cpos = ui->hostname->cursorPosition() - 1), 1, nullptr));
+        ui->hostname->setText(QStr(arg1).replace(cpos = ui->hostname->cursorPosition() - 1, 1, nullptr));
     else if(ui->hostnamepipe->isHidden())
     {
         if(ui->hostnameerror->isVisible()) ui->hostnameerror->hide();
@@ -7309,7 +7309,7 @@ void systemback::on_interrupt_clicked()
                 sb::error("\n " % tr("Systemback worker thread is interrupted by the user.") % "\n\n");
             }
 
-            connect((intrptimer = new QTimer),
+            connect(intrptimer = new QTimer,
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
                 SIGNAL(timeout()), this, SLOT(on_interrupt_clicked())
 #else

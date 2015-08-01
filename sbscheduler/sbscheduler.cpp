@@ -100,7 +100,7 @@ void scheduler::main()
 
                     if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || [&] {
                             QStr path("/home/" % qApp->arguments().at(1) % "/.Xauthority");
-                            return (sb::isfile(path) && QFile(path).copy(xauth)) || (sb::isfile((path = usrhm % "/.Xauthority")) && QFile(path).copy(xauth));
+                            return (sb::isfile(path) && QFile(path).copy(xauth)) || (sb::isfile(path = usrhm % "/.Xauthority") && QFile(path).copy(xauth));
                         }())
                     {
                         sb::exec("systemback schedule", sb::Wait, "XAUTHORITY=" % xauth);

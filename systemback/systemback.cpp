@@ -714,6 +714,7 @@ void systemback::unitimer()
                                        : lcode == "id" ? "Bahasa Indonesia"
                                        : lcode == "pt_BR" ? "Português (Brasil)"
                                        : lcode == "ro" ? "Română"
+                                       : lcode == "ru" ? "Русский"
                                        : lcode == "tr" ? "Türkçe"
                                        : lcode == "uk" ? "Українськa"
                                        : lcode == "zh_CN" ? "中文（简体）" : nullptr);
@@ -745,6 +746,7 @@ void systemback::unitimer()
                                          : sb::lang == "hu_HU" ? lst.indexOf("Magyar")
                                          : sb::lang == "pt_BR" ? lst.indexOf("Português (Brasil)")
                                          : sb::lang == "ro_RO" ? lst.indexOf("Română")
+                                         : sb::lang == "ru_RU" ? lst.indexOf("Русский")
                                          : sb::lang == "tr_TR" ? lst.indexOf("Türkçe")
                                          : sb::lang == "uk_UK" ? lst.indexOf("Українськa")
                                          : sb::lang == "zh_CN" ? lst.indexOf("中文（简体）") : -1);
@@ -7946,6 +7948,7 @@ void systemback::on_languageoverride_clicked(bool chckd)
                  : lname == "Bahasa Indonesia" ? "id_ID"
                  : lname == "Português (Brasil)" ? "pt_BR"
                  : lname == "Română" ? "ro_RO"
+                 : lname == "Русский" ? "ru_RU"
                  : lname == "Türkçe" ? "tr_TR"
                  : lname == "Українськa" ? "uk_UK" : "zh_CN";
 
@@ -7980,6 +7983,7 @@ void systemback::on_languages_currentIndexChanged(cQStr &arg1)
                  : arg1 == "Bahasa Indonesia" ? "id_ID"
                  : arg1 == "Português (Brasil)" ? "pt_BR"
                  : arg1 == "Română" ? "ro_RO"
+                 : arg1 == "Русский" ? "ru_RU"
                  : arg1 == "Türkçe" ? "tr_TR"
                  : arg1 == "Українськa" ? "uk_UK" : "zh_CN";
 

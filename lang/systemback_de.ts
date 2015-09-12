@@ -396,7 +396,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="1686"/>
         <source>Excludable items</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausschliessbare Elemente</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1708"/>
@@ -665,7 +665,7 @@
         <location filename="../systemback/systemback.ui" line="3963"/>
         <location filename="../systemback/systemback.cpp" line="4206"/>
         <source>Include</source>
-        <translation type="unfinished"></translation>
+        <translation>Einschliessen</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4125"/>
@@ -901,18 +901,19 @@
     <message>
         <location filename="../systemback/systemback.ui" line="6570"/>
         <source>Includable items</source>
-        <translation type="unfinished"></translation>
+        <translation>Einbeziehbare Elemente</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6592"/>
         <source>Included items</source>
-        <translation type="unfinished"></translation>
+        <translation>Einbezogene Elemtente</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6804"/>
         <source>Include user data files and directories into the restore points
 These will be defined as restorable configuration files!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordnen Sie Dateien und Verzeichnisse den Wiederherstellungspunkten zu, 
+um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6998"/>
@@ -1633,6 +1634,13 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="7779"/>
         <location filename="../systemback/systemback.cpp" line="7781"/>
         <location filename="../systemback/systemback.cpp" line="7783"/>
+        <source>Boot system installer</source>
+        <translation>Start-System-Installationsprogramm</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="7779"/>
+        <location filename="../systemback/systemback.cpp" line="7781"/>
+        <location filename="../systemback/systemback.cpp" line="7783"/>
         <source>Boot Live in safe graphics mode</source>
         <translation>Start des Live Systems in sicherem Grafikmodus</translation>
     </message>
@@ -1642,13 +1650,6 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="7783"/>
         <source>Boot Live in debug mode</source>
         <translation>Start des Live Systems im Debug Modus</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7779"/>
-        <location filename="../systemback/systemback.cpp" line="7781"/>
-        <location filename="../systemback/systemback.cpp" line="7783"/>
-        <source>Boot system installer</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7780"/>
@@ -1703,11 +1704,26 @@ These will be defined as restorable configuration files!</source>
         <translation>grundlegendes Wiederherstellungsbenutzerinterface</translation>
     </message>
     <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="111"/>
+        <source>The Systemback command line interface cannot be used on a Live system!</source>
+        <translation>Die Systemback Befehlszeile kann nicht auf einem Live-System verwendet werden!</translation>
+    </message>
+    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="115"/>
         <source>An another Systemback process is currently running, please wait until it
  finishes.</source>
         <translation>Ein anderer Systemback Prozess ist gegenwärtig aktiv, bitte warten Sie auf
  seine Beendigung.</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="119"/>
+        <source>This stupid terminal does not support color!</source>
+        <translation>Dieses dumme Terminal unterstützt keine Farben!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="121"/>
+        <source>This terminal is too small!</source>
+        <translation>Dieses Terminal ist zu klein!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="123"/>
@@ -1730,21 +1746,6 @@ These will be defined as restorable configuration files!</source>
         <source>The restore points storage directory is not available or not writable!</source>
         <translation>Das Speicherverzeichnis der Wiederherstellungspunkte ist nicht verfügbar oder
  nicht beschreibbar!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="119"/>
-        <source>This stupid terminal does not support color!</source>
-        <translation>Dieses dumme Terminal unterstützt keine Farben!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="111"/>
-        <source>The Systemback command line interface cannot be used on a Live system!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="121"/>
-        <source>This terminal is too small!</source>
-        <translation>Dieses Terminal ist zu klein!</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="146"/>

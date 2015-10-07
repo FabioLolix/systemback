@@ -1,4 +1,4 @@
-.TH Systemback 1 "01.08.2015."
+.TH Systemback 1 "06.10.2015."
 
 .SH NAME
 Systemback - Simple system backup and restore application with extra
@@ -33,6 +33,21 @@ output Systemback version number
 .TP
 .B -h, --help
 show help
+
+.SH ENVIRONMENT
+.TP
+.B DBGLEV
+set the debug level for the stdout printed error messages
+.br
+these will be redirected to the /tmp/systemback-cli_stderr
+.br
+0 - no error messages
+.br
+1 - print the error messages when a process has stopped because
+.br
+    an error occurred (default)
+.br
+2 - this is the same as level 1
 
 .SH FILES
 .SS /etc/systemback/systemback.conf

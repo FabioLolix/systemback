@@ -62,8 +62,7 @@ void systemback::main()
                     : ! sb::lock(sb::Dpkglock) ? 5
                     : [&] {
                             auto startui([this](bool crtrpt = false) -> uchar {
-                                    { int pgid(getpgrp());
-                                    if(pgid == -1 || ! sb::like(pgid, {tcgetpgrp(STDIN_FILENO), tcgetpgrp(STDOUT_FILENO)}, true)) return 255; }
+                                    if(! (isatty(fileno(stdin)) && isatty(fileno(stdout)) && isatty(fileno(stderr)))) return 255;
                                     initscr();
 
                                     uchar crv(! has_colors() ? 6
@@ -104,6 +103,11 @@ void systemback::main()
         }());
 
     if(! sb::like(rv, {0, 255})) sb::error("\n " % [=]() -> QStr {
+            auto dbg([](cQStr &txt) {
+                    if(! sb::eout.isEmpty()) sb::crtfile("/tmp/systemback-cli_stderr", sb::eout.trimmed().replace("\n\n\n ", "\n") % '\n');
+                    return txt;
+                });
+
             switch(rv) {
             case 1:
                 return help();
@@ -124,15 +128,15 @@ void systemback::main()
             case 9:
                 return tr("The restoration is aborted!");
             case 10:
-                return tr("The restoration is completed, but an error occurred while reinstalling the GRUB!");
+                return dbg(tr("The restoration is completed, but an error occurred while reinstalling the GRUB!"));
             case 11:
-                return tr("The restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process.");
+                return dbg(tr("The restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process."));
             case 12:
-                return tr("The restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation.");
+                return dbg(tr("The restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation."));
             case 13:
-                return tr("The restore points storage directory is not available or not writable!");
+                return dbg(tr("The restore points storage directory is not available or not writable!"));
             default:
-                return tr("The restore point deletion is aborted!") % "\n\n " % tr("An error occurred while during the process.");
+                return dbg(tr("The restore point deletion is aborted!") % "\n\n " % tr("An error occurred while during the process."));
             }
         }() % "\n\n");
 
@@ -174,6 +178,7 @@ uchar systemback::clistart()
     attron(COLOR_PAIR(2));
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();
+    if(! sb::eout.isEmpty()) sb::eout.clear();
     if(! pname.isEmpty()) pname.clear();
 
     do {
@@ -247,7 +252,7 @@ uchar systemback::clistart()
             pset(2);
             progress(Start);
 
-            if(! sb::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % pname))
+            if(! (sb::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) && sb::remove(sb::sdir[1] % "/.DELETED_" % pname)))
             {
                 progress(Stop);
                 return 14;
@@ -298,10 +303,10 @@ uchar systemback::storagedir(cQSL &args)
             }
 
             sb::sdir[0] = ndir, sb::sdir[1] = sb::sdir[0] % "/Systemback", sb::ismpnt = ! sb::issmfs(sb::sdir[0], sb::sdir[0].count('/') == 1 ? "/" : sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1));
-            sb::cfgwrite();
+            if(! sb::cfgwrite()) return 8;
         }
 
-        if(! sb::isdir(sb::sdir[1]) && ! sb::crtdir(sb::sdir[1]))
+        if(! (sb::isdir(sb::sdir[1]) || sb::crtdir(sb::sdir[1])))
         {
             sb::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
             sb::crtdir(sb::sdir[1]);
@@ -341,7 +346,7 @@ bool systemback::newrpnt()
         if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
         {
             if(prun.type != 4) pset(4);
-            if(! sb::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) return end(false);
+            if(! (sb::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) && sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]))) return end(false);
         }
 
     pset(5);
@@ -595,7 +600,9 @@ void systemback::progress(uchar status)
     case Start:
         connect(ptimer = new QTimer, SIGNAL(timeout()), this, SLOT(progress()));
         QTimer::singleShot(0, this, SLOT(progress()));
-        return ptimer->start(2000);
+        ptimer->start(2000);
+        if(sb::dbglev == sb::Nulldbg) sb::dbglev = sb::Errdbg;
+        return;
     case Inprog:
         for(uchar a(0) ; a < 4 ; ++a)
         {
@@ -612,7 +619,7 @@ void systemback::progress(uchar status)
                 }
                 else if(prun.cperc < cperc)
                     prun.pbar = " (" % QStr::number(prun.cperc = cperc) % "%)";
-                else if(! prun.cperc && prun.pbar != " (0%)")
+                else if(! (prun.cperc || prun.pbar == " (0%)"))
                     prun.pbar = " (0%)";
                 else if(sb::like(99, {cperc, prun.cperc}, true))
                     prun.pbar = " (100%)", prun.cperc = 100;

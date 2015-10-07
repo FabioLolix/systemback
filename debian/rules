@@ -49,7 +49,6 @@ binary-arch: build-arch
 
 binary-indep: build-indep
 	dh_install -i
-	dh_link -i
 	dh_fixperms -i
 	dh_installdeb -i
 	dh_gencontrol -i

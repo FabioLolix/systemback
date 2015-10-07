@@ -55,8 +55,7 @@ void scheduler::main()
                     }
                 }() % "\n\n");
 
-            qApp->exit(rv);
-            return;
+            return qApp->exit(rv);
         }
     }
 
@@ -80,7 +79,7 @@ void scheduler::main()
             cfglmd = QFileInfo(cfgfile).lastModified();
         }
 
-        if(! sb::isdir(sb::sdir[1]) || ! sb::access(sb::sdir[1], sb::Write))
+        if(! (sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)))
             sleep(50);
         else if(! sb::isfile(sb::sdir[1] % "/.sbschedule"))
             sb::crtfile(sb::sdir[1] % "/.sbschedule");

@@ -55,18 +55,16 @@ ushort lblevent::MouseX, lblevent::MouseY;
 
 systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new Ui::systemback)
 {
-    cfgupdt = sb::style != "auto" && [this] {
-            if(QStyleFactory::keys().contains(sb::style))
-            {
-                qApp->setStyle(QStyleFactory::create(sb::style));
-                return false;
-            }
+    ocfg = (sb::sdir[0] % sb::sdir[2] % sb::schdlr[0] % sb::schdlr[1] % sb::lang % sb::style % sb::wsclng).toUtf8() % char(sb::ismpnt) % char(sb::pnumber) % char(sb::incrmtl) % char(sb::xzcmpr) % char(sb::autoiso) % char(sb::schdle[0]) % char(sb::schdle[1]) % char(sb::schdle[2]) % char(sb::schdle[3]) % char(sb::schdle[4]) % char(sb::schdle[5]) % char(sb::waot) % char(sb::ecache), shdltimer = dlgtimer = intrptimer = nullptr, wmblck = wismax = fscrn = nrxth = false;
 
+    if(sb::style != "auto")
+    {
+        if(QStyleFactory::keys().contains(sb::style))
+            qApp->setStyle(QStyleFactory::create(sb::style));
+        else
             sb::style = "auto";
-            return true;
-        }();
+    }
 
-    shdltimer = dlgtimer = intrptimer = nullptr, wmblck = wismax = fscrn = nrxth = false;
     ui->setupUi(this);
     ui->dialogpanel->move(0, 0);
     for(QWdt wdgt : QWL{ui->statuspanel, ui->scalingbuttonspanel, ui->buttonspanel, ui->resizepanel}) wdgt->hide();
@@ -122,7 +120,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         if(fnt.strikeOut()) fnt.setStrikeOut(false);
         if(fnt.underline()) fnt.setUnderline(false);
 
-        if(! sb::like(sb::wsclng, {"_auto_", "_1_"}) || fontInfo().pixelSize() != 15)
+        if(! (sb::like(sb::wsclng, {"_auto_", "_1_"}) && fontInfo().pixelSize() == 15))
         {
             sfctr = sb::wsclng == "auto" ? fontInfo().pixelSize() > 28 ? Max : fontInfo().pixelSize() > 21 ? High : Normal : sb::wsclng == "2" ? Max : sb::wsclng == "1.5" ? High : Normal;
             while(sfctr > Normal && (sgm.width() - ss(30) < ss(698) || sgm.height() - ss(30) < ss(465))) sfctr = sfctr == Max ? High : Normal;
@@ -217,6 +215,23 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         connect(ui->windowbutton4, &lblevent::Mouse_Released, this, &systemback::wbreleased);
         connect(ui->windowbutton4, &lblevent::Mouse_Move, this, &systemback::bmove);
 
+        connect(ui->statuspanel, &pnlevent::Hide, [this] {
+                prun.type = 0;
+                prun.txt.clear();
+                ui->processrun->clear();
+                if(prun.pnts) prun.pnts = 0;
+                if(sb::Progress > -1) sb::Progress = -1;
+                if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
+                if(ui->progressbar->value()) ui->progressbar->setValue(0);
+                if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+
+                if(sb::dbglev == sb::Errdbg)
+                {
+                    if(! sb::eout.isEmpty()) sb::eout.clear();
+                    sb::dbglev = sb::Nulldbg;
+                }
+            });
+
         if(! sstart)
         {
             icnt = 0, cpos = -1, nohmcpy[1] = uchkd = false;
@@ -307,9 +322,9 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                     }
                     else
                     {
-                        sb::wsclng = nsclng, nrxth = true;
+                        sb::wsclng = nsclng;
                         sb::cfgwrite();
-                        if(cfgupdt) cfgupdt = false;
+                        ocfg.clear();
                         sb::unlock(sb::Sblock);
                         sb::unlock(sb::Dpkglock);
 
@@ -495,7 +510,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                             ui->wpanel->setGeometry(wgeom[0] = sgm.width() < wgeom[2] ? 0 : sgm.x() + width() / 2 - ss(349), wgeom[1] = sgm.height() < wgeom[3] ? 0 : sgm.y() + height() / 2 - ss(232), wgeom[2], wgeom[3]);
 
                             connect(ui->wpanel, &pnlevent::Move, [this] {
-                                    if(fscrn && ! wismax && ! wmblck)
+                                    if(fscrn && ! (wismax || wmblck))
                                     {
                                         if(wgeom[0] != ui->wpanel->x()) wgeom[0] = ui->wpanel->x();
                                         if(wgeom[1] != ui->wpanel->y()) wgeom[1] = ui->wpanel->y();
@@ -554,7 +569,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 ui->copycover->resize(ui->copypanel->width() - ss(10), ui->copypanel->height() - ss(10));
             }
 
-            if(fscrn && ! wismax && ! wmblck)
+            if(fscrn && ! (wismax || wmblck))
             {
                 if(wgeom[2] != wndw->width()) wgeom[2] = wndw->width();
                 if(wgeom[3] != wndw->height()) wgeom[3] = wndw->height();
@@ -578,21 +593,24 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
 
 systemback::~systemback()
 {
-    if(cfgupdt) sb::cfgwrite();
-
-    if(fscrn && sb::isfile("/usr/bin/ksplashqml"))
+    if(! ocfg.isEmpty())
     {
-        for(cQStr &item : QDir("/usr/bin").entryList(QDir::Files))
-            if(sb::like(item, {"_ksplash*", "_plasma*"})) cfmod(bstr("/usr/bin/" % item), 0755);
+        if(ocfg != (sb::sdir[0] % sb::sdir[2] % sb::schdlr[0] % sb::schdlr[1] % sb::lang % sb::style % sb::wsclng).toUtf8() % char(sb::ismpnt) % char(sb::pnumber) % char(sb::incrmtl) % char(sb::xzcmpr) % char(sb::autoiso) % char(sb::schdle[0]) % char(sb::schdle[1]) % char(sb::schdle[2]) % char(sb::schdle[3]) % char(sb::schdle[4]) % char(sb::schdle[5]) % char(sb::waot) % char(sb::ecache)) sb::cfgwrite();
 
-        if(sb::isfile("/usr/share/autostart/plasma-desktop.desktop_")) sb::rename("/usr/share/autostart/plasma-desktop.desktop_", "/usr/share/autostart/plasma-desktop.desktop");
-        if(sb::isfile("/usr/share/autostart/plasma-netbook.desktop_")) sb::rename("/usr/share/autostart/plasma-netbook.desktop_", "/usr/share/autostart/plasma-netbook.desktop");
-    }
+        if(fscrn && sb::isfile("/usr/bin/ksplashqml"))
+        {
+            for(cQStr &item : QDir("/usr/bin").entryList(QDir::Files))
+                if(sb::like(item, {"_ksplash*", "_plasma*"})) cfmod(bstr("/usr/bin/" % item), 0755);
 
-    if(! nrxth)
-    {
-        QBA xauth(qgetenv("XAUTHORITY"));
-        if(xauth.startsWith("/tmp/sbXauthority-")) sb::rmfile(xauth);
+            if(sb::isfile("/usr/share/autostart/plasma-desktop.desktop_")) sb::rename("/usr/share/autostart/plasma-desktop.desktop_", "/usr/share/autostart/plasma-desktop.desktop");
+            if(sb::isfile("/usr/share/autostart/plasma-netbook.desktop_")) sb::rename("/usr/share/autostart/plasma-netbook.desktop_", "/usr/share/autostart/plasma-netbook.desktop");
+        }
+
+        if(! nrxth)
+        {
+            QBA xauth(qgetenv("XAUTHORITY"));
+            if(xauth.startsWith("/tmp/sbXauthority-")) sb::rmfile(xauth);
+        }
     }
 
     for(QTimer *tmr : {shdltimer, dlgtimer, intrptimer})
@@ -683,12 +701,7 @@ void systemback::unitimer()
 
                 auto lodsbl([this](bool chkd = false) {
                         ui->languageoverride->setDisabled(true);
-
-                        if(chkd || sb::lang != "auto")
-                        {
-                            sb::lang = "auto";
-                            if(! cfgupdt) cfgupdt = true;
-                        }
+                        if(chkd || sb::lang != "auto") sb::lang = "auto";
                     });
 
                 if(sb::isdir("/usr/share/systemback/lang"))
@@ -756,9 +769,9 @@ void systemback::unitimer()
                                 else
                                 {
                                     ui->languageoverride->setChecked(true);
-                                    ui->languages->setEnabled(true);
                                     ui->languages->addItems(lst);
                                     if(indx) ui->languages->setCurrentIndex(indx);
+                                    ui->languages->setEnabled(true);
                                 }
                             }
                         }
@@ -978,197 +991,185 @@ void systemback::unitimer()
             else if(sislive && sb::exist("/etc/xdg/autostart/sbfinstall.desktop"))
                 for(cchar *file : {"/etc/xdg/autostart/sbfinstall.desktop", "/etc/xdg/autostart/sbfinstall-kde.desktop"}) sb::remove(file);
         }
-        else if(! ui->statuspanel->isVisibleTo(ui->wpanel))
+        else if(ui->statuspanel->isVisibleTo(ui->wpanel))
         {
-            if(! sstart)
+            if(prun.type)
             {
-                if(! fscrn)
-                {
-                    auto acserr([this] {
-                            pntupgrade();
-
-                            if(ui->dialogquestion->isVisible())
-                                on_dialogcancel_clicked();
-                            else if(ui->restorepanel->isVisible())
-                                on_restoreback_clicked();
-                            else if(ui->copypanel->isVisible())
-                            {
-                                on_copyback_clicked();
-                                if(ui->function1->text() != "Systemback") on_installback_clicked();
-                            }
-                            else if(ui->installpanel->isVisible())
-                                on_installback_clicked();
-                            else if(ui->repairpanel->isVisible())
-                                on_repairback_clicked();
-                        });
-
-                    if(sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write))
-                    {
-                        if(! ui->storagedirarea->styleSheet().isEmpty())
-                        {
-                            ui->storagedirarea->setStyleSheet(nullptr);
-                            pntupgrade();
+                ui->processrun->setText(prun.txt % [this] {
+                        switch(++prun.pnts) {
+                        case 1:
+                            return " .  ";
+                        case 2:
+                            return " .. ";
+                        case 3:
+                            return " ...";
+                        default:
+                            prun.pnts = 0;
+                            return "    ";
                         }
+                    }());
 
-                        if(! (ppipe || ui->newrestorepoint->isEnabled()) && pname == tr("Currently running system")) ui->newrestorepoint->setEnabled(true);
-                        schar num(-1);
+                switch(prun.type) {
+                case 2 ... 6:
+                case 8 ... 10:
+                case 15:
+                case 19 ... 21:
+                {
+                    if(irblck)
+                    {
+                        if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+                    }
+                    else if(! ui->interrupt->isEnabled())
+                        ui->interrupt->setEnabled(true);
 
-                        for(QLE ldt : ui->points->findChildren<QLE>())
+                    schar cperc(sb::Progress);
+
+                    if(cperc > -1)
+                    {
+                        if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
+
+                        if(cperc > 99)
                         {
-                            ++num;
+                            if(ui->progressbar->value() < 100) ui->progressbar->setValue(100);
+                        }
+                        else if(ui->progressbar->value() < cperc)
+                            ui->progressbar->setValue(cperc);
+                        else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
+                            ui->progressbar->setValue(100);
+                    }
+                    else if(ui->progressbar->maximum() == 100)
+                        ui->progressbar->setMaximum(0);
 
-                            if(ldt->isEnabled() && ! sb::isdir(sb::sdir[1] % [num]() -> QStr {
-                                    switch(num) {
-                                    case 9:
-                                        return "/S10_";
-                                    case 10 ... 14:
-                                        return "/H0" % QStr::number(num - 9) % '_';
-                                    default:
-                                        return "/S0" % QStr::number(num + 1) % '_';
-                                    }
-                                }() % sb::pnames[num]))
-                            {
-                                acserr();
-                                break;
-                            }
+                    break;
+                }
+                case 18:
+                {
+                    if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
+                    schar cperc(sb::Progress);
+
+                    if(cperc > -1)
+                    {
+                        if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
+                        if(cperc < 101 && ui->progressbar->value() < cperc) ui->progressbar->setValue(cperc);
+                    }
+                    else if(ui->progressbar->maximum() == 100)
+                        ui->progressbar->setMaximum(0);
+
+                    break;
+                }
+                default:
+                    if(! irblck && sb::like(prun.type, {12, 14, 16, 17}))
+                    {
+                        if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
+                    }
+                    else if(ui->interrupt->isEnabled())
+                        ui->interrupt->setDisabled(true);
+
+                    if(ui->progressbar->maximum() == 100) ui->progressbar->setMaximum(0);
+                }
+            }
+        }
+        else if(! sstart)
+        {
+            if(! fscrn)
+            {
+                auto acserr([this] {
+                        pntupgrade();
+
+                        if(ui->dialogquestion->isVisible())
+                            on_dialogcancel_clicked();
+                        else if(ui->restorepanel->isVisible())
+                            on_restoreback_clicked();
+                        else if(ui->copypanel->isVisible())
+                        {
+                            on_copyback_clicked();
+                            if(ui->function1->text() != "Systemback") on_installback_clicked();
+                        }
+                        else if(ui->installpanel->isVisible())
+                            on_installback_clicked();
+                        else if(ui->repairpanel->isVisible())
+                            on_repairback_clicked();
+                    });
+
+                if(sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write))
+                {
+                    if(! ui->storagedirarea->styleSheet().isEmpty())
+                    {
+                        ui->storagedirarea->setStyleSheet(nullptr);
+                        pntupgrade();
+                    }
+
+                    if(! (ppipe || ui->newrestorepoint->isEnabled()) && pname == tr("Currently running system")) ui->newrestorepoint->setEnabled(true);
+                    schar num(-1);
+
+                    for(QLE ldt : ui->points->findChildren<QLE>())
+                    {
+                        ++num;
+
+                        if(ldt->isEnabled() && ! sb::isdir(sb::sdir[1] % [num]() -> QStr {
+                                switch(num) {
+                                case 9:
+                                    return "/S10_";
+                                case 10 ... 14:
+                                    return "/H0" % QStr::number(num - 9) % '_';
+                                default:
+                                    return "/S0" % QStr::number(num + 1) % '_';
+                                }
+                            }() % sb::pnames[num]))
+                        {
+                            acserr();
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    if(ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) acserr();
+                    if(ui->newrestorepoint->isEnabled()) ui->newrestorepoint->setDisabled(true);
+                    if(ui->storagedirarea->styleSheet().isEmpty()) ui->storagedirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
+                }
+            }
+
+            if(ui->installpanel->isVisible())
+            {
+                if(ui->installmenu->isEnabled() && ui->fullnamepipe->isVisible() && ui->usernamepipe->isVisible() && ui->hostnamepipe->isVisible() && ui->passwordpipe->isVisible() && (ui->rootpassword1->text().isEmpty() || ui->rootpasswordpipe->isVisible()) && ! ui->installnext->isEnabled()) ui->installnext->setEnabled(true);
+            }
+            else if(ui->livepanel->isVisible())
+            {
+                if(ui->livenameerror->isVisible() || ui->liveworkdir->text().isEmpty())
+                {
+                    if(ui->livenew->isEnabled()) ui->livenew->setDisabled(true);
+                }
+                else if(ui->livenamepipe->isVisible() || ui->livename->text() == "auto")
+                {
+                    if(sb::isdir(sb::sdir[2]) && sb::access(sb::sdir[2], sb::Write))
+                    {
+                        if(! ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet(nullptr);
+                        if(ickernel && ! ui->livenew->isEnabled()) ui->livenew->setEnabled(true);
+
+                        if(! ui->livelist->isEnabled())
+                        {
+                            ui->livelist->setEnabled(true);
+                            on_livemenu_clicked();
                         }
                     }
                     else
                     {
-                        if(ui->point1->isEnabled() || ui->pointpipe11->isEnabled()) acserr();
-                        if(ui->newrestorepoint->isEnabled()) ui->newrestorepoint->setDisabled(true);
-                        if(ui->storagedirarea->styleSheet().isEmpty()) ui->storagedirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
-                    }
-                }
+                        if(ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
 
-                if(ui->installpanel->isVisible())
-                {
-                    if(ui->installmenu->isEnabled() && ui->fullnamepipe->isVisible() && ui->usernamepipe->isVisible() && ui->hostnamepipe->isVisible() && ui->passwordpipe->isVisible() && (ui->rootpassword1->text().isEmpty() || ui->rootpasswordpipe->isVisible()) && ! ui->installnext->isEnabled()) ui->installnext->setEnabled(true);
-                }
-                else if(ui->livepanel->isVisible())
-                {
-                    if(ui->livenameerror->isVisible() || ui->liveworkdir->text().isEmpty())
-                    {
-                        if(ui->livenew->isEnabled()) ui->livenew->setDisabled(true);
-                    }
-                    else if(ui->livenamepipe->isVisible() || ui->livename->text() == "auto")
-                    {
-                        if(sb::isdir(sb::sdir[2]) && sb::access(sb::sdir[2], sb::Write))
+                        for(QWdt wdgt : QWL{ui->livenew, ui->livedelete, ui->liveconvert, ui->livewritestart})
+                            if(wdgt->isEnabled()) wdgt->setDisabled(true);
+
+                        if(ui->livelist->isEnabled())
                         {
-                            if(! ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet(nullptr);
-                            if(ickernel && ! ui->livenew->isEnabled()) ui->livenew->setEnabled(true);
-
-                            if(! ui->livelist->isEnabled())
-                            {
-                                ui->livelist->setEnabled(true);
-                                on_livemenu_clicked();
-                            }
-                        }
-                        else
-                        {
-                            if(ui->liveworkdirarea->styleSheet().isEmpty()) ui->liveworkdirarea->setStyleSheet("background-color: rgb(255, 103, 103)");
-
-                            for(QWdt wdgt : QWL{ui->livenew, ui->livedelete, ui->liveconvert, ui->livewritestart})
-                                if(wdgt->isEnabled()) wdgt->setDisabled(true);
-
-                            if(ui->livelist->isEnabled())
-                            {
-                                if(ui->livelist->count()) ui->livelist->clear();
-                                ui->livelist->setDisabled(true);
-                            }
+                            if(ui->livelist->count()) ui->livelist->clear();
+                            ui->livelist->setDisabled(true);
                         }
                     }
                 }
-                else if(ui->repairpanel->isVisible())
-                    rmntcheck();
             }
-
-            if(prun.type)
-            {
-                prun.type = 0;
-                prun.txt.clear();
-                ui->processrun->clear();
-                if(prun.pnts) prun.pnts = 0;
-                if(sb::Progress > -1) sb::Progress = -1;
-                if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
-                if(ui->progressbar->value()) ui->progressbar->setValue(0);
-                if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
-            }
-        }
-        else if(prun.type)
-        {
-            ui->processrun->setText(prun.txt % [this] {
-                    switch(++prun.pnts) {
-                    case 1:
-                        return " .  ";
-                    case 2:
-                        return " .. ";
-                    case 3:
-                        return " ...";
-                    default:
-                        prun.pnts = 0;
-                        return "    ";
-                    }
-                }());
-
-            switch(prun.type) {
-            case 2 ... 6:
-            case 8 ... 10:
-            case 15:
-            case 19 ... 21:
-            {
-                if(irblck)
-                {
-                    if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
-                }
-                else if(! ui->interrupt->isEnabled())
-                    ui->interrupt->setEnabled(true);
-
-                schar cperc(sb::Progress);
-
-                if(cperc > -1)
-                {
-                    if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
-
-                    if(cperc > 99)
-                    {
-                        if(ui->progressbar->value() < 100) ui->progressbar->setValue(100);
-                    }
-                    else if(ui->progressbar->value() < cperc)
-                        ui->progressbar->setValue(cperc);
-                    else if(sb::like(99, {cperc, ui->progressbar->value()}, true))
-                        ui->progressbar->setValue(100);
-                }
-                else if(ui->progressbar->maximum() == 100)
-                    ui->progressbar->setMaximum(0);
-
-                break;
-            }
-            case 18:
-            {
-                if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
-                schar cperc(sb::Progress);
-
-                if(cperc > -1)
-                {
-                    if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
-                    if(cperc < 101 && ui->progressbar->value() < cperc) ui->progressbar->setValue(cperc);
-                }
-                else if(ui->progressbar->maximum() == 100)
-                    ui->progressbar->setMaximum(0);
-
-                break;
-            }
-            default:
-                if(! irblck && sb::like(prun.type, {12, 14, 16, 17}))
-                {
-                    if(! ui->interrupt->isEnabled()) ui->interrupt->setEnabled(true);
-                }
-                else if(ui->interrupt->isEnabled())
-                    ui->interrupt->setDisabled(true);
-
-                if(ui->progressbar->maximum() == 100) ui->progressbar->setMaximum(0);
-            }
+            else if(ui->repairpanel->isVisible())
+                rmntcheck();
         }
 
         if(ui->buttonspanel->isVisible() && ! (ui->buttonspanel->y() || minside(ui->buttonspanel))) bttnshide();
@@ -1446,7 +1447,7 @@ void systemback::wreleased()
         if(busycnt) qApp->setOverrideCursor(Qt::WaitCursor);
     }
 
-    if(! fscrn && ! wismax)
+    if(! (fscrn || wismax))
     {
         QDW dtp(qApp->desktop());
         QRect agm(sgeom(true, dtp)), sgm;
@@ -1746,7 +1747,7 @@ void systemback::rleave()
 
     if(wdgt->width() == ss(30) && [] {
             QCr csr(qApp->overrideCursor());
-            return ! csr || csr->shape() != Qt::SizeFDiagCursor;
+            return ! (csr && csr->shape() == Qt::SizeFDiagCursor);
         }())
     {
         ushort sz[]{ss(20), ss(10)};
@@ -1920,6 +1921,7 @@ void systemback::statustart()
 
         ui->statuspanel->show();
         windowmove(ui->statuspanel->width(), ui->statuspanel->height());
+        if(sb::dbglev == sb::Nulldbg) sb::dbglev = sb::Errdbg;
     }
 
     ui->progressbar->setMaximum(0);
@@ -1942,12 +1944,12 @@ void systemback::restore()
 
         if(mthd < 3)
         {
-            if(ui->grubreinstallrestore->isVisibleTo(ui->restorepanel) && (! ui->grubreinstallrestore->isEnabled() || ui->grubreinstallrestore->currentText() != tr("Disabled")))
+            if(ui->grubreinstallrestore->isVisibleTo(ui->restorepanel) && ! (ui->grubreinstallrestore->isEnabled() && ui->grubreinstallrestore->currentText() == tr("Disabled")))
             {
                 sb::exec("update-grub");
                 if(intrrpt) return exit();
 
-                if(fcmp < 2 || (! ui->autorestoreoptions->isChecked() && ui->grubreinstallrestore->currentText() != "Auto"))
+                if(fcmp < 2 || ! (ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto"))
                 {
                     if(sb::exec("grub-install --force " % (grub.isEFI ? nullptr : ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? sb::gdetect() : ui->grubreinstallrestore->currentText()))) dialog = 308;
                     if(intrrpt) return exit();
@@ -1998,7 +2000,7 @@ void systemback::repair()
 
         if(! ppipe)
         {
-            if(! sb::isdir("/.systembacklivepoint") && ! sb::crtdir("/.systembacklivepoint"))
+            if(! (sb::isdir("/.systembacklivepoint") || sb::crtdir("/.systembacklivepoint")))
             {
                 sb::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
                 sb::crtdir("/.systembacklivepoint");
@@ -2036,13 +2038,13 @@ void systemback::repair()
 
         if(rv)
         {
-            if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel) && (! ui->grubreinstallrepair->isEnabled() || ui->grubreinstallrepair->currentText() != tr("Disabled")))
+            if(ui->grubreinstallrepair->isVisibleTo(ui->repairpanel) && ! (ui->grubreinstallrepair->isEnabled() && ui->grubreinstallrepair->currentText() == tr("Disabled")))
             {
                 QSL mlst{"dev", "dev/pts", "proc", "sys"};
                 for(cQStr &bpath : (sb::mcheck("/run") ? mlst << "/run" : mlst)) sb::mount('/' % bpath, "/mnt/" % bpath);
                 sb::exec("chroot /mnt update-grub");
                 if(intrrpt) return exit();
-                if((fcmp < 2 || (! ui->autorepairoptions->isChecked() && ui->grubreinstallrepair->currentText() != "Auto")) && sb::exec("chroot /mnt grub-install --force " % (grub.isEFI ? nullptr : ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText()))) dialog = ui->fullrepair->isChecked() ? 309 : 303;
+                if((fcmp < 2 || ! (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")) && sb::exec("chroot /mnt grub-install --force " % (grub.isEFI ? nullptr : ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText()))) dialog = ui->fullrepair->isChecked() ? 309 : 303;
                 mlst.move(0, 1);
                 for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
                 if(intrrpt) return exit();
@@ -2052,7 +2054,7 @@ void systemback::repair()
 
             if(sb::like(dialog, {101, 102}))
             {
-                if(ppipe == 1 && sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
+                if(ppipe && sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
                 dialog = ui->fullrepair->isChecked() ? 202 : 203;
             }
         }
@@ -2069,7 +2071,7 @@ void systemback::systemcopy()
     pset(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 8 : 9);
 
     auto err([this](ushort dlg = 0, cbstr &dev = nullptr) {
-            if(! intrrpt && ! (dlg && sb::like(dlg, {307, 313, 314, 316, 329, 330, 331, 332}))) dlg = [this] {
+            if(! (intrrpt || (dlg && sb::like(dlg, {307, 313, 314, 316, 329, 330, 331, 332})))) dlg = [this] {
                     if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
                     {
                         irblck = true;
@@ -2109,7 +2111,7 @@ void systemback::systemcopy()
             }
         });
 
-    if(! sb::isdir("/.sbsystemcopy") && ! sb::crtdir("/.sbsystemcopy")) return err();
+    if(! (sb::isdir("/.sbsystemcopy") || sb::crtdir("/.sbsystemcopy"))) return err();
 
     {
         QSL msort;
@@ -2119,7 +2121,7 @@ void systemback::systemcopy()
         {
             QStr nmpt(ui->partitionsettings->item(a, 4)->text());
 
-            if(! nmpt.isEmpty() && (! nohmcpy[1] || nmpt != "/home"))
+            if(! (nmpt.isEmpty() || (nohmcpy[1] && nmpt == "/home")))
                 msort.append(nmpt % '\n' % (ui->partitionsettings->item(a, 6)->text() == "x" ? ui->partitionsettings->item(a, 5)->text() : ui->partitionsettings->item(a, 5)->text() == "btrfs" ? "-b" : "-") % '\n' % ui->partitionsettings->item(a, 0)->text());
         }
 
@@ -2131,7 +2133,7 @@ void systemback::systemcopy()
         {
             QSL cval(vals.split('\n'));
             cQStr &mpoint(cval.at(0)), &fstype(cval.at(1)), &part(cval.at(2));
-            if(! ckd.contains(part) && sb::mcheck(part) && (! grub.isEFI || mpoint != "/boot/efi" || fstype.length() > 2)) sb::umount(part);
+            if(! ckd.contains(part) && sb::mcheck(part) && (! (grub.isEFI && mpoint == "/boot/efi") || fstype.length() > 2)) sb::umount(part);
             if(intrrpt) return err();
             sb::fssync();
             if(intrrpt) return err();
@@ -2159,7 +2161,7 @@ void systemback::systemcopy()
                     QStr path("/.sbsystemcopy");
 
                     for(cQStr &cpath : mpoint.split('/'))
-                        if(! sb::isdir(path.append('/' % cpath)) && ! sb::crtdir(path))
+                        if(! (sb::isdir(path.append('/' % cpath)) || sb::crtdir(path)))
                         {
                             sb::rename(path, path % '_' % sb::rndstr());
                             if(! sb::crtdir(path)) return err();
@@ -2210,11 +2212,16 @@ void systemback::systemcopy()
         }
     }
 
+    auto cfgwrt([](bool rpnt = true) {
+            if(rpnt && ! (sb::copy(excfile, "/.sbsystemcopy" excfile) && sb::copy(incfile, "/.sbsystemcopy" incfile))) return false;
+            return sb::cfgwrite("/.sbsystemcopy" cfgfile);
+        });
+
     if(! ppipe)
     {
-        if(pname != tr("Currently running system"))
+        if(pname == tr("Live image"))
         {
-            if(! sb::isdir("/.systembacklivepoint") && ! sb::crtdir("/.systembacklivepoint"))
+            if(! (sb::isdir("/.systembacklivepoint") || sb::crtdir("/.systembacklivepoint")))
             {
                 sb::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr());
                 if(! sb::crtdir("/.systembacklivepoint") || intrrpt) return err();
@@ -2236,12 +2243,8 @@ void systemback::systemcopy()
                         }
                     }(), guname(), "/.systembacklivepoint")) return err();
             }
-            else
-            {
-                if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint")) return err();
-                QBA cfg(sb::fload("/.sbsystemcopy" cfgfile));
-                if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy" cfgfile, cfg.replace("enabled=true", "enabled=false"))) return err();
-            }
+            else if(! (sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, "/.systembacklivepoint") && cfgwrt()))
+                return err();
 
             sb::umount("/.systembacklivepoint");
             rmdir("/.systembacklivepoint");
@@ -2259,16 +2262,14 @@ void systemback::systemcopy()
                     }
                 }(), guname(), nullptr)) return err();
         }
-        else if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) || (sb::schdle[0] && ! sb::cfgwrite("/.sbsystemcopy" cfgfile)))
+        else if(! (sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, nullptr) && cfgwrt(false)))
             return err();
     }
-    else if(ui->userdatafilescopy->isVisibleTo(ui->copypanel))
+    else if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
     {
-        if(! sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname)) return err();
-        QBA cfg(sb::fload("/.sbsystemcopy" cfgfile));
-        if(cfg.contains("enabled=true") && ! sb::crtfile("/.sbsystemcopy" cfgfile, cfg.replace("enabled=true", "enabled=false"))) return err();
+        if(! sb::scopy(ui->usersettingscopy->isChecked() ? 4 : 5, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname)) return err();
     }
-    else if(! sb::scopy(ui->usersettingscopy->isChecked() ? 4 : 5, guname(), sb::sdir[1] % '/' % cpoint % '_' % pname))
+    else if(! (sb::scopy(nohmcpy[1] ? 0 : ui->userdatafilescopy->isChecked() ? 1 : 2, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname) && cfgwrt()))
         return err();
 
     if(intrrpt) return err();
@@ -2512,7 +2513,7 @@ void systemback::systemcopy()
                     if(sb::like(nline, incl))
                         if(! nline.endsWith('='))
                         {
-                            bool algn(nline.endsWith('=' % guname()) && (a != 2 || ! nline.startsWith("HideUsers=")));
+                            bool algn(nline.endsWith('=' % guname()) && ! (a == 2 && nline.startsWith("HideUsers=")));
                             nline = sb::left(nline, sb::instr(nline, "="));
 
                             if(algn)
@@ -2560,7 +2561,7 @@ void systemback::systemcopy()
         }
 
         QBA mid(sb::rndstr(16).toUtf8().toHex() % '\n');
-        if(intrrpt || ! sb::crtfile("/.sbsystemcopy/etc/machine-id", mid) || ! cfmod("/.sbsystemcopy/etc/machine-id", 0444) || (sb::isdir("/.sbsystemcopy/var/lib/dbus") && ! sb::crtfile("/.sbsystemcopy/var/lib/dbus/machine-id", mid))) return err();
+        if(intrrpt || ! (sb::crtfile("/.sbsystemcopy/etc/machine-id", mid) && cfmod("/.sbsystemcopy/etc/machine-id", 0444)) || (sb::isdir("/.sbsystemcopy/var/lib/dbus") && ! sb::crtfile("/.sbsystemcopy/var/lib/dbus/machine-id", mid))) return err();
     }
 
     {
@@ -2743,7 +2744,7 @@ void systemback::livewrite()
         }
         else
         {
-            if(! sb::mkpart(ldev, 1048576, 104857600) || ! sb::mkpart(ldev) || intrrpt) return err(337);
+            if(! (sb::mkpart(ldev, 1048576, 104857600) && sb::mkpart(ldev)) || intrrpt) return err(337);
             sb::delay(100);
             if(sb::exec("mkfs.ext2 -FL SBROOT " % ldev % (ismmc ? "p" : nullptr) % '2') || intrrpt) return err(337);
             lrdir = "sbroot";
@@ -2753,7 +2754,7 @@ void systemback::livewrite()
 
         if(sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") || ! sb::setpflag(ldev % (ismmc ? "p" : nullptr) % '1', "boot lba")
             || intrrpt || (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite")))
-            || intrrpt || ! sb::crtdir("/.sblivesystemwrite") || ! sb::crtdir("/.sblivesystemwrite/sblive")
+            || intrrpt || ! (sb::crtdir("/.sblivesystemwrite") && sb::crtdir("/.sblivesystemwrite/sblive"))
             || intrrpt) return err();
 
         sb::delay(100);
@@ -2914,6 +2915,7 @@ void systemback::dialogopen(ushort dlg, cbstr &dev)
         }
         else
         {
+            if(! sb::eout.isEmpty()) sb::error(sb::eout);
             if(ui->dialoginfo->isVisibleTo(ui->dialogpanel)) ui->dialoginfo->hide();
             if(! ui->dialogerror->isVisibleTo(ui->dialogpanel)) ui->dialogerror->show();
             if(ui->dialogok->text() != "OK") ui->dialogok->setText("OK");
@@ -3017,7 +3019,7 @@ void systemback::dialogopen(ushort dlg, cbstr &dev)
             windowmove(ui->dialogpanel->width(), ui->dialogpanel->height());
         else
         {
-            if(sstart && ! sb::like(dialog, {300, 301, 305}) && ! ui->function3->text().contains(' ')) ui->function3->setText("Systemback " % tr("scheduler"));
+            if(sstart && ! (sb::like(dialog, {300, 301, 305}) || ui->function3->text().contains(' '))) ui->function3->setText("Systemback " % tr("scheduler"));
             setFixedSize(wgeom[2] = ui->dialogpanel->width(), wgeom[3] = ui->dialogpanel->height());
             QRect sgm(sgeom());
             move(wgeom[0] = sgm.x() + sgm.width() / 2 - ss(253), wgeom[1] = sgm.y() + sgm.height() / 2 - ss(100));
@@ -3383,7 +3385,7 @@ bool systemback::eventFilter(QObject *, QEvent *ev)
         }
 
 gcheck:
-        if(! wismax && ! wmblck)
+        if(! (wismax || wmblck))
         {
             QDW dtp(qApp->desktop());
             QRect agm(sgeom(true, dtp)), sgm;
@@ -3809,12 +3811,7 @@ void systemback::on_dialogcancel_clicked()
 
 void systemback::pnmchange(uchar num)
 {
-    if(sb::pnumber != num)
-    {
-        sb::pnumber = num;
-        if(! cfgupdt) cfgupdt = true;
-    }
-
+    if(sb::pnumber != num) sb::pnumber = num;
     uchar cnum(0);
 
     for(QLE ldt : ui->points->findChildren<QLE>())
@@ -4065,13 +4062,15 @@ void systemback::on_copymenu_clicked()
         ui->userdatafilescopy->show();
     }
 
-    if(ppipe == 1)
+    if(! ppipe)
+    {
+        if(! ui->userdatafilescopy->isEnabled()) ui->userdatafilescopy->setEnabled(true);
+    }
+    else if(ui->userdatafilescopy->isEnabled())
     {
         ui->userdatafilescopy->setDisabled(true);
         if(ui->userdatafilescopy->isChecked()) ui->userdatafilescopy->setChecked(false);
     }
-    else if(! ui->userdatafilescopy->isEnabled())
-        ui->userdatafilescopy->setEnabled(true);
 
     ui->sbpanel->hide();
     ui->copypanel->show();
@@ -4097,7 +4096,11 @@ void systemback::on_copymenu_clicked()
     {
         if(sb::mcheck("/.sbsystemcopy/") || sb::mcheck("/.sblivesystemwrite/"))
             on_partitionrefresh_clicked();
-        else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home" && ! ui->mountpoint->isEnabled())
+        else if(ui->mountpoint->isEnabled())
+        {
+            if(! ui->mountpoint->currentText().isEmpty()) on_mountpoint_currentTextChanged(ui->mountpoint->currentText());
+        }
+        else if(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text() == "/home")
             ui->mountpoint->setEnabled(true);
     }
 }
@@ -4127,7 +4130,7 @@ void systemback::on_livemenu_clicked()
 
     if(sb::isdir(sb::sdir[2]))
         for(cQStr &item : QDir(sb::sdir[2]).entryList(QDir::Files | QDir::Hidden))
-            if(item.endsWith(".sblive") && ! item.contains(' ') && ! sb::islink(sb::sdir[2] % '/' % item) && sb::fsize(sb::sdir[2] % '/' % item))
+            if(item.endsWith(".sblive") && ! (item.contains(' ') || sb::islink(sb::sdir[2] % '/' % item)) && sb::fsize(sb::sdir[2] % '/' % item))
             {
                 QLWI *lwi(new QLWI(sb::left(item, -7) % " (" % QStr::number(qRound64(sb::fsize(sb::sdir[2] % '/' % item) * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB, " % (sb::stype(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") == sb::Isfile && sb::fsize(sb::sdir[2] % '/' % sb::left(item, -6) % "iso") ? "sblive+iso" : "sblive") % ')'));
                 ui->livelist->addItem(lwi);
@@ -4136,7 +4139,7 @@ void systemback::on_livemenu_clicked()
 
 void systemback::on_repairmenu_clicked()
 {
-    if(ppipe == 1 || pname == tr("Live image"))
+    if(ppipe || pname == tr("Live image"))
     {
         if(! ui->systemrepair->isEnabled())
             for(QWdt wdgt : QWL{ui->systemrepair, ui->fullrepair}) wdgt->setEnabled(true);
@@ -4279,7 +4282,11 @@ void systemback::on_partitionrefresh_clicked()
     if(nohmcpy[1])
     {
         nohmcpy[1] = false;
-        if(! ppipe) ui->userdatafilescopy->setEnabled(true);
+
+        if(! ppipe)
+            ui->userdatafilescopy->setEnabled(true);
+        else if(ui->userdatafilescopy->isChecked())
+            ui->userdatafilescopy->setChecked(false);
     }
 
     if(ui->partitionsettings->rowCount()) ui->partitionsettings->clearContents();
@@ -4484,7 +4491,7 @@ void systemback::on_unmountdelete_clicked()
             {
                 QStr mpt(ui->partitionsettings->item(a, 3)->text());
 
-                if(! mpt.isEmpty() && ! sb::like(mpt, {"_SWAP_", '_' % tr("Multiple mount points") % '_'}) && ! mnts.contains(' ' % mpt.replace(" ", "\\040") % ' '))
+                if(! (mpt.isEmpty() || sb::like(mpt, {"_SWAP_", '_' % tr("Multiple mount points") % '_'}) || mnts.contains(' ' % mpt.replace(" ", "\\040") % ' ')))
                 {
                     ui->partitionsettings->item(a, 3)->setText(nullptr);
                     ui->partitionsettings->item(a, 3)->setToolTip(nullptr);
@@ -4573,7 +4580,7 @@ void systemback::on_unmount_clicked()
 
             if(! mpt.isEmpty())
             {
-                if((mpt == "SWAP" && ! QStr('\n' % mnts[1]).contains('\n' % ui->partitionsettings->item(a, 0)->text() % ' ')) || (mpt != "SWAP" && ! mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')))
+                if((mpt == "SWAP" && ! QStr('\n' % mnts[1]).contains('\n' % ui->partitionsettings->item(a, 0)->text() % ' ')) || ! (mpt == "SWAP" || mnts[0].contains(' ' % mpt.replace(" ", "\\040") % ' ')))
                 {
                     ui->partitionsettings->item(a, 3)->setText(nullptr);
                     ui->partitionsettings->item(a, 3)->setToolTip(nullptr);
@@ -4752,12 +4759,12 @@ void systemback::on_pointpipe1_clicked()
                     }
                 }(), pname = sb::pnames[num];
 
-            if(! rnmenbl && getpoint(num)->text() != sb::pnames[num]) rnmenbl = true;
+            if(! (rnmenbl || getpoint(num)->text() == sb::pnames[num])) rnmenbl = true;
         }
         else
         {
             QLE ldt(getpoint(num));
-            if(ldt->isEnabled() && ldt->text() != sb::pnames[num] && ! ldt->text().isEmpty()) ldt->setText(sb::pnames[num]);
+            if(ldt->isEnabled() && ! (ldt->text() == sb::pnames[num] || ldt->text().isEmpty())) ldt->setText(sb::pnames[num]);
         }
     }
 
@@ -4813,13 +4820,13 @@ void systemback::on_pointpipe1_clicked()
             {
                 if(ui->pointhighlight->isEnabled()) ui->pointhighlight->setDisabled(true);
             }
-            else if(! ui->point15->isEnabled() && ! ui->pointhighlight->isEnabled())
+            else if(! (ui->point15->isEnabled() || ui->pointhighlight->isEnabled()))
                 ui->pointhighlight->setEnabled(true);
 
             if(! ui->copymenu->isEnabled())
                 for(QWdt wdgt : QWL{ui->copymenu, ui->installmenu}) wdgt->setEnabled(true);
 
-            if(! sislive && ! ui->restoremenu->isEnabled()) ui->restoremenu->setEnabled(true);
+            if(! (sislive || ui->restoremenu->isEnabled())) ui->restoremenu->setEnabled(true);
             if(ui->livemenu->isEnabled()) ui->livemenu->setDisabled(true);
             if(! ui->repairmenu->isEnabled()) ui->repairmenu->setEnabled(true);
         }
@@ -5381,7 +5388,7 @@ void systemback::on_dirrefresh_clicked()
         }
     }
 
-    if(! ui->dirchoose->currentItem() && ui->dirpath->text() != "/")
+    if(! (ui->dirchoose->currentItem() || ui->dirpath->text() == "/"))
     {
         ui->dirpath->setText("/");
 
@@ -5558,20 +5565,20 @@ void systemback::on_dirchooseok_clicked()
                 else if(dlst.count() == 1 && sb::isfile(sb::sdir[1] % "/.sbschedule"))
                     sb::remove(sb::sdir[1]);
 
-                sb::sdir[0] = ui->dirpath->text(), sb::sdir[1] = sb::sdir[0] % "/Systemback", sb::ismpnt = ! sb::issmfs(sb::sdir[0], sb::sdir[0].count('/') == 1 ? "/" : sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1));
-                if(! cfgupdt) cfgupdt = true;
+                sb::sdir[0] = ui->dirpath->text(), sb::sdir[1] = sb::sdir[0] % "/Systemback";
                 ui->storagedir->setText(sb::sdir[0]);
                 ui->storagedir->setToolTip(sb::sdir[0]);
                 ui->storagedir->setCursorPosition(0);
                 pntupgrade();
             }
 
-            if(! sb::isdir(sb::sdir[1]) && ! sb::crtdir(sb::sdir[1]))
+            if(! (sb::isdir(sb::sdir[1]) || sb::crtdir(sb::sdir[1])))
             {
                 sb::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
                 sb::crtdir(sb::sdir[1]);
             }
 
+            sb::ismpnt = ! sb::issmfs(sb::sdir[0], sb::sdir[0].count('/') == 1 ? "/" : sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1));
             if(! sb::isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule");
             ui->choosepanel->hide();
             ui->sbpanel->show();
@@ -5588,7 +5595,6 @@ void systemback::on_dirchooseok_clicked()
             if(sb::sdir[2] != ui->dirpath->text())
             {
                 sb::sdir[2] = ui->dirpath->text();
-                if(! cfgupdt) cfgupdt = true;
                 ui->liveworkdir->setText(sb::sdir[2]);
                 ui->liveworkdir->setToolTip(sb::sdir[2]);
                 ui->liveworkdir->setCursorPosition(0);
@@ -5715,7 +5721,7 @@ void systemback::on_livedelete_clicked()
 
 void systemback::on_livedevices_currentItemChanged(QTblWI *crrnt, QTblWI *prvs)
 {
-    if(crrnt && (! prvs || crrnt->row() != prvs->row()))
+    if(crrnt && ! (prvs && crrnt->row() == prvs->row()))
     {
         ui->livedevices->item(crrnt->row(), 3)->setText("x");
         if(prvs) ui->livedevices->item(prvs->row(), 3)->setText("-");
@@ -5846,7 +5852,7 @@ void systemback::on_installnext_clicked()
         }
     }
 
-    if(ppipe == 1)
+    if(ppipe)
     {
         if(ui->usersettingscopy->isTristate())
         {
@@ -5923,7 +5929,7 @@ void systemback::on_installnext_clicked()
 
 void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *prvs)
 {
-    if(crrnt && (! prvs || crrnt->row() != prvs->row()))
+    if(crrnt && ! (prvs && crrnt->row() == prvs->row()))
     {
         if(ui->partitionsettingspanel2->isVisible())
             for(ushort a(prvs->row() + 1) ; a < ui->partitionsettings->rowCount() && ui->partitionsettings->item(a, 0)->background() != QBrush() ; ++a)
@@ -6080,6 +6086,8 @@ void systemback::on_partitionsettings_currentItemChanged(QTblWI *crrnt, QTblWI *
 
                     if(! ui->format->isChecked()) ui->format->setChecked(true);
                     if(! ui->unmountdelete->isEnabled()) ui->unmountdelete->setEnabled(true);
+                    schar indx(ui->filesystem->findText(ui->partitionsettings->item(crrnt->row(), 7)->text()));
+                    if(indx != -1 && ui->filesystem->currentIndex() != indx) ui->filesystem->setCurrentIndex(indx);
                 }
 
                 if(ui->mountpoint->currentIndex())
@@ -6315,7 +6323,7 @@ void systemback::on_changepartition_clicked()
 
 void systemback::on_filesystem_currentIndexChanged(cQStr &arg1)
 {
-    if(! ui->format->isChecked() && ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() != arg1) ui->format->setChecked(true);
+    if(! (ui->format->isChecked() || ui->partitionsettings->item(ui->partitionsettings->currentRow(), 7)->text() == arg1)) ui->format->setChecked(true);
 }
 
 void systemback::on_format_clicked(bool chckd)
@@ -6384,7 +6392,16 @@ void systemback::on_mountpoint_currentTextChanged(cQStr &arg1)
             {
                 if(ui->changepartition->isEnabled()) ui->changepartition->setDisabled(true);
                 sb::delay(300);
-                if(ccnt == icnt && QTemporaryDir("/tmp/" % QStr(arg1).replace('/', '_') % '_' % sb::rndstr()).isValid()) ui->changepartition->setEnabled(true);
+
+                if(ccnt == icnt && [&] {
+                        switch(sb::stype(ppipe ? sb::sdir[1] % '/' % cpoint % '_' % pname % arg1 : arg1)) {
+                        case sb::Notexist:
+                        case sb::Isdir:
+                            return true;
+                        }
+
+                        return false;
+                    }() && QTemporaryDir("/tmp/" % QStr(arg1).replace('/', '_') % '_' % sb::rndstr()).isValid()) ui->changepartition->setEnabled(true);
             }
             else if(! ui->changepartition->isEnabled())
                 ui->changepartition->setEnabled(true);
@@ -6464,7 +6481,7 @@ void systemback::on_repairmount_clicked()
             QStr path;
 
             for(cQStr &cpath : sb::right(ui->repairmountpoint->currentText(), -5).split('/'))
-                if(! sb::isdir("/mnt/" % path.append('/' % cpath)) && ! sb::crtdir("/mnt" % path))
+                if(! (sb::isdir("/mnt/" % path.append('/' % cpath)) || sb::crtdir("/mnt" % path)))
                 {
                     sb::rename("/mnt" % path, "/mnt" % path % '_' % sb::rndstr());
                     sb::crtdir("/mnt" % path);
@@ -6501,7 +6518,7 @@ void systemback::on_repairmount_clicked()
         }
     }
 
-    if(! ui->repairback->hasFocus() && ! ui->repairmountpoint->hasFocus()) ui->repairback->setFocus();
+    if(! (ui->repairback->hasFocus() || ui->repairmountpoint->hasFocus())) ui->repairback->setFocus();
 }
 
 void systemback::on_livename_textChanged(cQStr &arg1)
@@ -6518,7 +6535,7 @@ void systemback::on_livename_textChanged(cQStr &arg1)
             for(uchar a(0) ; a < arg1.length() ; ++a)
             {
                 cQChar &ctr(arg1.at(a));
-                if(ctr == '/' || ((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! ctr.isDigit() && ! ctr.isPunct())) return true;
+                if(ctr == '/' || ((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! (ctr.isDigit() || ctr.isPunct()))) return true;
             }
 
             return false;
@@ -6715,7 +6732,7 @@ void systemback::on_excludeadditem_clicked()
         while(! file.atEnd())
         {
             QStr cline(sb::left(file.readLine(), -1));
-            if(! cline.isEmpty() && ! cline.startsWith(path)) elst.append(cline % '\n');
+            if(! (cline.isEmpty() || cline.startsWith(path))) elst.append(cline % '\n');
         }
 
         file.close();
@@ -6777,7 +6794,7 @@ void systemback::on_includeadditem_clicked()
         while(! file.atEnd())
         {
             QStr cline(sb::left(file.readLine(), -1));
-            if(! cline.isEmpty() && ! cline.startsWith(path)) ilst.append(cline % '\n');
+            if(! (cline.isEmpty() || cline.startsWith(path))) ilst.append(cline % '\n');
         }
 
         file.close();
@@ -6813,7 +6830,7 @@ void systemback::on_excluderemoveitem_clicked()
         while(! file.atEnd())
         {
             QStr cline(sb::left(file.readLine(), -1));
-            if(! cline.isEmpty() && cline != ctxt) elst.append(cline % '\n');
+            if(! (cline.isEmpty() || cline == ctxt)) elst.append(cline % '\n');
         }
 
         file.close();
@@ -6845,7 +6862,7 @@ void systemback::on_includeremoveitem_clicked()
         while(! file.atEnd())
         {
             QStr cline(sb::left(file.readLine(), -1));
-            if(! cline.isEmpty() && cline != ctxt) ilst.append(cline % '\n');
+            if(! (cline.isEmpty() || cline == ctxt)) ilst.append(cline % '\n');
         }
 
         file.close();
@@ -6901,8 +6918,7 @@ void systemback::on_fullname_textChanged(cQStr &arg1)
             if(! word.isEmpty() && word.at(0).isLower())
             {
                 cpos = ui->fullname->cursorPosition();
-                ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
-                return;
+                return ui->fullname->setText(QStr(arg1).replace(' ' % word.at(0) % sb::right(word, -1), ' ' % word.at(0).toUpper() % sb::right(word, -1)));
             }
 
         if(ui->fullnamepipe->isHidden()) ui->fullnamepipe->show();
@@ -6951,7 +6967,7 @@ void systemback::on_username_textChanged(cQStr &arg1)
             for(uchar a(0) ; a < arg1.length() ; ++a)
             {
                 cQChar &ctr(arg1.at(a));
-                if((ctr < 'a' || ctr > 'z') && ctr != '.' && ctr != '_' && ctr != '@' && (! a || (! ctr.isDigit() && ctr != '-' && ctr != '$'))) return true;
+                if((ctr < 'a' || ctr > 'z') && ! (ctr == '.' || ctr == '_' || ctr == '@' || (a && (ctr.isDigit() || ctr == '-' || ctr == '$')))) return true;
             }
 
             return false;
@@ -7000,7 +7016,7 @@ void systemback::on_hostname_textChanged(cQStr &arg1)
             for(uchar a(0) ; a < arg1.length() ; ++a)
             {
                 cQChar &ctr(arg1.at(a));
-                if((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! ctr.isDigit() && (! a || (ctr != '-' && ctr != '.'))) return true;
+                if((ctr < 'a' || ctr > 'z') && (ctr < 'A' || ctr > 'Z') && ! (ctr.isDigit() || (a && (ctr == '-' || ctr == '.')))) return true;
             }
 
             return false;
@@ -7095,7 +7111,6 @@ void systemback::on_schedulerstate_clicked()
         if(! sb::schdle[0])
         {
             sb::schdle[0] = sb::True;
-            if(! cfgupdt) cfgupdt = true;
             if(sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)) sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
@@ -7118,7 +7133,6 @@ void systemback::on_schedulerstate_clicked()
     else
     {
         sb::schdle[0] = sb::False;
-        if(! cfgupdt) cfgupdt = true;
         ui->schedulerstate->setText(tr("Disabled"));
         ui->silentmode->setDisabled(true);
         if(ui->windowposition->isEnabled()) ui->windowposition->setDisabled(true);
@@ -7136,7 +7150,6 @@ void systemback::on_silentmode_clicked(bool chckd)
     if(! chckd)
     {
         sb::schdle[5] = sb::False;
-        if(! cfgupdt) cfgupdt = true;
         if(sb::schdle[4] > 10) ui->seconddown->setEnabled(true);
         if(sb::schdle[4] < 99) ui->secondup->setEnabled(true);
         ui->windowposition->setEnabled(true);
@@ -7144,7 +7157,6 @@ void systemback::on_silentmode_clicked(bool chckd)
     else if(! sb::schdle[5])
     {
         sb::schdle[5] = sb::True;
-        if(! cfgupdt) cfgupdt = true;
         ui->windowposition->setDisabled(true);
 
         for(QWdt wdgt : QWL{ui->secondup, ui->seconddown})
@@ -7155,7 +7167,6 @@ void systemback::on_silentmode_clicked(bool chckd)
 void systemback::on_dayup_clicked()
 {
     ++sb::schdle[1];
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->daydown->isEnabled()) ui->daydown->setEnabled(true);
     if(sb::schdle[1] == 7) ui->dayup->setDisabled(true);
@@ -7165,7 +7176,6 @@ void systemback::on_dayup_clicked()
 void systemback::on_daydown_clicked()
 {
     --sb::schdle[1];
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulerday->setText(QStr::number(sb::schdle[1]) % ' ' % tr("day(s)"));
     if(! ui->dayup->isEnabled()) ui->dayup->setEnabled(true);
 
@@ -7189,7 +7199,6 @@ void systemback::on_daydown_clicked()
 void systemback::on_hourup_clicked()
 {
     ++sb::schdle[2];
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourdown->isEnabled()) ui->hourdown->setEnabled(true);
     if(sb::schdle[2] == 23) ui->hourup->setDisabled(true);
@@ -7199,7 +7208,6 @@ void systemback::on_hourup_clicked()
 void systemback::on_hourdown_clicked()
 {
     --sb::schdle[2];
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulerhour->setText(QStr::number(sb::schdle[2]) % ' ' % tr("hour(s)"));
     if(! ui->hourup->isEnabled()) ui->hourup->setEnabled(true);
 
@@ -7223,7 +7231,6 @@ void systemback::on_hourdown_clicked()
 void systemback::on_minuteup_clicked()
 {
     sb::schdle[3] = sb::schdle[3] + (sb::schdle[3] == 55 ? 4 : 5);
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minutedown->isEnabled()) ui->minutedown->setEnabled(true);
     if(sb::schdle[3] == 59) ui->minuteup->setDisabled(true);
@@ -7232,7 +7239,6 @@ void systemback::on_minuteup_clicked()
 void systemback::on_minutedown_clicked()
 {
     sb::schdle[3] = sb::schdle[3] - (sb::schdle[3] == 59 ? 4 : 5);
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulerminute->setText(QStr::number(sb::schdle[3]) % ' ' % tr("minute(s)"));
     if(! ui->minuteup->isEnabled()) ui->minuteup->setEnabled(true);
     if(! sb::schdle[3] || (sb::schdle[3] == 30 && ! (sb::schdle[1] || sb::schdle[2]))) ui->minutedown->setDisabled(true);
@@ -7241,7 +7247,6 @@ void systemback::on_minutedown_clicked()
 void systemback::on_secondup_clicked()
 {
     sb::schdle[4] = sb::schdle[4] + (sb::schdle[4] == 95 ? 4 : 5);
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->seconddown->isEnabled()) ui->seconddown->setEnabled(true);
     if(sb::schdle[4] == 99) ui->secondup->setDisabled(true);
@@ -7250,7 +7255,6 @@ void systemback::on_secondup_clicked()
 void systemback::on_seconddown_clicked()
 {
     sb::schdle[4] = sb::schdle[4] - (sb::schdle[4] == 99 ? 4 : 5);
-    if(! cfgupdt) cfgupdt = true;
     ui->schedulersecond->setText(QStr::number(sb::schdle[4]) % ' ' % tr("seconds"));
     if(! ui->secondup->isEnabled()) ui->secondup->setEnabled(true);
     if(sb::schdle[4] == 10) ui->seconddown->setDisabled(true);
@@ -7267,11 +7271,7 @@ void systemback::on_windowposition_currentIndexChanged(cQStr &arg1)
                   : arg1 == tr("Center") ? "center"
                   : arg1 == tr("Bottom left") ? "bottomleft" : "bottomright");
 
-        if(sb::schdlr[0] != cval)
-        {
-            sb::schdlr[0] = cval;
-            if(! cfgupdt) cfgupdt = true;
-        }
+        if(sb::schdlr[0] != cval) sb::schdlr[0] = cval;
     }
 }
 
@@ -7295,7 +7295,7 @@ void systemback::on_userdatainclude_clicked(bool chckd)
 
 void systemback::on_interrupt_clicked()
 {
-    if(! irblck && ! intrrpt)
+    if(! (irblck || intrrpt))
     {
         if(! intrptimer)
         {
@@ -7448,7 +7448,7 @@ void systemback::on_newrestorepoint_clicked()
             if(! sb::pnames[a].isEmpty() && (a == 9 || a > 2 ? sb::pnumber < a + 2 : sb::pnumber == 3))
             {
                 pset(14, bstr(QStr::number(++dnum) % '/' % QStr::number(ppipe)));
-                if(! sb::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || ! sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) || intrrpt) return err();
+                if(! (sb::rename(sb::sdir[1] % (a < 9 ? QStr("/S0" % QStr::number(a + 1)) : "/S10") % '_' % sb::pnames[a], sb::sdir[1] % "/.DELETED_" % sb::pnames[a]) && sb::remove(sb::sdir[1] % "/.DELETED_" % sb::pnames[a])) || intrrpt) return err();
             }
     }
 
@@ -7525,7 +7525,7 @@ void systemback::on_livenew_clicked()
     pset(17, " 1/3");
 
     auto err([this](ushort dlg = 0) {
-            if(! intrrpt && dlg != 326)
+            if(! (intrrpt || dlg == 326))
             {
                 if(sb::dfree(sb::sdir[2]) < 104857600 || (sb::isdir("/home/.sbuserdata") && sb::dfree("/home") < 104857600))
                     dlg = 312;
@@ -7550,12 +7550,12 @@ void systemback::on_livenew_clicked()
     QStr lvtype;
 
     if((sb::exist(sb::sdir[2] % "/.sblivesystemcreate") && ! sb::remove(sb::sdir[2] % "/.sblivesystemcreate"))
-        || intrrpt || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate") || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/.disk") || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/" % (lvtype = sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live")) || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux")) return err();
+        || intrrpt || ! (sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate") && sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/.disk") && sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/" % (lvtype = sb::isfile("/usr/share/initramfs-tools/scripts/casper") ? "casper" : "live")) && sb::crtdir(sb::sdir[2] % "/.sblivesystemcreate/syslinux"))) return err();
 
     QStr ifname(ui->livename->text() == "auto" ? "systemback_live_" % QDateTime().currentDateTime().toString("yyyy-MM-dd") : ui->livename->text()), ckernel;
     { uchar ncount(0);
     while(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) ncount++ ? ifname = sb::left(ifname, sb::rinstr(ifname, "_")) % QStr::number(ncount) : ifname.append("_1"); }
-    if(intrrpt || ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::right(ui->version->text(), -sb::rinstr(ui->version->text(), "_")) % '\n') || ! sb::copy("/boot/vmlinuz-" % (ckernel = ckname()), sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz") || intrrpt) return err();
+    if(intrrpt || ! (sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/.disk/info", "Systemback Live (" % ifname % ") - Release " % sb::right(ui->version->text(), -sb::rinstr(ui->version->text(), "_")) % '\n') && sb::copy("/boot/vmlinuz-" % (ckernel = ckname()), sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/vmlinuz")) || intrrpt) return err();
     irblck = true;
 
     if(lvtype == "casper")
@@ -7605,7 +7605,7 @@ void systemback::on_livenew_clicked()
         QSL incl{"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"};
 
         for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
-            if(! sb::like(item, incl) && ! cfmod("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, 0644)) return err();
+            if(! (sb::like(item, incl) || cfmod("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, 0644))) return err();
     }
     else
     {
@@ -7671,12 +7671,12 @@ void systemback::on_livenew_clicked()
             QSL incl{"*integrity_check_", "*mountpoints_", "*fstab_", "*swap_", "*xconfig_", "*networking_", "*disable_update_notifier_", "*disable_hibernation_", "*disable_kde_services_", "*fix_language_selector_", "*disable_trackerd_", "*disable_updateinitramfs_", "*kubuntu_disable_restart_notifications_", "*kubuntu_mobile_session_"};
 
             for(cQStr &item : QDir("/usr/share/initramfs-tools/scripts/casper-bottom").entryList(QDir::Files))
-                if(! sb::like(item, incl) && ! cfmod("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, 0755)) return err();
+                if(! (sb::like(item, incl) || cfmod("/usr/share/initramfs-tools/scripts/casper-bottom/" % item, 0755))) return err();
         }
         else if(! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab"))
             return err();
 
-        if((xmntry && ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) || ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall")) return err();
+        if((xmntry && ! (sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) && sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall"))) return err();
         if(rv) return err(326);
     }
 
@@ -7685,12 +7685,12 @@ void systemback::on_livenew_clicked()
 
     if(sb::isfile("/usr/lib/syslinux/isolinux.bin"))
     {
-        if(! sb::copy("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32")) return err();
+        if(! (sb::copy("/usr/lib/syslinux/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") && sb::copy("/usr/lib/syslinux/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32"))) return err();
     }
-    else if(! sb::copy("/usr/lib/ISOLINUX/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") || ! sb::copy("/usr/lib/syslinux/modules/bios/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/libcom32.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libcom32.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/libutil.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libutil.c32") || ! sb::copy("/usr/lib/syslinux/modules/bios/ldlinux.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/ldlinux.c32"))
+    else if(! (sb::copy("/usr/lib/ISOLINUX/isolinux.bin", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.bin") && sb::copy("/usr/lib/syslinux/modules/bios/vesamenu.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/vesamenu.c32") && sb::copy("/usr/lib/syslinux/modules/bios/libcom32.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libcom32.c32") && sb::copy("/usr/lib/syslinux/modules/bios/libutil.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/libutil.c32") && sb::copy("/usr/lib/syslinux/modules/bios/ldlinux.c32", sb::sdir[2] % "/.sblivesystemcreate/syslinux/ldlinux.c32")))
         return err();
 
-    if(! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png") || ! sb::lvprpr(ui->userdatainclude->isChecked())) return err();
+    if(! (sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/syslinux/splash.png") && sb::lvprpr(ui->userdatainclude->isChecked()))) return err();
 
     {
         QStr ide;
@@ -7752,7 +7752,7 @@ void systemback::on_livenew_clicked()
                         QStr pprt;
 
                         for(cQStr &cprmtr : sb::left(sb::right(cline, -sb::instr(cline, "\"")), -1).split(' '))
-                            if(! cprmtr.isEmpty() && ! (pprt.isEmpty() && sb::like(cprmtr, {"_quiet_", "_splash_", "_xforcevesa_"})))
+                            if(! (cprmtr.isEmpty() || (pprt.isEmpty() && sb::like(cprmtr, {"_quiet_", "_splash_", "_xforcevesa_"}))))
                             {
                                 if(cprmtr.contains("\\\""))
                                 {
@@ -7775,10 +7775,10 @@ void systemback::on_livenew_clicked()
 
         if(xmntry) grxorg = "menuentry \"" % tr("Boot Live without xorg.conf file") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " noxconf quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n", srxorg = "label noxconf\n  menu label " % tr("Boot Live without xorg.conf file") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz noxconf quiet splash" % prmtrs % "\n\n";
 #ifdef __amd64__
-        if(sb::isfile("/usr/share/systemback/efi-amd64.bootfiles") && (sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") || ! sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png") ||
-            ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot system installer") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " finstall quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n") ||
-            ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"left\"}\n}\n") ||
-            ! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/loopback.cfg", "menuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz" % rpart % "boot=" % lvtype % " quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot system installer") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " finstall quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n"))) return err();
+        if(sb::isfile("/usr/share/systemback/efi-amd64.bootfiles") && (sb::exec("tar -xJf /usr/share/systemback/efi-amd64.bootfiles -C " % sb::sdir[2] % "/.sblivesystemcreate --no-same-owner --no-same-permissions") || ! (sb::copy("/usr/share/systemback/splash.png", sb::sdir[2] % "/.sblivesystemcreate/boot/grub/splash.png") &&
+            sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/grub.cfg", "if loadfont /boot/grub/font.pf2\nthen\n  set gfxmode=auto\n  insmod efi_gop\n  insmod efi_uga\n  insmod gfxterm\n  terminal_output gfxterm\nfi\n\nset theme=/boot/grub/theme.cfg\n\nmenuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot system installer") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " finstall quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n") &&
+            sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/theme.cfg", "title-color: \"white\"\ntitle-text: \"Systemback Live (" % ifname % ")\"\ntitle-font: \"Sans Regular 16\"\ndesktop-color: \"black\"\ndesktop-image: \"/boot/grub/splash.png\"\nmessage-color: \"white\"\nmessage-bg-color: \"black\"\nterminal-font: \"Sans Regular 12\"\n\n+ boot_menu {\n  top = 150\n  left = 15%\n  width = 75%\n  height = 130\n  item_font = \"Sans Regular 12\"\n  item_color = \"grey\"\n  selected_item_color = \"white\"\n  item_height = 20\n  item_padding = 15\n  item_spacing = 5\n}\n\n+ vbox {\n  top = 100%\n  left = 2%\n  + label {text = \"" % tr("Press 'E' key to edit") % "\" font = \"Sans 10\" color = \"white\" align = \"left\"}\n}\n") &&
+            sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/boot/grub/loopback.cfg", "menuentry \"" % tr("Boot Live system") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz" % rpart % "boot=" % lvtype % " quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot system installer") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " finstall quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\nmenuentry \"" % tr("Boot Live in safe graphics mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % " xforcevesa nomodeset quiet splash" % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n\n" % grxorg % "menuentry \"" % tr("Boot Live in debug mode") % "\" {\n  set gfxpayload=keep\n  linux /" % lvtype % "/vmlinuz " % rpart % "boot=" % lvtype % prmtrs % "\n  initrd /" % lvtype % "/initrd.gz\n}\n")))) return err();
 #endif
         if(! sb::crtfile(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", "default vesamenu.c32\nprompt 0\ntimeout 100\n\nmenu title Systemback Live (" % ifname % ")\nmenu tabmsg " % tr("Press TAB key to edit") % "\nmenu background splash.png\n\nlabel live\n  menu label " % tr("Boot Live system") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz quiet splash" % prmtrs % "\n\nlabel install\n  menu label " % tr("Boot system installer") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz finstall quiet splash" % prmtrs % "\n\nlabel safe\n  menu label " % tr("Boot Live in safe graphics mode") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz xforcevesa nomodeset quiet splash" % prmtrs % "\n\n" % srxorg % "label debug\n  menu label " % tr("Boot Live in debug mode") % "\n  kernel /" % lvtype % "/vmlinuz\n  append " % rpart % "boot=" % lvtype % " initrd=/" % lvtype % "/initrd.gz" % prmtrs % '\n')
             || intrrpt || ! sb::remove(sb::sdir[2] % "/.sblivesystemcreate/.systemback")
@@ -7806,7 +7806,7 @@ void systemback::on_livenew_clicked()
         {
             pset(20, " 4/3+1");
             sb::Progress = -1;
-            if(! sb::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") || ! sb::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux") || intrrpt) return err();
+            if(! (sb::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemcreate/syslinux/isolinux.cfg") && sb::rename(sb::sdir[2] % "/.sblivesystemcreate/syslinux", sb::sdir[2] % "/.sblivesystemcreate/isolinux")) || intrrpt) return err();
             ui->progressbar->setValue(0);
 
             if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o " % sb::sdir[2] % '/' % ifname % ".iso " % sb::sdir[2] % "/.sblivesystemcreate", sb::Prgrss))
@@ -7844,7 +7844,7 @@ void systemback::on_liveconvert_clicked()
     if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemconvert")) return err();
     sb::ThrdLng[0] = sb::fsize(path % ".sblive"), sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
     if(sb::exec("tar -xf " % path % ".sblive -C " % sb::sdir[2] % "/.sblivesystemconvert --no-same-owner --no-same-permissions", sb::Prgrss)) return err(325);
-    if(! sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") || ! sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux") || intrrpt) return err(323);
+    if(! (sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") && sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux")) || intrrpt) return err(323);
     pset(21, " 2/2");
     sb::Progress = -1;
     ui->progressbar->setValue(0);
@@ -7959,54 +7959,41 @@ void systemback::on_languageoverride_clicked(bool chckd)
         sb::lang = "auto";
         ui->languages->setDisabled(true);
     }
-
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_languages_currentIndexChanged(cQStr &arg1)
 {
     ui->languages->resize(fontMetrics().width(arg1) + ss(30), ui->languages->height());
 
-    if(ui->languages->isEnabled())
-    {
-        sb::lang = arg1 == "المصرية العربية" ? "ar_EG"
-                 : arg1 == "Català" ? "ca_ES"
-                 : arg1 == "Čeština" ? "cs_CS"
-                 : arg1 == "Deutsch" ? "de_DE"
-                 : arg1 == "English (common)" ? "en_EN"
-                 : arg1 == "English (United Kingdom)" ? "en_GB"
-                 : arg1 == "Español" ? "es_ES"
-                 : arg1 == "Suomi" ? "fi_FI"
-                 : arg1 == "Français" ? "fr_FR"
-                 : arg1 == "Galego" ? "gl_ES"
-                 : arg1 == "Magyar" ? "hu_HU"
-                 : arg1 == "Bahasa Indonesia" ? "id_ID"
-                 : arg1 == "Português (Brasil)" ? "pt_BR"
-                 : arg1 == "Română" ? "ro_RO"
-                 : arg1 == "Русский" ? "ru_RU"
-                 : arg1 == "Türkçe" ? "tr_TR"
-                 : arg1 == "Українськa" ? "uk_UK" : "zh_CN";
-
-        if(! cfgupdt) cfgupdt = true;
-    }
+    if(ui->languages->isEnabled()) sb::lang = arg1 == "المصرية العربية" ? "ar_EG"
+                                            : arg1 == "Català" ? "ca_ES"
+                                            : arg1 == "Čeština" ? "cs_CS"
+                                            : arg1 == "Deutsch" ? "de_DE"
+                                            : arg1 == "English (common)" ? "en_EN"
+                                            : arg1 == "English (United Kingdom)" ? "en_GB"
+                                            : arg1 == "Español" ? "es_ES"
+                                            : arg1 == "Suomi" ? "fi_FI"
+                                            : arg1 == "Français" ? "fr_FR"
+                                            : arg1 == "Galego" ? "gl_ES"
+                                            : arg1 == "Magyar" ? "hu_HU"
+                                            : arg1 == "Bahasa Indonesia" ? "id_ID"
+                                            : arg1 == "Português (Brasil)" ? "pt_BR"
+                                            : arg1 == "Română" ? "ro_RO"
+                                            : arg1 == "Русский" ? "ru_RU"
+                                            : arg1 == "Türkçe" ? "tr_TR"
+                                            : arg1 == "Українськa" ? "uk_UK" : "zh_CN";
 }
 
 void systemback::on_styleoverride_clicked(bool chckd)
 {
     sb::style = chckd ? ui->styles->currentText() : "auto";
     ui->styles->setEnabled(chckd);
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_styles_currentIndexChanged(cQStr &arg1)
 {
     ui->styles->resize(fontMetrics().width(arg1) + ss(30), ui->styles->height());
-
-    if(ui->styles->isEnabled())
-    {
-        sb::style = arg1;
-        if(! cfgupdt) cfgupdt = true;
-    }
+    if(ui->styles->isEnabled()) sb::style = arg1;
 }
 
 void systemback::on_alwaysontop_clicked(bool chckd)
@@ -8021,32 +8008,26 @@ void systemback::on_alwaysontop_clicked(bool chckd)
         sb::waot = sb::False;
         setwontop(false);
     }
-
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_incrementaldisable_clicked(bool chckd)
 {
     sb::incrmtl = chckd ? sb::False : sb::True;
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_cachemptydisable_clicked(bool chckd)
 {
     sb::ecache = chckd ? sb::False : sb::True;
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_usexzcompressor_clicked(bool chckd)
 {
     sb::xzcmpr = chckd ? sb::True : sb::False;
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_autoisocreate_clicked(bool chckd)
 {
     sb::autoiso = chckd ? sb::True : sb::False;
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_schedulerdisable_clicked(bool chckd)
@@ -8061,7 +8042,6 @@ void systemback::on_schedulerdisable_clicked(bool chckd)
         sb::schdlr[1] = "false";
         ui->schedulerusers->setText(nullptr);
         if(ui->adduser->isEnabled()) ui->adduser->setDisabled(true);
-        if(! cfgupdt) cfgupdt = true;
     }
 
     ui->users->setEnabled(chckd);
@@ -8092,8 +8072,6 @@ void systemback::on_adduser_clicked()
         ui->schedulerusers->setText(sb::right(sb::schdlr[1], -1));
         ui->users->removeItem(ui->users->findText(ui->users->currentText()));
     }
-
-    if(! cfgupdt) cfgupdt = true;
 }
 
 void systemback::on_schedulerrefresh_clicked()
@@ -8104,7 +8082,6 @@ void systemback::on_schedulerrefresh_clicked()
     {
         sb::schdlr[1] = "everyone";
         ui->schedulerusers->setText(tr("Everyone"));
-        if(! cfgupdt) cfgupdt = true;
     }
 
     ui->users->count() ? ui->users->clear() : ui->adduser->setEnabled(true);

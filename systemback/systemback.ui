@@ -6842,7 +6842,7 @@ These will be defined as restorable configuration files!</string>
      <zorder>settingspanel</zorder>
      <zorder>scalingbuttonspanel</zorder>
     </widget>
-    <widget class="QWidget" name="statuspanel" native="true">
+    <widget class="pnlevent" name="statuspanel" native="true">
      <property name="geometry">
       <rect>
        <x>0</x>

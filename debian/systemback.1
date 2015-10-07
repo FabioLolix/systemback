@@ -1,4 +1,4 @@
-.TH Systemback 1 "01.08.2015."
+.TH Systemback 1 "06.10.2015."
 
 .SH NAME
 Systemback - Simple system backup and restore application with extra
@@ -14,6 +14,19 @@ Systemback - Simple system backup and restore application with extra
 configuration files. In case of problems you can easily restore the previous
 state of the system. There are extra features like system copying, system
 installation and Live system creation.
+
+.SH ENVIRONMENT
+.TP
+.B DBGLEV
+set the debug level for the stdout printed error messages
+.br
+0 - no error messages
+.br
+1 - print the error messages when a process has stopped because
+.br
+    an error occurred (default)
+.br
+2 - print all error messages
 
 .SH FILES
 .SS /etc/systemback/systemback.conf

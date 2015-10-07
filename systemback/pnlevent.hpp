@@ -33,6 +33,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *);
     void resizeEvent(QResizeEvent *);
     void moveEvent(QMoveEvent *);
+    void hideEvent(QHideEvent *);
     void leaveEvent(QEvent *);
 
 signals:
@@ -40,6 +41,7 @@ signals:
     void Mouse_Move();
     void Resize();
     void Move();
+    void Hide();
 };
 
 inline void pnlevent::mouseMoveEvent(QMouseEvent *)
@@ -55,6 +57,11 @@ inline void pnlevent::resizeEvent(QResizeEvent *)
 inline void pnlevent::moveEvent(QMoveEvent *)
 {
     emit Move();
+}
+
+inline void pnlevent::hideEvent(QHideEvent *)
+{
+    emit Hide();
 }
 
 inline void pnlevent::leaveEvent(QEvent *)

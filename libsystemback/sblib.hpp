@@ -46,6 +46,7 @@ public:
     enum { Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvdevs = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Delpart = 11, Crtrpoint = 12, Srestore = 13, Scopy = 14, Lvprpr = 15,
            MSDOS = 0, GPT = 1, Clear = 2, Primary = 3, Extended = 4, Logical = 5, Freespace = 6, Emptyspace = 7,
            Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknown = 5,
+           Nodbg = 0, Errdbg = 1, Alldbg = 2, Nulldbg = 3, Falsedbg = 4,
            Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4, Wait = 8,
            False = 0, True = 1, Empty = 2, Include = 3,
            Sblock = 0, Dpkglock = 1, Schdlrlock = 2,
@@ -54,9 +55,9 @@ public:
            Norm = 0, All = 1, Mixed = 2 };
 
     static sb SBThrd;
-    static QStr ThrdStr[3], sdir[3], schdlr[2], pnames[15], lang, style, wsclng;
+    static QStr ThrdStr[3], eout, sdir[3], schdlr[2], pnames[15], lang, style, wsclng;
     static ullong ThrdLng[2];
-    static uchar pnumber, ismpnt, schdle[6], waot, incrmtl, xzcmpr, autoiso, ecache;
+    static uchar dbglev, pnumber, ismpnt, schdle[6], waot, incrmtl, xzcmpr, autoiso, ecache;
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
@@ -84,7 +85,6 @@ public:
     template<typename T> static fnln bool rmfile(const T &file);
     static bool like(cQStr &txt, cQSL &lst, uchar mode = Norm);
     static bool execsrch(cQStr &fname, cQStr &ppath = nullptr);
-    static bool cfgwrite(cQStr &file = cfgfile);
     static bool scopy(uchar mthd, cQStr &usr, cQStr &srcdir);
     static bool mkptable(cQStr &dev, cQStr &type = "msdos");
     static bool crtfile(cQStr &path, cQStr &txt = nullptr);
@@ -93,7 +93,9 @@ public:
     static bool access(cQStr &path, uchar mode = Read);
     static bool copy(cQStr &srcfile, cQStr &newfile);
     static bool setpflag(cQStr &part, cQStr &flags);
+    static bool error(cQStr &txt, bool dbg = false);
     static bool rename(cQStr &opath, cQStr &npath);
+    static bool cfgwrite(cQStr &file = cfgfile);
     static fnln bool islink(cQStr &path);
     static fnln bool isfile(cQStr &path);
     static fnln bool isdir(cQStr &path);
@@ -104,7 +106,6 @@ public:
     static bool lvprpr(bool iudata);
     static bool fopen(QFile &file);
     static bool umount(cQStr &dev);
-    static bool error(cQStr &txt);
     static bool isnum(cQStr &txt);
     static bool lock(uchar type);
     static void readprttns(QSL &strlst);
@@ -131,7 +132,7 @@ private:
     static QSL *ThrdSlst;
     static int sblock[3];
     static uchar ThrdType, ThrdChr;
-    static bool init, ThrdBool, ThrdRslt;
+    static bool ThrdBool, ThrdRslt;
 
     static QStr rlink(cQStr &path, ushort blen);
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), uchar oplen = 0);

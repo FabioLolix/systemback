@@ -21,6 +21,7 @@
 
 int main(int argc, char *argv[])
 {
+    if(sb::dbglev == sb::Alldbg) sb::dbglev = sb::Nulldbg;
     QCoreApplication a(argc, argv);
     sb::ldtltr();
     systemback c;

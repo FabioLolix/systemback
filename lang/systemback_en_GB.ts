@@ -1250,5 +1250,13 @@
 These will be defined as restorable configuration files!</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The specified debug level is invalid!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The default level (1) will be used.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

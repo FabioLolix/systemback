@@ -69,10 +69,11 @@ private:
     QFont bfnt;
     QTimer utimer, *shdltimer, *dlgtimer, *intrptimer;
     QStr cpoint, pname, hash;
+    QBA ocfg;
     ushort dialog;
     short wgeom[4], cpos;
     uchar busycnt, ppipe, sfctr, icnt;
-    bool sislive, wismax, wmblck, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy[2], sstart, cfgupdt, intrrpt;
+    bool sislive, wismax, wmblck, uchkd, nrxth, ickernel, irblck, utblck, nohmcpy[2], sstart, intrrpt;
 
     QLE getpoint(uchar num);
     QCB getppipe(uchar num);

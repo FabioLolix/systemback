@@ -39,6 +39,8 @@ public slots:
     void main();
 
 private:
+    enum { Unknown = 0, Systemback = 1, Finstall = 2, Scheduler = 3 };
+
     QStr *cmd;
 };
 

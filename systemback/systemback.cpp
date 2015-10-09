@@ -4482,7 +4482,7 @@ void systemback::on_unmountdelete_clicked()
             while(! in.atEnd())
             {
                 QStr cline(in.readLine()), mpt(ui->partitionsettings->item(ui->partitionsettings->currentRow(), 3)->text().replace(" ", "\\040"));
-                if(sb::like(cline, {"* " % mpt % " *", "* " % mpt % "/*"})) sb::umount(cline.split(' ').at(1));
+                if(sb::like(cline, {"* " % mpt % " *", "* " % mpt % "/*"})) sb::umount(cline.split(' ').value(1).replace("\\040", " "));
             }
 
             mnts = sb::fload("/proc/self/mounts");
@@ -4562,7 +4562,7 @@ void systemback::on_unmount_clicked()
 
                                 if(! umlst.contains(pslst.at(0)))
                                 {
-                                    sb::umount(pslst.at(1));
+                                    sb::umount(pslst.value(1).replace("\\040", " "));
                                     umlst.append(pslst.at(0));
                                 }
                             }

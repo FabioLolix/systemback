@@ -165,13 +165,13 @@
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="41"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback scheduler daemon!</source>
         <translation>Не удается запустить демон - планировщик Systemback!</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="123"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="121"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation>Параметры отсутствуют или ошибочны (или их слишком много).</translation>
     </message>
@@ -201,17 +201,17 @@
         <translation>Невозможно &quot;демонизировать&quot;.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback graphical user interface!</source>
         <translation>Не удается запустить Systemback GUI!</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to get root permissions.</source>
         <translation>Не удалось получить права root.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to connect to the X server.</source>
         <translation>Не удалось подключиться к X-серверу.</translation>
     </message>

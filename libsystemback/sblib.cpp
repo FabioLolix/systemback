@@ -3815,8 +3815,10 @@ bool sb::thrdlvprpr(bool iudata)
     if(ThrdKill) return false;
 
     bool uhl(dfree("/home") > 104857600 && dfree("/root") > 104857600 && [&usrs] {
+            QStr mnts(fload("/proc/self/mounts"));
+
             for(uchar a(1) ; a < usrs.count() ; ++a)
-                if(! issmfs("/home", "/home/" % usrs.at(a))) return false;
+                if(mnts.contains(" /home/" % usrs.at(a) % '/') || ! issmfs("/home", "/home/" % usrs.at(a))) return false;
 
             return true;
         }());

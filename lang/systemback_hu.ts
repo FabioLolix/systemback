@@ -1798,13 +1798,13 @@ Ezek visszaállítható konfigurációs fájloknak lesznek definiálva!</transla
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="41"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback scheduler daemon!</source>
         <translation>A Systemback ütemező démon nem indult el!</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="123"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="121"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation>Hiányzó, hibás vagy túl sok argumentum.</translation>
     </message>
@@ -1834,17 +1834,17 @@ Ezek visszaállítható konfigurációs fájloknak lesznek definiálva!</transla
         <translation>Nem sikerült démonizálni.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback graphical user interface!</source>
         <translation>A Systemback grafikus felülete nem indult el!</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to get root permissions.</source>
         <translation>Nem sikerült root jogosultságot szerezni.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to connect to the X server.</source>
         <translation>Nem sikerült az X szerverhez csatlakozni.</translation>
     </message>

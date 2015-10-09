@@ -165,13 +165,13 @@
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="41"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback scheduler daemon!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="123"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="121"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -201,17 +201,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback graphical user interface!</source>
         <translation>Não foi possível iniciar a interface gráfica do Systemback!</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to get root permissions.</source>
         <translation>Incapaz de obter permissões de root.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to connect to the X server.</source>
         <translation>Incapaz de se conectar ao servidor X.</translation>
     </message>

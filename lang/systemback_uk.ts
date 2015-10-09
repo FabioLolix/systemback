@@ -1797,13 +1797,13 @@ These will be defined as restorable configuration files!</source>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="41"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback scheduler daemon!</source>
         <translation>Не можу запустити планувальник Systemback!</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="123"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="121"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation>Не вистачає, чи помилкові параметри (або їх занадто багато).</translation>
     </message>
@@ -1833,17 +1833,17 @@ These will be defined as restorable configuration files!</source>
         <translation>Не в змозі &quot;демонізувати&quot;.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback graphical user interface!</source>
         <translation>Не можу запустити Systemback GUI!</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to get root permissions.</source>
         <translation>Не можу отримати права root.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to connect to the X server.</source>
         <translation>Не можу підключитися до X-серверу.</translation>
     </message>

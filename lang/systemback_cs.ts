@@ -1797,13 +1797,13 @@ skončí.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="41"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback scheduler daemon!</source>
         <translation>Nelze spustit službu plánovače aplikace Systemback!</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="123"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="121"/>
         <source>Missing, wrong or too much argument(s).</source>
         <translation>Chybějící, chybné či příliš mnoho argumentů.</translation>
     </message>
@@ -1833,17 +1833,17 @@ skončí.</translation>
         <translation>Nelze spustit jako službu.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Cannot start the Systemback graphical user interface!</source>
         <translation>Nelze spustit grafické uživatelské rozhraní aplikace Systemback!</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to get root permissions.</source>
         <translation>Nelze získat oprávnění správce systému.</translation>
     </message>
     <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="126"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
         <source>Unable to connect to the X server.</source>
         <translation>Nelze se připojit ke grafickému serveru X.</translation>
     </message>

@@ -107,12 +107,10 @@ void sustart::main()
                         }
                     }
                     else
-                    {
                         cmd = new QStr(mode == Scheduler ? [&]() -> QStr {
                                 qputenv("HOME", usrhm.toUtf8());
                                 return "sbscheduler " % uname;
                             }() : "systemback" % QStr(mode == Finstall ? " finstall" : nullptr));
-                    }
 
                     return 0;
                 }() : 2);

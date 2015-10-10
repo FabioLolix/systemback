@@ -24,7 +24,6 @@ HEADERS += sblib.hpp \
 RESOURCES += version.qrc
 
 QMAKE_CXXFLAGS += -g \
-                  -flto \
                   -fno-rtti \
                   -fvisibility=hidden \
                   -fvisibility-inlines-hidden \
@@ -37,8 +36,12 @@ QMAKE_CXXFLAGS_WARN_ON += -Wextra \
 QMAKE_LFLAGS += -g \
                 -Wl,-Bsymbolic-functions \
                 -Wl,--as-needed \
-                -fuse-ld=gold \
-                -flto
+                -fuse-ld=gold
+
+! equals(QMAKE_CXX, clang++) {
+    QMAKE_CXXFLAGS += -flto
+    QMAKE_LFLAGS += -flto
+}
 
 LIBS += -lmount \
         -lblkid \

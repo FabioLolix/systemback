@@ -1065,13 +1065,13 @@ bool sb::lvprpr(bool iudata)
 bool sb::mkptable(cQStr &dev, cQStr &type)
 {
     auto err([&dev] { return error("\n " % tr("An error occurred while creating the partition table on the following device:") % "\n\n  " % dev % "\n\n", true); });
-    if(dev.length() > (dev.contains("mmc") ? 12 : 8) || stype(dev) != Isblock) return false;
+    if(dev.length() > (dev.contains("mmc") ? 12 : 8) || stype(dev) != Isblock) return err();
     ThrdType = Mkptable,
     ThrdStr[0] = dev,
     ThrdStr[1] = type;
     SBThrd.start();
     thrdelay();
-    return ThrdRslt;
+    return ThrdRslt ? true : err();
 }
 
 bool sb::remove(cQStr &path)
@@ -1254,7 +1254,7 @@ void sb::edetect(QSL &elst, bool spath)
     QSL mpts;
 
     {
-        QStr mnts(fload("/proc/self/mounts"));
+        QBA mnts(fload("/proc/self/mounts"));
         QTS in(&mnts, QIODevice::ReadOnly);
 
         while(! in.atEnd())

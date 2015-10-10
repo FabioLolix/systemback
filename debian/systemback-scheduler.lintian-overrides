@@ -1,2 +1,1 @@
-systemback-scheduler: hardening-no-relro
 systemback-scheduler: setuid-binary

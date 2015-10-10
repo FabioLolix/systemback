@@ -216,19 +216,22 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
         connect(ui->windowbutton4, &lblevent::Mouse_Move, this, &systemback::bmove);
 
         connect(ui->statuspanel, &pnlevent::Hide, [this] {
-                prun.type = 0;
-                prun.txt.clear();
-                ui->processrun->clear();
-                if(prun.pnts) prun.pnts = 0;
-                if(sb::Progress > -1) sb::Progress = -1;
-                if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
-                if(ui->progressbar->value()) ui->progressbar->setValue(0);
-                if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
-
-                if(sb::dbglev == sb::Errdbg)
+                if(! ui->statuspanel->isVisibleTo(ui->wpanel))
                 {
-                    if(! sb::eout.isEmpty()) sb::eout.clear();
-                    sb::dbglev = sb::Nulldbg;
+                    prun.type = 0;
+                    prun.txt.clear();
+                    ui->processrun->clear();
+                    if(prun.pnts) prun.pnts = 0;
+                    if(sb::Progress > -1) sb::Progress = -1;
+                    if(! ui->progressbar->maximum()) ui->progressbar->setMaximum(100);
+                    if(ui->progressbar->value()) ui->progressbar->setValue(0);
+                    if(ui->interrupt->isEnabled()) ui->interrupt->setDisabled(true);
+
+                    if(sb::dbglev == sb::Errdbg)
+                    {
+                        if(! sb::eout.isEmpty()) sb::eout.clear();
+                        sb::dbglev = sb::Nulldbg;
+                    }
                 }
             });
 

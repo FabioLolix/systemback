@@ -39,7 +39,8 @@ QMAKE_CXXFLAGS_WARN_ON += -Wextra \
 QMAKE_LFLAGS += -g \
                 -Wl,-rpath=/usr/lib/systemback \
                 -Wl,--as-needed \
-                -fuse-ld=gold
+                -fuse-ld=gold \
+                -Wl,-z,relro
 
 ! equals(QMAKE_CXX, clang++) {
     QMAKE_CXXFLAGS += -flto

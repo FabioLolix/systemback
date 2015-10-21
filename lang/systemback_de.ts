@@ -6,12 +6,12 @@
     <message>
         <location filename="../libsystemback/sblib.cpp" line="101"/>
         <source>The specified debug level is invalid!</source>
-        <translation type="unfinished"></translation>
+        <translation>Die angegebene Debug-Stufe ist ungültig!</translation>
     </message>
     <message>
         <location filename="../libsystemback/sblib.cpp" line="101"/>
         <source>The default level (1) will be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Standardebene (1) wird verwendet werden.</translation>
     </message>
     <message>
         <location filename="../libsystemback/sblib.cpp" line="153"/>

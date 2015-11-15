@@ -720,7 +720,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An another systemback process is currently running, please wait until it finishes.</source>
+        <source>An another Systemback process is currently running, please wait until it finishes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1054,11 +1054,6 @@
   -v, --version            output the Systemback version number
 
   -h, --help               show this help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An another Systemback process is currently running, please wait until it
- finishes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

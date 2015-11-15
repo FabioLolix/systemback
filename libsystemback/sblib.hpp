@@ -147,7 +147,7 @@ private:
     bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
     bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
     bool thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir);
-    bool recrmdir(cQStr &path, bool slimit = false);
+    bool recrmdir(cbstr &path, bool slimit = false);
     bool cplink(cQStr &srclink, cQStr &newlink);
     bool cpdir(cQStr &srcdir, cQStr &newdir);
     bool exclcheck(cQSL &elist, cQStr &item);

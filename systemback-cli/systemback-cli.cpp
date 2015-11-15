@@ -116,7 +116,7 @@ void systemback::main()
             case 3:
                 return tr("Root privileges are required for running the Systemback!");
             case 4:
-                return tr("An another Systemback process is currently running, please wait until it\n finishes.");
+                return tr("An another Systemback process is currently running, please wait until it finishes.");
             case 5:
                 return tr("Unable to get exclusive lock!") % "\n\n " % tr("First, close all package manager.");
             case 6:
@@ -313,7 +313,7 @@ uchar systemback::storagedir(cQSL &args)
         }
 
         if(! sb::isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule");
-        sb::print("\n " % tr("The specified storage directory path is set.") % "\n\n");
+        sb::print("\n " % twrp(tr("The specified storage directory path is set.")) % "\n\n");
     }
 
     return 0;
@@ -538,7 +538,7 @@ uchar systemback::restore()
     mvprintw(0, blgn, sbtxt);
     attron(COLOR_PAIR(1));
 
-    printw(bstr("\n\n " % [mthd] {
+    printw(bstr("\n\n " % twrp([mthd] {
             switch(mthd) {
             case 1:
                 return tr("The full system restoration is completed.");
@@ -549,10 +549,10 @@ uchar systemback::restore()
             default:
                 return tr("The users configuration files restoration are completed.");
             }
-        }()));
+        }())));
 
     attron(COLOR_PAIR(3));
-    printw(bstr("\n\n " % (mthd < 3 ? tr("Press 'ENTER' key to reboot the computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit."))));
+    printw(bstr("\n\n " % twrp(mthd < 3 ? tr("Press 'ENTER' key to reboot the computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit."))));
     attron(COLOR_PAIR(2));
     mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
     refresh();

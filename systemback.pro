@@ -17,6 +17,7 @@ TRANSLATIONS = lang/systemback_hu.ts \
                lang/systemback_ar_EG.ts \
                lang/systemback_ca_ES.ts \
                lang/systemback_cs.ts \
+               lang/systemback_da_DK.ts \
                lang/systemback_de.ts \
                lang/systemback_en_GB.ts \
                lang/systemback_es.ts \

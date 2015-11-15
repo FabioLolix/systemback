@@ -50,6 +50,7 @@ private:
     bstr sbtxt;
     uchar blgn;
 
+    QStr twrp(cQStr &txt);
     uchar storagedir(cQSL &args);
     uchar clistart();
     uchar restore();
@@ -71,6 +72,11 @@ inline systemback::systemback() : ptimer(nullptr)
 inline systemback::~systemback()
 {
     if(ptimer) delete ptimer;
+}
+
+inline QStr systemback::twrp(cQStr &txt)
+{
+    return txt.length() > 78 ? QStr(txt).replace(txt.left(78).lastIndexOf(' '), 1, "\n ") : txt;
 }
 
 #endif

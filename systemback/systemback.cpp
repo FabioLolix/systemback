@@ -720,6 +720,7 @@ void systemback::unitimer()
                             cchar *lname(lcode == "ar_EG" ? "المصرية العربية"
                                        : lcode == "ca_ES" ? "Català"
                                        : lcode == "cs" ? "Čeština"
+                                       : lcode == "da_DK" ? "Dansk"
                                        : lcode == "de" ? "Deutsch"
                                        : lcode == "en_GB" ? "English (United Kingdom)"
                                        : lcode == "es" ? "Español"
@@ -752,6 +753,7 @@ void systemback::unitimer()
                                          : sb::lang == "ar_EG" ? lst.indexOf("المصرية العربية")
                                          : sb::lang == "ca_ES" ? lst.indexOf("Català")
                                          : sb::lang == "cs_CS" ? lst.indexOf("Čeština")
+                                         : sb::lang == "da_DK" ? lst.indexOf("Dansk")
                                          : sb::lang == "de_DE" ? lst.indexOf("Deutsch")
                                          : sb::lang == "en_EN" ? lst.indexOf("English (common)")
                                          : sb::lang == "en_GB" ? lst.indexOf("English (United Kingdom)")
@@ -2926,7 +2928,7 @@ void systemback::dialogopen(ushort dlg, cbstr &dev)
             ui->dialogtext->setText([&, dlg]() -> QStr {
                     switch(dlg) {
                     case 300:
-                        return tr("An another systemback process is currently running, please wait until it finishes.");
+                        return tr("An another Systemback process is currently running, please wait until it finishes.");
                     case 301:
                         return tr("Unable to get exclusive lock!") % "<p>" % tr("First, close all package manager.");
                     case 302:
@@ -7738,7 +7740,7 @@ void systemback::on_livenew_clicked()
 
     {
         QStr rpart, grxorg, srxorg, prmtrs;
-        if(QFile(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs").size() > 4294967295) rpart = "root=LABEL=SBROOT ";
+        if(sb::fsize(sb::sdir[2] % "/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs") > 4294967295) rpart = "root=LABEL=SBROOT ";
 
         if(sb::isfile("/etc/default/grub"))
         {
@@ -7940,6 +7942,7 @@ void systemback::on_languageoverride_clicked(bool chckd)
         sb::lang = lname == "المصرية العربية" ? "ar_EG"
                  : lname == "Català" ? "ca_ES"
                  : lname == "Čeština" ? "cs_CS"
+                 : lname == "Dansk" ? "da_DK"
                  : lname == "Deutsch" ? "de_DE"
                  : lname == "English (common)" ? "en_EN"
                  : lname == "English (United Kingdom)" ? "en_GB"
@@ -7971,6 +7974,7 @@ void systemback::on_languages_currentIndexChanged(cQStr &arg1)
     if(ui->languages->isEnabled()) sb::lang = arg1 == "المصرية العربية" ? "ar_EG"
                                             : arg1 == "Català" ? "ca_ES"
                                             : arg1 == "Čeština" ? "cs_CS"
+                                            : arg1 == "Dansk" ? "da_DK"
                                             : arg1 == "Deutsch" ? "de_DE"
                                             : arg1 == "English (common)" ? "en_EN"
                                             : arg1 == "English (United Kingdom)" ? "en_GB"

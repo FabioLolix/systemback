@@ -110,15 +110,22 @@ void sb::print(cQStr &txt)
 
 bool sb::error(cQStr &txt, bool dbg)
 {
+    QStr ftxt;
+
+    if(txt.length() > 80)
+        for(cQStr &ptxt : txt.split('\n')) ftxt.append('\n' % (ptxt.length() > 79 && ! like(ptxt, {"*: /*", "*： /*"}) ? QStr(ptxt).replace(ptxt.left(79).lastIndexOf(' '), 1, "\n ") : ptxt));
+    else
+        ftxt = txt;
+
     if(! dbg) goto print;
 
     switch(dbglev) {
     case Errdbg:
-        eout.append(isatty(fileno(stderr)) ? txt : txt.trimmed() % '\n');
+        eout.append(isatty(fileno(stderr)) ? ftxt : ftxt.trimmed() % '\n');
         break;
     case Alldbg:
 print:
-        QTS(stderr) << (isatty(fileno(stderr)) ? "\033[1;31m" % txt % "\033[0m" : txt.trimmed().append('\n'));
+        QTS(stderr) << (isatty(fileno(stderr)) ? "\033[1;31m" % ftxt % "\033[0m" : ftxt.trimmed().append('\n'));
     }
 
     return false;
@@ -1337,203 +1344,234 @@ bool sb::lcomp(cQStr &link1, cQStr &link2)
 
 bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden, cQSL &ilist, uchar oplen)
 {
-    QStr ppath(ba.isEmpty() ? nullptr : QStr(right(path, -(oplen == 1 ? 1 : oplen + 1)) % '/'));
     DIR *dir(opendir(bstr(path)));
-    dirent *ent;
-    QSL dd{"_._", "_.._"};
 
-    while(! ThrdKill && (ent = readdir(dir)))
+    if(dir)
     {
-        QStr iname(ent->d_name), npath(ppath % iname);
+        dirent *ent;
+        QStr ppath(ba.isEmpty() ? nullptr : QStr(right(path, -(oplen == 1 ? 1 : oplen + 1)) % '/'));
+        QSL dd{"_._", "_.._"};
 
-        if(! like(iname, dd) && [&, hidden] {
-                switch(hidden) {
-                case False:
-                    return true;
-                case True:
-                    return iname.startsWith('.') || (! ilist.isEmpty() && inclcheck(ilist, iname));
-                default:
-                    return npath.startsWith('.') || inclcheck(ilist, npath);
-                }
-            }())
+        while(! ThrdKill && (ent = readdir(dir)))
         {
-            uchar type([&]() -> uchar {
-                    switch(ent->d_type) {
-                    case DT_LNK:
-                        return Islink;
-                    case DT_DIR:
-                        return Isdir;
-                    case DT_REG:
-                        return Isfile;
-                    case DT_UNKNOWN:
-                        return stype(path % '/' % iname);
-                    default:
-                        return Unknown;
-                    }
-                }());
+            QStr iname(ent->d_name), npath(ppath % iname);
 
-            switch(type) {
-            case Islink:
-            case Isfile:
-                ucl.append(type);
-                ba.append(npath % '\n');
-                break;
-            case Isdir:
-                rodir(ba.append(npath % '\n'), ucl << Isdir, path % '/' % iname, hidden == True ? ilist.isEmpty() ? uchar(False) : uchar(Include) : hidden, ilist, (oplen ? oplen : path.length()));
+            if(! like(iname, dd) && [&, hidden] {
+                    switch(hidden) {
+                    case False:
+                        return true;
+                    case True:
+                        return iname.startsWith('.') || (! ilist.isEmpty() && inclcheck(ilist, iname));
+                    default:
+                        return npath.startsWith('.') || inclcheck(ilist, npath);
+                    }
+                }())
+            {
+                uchar type([&]() -> uchar {
+                        switch(ent->d_type) {
+                        case DT_LNK:
+                            return Islink;
+                        case DT_DIR:
+                            return Isdir;
+                        case DT_REG:
+                            return Isfile;
+                        case DT_UNKNOWN:
+                            return stype(path % '/' % iname);
+                        default:
+                            return Unknown;
+                        }
+                    }());
+
+                switch(type) {
+                case Islink:
+                case Isfile:
+                    ucl.append(type);
+                    ba.append(npath % '\n');
+                    break;
+                case Isdir:
+                    rodir(ba.append(npath % '\n'), ucl << Isdir, path % '/' % iname, hidden == True ? ilist.isEmpty() ? uchar(False) : uchar(Include) : hidden, ilist, (oplen ? oplen : path.length()));
+                }
             }
         }
+
+        closedir(dir);
+        if(! (ThrdKill || oplen)) ba.squeeze();
     }
 
-    closedir(dir);
-    if(! (ThrdKill || oplen)) ba.squeeze();
     return ! ThrdKill;
 }
 
 bool sb::rodir(QBA &ba, cQStr &path, uchar oplen)
 {
-    QStr ppath(ba.isEmpty() ? nullptr : QStr(right(path, -(oplen == 1 ? 1 : oplen + 1)) % '/'));
     DIR *dir(opendir(bstr(path)));
-    dirent *ent;
-    QSL dd{"_._", "_.._"};
 
-    while(! ThrdKill && (ent = readdir(dir)))
+    if(dir)
     {
-        QStr iname(ent->d_name);
+        dirent *ent;
+        QStr ppath(ba.isEmpty() ? nullptr : QStr(right(path, -(oplen == 1 ? 1 : oplen + 1)) % '/'));
+        QSL dd{"_._", "_.._"};
 
-        if(! like(iname, dd))
-            switch([&]() -> uchar {
-                    switch(ent->d_type) {
-                    case DT_LNK:
-                    case DT_REG:
-                        return Isfile;
-                    case DT_DIR:
-                        return Isdir;
-                    case DT_UNKNOWN:
-                        return stype(path % '/' % iname);
-                    default:
-                        return Unknown;
-                    }
-                }()) {
-            case Islink:
-            case Isfile:
-                ba.append(ppath % iname % '\n');
-                break;
-            case Isdir:
-                rodir(ba.append(ppath % iname % '\n'), path % '/' % iname, (oplen ? oplen : path.length()));
-            }
+        while(! ThrdKill && (ent = readdir(dir)))
+        {
+            QStr iname(ent->d_name);
+
+            if(! like(iname, dd))
+                switch([&]() -> uchar {
+                        switch(ent->d_type) {
+                        case DT_LNK:
+                        case DT_REG:
+                            return Isfile;
+                        case DT_DIR:
+                            return Isdir;
+                        case DT_UNKNOWN:
+                            return stype(path % '/' % iname);
+                        default:
+                            return Unknown;
+                        }
+                    }()) {
+                case Islink:
+                case Isfile:
+                    ba.append(ppath % iname % '\n');
+                    break;
+                case Isdir:
+                    rodir(ba.append(ppath % iname % '\n'), path % '/' % iname, (oplen ? oplen : path.length()));
+                }
+        }
+
+        closedir(dir);
+        if(! (ThrdKill || oplen)) ba.squeeze();
     }
 
-    closedir(dir);
-    if(! (ThrdKill || oplen)) ba.squeeze();
     return ! ThrdKill;
 }
 
 bool sb::rodir(QUCL &ucl, cQStr &path, uchar oplen)
 {
     DIR *dir(opendir(bstr(path)));
-    dirent *ent;
-    QSL dd{"_._", "_.._"};
 
-    while(! ThrdKill && (ent = readdir(dir)))
+    if(dir)
     {
-        QStr iname(ent->d_name);
+        dirent *ent;
+        QSL dd{"_._", "_.._"};
 
-        if(! like(iname, dd))
-            switch([&]() -> uchar {
-                    switch(ent->d_type) {
-                    case DT_LNK:
-                    case DT_REG:
-                        return Isfile;
-                    case DT_DIR:
-                        return Isdir;
-                    case DT_UNKNOWN:
-                        return stype(path % '/' % iname);
-                    default:
-                        return Unknown;
-                    }
-                }()) {
-            case Islink:
-            case Isfile:
-                ucl.append(0);
-                break;
-            case Isdir:
-                rodir(ucl << 0, path % '/' % iname, (oplen ? oplen : path.length()));
-            }
+        while(! ThrdKill && (ent = readdir(dir)))
+        {
+            QStr iname(ent->d_name);
+
+            if(! like(iname, dd))
+                switch([&]() -> uchar {
+                        switch(ent->d_type) {
+                        case DT_LNK:
+                        case DT_REG:
+                            return Isfile;
+                        case DT_DIR:
+                            return Isdir;
+                        case DT_UNKNOWN:
+                            return stype(path % '/' % iname);
+                        default:
+                            return Unknown;
+                        }
+                    }()) {
+                case Islink:
+                case Isfile:
+                    ucl.append(0);
+                    break;
+                case Isdir:
+                    rodir(ucl << 0, path % '/' % iname, (oplen ? oplen : path.length()));
+                }
+        }
+
+        closedir(dir);
     }
 
-    closedir(dir);
     return ! ThrdKill;
 }
 
 bool sb::odir(QBAL &balst, cQStr &path, uchar hidden, cQSL &ilist, cQStr &ppath)
 {
-    balst.reserve(1000);
     DIR *dir(opendir(bstr(path)));
-    dirent *ent;
-    QSL dd{"_._", "_.._"};
 
-    while(! ThrdKill && (ent = readdir(dir)))
+    if(dir)
     {
-        QStr iname(ent->d_name);
+        balst.reserve(1000);
+        dirent *ent;
+        QSL dd{"_._", "_.._"};
 
-        if(! like(iname, dd) && [&, hidden] {
-                switch(hidden) {
-                case False:
-                    return true;
-                case True:
-                    return iname.startsWith('.') || (! ilist.isEmpty() && inclcheck(ilist, iname));
-                default:
-                    return inclcheck(ilist, ppath % '/' % iname);
-                }
-            }()) balst.append(QBA(ent->d_name));
+        while(! ThrdKill && (ent = readdir(dir)))
+        {
+            QStr iname(ent->d_name);
+
+            if(! like(iname, dd) && [&, hidden] {
+                    switch(hidden) {
+                    case False:
+                        return true;
+                    case True:
+                        return iname.startsWith('.') || (! ilist.isEmpty() && inclcheck(ilist, iname));
+                    default:
+                        return inclcheck(ilist, ppath % '/' % iname);
+                    }
+                }()) balst.append(QBA(ent->d_name));
+        }
+
+        closedir(dir);
     }
 
-    closedir(dir);
     return ! ThrdKill;
 }
 
-bool sb::recrmdir(cQStr &path, bool slimit)
+bool sb::recrmdir(cbstr &path, bool slimit)
 {
-    DIR *dir(opendir(bstr(path)));
-    dirent *ent;
-    QSL dd{"_._", "_.._"};
+    DIR *dir(opendir(path));
 
-    while(! ThrdKill && (ent = readdir(dir)))
+    if(dir)
     {
-        QStr iname(ent->d_name);
+        auto size([](cbstr &spath) -> ullong {
+                struct stat fstat;
+                if(stat(spath, &fstat)) return 8000001;
+                return fstat.st_size;
+            });
 
-        if(! like(iname, dd))
+        dirent *ent;
+        QSL dd{"_._", "_.._"};
+
+        while(! ThrdKill && (ent = readdir(dir)))
         {
-            QStr fpath(path % '/' % iname);
+            QBA iname(ent->d_name);
 
-            switch(ent->d_type) {
-            case DT_UNKNOWN:
-                switch(stype(fpath)) {
-                case Isfile:
-                    if(slimit && QFile(fpath).size() > 8000000) continue;
+            if(! like(iname, dd))
+            {
+                QBA fpath(QBA(path) % '/' % iname);
+
+                switch(ent->d_type) {
+                case DT_UNKNOWN:
+                    switch(stype(fpath)) {
+                    case Isfile:
+                        if(slimit && size(fpath) > 8000000) continue;
+                    default:
+                        rmfile(fpath);
+                        continue;
+                    case Isdir:;
+                    }
+                case DT_DIR:
+                    if(! recrmdir(fpath, slimit))
+                    {
+                        closedir(dir);
+                        return false;
+                    }
+
+                    break;
+                case DT_REG:
+                    if(slimit && size(fpath) > 8000000) break;
                 default:
                     rmfile(fpath);
-                    continue;
-                case Isdir:;
                 }
-            case DT_DIR:
-                if(! recrmdir(fpath, slimit))
-                {
-                    closedir(dir);
-                    return false;
-                }
-
-                break;
-            case DT_REG:
-                if(slimit && QFile(fpath).size() > 8000000) break;
-            default:
-                rmfile(fpath);
             }
         }
+
+        closedir(dir);
     }
 
-    closedir(dir);
-    return ! ThrdKill && (! rmdir(bstr(path)) || slimit || (errno == ENOTEMPTY ? false : error("\n " % tr("An error occurred while deleting the following directory:") % "\n\n  " % path % "\n\n", true)));
+    return ! ThrdKill && (! rmdir(path) || slimit || (errno == ENOTEMPTY ? false : error("\n " % tr("An error occurred while deleting the following directory:") % "\n\n  " % QStr(path) % "\n\n", true)));
 }
 
 void sb::run()
@@ -2035,7 +2073,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                                         if(! crtdir(nrpi)) return false;
                                         break;
                                     case Isfile:
-                                        if(QFile(srci).size() <= 8000000)
+                                        if(fsize(srci) <= 8000000)
                                         {
                                             for(cQStr &pname : rplst)
                                             {
@@ -2770,7 +2808,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                                     recrmdir(trgi, true);
                                     break;
                                 case Isfile:
-                                    if(! inc && QFile(trgi).size() > 8000000) break;
+                                    if(! inc && fsize(trgi) > 8000000) break;
                                 case Islink:
                                     rmfile(trgi);
                                 }
@@ -2829,7 +2867,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                                                     recrmdir(strgi, true);
                                                     break;
                                                 case Isfile:
-                                                    if(! inc && QFile(strgi).size() > 8000000) break;
+                                                    if(! inc && fsize(strgi) > 8000000) break;
                                                 case Islink:
                                                     rmfile(strgi);
                                                 }
@@ -2848,7 +2886,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                                 if(! (crtdir(trgi) || fspchk())) return false;
                                 break;
                             case Isfile:
-                                skppd = ! inc && QFile(srci).size() > 8000000;
+                                skppd = ! inc && fsize(srci) > 8000000;
 
                                 switch(stype(trgi)) {
                                 case Isfile:
@@ -3100,7 +3138,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                                     break;
                                 case Isfile:
                                     QStr srci(srcd[1] % '/' % item);
-                                    skppd = like(mthd, {2, 3}) && QFile(srci).size() > 8000000;
+                                    skppd = like(mthd, {2, 3}) && fsize(srci) > 8000000;
 
                                     switch(stype(trgi)) {
                                     case Isfile:
@@ -3916,7 +3954,7 @@ bool sb::thrdlvprpr(bool iudata)
                                 ++ThrdLng[0];
                                 break;
                             case Isfile:
-                                if(iudata || QFile(srci).size() <= 8000000)
+                                if(iudata || fsize(srci) <= 8000000)
                                 {
                                     if(uhl)
                                     {

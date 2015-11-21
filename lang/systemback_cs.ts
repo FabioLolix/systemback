@@ -4,6 +4,218 @@
 <context>
     <name>systemback</name>
     <message>
+        <location filename="../libsystemback/sblib.cpp" line="101"/>
+        <source>The specified debug level is invalid!</source>
+        <translation>Zadaná úroveň ladících podrobností není platná!</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="101"/>
+        <source>The default level (1) will be used.</source>
+        <translation>Bude použita výchozí úroveň (1).</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="160"/>
+        <source>An error occurred while opening the following file:</source>
+        <translation>Došlo k chybě při otevírání tohoto souboru:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="289"/>
+        <source>An error occurred while creating the following directory:</source>
+        <translation>Došlo k chybě při otevírání této složky:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="291"/>
+        <source>An error occurred while removing the following file:</source>
+        <translation>Došlo k chybě při odebírání tohoto souboru:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="293"/>
+        <source>An error occurred while creating the following hard link:</source>
+        <translation>Došlo k chybě při vytváření tohoto pevného odkazu:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="293"/>
+        <source>Reference file:</source>
+        <translation>Referenční soubor:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="300"/>
+        <source>An error occurred while creating the following file:</source>
+        <translation>Došlo k chybě při vytváření tohoto souboru:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="311"/>
+        <source>An error occurred while renaming the following item:</source>
+        <translation>Došlo k chybě při přejmenovávání této položky:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="311"/>
+        <source>New path:</source>
+        <translation>Nové umístění:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="639"/>
+        <source>An error occurred while executing the following command:</source>
+        <translation>Došlo k chybě při spouštění tohoto příkazu:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="639"/>
+        <source>Exit code:</source>
+        <translation>Návratový kód:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="832"/>
+        <source>Failed to detect the device for installing the GRUB!</source>
+        <translation>Nezdařilo se zjistit zařízení pro instalaci zavaděče GRUB!</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="957"/>
+        <source>An error occurred while upgrading the system!</source>
+        <translation>V průběhu přechodu na novější verzi systému došlo k chybě!</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="958"/>
+        <source>Restart upgrade ...</source>
+        <translation>Spustit přechod na novější verzi znovu …</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="969"/>
+        <source>This file could not be copied because it does not exist:</source>
+        <translation>Tento soubor nemůže být zkopírován protože neexistuje:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="984"/>
+        <source>The following partition has no UUID:</source>
+        <translation>Tento oddíl nemá univerzálně jedinečný identifikátor (UUID):</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1003"/>
+        <source>An error occurred while creating a new partition on the following device:</source>
+        <translation>Došlo k chybě při vytváření nového oddílu na tomto zařízení:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1017"/>
+        <source>An error occurred while mounting the following partition/image:</source>
+        <translation>Došlo k chybě při vytváření připojování tohoto oddílu/obrazu:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1052"/>
+        <source>An error occurred while setting one or more flags on the following partition:</source>
+        <translation>Došlo k chybě při nastavování jednoho či více příznaků (flag) na tomto oddílu:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1052"/>
+        <source>Flag(s):</source>
+        <translation>Příznaky (flag):</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1074"/>
+        <source>An error occurred while creating the partition table on the following device:</source>
+        <translation>Došlo k chybě při vytváření tabulky oddílů na tomto zařízení:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1099"/>
+        <source>An error occurred while unmounting the following partition/image/mount point:</source>
+        <translation>Došlo k chybě při odpojování tohoto oddílu/obrazu / přípojného bodu:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1153"/>
+        <source>An error occurred while cloning the properties of the following item:</source>
+        <translation>Došlo k chybě při klonování vlastností této položky:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1153"/>
+        <source>Target item:</source>
+        <translation>Cílová položka:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1185"/>
+        <source>An error occurred while cloning the following symbolic link:</source>
+        <translation>Došlo k chybě při klonování tohoto symbolického odkazu:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1185"/>
+        <source>Target symlink:</source>
+        <translation>Cílový symbolický odkaz:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1198"/>
+        <source>An error occurred while cloning the following file:</source>
+        <translation>Došlo k chybě při klonování tohoto souboru:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1198"/>
+        <source>Target file:</source>
+        <translation>Cílový soubor:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1249"/>
+        <source>An error occurred while cloning the following directory:</source>
+        <translation>Došlo k chybě při klonování této složky:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1249"/>
+        <source>Target directory:</source>
+        <translation>Cílová složka:</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="1574"/>
+        <source>An error occurred while deleting the following directory:</source>
+        <translation>Došlo k chybě při mazání této složky:</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="41"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
+        <source>Cannot start the Systemback scheduler daemon!</source>
+        <translation>Nelze spustit službu plánovače aplikace Systemback!</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
+        <location filename="../sbsustart/sbsustart.cpp" line="121"/>
+        <source>Missing, wrong or too much argument(s).</source>
+        <translation>Chybějící, chybné či příliš mnoho argumentů.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
+        <source>The process is disabled for this user.</source>
+        <translation>Tento proces je pro tohoto uživatele vypnutý.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="48"/>
+        <source>Root privileges are required.</source>
+        <translation>Jsou zapotřebí oprávnění správce systému.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="50"/>
+        <source>This system is a Live.</source>
+        <translation>Nacházíte se v systému, spuštěném z vyjímatelného média.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="52"/>
+        <source>Already running.</source>
+        <translation>Již je spuštěno.</translation>
+    </message>
+    <message>
+        <location filename="../sbscheduler/sbscheduler.cpp" line="54"/>
+        <source>Unable to daemonize.</source>
+        <translation>Nelze spustit jako službu.</translation>
+    </message>
+    <message>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
+        <source>Cannot start the Systemback graphical user interface!</source>
+        <translation>Nelze spustit grafické uživatelské rozhraní aplikace Systemback!</translation>
+    </message>
+    <message>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
+        <source>Unable to get root permissions.</source>
+        <translation>Nelze získat oprávnění správce systému.</translation>
+    </message>
+    <message>
+        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
+        <source>Unable to connect to the X server.</source>
+        <translation>Nelze se připojit ke grafickému serveru X.</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.ui" line="162"/>
         <source>Full name of the new user:</source>
         <translation>Úplné jméno nového uživatele:</translation>
@@ -114,19 +326,19 @@
     <message>
         <location filename="../systemback/systemback.ui" line="959"/>
         <source>Convert to ISO</source>
-        <translation>Přeměnit na ISO</translation>
+        <translation>Převést na ISO</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="981"/>
         <location filename="../systemback/systemback.ui" line="3393"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="177"/>
         <source>Create new</source>
-        <translation>Vytvořit nové</translation>
+        <translation>Vytvořit nový</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1209"/>
         <source>Mount the faulty system partition(s) to the &apos;/mnt&apos; directory according to the original structure.&lt;br&gt;(&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, etc.)</source>
-        <translation>Připojit oddíly rozbitého systému do složky &apos;/mnt&apos; dle původní struktury.&lt;br&gt;(&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, atd.)</translation>
+        <translation>Připojit oddíly rozbitého systému do složky „/mnt“ dle původní struktury.&lt;br&gt;(„/“ → „/mnt“, „/home“ → „/mnt/home“, atd.)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1278"/>
@@ -137,7 +349,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="1303"/>
         <source>Reset mounts</source>
-        <translation>Resetovat připojení</translation>
+        <translation>Resetovat připojení (mount)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1332"/>
@@ -164,7 +376,7 @@
         <location filename="../systemback/systemback.ui" line="1455"/>
         <location filename="../systemback/systemback.ui" line="5072"/>
         <source>Auto detection</source>
-        <translation>Samočinné zjištění</translation>
+        <translation>Automatické zjištění</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1503"/>
@@ -184,7 +396,12 @@
     <message>
         <location filename="../systemback/systemback.ui" line="1667"/>
         <source>Exclude user data files and directories from Live system</source>
-        <translation>Ze systému pro spouštění z vyjímatelného média vynechat soubory a složky uživatelů</translation>
+        <translation>Ze systému pro spouštění z vyjímatelného média („Live“) vynechat soubory a složky uživatelů</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="1686"/>
+        <source>Excludable items</source>
+        <translation>Vynechatelné položky</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1708"/>
@@ -201,7 +418,7 @@
         <location filename="../systemback/systemback.ui" line="1765"/>
         <location filename="../systemback/systemback.ui" line="6649"/>
         <source>Add item to the exclusion list</source>
-        <translation>Přidat položku do seznamu vynechaných</translation>
+        <translation>Přidat položku na seznam vynechaných</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1927"/>
@@ -231,7 +448,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="2012"/>
         <source>Waiting time before creating a new restore point:</source>
-        <translation>Prodleva před vytvořením nového bodu obnovení:</translation>
+        <translation>V jakém intervalu vytvářet body obnovení:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2025"/>
@@ -282,7 +499,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="2717"/>
         <source>Donate:</source>
-        <translation>Podpořit vývoj:</translation>
+        <translation>Podpořit vývoj darem:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="2754"/>
@@ -323,7 +540,7 @@
         <location filename="../systemback/systemback.ui" line="3283"/>
         <location filename="../systemback/systemback.ui" line="3305"/>
         <source>Maximum number of temporary restore points</source>
-        <translation>Maximální počet dočasných bodů obnovení</translation>
+        <translation>Nejvyšší možný počet dočasných bodů obnovení</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3324"/>
@@ -367,7 +584,7 @@
         <location filename="../systemback/systemback.ui" line="4759"/>
         <location filename="../systemback/systemback.ui" line="4781"/>
         <source>Select restore point</source>
-        <translation>Zvolte bod obnovení</translation>
+        <translation>Vyberte bod obnovení</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3588"/>
@@ -385,67 +602,10 @@
         <translation>Nabídka funkcí</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.ui" line="3867"/>
-        <location filename="../systemback/systemback.cpp" line="4033"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="244"/>
-        <source>System restore</source>
-        <translation>Obnovení systému</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="3899"/>
-        <location filename="../systemback/systemback.cpp" line="4082"/>
-        <location filename="../systemback/systemback.cpp" line="4626"/>
-        <location filename="../systemback/systemback.cpp" line="6419"/>
-        <source>System copy</source>
-        <translation>Kopie systému</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="6804"/>
-        <source>Include user data files and directories into the restore points
-These will be defined as restorable configuration files!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="3771"/>
-        <location filename="../systemback/systemback.cpp" line="4117"/>
-        <source>System install</source>
-        <translation>Instalace systému</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="3803"/>
-        <location filename="../systemback/systemback.cpp" line="4132"/>
-        <location filename="../systemback/systemback.cpp" line="5550"/>
-        <location filename="../systemback/systemback.cpp" line="5597"/>
-        <source>Live system create</source>
-        <translation>Vytvořit živý systému</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="3835"/>
-        <location filename="../systemback/systemback.cpp" line="4163"/>
-        <source>System repair</source>
-        <translation>Oprava systému</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="3749"/>
-        <source>System upgrade</source>
-        <translation>Upgrade systému</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="3931"/>
-        <location filename="../systemback/systemback.cpp" line="4203"/>
-        <source>Exclude</source>
-        <translation>Vynechat</translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.ui" line="3653"/>
         <location filename="../systemback/systemback.cpp" line="4225"/>
         <source>Schedule</source>
         <translation>Plán</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.ui" line="1686"/>
-        <source>Excludable items</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3685"/>
@@ -461,10 +621,56 @@ These will be defined as restorable configuration files!</source>
         <translation>Nastavení</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.ui" line="3749"/>
+        <source>System upgrade</source>
+        <translation>Přejít na novější verzi systému</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="3771"/>
+        <location filename="../systemback/systemback.cpp" line="4117"/>
+        <source>System install</source>
+        <translation>Odvodit instalaci</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="3803"/>
+        <location filename="../systemback/systemback.cpp" line="4132"/>
+        <location filename="../systemback/systemback.cpp" line="5550"/>
+        <location filename="../systemback/systemback.cpp" line="5597"/>
+        <source>Live system create</source>
+        <translation>Vytvořit živý (Live) systému</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="3835"/>
+        <location filename="../systemback/systemback.cpp" line="4163"/>
+        <source>System repair</source>
+        <translation>Oprava systému</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="3867"/>
+        <location filename="../systemback/systemback.cpp" line="4033"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="244"/>
+        <source>System restore</source>
+        <translation>Obnovení systému</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="3899"/>
+        <location filename="../systemback/systemback.cpp" line="4082"/>
+        <location filename="../systemback/systemback.cpp" line="4626"/>
+        <location filename="../systemback/systemback.cpp" line="6419"/>
+        <source>System copy</source>
+        <translation>Zkopírovat systém</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="3931"/>
+        <location filename="../systemback/systemback.cpp" line="4203"/>
+        <source>Exclude</source>
+        <translation>Vynechat</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.ui" line="3963"/>
         <location filename="../systemback/systemback.cpp" line="4214"/>
         <source>Include</source>
-        <translation type="unfinished"></translation>
+        <translation>Zahrnout</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4125"/>
@@ -488,7 +694,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="3851"/>
         <location filename="../systemback/systemback.cpp" line="3853"/>
         <source>empty</source>
-        <translation>prázdné</translation>
+        <translation>prázdný</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4303"/>
@@ -500,7 +706,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="3851"/>
         <location filename="../systemback/systemback.cpp" line="3854"/>
         <source>not used</source>
-        <translation>nepoužito</translation>
+        <translation>nepoužitý</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="4908"/>
@@ -577,7 +783,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="686"/>
         <location filename="../systemback/systemback.cpp" line="692"/>
         <source>Format</source>
-        <translation>Formátování</translation>
+        <translation>Formátovat</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5612"/>
@@ -635,12 +841,12 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="5991"/>
         <source>Need to set the mount point as &apos;/boot/efi&apos;!</source>
-        <translation>Přípojný bod je třeba nastavit jako &apos;/boot/efi&apos;!</translation>
+        <translation>Přípojný bod je třeba nastavit jako „/boot/efi“!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6027"/>
         <source>Window DPI scaling</source>
-        <translation>Úprava velikosti prvků okna vzhledek rozlišení zobrazení</translation>
+        <translation>Změna měřítka velikosti okna (vzhledem k rozlišení zobrazení)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6076"/>
@@ -665,22 +871,22 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="6331"/>
         <source>Disable scheduler daemon starting for the following users:</source>
-        <translation>Vypnut start služby plánovače pro následující uživatele:</translation>
+        <translation>Nespouštět službu plánovače pro tyto uživatele:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6350"/>
         <source>Use XZ compressor for squashfs filesystems</source>
-        <translation>Komprimovat souborové systémy squashfs pomocí nástroje XZ</translation>
+        <translation>Na souborové systémy squashfs použít XZ kompresi</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6369"/>
         <source>Override auto-detected language:</source>
-        <translation>Přebít samočinně zjištěný jazyk:</translation>
+        <translation>Přepsat samočinně zjištěný jazyk:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6388"/>
         <source>Override the used style:</source>
-        <translation>Přebít použitý styl:</translation>
+        <translation>Přepsat použitý styl vzhledu:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6407"/>
@@ -690,7 +896,7 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="6519"/>
         <source>Create Live ISO images automatically (faster than the conversion)</source>
-        <translation>Vždy rovnou vytvářet i ISO obrazy (rychlejší než převádět následně)</translation>
+        <translation>Vždy rovnou vytvářet i obrazy Live systému (rychlejší než převádět dodatečně)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6538"/>
@@ -700,12 +906,19 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.ui" line="6570"/>
         <source>Includable items</source>
-        <translation type="unfinished"></translation>
+        <translation>Zahrnutelné položky</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6592"/>
         <source>Included items</source>
-        <translation type="unfinished"></translation>
+        <translation>Zahrnuté položky</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.ui" line="6804"/>
+        <source>Include user data files and directories into the restore points
+These will be defined as restorable configuration files!</source>
+        <translation>Zahrnout do bodu obnovení soubory a složky s daty uživatele
+Tyto budou určeny jako obnovitelné soubory s nastaveními!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="6998"/>
@@ -745,16 +958,31 @@ These will be defined as restorable configuration files!</source>
         <translation>Heslo:</translation>
     </message>
     <message>
+        <location filename="../systemback/main.cpp" line="31"/>
+        <source>Unsafe X Window authorization!</source>
+        <translation>Nezabezpečené ověřování okna grafického serveru X!</translation>
+    </message>
+    <message>
+        <location filename="../systemback/main.cpp" line="31"/>
+        <source>Please do not use &apos;sudo&apos; command.</source>
+        <translation>Nepoužívejte příkaz &apos;sudo&apos;.</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="403"/>
+        <location filename="../systemback/systemback.cpp" line="404"/>
+        <location filename="../systemback/systemback.cpp" line="854"/>
+        <location filename="../systemback/systemback.cpp" line="1855"/>
+        <location filename="../systemback/systemback.cpp" line="5866"/>
+        <location filename="../systemback/systemback.cpp" line="5874"/>
+        <source>Transfer user configuration and data files</source>
+        <translation>Přenést soubory s uživatelskými nastaveními a daty</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="475"/>
         <location filename="../systemback/systemback.cpp" line="3027"/>
         <location filename="../systemback/systemback.cpp" line="3756"/>
         <source>scheduler</source>
         <translation>plánovač</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="1341"/>
-        <source>Upgrading the system</source>
-        <translation>Probíhá přechod na novější verzi systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="686"/>
@@ -865,27 +1093,23 @@ These will be defined as restorable configuration files!</source>
         <translation>Všichni</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="403"/>
-        <location filename="../systemback/systemback.cpp" line="404"/>
-        <location filename="../systemback/systemback.cpp" line="854"/>
-        <location filename="../systemback/systemback.cpp" line="1855"/>
-        <location filename="../systemback/systemback.cpp" line="5866"/>
-        <location filename="../systemback/systemback.cpp" line="5874"/>
-        <source>Transfer user configuration and data files</source>
-        <translation>Přenést soubory s uživatelskými nastaveními a daty</translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="977"/>
         <location filename="../systemback/systemback.cpp" line="1107"/>
         <location filename="../systemback/systemback.cpp" line="4796"/>
         <source>Currently running system</source>
-        <translation>Nyní běžící systém</translation>
+        <translation>Nyní spuštěný systém</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1349"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="584"/>
-        <source>Creating restore point</source>
-        <translation>Vytváření bodu obnovení</translation>
+        <location filename="../systemback/systemback.cpp" line="1321"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="576"/>
+        <source>Emptying cache</source>
+        <translation>Vyprazdňování mezipaměti</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="1321"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="576"/>
+        <source>Flushing filesystem buffers</source>
+        <translation>Vyprazdňování vyrovnávacích pamětí souborového systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1323"/>
@@ -915,6 +1139,11 @@ These will be defined as restorable configuration files!</source>
         <translation>Opravování celého systému</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="1333"/>
+        <source>Repairing the GRUB 2</source>
+        <translation>Opravování zavaděče GRUB 2</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="1335"/>
         <source>Copying the system</source>
         <translation>Kopírování systému</translation>
@@ -925,36 +1154,14 @@ These will be defined as restorable configuration files!</source>
         <translation>Instalace systému</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1355"/>
-        <source>Creating Live system</source>
-        <translation>Vytvoření Live systému</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="1353"/>
-        <location filename="../systemback/systemback.cpp" line="1355"/>
-        <source>process</source>
-        <translation>proces</translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="1339"/>
         <source>Writing Live image to the target device</source>
         <translation>Probíhá zápis obrazu systému na cílové médium</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1353"/>
-        <source>Converting Live system image</source>
-        <translation>Probíhá přeměna obrazu spouštěcího média</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="1351"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="578"/>
-        <source>Deleting restore point</source>
-        <translation>Mazání bodu obnovení</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="1347"/>
-        <source>Deleting old restore point</source>
-        <translation>Mazání starého bodu obnovení</translation>
+        <location filename="../systemback/systemback.cpp" line="1341"/>
+        <source>Upgrading the system</source>
+        <translation>Probíhá přechod na novější verzi systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1343"/>
@@ -963,16 +1170,42 @@ These will be defined as restorable configuration files!</source>
         <translation>Mazání neúplného bodu obnovení</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1321"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="576"/>
-        <source>Emptying cache</source>
-        <translation>Vyprazdňování mezipaměti</translation>
+        <location filename="../systemback/systemback.cpp" line="1345"/>
+        <source>Interrupting the current process</source>
+        <translation>Přerušování současného procesu</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1321"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="576"/>
-        <source>Flushing filesystem buffers</source>
-        <translation>Vyprazdňování vyrovnávacích pamětí souborového systému…</translation>
+        <location filename="../systemback/systemback.cpp" line="1347"/>
+        <source>Deleting old restore point</source>
+        <translation>Mazání starého bodu obnovení</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="1349"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="584"/>
+        <source>Creating restore point</source>
+        <translation>Vytváření bodu obnovení</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="1351"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="578"/>
+        <source>Deleting restore point</source>
+        <translation>Mazání bodu obnovení</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="1353"/>
+        <source>Converting Live system image</source>
+        <translation>Probíhá přeměna obrazu spouštěcího média</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="1353"/>
+        <location filename="../systemback/systemback.cpp" line="1355"/>
+        <source>process</source>
+        <translation>proces</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="1355"/>
+        <source>Creating Live system</source>
+        <translation>Vytvoření Live systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1432"/>
@@ -993,9 +1226,11 @@ These will be defined as restorable configuration files!</source>
         <translation>Restart X</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="1333"/>
-        <source>Repairing the GRUB 2</source>
-        <translation>Opravování zavaděče GRUB 2</translation>
+        <location filename="../systemback/systemback.cpp" line="2227"/>
+        <location filename="../systemback/systemback.cpp" line="4147"/>
+        <location filename="../systemback/systemback.cpp" line="4803"/>
+        <source>Live image</source>
+        <translation>Obraz média pro zavedení systému</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2824"/>
@@ -1371,13 +1606,6 @@ These will be defined as restorable configuration files!</source>
         <translation>Není zde dostatek volného místa.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="2227"/>
-        <location filename="../systemback/systemback.cpp" line="4147"/>
-        <location filename="../systemback/systemback.cpp" line="4803"/>
-        <source>Live image</source>
-        <translation>Obraz média pro zavedení systému</translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="4396"/>
         <location filename="../systemback/systemback.cpp" line="4402"/>
         <location filename="../systemback/systemback.cpp" line="4499"/>
@@ -1390,18 +1618,6 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="7122"/>
         <source>Enabled</source>
         <translation>Zapnuto</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="7784"/>
-        <location filename="../systemback/systemback.cpp" line="7786"/>
-        <location filename="../systemback/systemback.cpp" line="7788"/>
-        <source>Boot system installer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="1345"/>
-        <source>Interrupting the current process</source>
-        <translation>Přerušování současného procesu</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7316"/>
@@ -1419,6 +1635,13 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live system</source>
         <translation>Zavést systém z vyjímatelného média</translation>
+    </message>
+    <message>
+        <location filename="../systemback/systemback.cpp" line="7784"/>
+        <location filename="../systemback/systemback.cpp" line="7786"/>
+        <location filename="../systemback/systemback.cpp" line="7788"/>
+        <source>Boot system installer</source>
+        <translation>Instalator zavadeciho systemu</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
@@ -1445,241 +1668,9 @@ These will be defined as restorable configuration files!</source>
         <translation>Úpravu zahájíte stiskem klávesy TAB</translation>
     </message>
     <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="430"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="453"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="458"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="481"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="486"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="509"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="515"/>
-        <location filename="../systemback-cli/systemback-cli.hpp" line="68"/>
-        <source>(Y/N)</source>
-        <translation>(A/N)</translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="101"/>
-        <source>The specified debug level is invalid!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="101"/>
-        <source>The default level (1) will be used.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="160"/>
-        <source>An error occurred while opening the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="289"/>
-        <source>An error occurred while creating the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="291"/>
-        <source>An error occurred while removing the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="293"/>
-        <source>An error occurred while creating the following hard link:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="293"/>
-        <source>Reference file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="300"/>
-        <source>An error occurred while creating the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="311"/>
-        <source>An error occurred while renaming the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="311"/>
-        <source>New path:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="639"/>
-        <source>An error occurred while executing the following command:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="639"/>
-        <source>Exit code:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="832"/>
-        <source>Failed to detect the device for installing the GRUB!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="957"/>
-        <source>An error occurred while upgrading the system!</source>
-        <translation>V průběhu přechodu na novější verzi systému došlo k chybě!</translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="958"/>
-        <source>Restart upgrade ...</source>
-        <translation>Spustit přechod na novější verzi znovu …</translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="969"/>
-        <source>This file could not be copied because it does not exist:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="984"/>
-        <source>The following partition has no UUID:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1003"/>
-        <source>An error occurred while creating a new partition on the following device:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1017"/>
-        <source>An error occurred while mounting the following partition/image:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1052"/>
-        <source>An error occurred while setting one or more flags on the following partition:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1052"/>
-        <source>Flag(s):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1074"/>
-        <source>An error occurred while creating the partition table on the following device:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1099"/>
-        <source>An error occurred while unmounting the following partition/image/mount point:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1153"/>
-        <source>An error occurred while cloning the properties of the following item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1153"/>
-        <source>Target item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1185"/>
-        <source>An error occurred while cloning the following symbolic link:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1185"/>
-        <source>Target symlink:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1198"/>
-        <source>An error occurred while cloning the following file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1198"/>
-        <source>Target file:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1249"/>
-        <source>An error occurred while cloning the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1249"/>
-        <source>Target directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="1574"/>
-        <source>An error occurred while deleting the following directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="127"/>
-        <source>The specified storage directory path has not been set!</source>
-        <translation>Zadané umístění úložné složky nebylo nastaveno!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="129"/>
-        <source>The restoration is aborted!</source>
-        <translation>Proces obnovování byl přerušen!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="131"/>
-        <source>The restoration is completed, but an error occurred while reinstalling the GRUB!</source>
-        <translation>Obnova je dokončena, ale při opětovné instalaci zavaděče GRUB 2 se vyskytla chyba!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="137"/>
-        <source>The restore points storage directory is not available or not writable!</source>
-        <translation>Složka s body obnovení není dostupná či do ní nelze zapisovat!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="123"/>
-        <source>This stupid terminal does not support color!</source>
-        <translation>Tento hloupý terminál nepodporuje barvy!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="125"/>
-        <source>This terminal is too small!</source>
-        <translation>Tento terminál je příliš malý!</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="82"/>
-        <source>basic restore UI</source>
-        <translation>základní uživatelské rozhraní pro obnovu</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="150"/>
-        <source>Available restore point(s):</source>
-        <translation>Body obnovení k dispozici:</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="177"/>
-        <source>Quit</source>
-        <translation>Skončit</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="240"/>
-        <source>Selected restore point:</source>
-        <translation>Zvolený bod obnovení:</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="316"/>
-        <source>The specified storage directory path is set.</source>
-        <translation>Zadané umístění úložné složky je nastaveno.</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="582"/>
-        <source>Deleting old restore point(s)</source>
-        <translation>Mazání starých bodů obnovení</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="372"/>
-        <source>Restore with the following restore point:</source>
-        <translation>Obnovit s použitím následujícího bodu obnovení:</translation>
+        <location filename="../systemback/systemback.hpp" line="316"/>
+        <source>An error occurred while changing the access permissions of the following file:</source>
+        <translation>Došlo k chybě při změně přístupových práv tohoto souboru:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="37"/>
@@ -1713,9 +1704,69 @@ These will be defined as restorable configuration files!</source>
   -h, --help               zobrazit tuto nápovědu</translation>
     </message>
     <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="82"/>
+        <source>basic restore UI</source>
+        <translation>základní uživatelské rozhraní pro obnovu</translation>
+    </message>
+    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="115"/>
         <source>The Systemback command line interface cannot be used on a Live system!</source>
-        <translation type="unfinished"></translation>
+        <translation>Textové rozhraní nástroje Systemback nelze použít v systému, spuštěného z instalačního média (live)!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="123"/>
+        <source>This stupid terminal does not support color!</source>
+        <translation>Tento hloupý terminál nepodporuje barvy!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="125"/>
+        <source>This terminal is too small!</source>
+        <translation>Tento terminál je příliš malý!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="127"/>
+        <source>The specified storage directory path has not been set!</source>
+        <translation>Zadané umístění úložné složky nebylo nastaveno!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="129"/>
+        <source>The restoration is aborted!</source>
+        <translation>Proces obnovování byl přerušen!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="131"/>
+        <source>The restoration is completed, but an error occurred while reinstalling the GRUB!</source>
+        <translation>Obnova je dokončena, ale při opětovné instalaci zavaděče GRUB 2 se vyskytla chyba!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="137"/>
+        <source>The restore points storage directory is not available or not writable!</source>
+        <translation>Složka s body obnovení není dostupná či do ní nelze zapisovat!</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="150"/>
+        <source>Available restore point(s):</source>
+        <translation>Body obnovení k dispozici:</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="177"/>
+        <source>Quit</source>
+        <translation>Skončit</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="240"/>
+        <source>Selected restore point:</source>
+        <translation>Zvolený bod obnovení:</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="316"/>
+        <source>The specified storage directory path is set.</source>
+        <translation>Zadané umístění úložné složky je nastaveno.</translation>
+    </message>
+    <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="372"/>
+        <source>Restore with the following restore point:</source>
+        <translation>Obnovit s použitím následujícího bodu obnovení:</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="372"/>
@@ -1746,6 +1797,18 @@ These will be defined as restorable configuration files!</source>
         <translation>Přejete si ponechat stávající soubor fstab?</translation>
     </message>
     <message>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="430"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="453"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="458"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="481"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="486"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="509"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="515"/>
+        <location filename="../systemback-cli/systemback-cli.hpp" line="68"/>
+        <source>(Y/N)</source>
+        <translation>(A/N)</translation>
+    </message>
+    <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="458"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="481"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="486"/>
@@ -1757,11 +1820,6 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback-cli/systemback-cli.cpp" line="515"/>
         <source>Start the restore?</source>
         <translation>Zahájit proces obnovy?</translation>
-    </message>
-    <message>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="590"/>
-        <source>Restoring the users configuration files</source>
-        <translation>Obnovování souborů s uživatelskými nastaveními</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="548"/>
@@ -1784,71 +1842,14 @@ These will be defined as restorable configuration files!</source>
         <translation>Ukončete stiskem klávesy &apos;Enter&apos;.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.hpp" line="316"/>
-        <source>An error occurred while changing the access permissions of the following file:</source>
-        <translation type="unfinished"></translation>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="582"/>
+        <source>Deleting old restore point(s)</source>
+        <translation>Mazání starých bodů obnovení</translation>
     </message>
     <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="41"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
-        <source>Cannot start the Systemback scheduler daemon!</source>
-        <translation>Nelze spustit službu plánovače aplikace Systemback!</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
-        <location filename="../sbsustart/sbsustart.cpp" line="121"/>
-        <source>Missing, wrong or too much argument(s).</source>
-        <translation>Chybějící, chybné či příliš mnoho argumentů.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
-        <source>The process is disabled for this user.</source>
-        <translation>Tento proces je pro tohoto uživatele vypnutý.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="48"/>
-        <source>Root privileges are required.</source>
-        <translation>Jsou zapotřebí oprávnění správce systému.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="50"/>
-        <source>This system is a Live.</source>
-        <translation>Nacházíte se v systému, spuštěném z vyjímatelného média.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="52"/>
-        <source>Already running.</source>
-        <translation>Již je spuštěno.</translation>
-    </message>
-    <message>
-        <location filename="../sbscheduler/sbscheduler.cpp" line="54"/>
-        <source>Unable to daemonize.</source>
-        <translation>Nelze spustit jako službu.</translation>
-    </message>
-    <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
-        <source>Cannot start the Systemback graphical user interface!</source>
-        <translation>Nelze spustit grafické uživatelské rozhraní aplikace Systemback!</translation>
-    </message>
-    <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
-        <source>Unable to get root permissions.</source>
-        <translation>Nelze získat oprávnění správce systému.</translation>
-    </message>
-    <message>
-        <location filename="../sbsustart/sbsustart.cpp" line="124"/>
-        <source>Unable to connect to the X server.</source>
-        <translation>Nelze se připojit ke grafickému serveru X.</translation>
-    </message>
-    <message>
-        <location filename="../systemback/main.cpp" line="31"/>
-        <source>Unsafe X Window authorization!</source>
-        <translation>Nezabezpečené ověřování okna grafického serveru X!</translation>
-    </message>
-    <message>
-        <location filename="../systemback/main.cpp" line="31"/>
-        <source>Please do not use &apos;sudo&apos; command.</source>
-        <translation>Nepoužívejte příkaz &apos;sudo&apos;.</translation>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="590"/>
+        <source>Restoring the users configuration files</source>
+        <translation>Obnovování souborů s uživatelskými nastaveními</translation>
     </message>
 </context>
 </TS>

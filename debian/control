@@ -32,6 +32,7 @@ Depends: ${misc:Depends},
 Recommends: grub2-common,
             grub-efi-amd64-bin,
             grub-pc-bin,
+            lupin-casper [amd64],
             systemback-cli (= ${binary:Version}),
             systemback-locales (= ${source:Version}),
             ttf-ubuntu-font-family

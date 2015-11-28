@@ -1647,14 +1647,14 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live in safe graphics mode</source>
-        <translation>Iniciar Live em modo gráfico seguro</translation>
+        <translation>Iniciar Live em modo grafico seguro</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live in debug mode</source>
-        <translation>Iniciar Live no modo de depuração</translation>
+        <translation>Iniciar Live no modo de depuracao</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7785"/>

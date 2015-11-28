@@ -21,7 +21,7 @@
     <message>
         <location filename="../libsystemback/sblib.cpp" line="289"/>
         <source>An error occurred while creating the following directory:</source>
-        <translation>Beim Erstellen der folgenden Verzeichnisses ist ein Fehler aufgetreten:</translation>
+        <translation>Beim Erstellen des folgenden Verzeichnisses ist ein Fehler aufgetreten:</translation>
     </message>
     <message>
         <location filename="../libsystemback/sblib.cpp" line="291"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="../libsystemback/sblib.cpp" line="311"/>
         <source>An error occurred while renaming the following item:</source>
-        <translation>Beim Umbennen des folgenden Punktes ist ein Fehler aufgetreten:</translation>
+        <translation>Beim Umbennen des folgenden Objektes ist ein Fehler aufgetreten:</translation>
     </message>
     <message>
         <location filename="../libsystemback/sblib.cpp" line="311"/>
@@ -173,7 +173,7 @@
         <location filename="../sbscheduler/sbscheduler.cpp" line="44"/>
         <location filename="../sbsustart/sbsustart.cpp" line="121"/>
         <source>Missing, wrong or too much argument(s).</source>
-        <translation>Fehlende(s), falsche(s) Argument(e) oder falsche Anzahl.</translation>
+        <translation>Fehlende(s), falsche(s) oder zu viele Argument(e).</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="46"/>
@@ -188,7 +188,7 @@
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="50"/>
         <source>This system is a Live.</source>
-        <translation>Dieses System ist ein Live-System.</translation>
+        <translation>Dieses ist ein Live-System.</translation>
     </message>
     <message>
         <location filename="../sbscheduler/sbscheduler.cpp" line="52"/>
@@ -515,7 +515,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="2982"/>
         <source>Re-read directories</source>
-        <translation>Verzeichnisse wiedereinlesen</translation>
+        <translation>Verzeichnisse neu einlesen</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3014"/>
@@ -623,7 +623,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="3749"/>
         <source>System upgrade</source>
-        <translation>Systemwartung</translation>
+        <translation>Systemaktualisierung</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3771"/>
@@ -637,7 +637,7 @@
         <location filename="../systemback/systemback.cpp" line="5550"/>
         <location filename="../systemback/systemback.cpp" line="5597"/>
         <source>Live system create</source>
-        <translation>Erstellung Live System</translation>
+        <translation>Erstelle Live System</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3835"/>
@@ -1205,7 +1205,7 @@ um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
     <message>
         <location filename="../systemback/systemback.cpp" line="1355"/>
         <source>Creating Live system</source>
-        <translation>Erstellung eine Live System</translation>
+        <translation>Erstellung eines Live System</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="1432"/>
@@ -1228,7 +1228,7 @@ um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
     <message>
         <location filename="../systemback/systemback.cpp" line="2824"/>
         <source>Restore the system files to the following restore point:</source>
-        <translation>Wiederherstellung de Systemdateien in den nachfolgenden Wiederherstellungspunkt:</translation>
+        <translation>Wiederherstellung der Systemdateien in den nachfolgenden Wiederherstellungspunkt:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2826"/>
@@ -1351,12 +1351,6 @@ um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
         <translation>Das Schreiben des Live System Images ist abgeschlossen.</translation>
     </message>
     <message>
-        <location filename="../systemback/systemback.cpp" line="2931"/>
-        <location filename="../systemback-cli/systemback-cli.cpp" line="119"/>
-        <source>An another Systemback process is currently running, please wait until it finishes.</source>
-        <translation>Ein anderer Systemback Prozess läuft momentan, bitte warten Sie auf seine Beendigung.</translation>
-    </message>
-    <message>
         <location filename="../systemback/systemback.cpp" line="2933"/>
         <location filename="../systemback-cli/systemback-cli.cpp" line="121"/>
         <source>Unable to get exclusive lock!</source>
@@ -1459,7 +1453,7 @@ um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
         <location filename="../systemback/systemback.cpp" line="2983"/>
         <location filename="../systemback/systemback.cpp" line="2985"/>
         <source>The Live system creation is aborted!</source>
-        <translation>Abbruch bei der Erstellung eine Live Systems!</translation>
+        <translation>Die Erstellung des Live Systems wurde abgebrochen!</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2951"/>
@@ -1606,6 +1600,12 @@ um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
         <translation>Live Image</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="2931"/>
+        <location filename="../systemback-cli/systemback-cli.cpp" line="119"/>
+        <source>An another Systemback process is currently running, please wait until it finishes.</source>
+        <translation>Ein anderer Systemback Prozess läuft momentan, bitte warten Sie auf seine Beendigung.</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="4396"/>
         <location filename="../systemback/systemback.cpp" line="4402"/>
         <location filename="../systemback/systemback.cpp" line="4499"/>
@@ -1641,7 +1641,7 @@ um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot system installer</source>
-        <translation>Start-System-Installationsprogramm</translation>
+        <translation>Start des System-Installationsprogrammes</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
@@ -1692,7 +1692,7 @@ um sie als wiederherstellbare Konfigurationsdateien zu definieren!</translation>
 
  Optionen:
 
-  -n, --newbackup          Erstellung eines neue Wiederherstellungspunktes
+  -n, --newbackup          Erstellung eines neuen Wiederherstellungspunktes
 
   -s, --storagedir &lt;path&gt;  Abruf oder Festlegung des Speicherverzeichnispfades
                            der Wiederherstellungspunkte

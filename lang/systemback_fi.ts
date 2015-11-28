@@ -1394,14 +1394,14 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.cpp" line="7781"/>
         <source>Boot Live without xorg.conf file</source>
-        <translation>Boot Live-järjestemä ilman xorg.conf tiedostoa</translation>
+        <translation>Boot Live-jarjestema ilman xorg.conf tiedostoa</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live system</source>
-        <translation>Boot Live-järjestelmä</translation>
+        <translation>Boot Live-jarjestelma</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>

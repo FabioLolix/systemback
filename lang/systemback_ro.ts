@@ -1627,7 +1627,7 @@ Acestea vor fi definite ca fișiere de configurare pentru restaurare!</translati
     <message>
         <location filename="../systemback/systemback.cpp" line="7781"/>
         <source>Boot Live without xorg.conf file</source>
-        <translation>Pornire Live fără fișier xorg.conf</translation>
+        <translation>Pornire Live fara fisier xorg.conf</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
@@ -1648,7 +1648,7 @@ Acestea vor fi definite ca fișiere de configurare pentru restaurare!</translati
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live in safe graphics mode</source>
-        <translation>Pornire Live în modul de grafică redusă</translation>
+        <translation>Pornire Live in modul de grafica redusa</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
+ * Copyright(C) 2014-2016, Krisztián Kende <nemh@freemail.hu>
  *
  * This file is part of Systemback.
  *

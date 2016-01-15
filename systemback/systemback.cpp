@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2014-2015, Krisztián Kende <nemh@freemail.hu>
+ * Copyright(C) 2014-2016, Krisztián Kende <nemh@freemail.hu>
  *
  * This file is part of Systemback.
  *
@@ -7681,7 +7681,7 @@ void systemback::on_livenew_clicked()
         else if(! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfstab"))
             return err();
 
-        if((xmntry && ! (sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) && sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall"))) return err();
+        if((xmntry && ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) || ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall")) return err();
         if(rv) return err(326);
     }
 

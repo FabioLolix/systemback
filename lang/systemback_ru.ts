@@ -338,7 +338,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="1209"/>
         <source>Mount the faulty system partition(s) to the &apos;/mnt&apos; directory according to the original structure.&lt;br&gt;(&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, etc.)</source>
-        <translation>Смонтируйте несправный системный раздел(ы) в каталог &apos;/mnt&apos; в соответствии с оригинальной&lt;br&gt;структурой. (&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, и т.д.)</translation>
+        <translation>Смонтируйте неисправный системный раздел(ы) в каталог &apos;/mnt&apos; в соответствии с оригинальной&lt;br&gt;структурой. (&apos;/&apos; -&gt; &apos;/mnt&apos;, &apos;/home&apos; -&gt; &apos;/mnt/home&apos;, и т.д.)</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1278"/>
@@ -376,7 +376,7 @@
         <location filename="../systemback/systemback.ui" line="1455"/>
         <location filename="../systemback/systemback.ui" line="5072"/>
         <source>Auto detection</source>
-        <translation>Автообнаружение</translation>
+        <translation>Автоматическое определение</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="1503"/>
@@ -550,7 +550,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="3346"/>
         <source>Highlighted restore points</source>
-        <translation>Выбранные</translation>
+        <translation>Выделенные точки</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3368"/>
@@ -560,7 +560,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="3415"/>
         <source>Highlight</source>
-        <translation>Выбрать</translation>
+        <translation>Выделить</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="3437"/>
@@ -816,7 +816,7 @@
     <message>
         <location filename="../systemback/systemback.ui" line="5755"/>
         <source>Mount point:</source>
-        <translation>Монтировать в:</translation>
+        <translation>Точка монтир:</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.ui" line="5825"/>
@@ -1226,6 +1226,13 @@ These will be defined as restorable configuration files!</source>
         <translation>Перезапуск X</translation>
     </message>
     <message>
+        <location filename="../systemback/systemback.cpp" line="2227"/>
+        <location filename="../systemback/systemback.cpp" line="4147"/>
+        <location filename="../systemback/systemback.cpp" line="4803"/>
+        <source>Live image</source>
+        <translation>Образ Live</translation>
+    </message>
+    <message>
         <location filename="../systemback/systemback.cpp" line="2824"/>
         <source>Restore the system files to the following restore point:</source>
         <translation>Восстановление системных файлов из указанной точки восстановления:</translation>
@@ -1597,13 +1604,6 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="3009"/>
         <source>There is not enough free space.</source>
         <translation>Недостаточно свободного места.</translation>
-    </message>
-    <message>
-        <location filename="../systemback/systemback.cpp" line="2227"/>
-        <location filename="../systemback/systemback.cpp" line="4147"/>
-        <location filename="../systemback/systemback.cpp" line="4803"/>
-        <source>Live image</source>
-        <translation>Образ Live</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="4396"/>

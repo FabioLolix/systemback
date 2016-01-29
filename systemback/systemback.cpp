@@ -1184,7 +1184,7 @@ void systemback::unitimer()
 
 QRect systemback::sgeom(bool rdc, QDW dtp)
 {
-    if(fscrn) return geometry();
+    if(fscrn) return {QPoint(), size()};
     if(! dtp) dtp = qApp->desktop();
     return rdc ? dtp->availableGeometry(dtp->screenNumber(this)) : dtp->screenGeometry(dtp->screenNumber(this));
 }

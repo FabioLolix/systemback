@@ -1627,45 +1627,45 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.cpp" line="7781"/>
         <source>Boot Live without xorg.conf file</source>
-        <translation>Boot Live without xorg.conf file</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live system</source>
-        <translation>Boot Live system</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot system installer</source>
-        <translation>Boot system installer</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live in safe graphics mode</source>
-        <translation>Boot Live in safe graphics mode</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7784"/>
         <location filename="../systemback/systemback.cpp" line="7786"/>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Boot Live in debug mode</source>
-        <translation>Boot Live in debug mode</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7785"/>
         <source>Press &apos;E&apos; key to edit</source>
-        <translation>Press &apos;E&apos; key to edit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7788"/>
         <source>Press TAB key to edit</source>
-        <translation>Press TAB key to edit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../systemback/systemback.hpp" line="316"/>

@@ -101,102 +101,102 @@
         <translation>Codul de ieșire:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="999"/>
+        <location filename="../libsystemback/sblib.cpp" line="1000"/>
         <source>Failed to detect the device for installing the GRUB!</source>
         <translation>Nu a reușit să detecteze dispozitivul pentru instalare GRUB!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1124"/>
+        <location filename="../libsystemback/sblib.cpp" line="1125"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>Eroare la actualizarea sistemului!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1125"/>
+        <location filename="../libsystemback/sblib.cpp" line="1126"/>
         <source>Restart upgrade ...</source>
         <translation>Reporniți actualizarea ...</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1151"/>
+        <location filename="../libsystemback/sblib.cpp" line="1152"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation>Acest fișier nu există, imposibil de copiat:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1166"/>
+        <location filename="../libsystemback/sblib.cpp" line="1167"/>
         <source>The following partition has no UUID:</source>
         <translation>Partiția nu are UUID:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1185"/>
+        <location filename="../libsystemback/sblib.cpp" line="1186"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation>Eroare la crearea partiției nou pe următorul dispozitiv:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1199"/>
+        <location filename="../libsystemback/sblib.cpp" line="1200"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation>A apărut o eroare la montarea următoarului partiție/imagine:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1234"/>
+        <location filename="../libsystemback/sblib.cpp" line="1235"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation>Eroare în timpul setării una sau mai multe steaguri pe următoarea partiție:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1234"/>
+        <location filename="../libsystemback/sblib.cpp" line="1235"/>
         <source>Flag(s):</source>
         <translation>Steag(uri):</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1256"/>
+        <location filename="../libsystemback/sblib.cpp" line="1257"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation>Eroare la crearea tablei de partiții pe următorul dispozitiv:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1281"/>
+        <location filename="../libsystemback/sblib.cpp" line="1282"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation>Eroare la demontarea următorului partiție/imagine/punct de montare:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1335"/>
+        <location filename="../libsystemback/sblib.cpp" line="1336"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation>Eroare la clonarea proprietățile următorului element:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1335"/>
+        <location filename="../libsystemback/sblib.cpp" line="1336"/>
         <source>Target item:</source>
         <translation>Element țintă:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1367"/>
+        <location filename="../libsystemback/sblib.cpp" line="1368"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation>Eroare la clonarea următorului link simbolic:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1367"/>
+        <location filename="../libsystemback/sblib.cpp" line="1368"/>
         <source>Target symlink:</source>
         <translation>Țintă symlink:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1380"/>
+        <location filename="../libsystemback/sblib.cpp" line="1381"/>
         <source>An error occurred while cloning the following file:</source>
         <translation>Eroare la clonarea următorului fișier:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1380"/>
+        <location filename="../libsystemback/sblib.cpp" line="1381"/>
         <source>Target file:</source>
         <translation>Fișier țintă:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1431"/>
+        <location filename="../libsystemback/sblib.cpp" line="1432"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation>Eroare la clonarea următorului dosar:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1431"/>
+        <location filename="../libsystemback/sblib.cpp" line="1432"/>
         <source>Target directory:</source>
         <translation>Dosar țintă:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1756"/>
+        <location filename="../libsystemback/sblib.cpp" line="1757"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation>Eroare la ștergerea următorul dosar:</translation>
     </message>

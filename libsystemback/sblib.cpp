@@ -958,10 +958,11 @@ bool sb::mcheck(cQStr &item)
     {
         blkid_probe pr(blkid_new_probe_from_filename(bstr(itm)));
         blkid_do_probe(pr);
-        cchar *uuid(nullptr);
-        blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+        cchar *val(nullptr);
+        blkid_probe_lookup_value(pr, "UUID", &val, nullptr);
+        QStr uuid(val);
         blkid_free_probe(pr);
-        return uuid && QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % QStr(uuid) % ' ');
+        return ! uuid.isEmpty() && QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % uuid % ' ');
     }
 }
 
@@ -1868,8 +1869,8 @@ void sb::run()
                                             blkid_probe_lookup_value(pr, "LABEL", &label, nullptr);
                                         }
 
-                                        blkid_free_probe(pr);
                                         ThrdSlst->append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(prt->type == PED_PARTITION_LOGICAL ? Logical : Primary) % '\n' % QStr::number(prt->geom.start * dev->sector_size) % '\n' % fstype % '\n' % label % '\n' % uuid);
+                                        blkid_free_probe(pr);
                                     }
                                 }
                             }

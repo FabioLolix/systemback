@@ -101,103 +101,103 @@
         <translation>Exit-kode:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="999"/>
+        <location filename="../libsystemback/sblib.cpp" line="1000"/>
         <source>Failed to detect the device for installing the GRUB!</source>
         <translation>Det lykkedes ikke at registrere enheden til installation af GRUB!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1124"/>
+        <location filename="../libsystemback/sblib.cpp" line="1125"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>Der opstod en fejl under opgradering af systemet!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1125"/>
+        <location filename="../libsystemback/sblib.cpp" line="1126"/>
         <source>Restart upgrade ...</source>
         <translation>Genstart opgradering …</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1151"/>
+        <location filename="../libsystemback/sblib.cpp" line="1152"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation>Denne fil kunne ikke kopieres, da den ikke findes:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1166"/>
+        <location filename="../libsystemback/sblib.cpp" line="1167"/>
         <source>The following partition has no UUID:</source>
         <translation>Den følgende partition har ingen UUID:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1185"/>
+        <location filename="../libsystemback/sblib.cpp" line="1186"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation>Der opstod en fejl under oprettelse af en ny partition på følgende enhed:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1199"/>
+        <location filename="../libsystemback/sblib.cpp" line="1200"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation>Der opstod en fejl under montering af følgende partition/aftryk:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1234"/>
+        <location filename="../libsystemback/sblib.cpp" line="1235"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation>Der opstod en fejl, da der blev sat en eller flere markeringer, for den
  følgende partition:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1234"/>
+        <location filename="../libsystemback/sblib.cpp" line="1235"/>
         <source>Flag(s):</source>
         <translation>Markering:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1256"/>
+        <location filename="../libsystemback/sblib.cpp" line="1257"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation>Der opstod en fejl under oprettelse af partitionstabellen på følgende enhed:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1281"/>
+        <location filename="../libsystemback/sblib.cpp" line="1282"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation>Der opstod en fejl under afmontering af følgende partition/aftryk/monteringspunkt:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1335"/>
+        <location filename="../libsystemback/sblib.cpp" line="1336"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation>Der opstod en fejl under kloning af egenskaberne for følgende element:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1335"/>
+        <location filename="../libsystemback/sblib.cpp" line="1336"/>
         <source>Target item:</source>
         <translation>Enheds element:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1367"/>
+        <location filename="../libsystemback/sblib.cpp" line="1368"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation>Der opstod en fejl under kloning af følgende symbolsk link:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1367"/>
+        <location filename="../libsystemback/sblib.cpp" line="1368"/>
         <source>Target symlink:</source>
         <translation>Enheds symlink:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1380"/>
+        <location filename="../libsystemback/sblib.cpp" line="1381"/>
         <source>An error occurred while cloning the following file:</source>
         <translation>Der opstod en fejl under kloning af følgende fil:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1380"/>
+        <location filename="../libsystemback/sblib.cpp" line="1381"/>
         <source>Target file:</source>
         <translation>Slut fil:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1431"/>
+        <location filename="../libsystemback/sblib.cpp" line="1432"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation>Der opstod en fejl under kloning af følgende mappe:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1431"/>
+        <location filename="../libsystemback/sblib.cpp" line="1432"/>
         <source>Target directory:</source>
         <translation>Målmappe:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1756"/>
+        <location filename="../libsystemback/sblib.cpp" line="1757"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation>Der opstod en fejl under sletning af følgende mappe:</translation>
     </message>

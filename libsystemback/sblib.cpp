@@ -2083,7 +2083,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 {
     if(chroot(bstr(sdir[1]))) return false;
 
-    auto exit([](bool val = false) {
+    auto out([](bool val = false) {
             chroot(bstr("./"));
             return val;
         });
@@ -2104,7 +2104,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                 {
                     sysitms[a].reserve(bbs[a]);
                     sysitmst[a].reserve(ibs[a]);
-                    if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return exit();
+                    if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return out();
                 }
         }
 
@@ -2122,7 +2122,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
             {
                 QFile file("./etc/passwd");
-                if(! fopen(file)) return exit();
+                if(! fopen(file)) return out();
 
                 while(! file.atEnd())
                 {
@@ -2142,13 +2142,13 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                 {
                     QFile file("." incfile);
-                    if(! fopen(file)) return exit();
+                    if(! fopen(file)) return out();
 
                     while(! file.atEnd())
                     {
                         QStr cline(left(file.readLine(), -1));
                         if(! cline.isEmpty()) ilst.append(cline);
-                        if(ThrdKill) return exit();
+                        if(ThrdKill) return out();
                     }
                 }
 
@@ -2158,20 +2158,20 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                     homeitms.last().reserve(50000);
                     homeitmst.append(QUCL());
                     homeitmst.last().reserve(1000);
-                    if(! rodir(homeitms.last(), homeitmst.last(), "./root", True, ilst)) return exit();
+                    if(! rodir(homeitms.last(), homeitmst.last(), "./root", True, ilst)) return out();
                 }
 
                 for(schar a(usrs.count() - 2) ; a > -1 ; --a)
                 {
                     homeitms[a].reserve(5000000);
                     homeitmst[a].reserve(100000);
-                    if(! rodir(homeitms[a], homeitmst[a], "./home/" % usrs.at(a), True, ilst)) return exit();
+                    if(! rodir(homeitms[a], homeitmst[a], "./home/" % usrs.at(a), True, ilst)) return out();
                 }
             }
 
             for(cQUCL &cucl : homeitmst) anum += cucl.count();
             Progress = 0;
-            if(! crtdir(rtrgt) || (isdir("./home") && ! crtdir(rtrgt % "/home"))) return exit();
+            if(! crtdir(rtrgt) || (isdir("./home") && ! crtdir(rtrgt % "/home"))) return out();
 
             if(incrmtl)
             {
@@ -2181,7 +2181,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                 for(cQStr &item : QDir("/").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot))
                 {
                     if(like(item, incl)) rplst.append(item);
-                    if(ThrdKill) return exit();
+                    if(ThrdKill) return out();
                 }
             }
 
@@ -2189,13 +2189,13 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
             {
                 QFile file("." excfile);
-                if(! fopen(file)) return exit();
+                if(! fopen(file)) return out();
 
                 while(! file.atEnd())
                 {
                     QStr cline(left(file.readLine(), -1));
                     if(cline.startsWith('.')) elst.append(cline);
-                    if(ThrdKill) return exit();
+                    if(ThrdKill) return out();
                 }
             }
 
@@ -2208,7 +2208,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                 if(! usr.isNull())
                 {
                     QStr srcd(usr.isEmpty() ? QStr("/root") : "/home/" % usr);
-                    if(! crtdir(rtrgt % srcd)) return exit();
+                    if(! crtdir(rtrgt % srcd)) return out();
 
                     if(! (cditmst = &homeitmst[a])->isEmpty())
                     {
@@ -2236,17 +2236,17 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                                             if(stype(orpi) == Islink && lcomp(rsrci, orpi))
                                             {
-                                                if(! crthlnk(orpi, nrpi)) return exit();
+                                                if(! crthlnk(orpi, nrpi)) return out();
                                                 goto nitem_1;
                                             }
 
-                                            if(ThrdKill) return exit();
+                                            if(ThrdKill) return out();
                                         }
 
-                                        if(! cplink(rsrci, nrpi)) return exit();
+                                        if(! cplink(rsrci, nrpi)) return out();
                                         break;
                                     case Isdir:
-                                        if(! crtdir(nrpi)) return exit();
+                                        if(! crtdir(nrpi)) return out();
                                         break;
                                     case Isfile:
                                         if(fsize(rsrci) <= 8000000)
@@ -2257,21 +2257,21 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                                                 if(stype(orpi) == Isfile && fcomp(rsrci, orpi) == 2)
                                                 {
-                                                    if(! crthlnk(orpi, nrpi)) return exit();
+                                                    if(! crthlnk(orpi, nrpi)) return out();
                                                     goto nitem_1;
                                                 }
 
-                                                if(ThrdKill) return exit();
+                                                if(ThrdKill) return out();
                                             }
 
-                                            if(! cpfile(rsrci, nrpi)) return exit();
+                                            if(! cpfile(rsrci, nrpi)) return out();
                                         }
                                     }
                                 }
                             }
 
                         nitem_1:
-                            if(ThrdKill) return exit();
+                            if(ThrdKill) return out();
                             ++lcnt;
                         }
 
@@ -2285,22 +2285,22 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                             if(cditmst->at(lcnt++) == Isdir)
                             {
                                 QStr srci(srcd % '/' % item), nrpi(rtrgt % srci);
-                                if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return exit();
+                                if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return out();
                             }
 
-                            if(ThrdKill) return exit();
+                            if(ThrdKill) return out();
                         }
 
                         cditms->clear();
                         cditmst->clear();
                     }
 
-                    if(! cpertime('.' % srcd, rtrgt % srcd)) return exit();
+                    if(! cpertime('.' % srcd, rtrgt % srcd)) return out();
                 }
             }
         }
 
-        if(isdir(rtrgt % "/home") && ! cpertime("./home", rtrgt % "/home")) return exit();
+        if(isdir(rtrgt % "/home") && ! cpertime("./home", rtrgt % "/home")) return out();
 
         {
             QSL incl{"_initrd.img_", "_initrd.img.old_", "_vmlinuz_", "_vmlinuz.old_"};
@@ -2321,27 +2321,27 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                             if(stype(orpi) == Islink && lcomp(rsrci, orpi))
                             {
-                                if(! crthlnk(orpi, nrpi)) return exit();
+                                if(! crthlnk(orpi, nrpi)) return out();
                                 goto nitem_2;
                             }
 
-                            if(ThrdKill) return exit();
+                            if(ThrdKill) return out();
                         }
 
-                        if(! cplink(rsrci, nrpi)) return exit();
+                        if(! cplink(rsrci, nrpi)) return out();
                     }
                 }
 
             nitem_2:
-                if(ThrdKill) return exit();
+                if(ThrdKill) return out();
             }
         }
 
         for(cQStr &cdir : {"/cdrom", "/dev", "/mnt", "/proc", "/run", "/sys", "/tmp"})
         {
             QStr rcdir('.' % cdir);
-            if(isdir(rcdir) && ! cpdir(rcdir, rtrgt % cdir)) return exit();
-            if(ThrdKill) return exit();
+            if(isdir(rcdir) && ! cpdir(rcdir, rtrgt % cdir)) return out();
+            if(ThrdKill) return out();
         }
 
         QSL elst{"/etc/mtab", "/var/.sblvtmp", "/var/cache/fontconfig/", "/var/lib/dpkg/lock", "/var/lib/udisks2/", "/var/lib/ureadahead/", "/var/log/", "/var/run/", "/var/tmp/"}, dlst{"/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/srv", "/usr", "/var"}, excl[]{{"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*.dpkg-old_", "*~_", "*~/*"}, {"+_/var/cache/apt/*", "-*.bin_", "-*.bin.*"}, {"_/var/cache/apt/archives/*", "*.deb_"}};
@@ -2353,7 +2353,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
             if(isdir(rcdir))
             {
-                if(! crtdir(rtrgt % cdir)) return exit();
+                if(! crtdir(rtrgt % cdir)) return out();
 
                 if(! (cditmst = &sysitmst[a])->isEmpty())
                 {
@@ -2381,17 +2381,17 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                                         if(stype(orpi) == Islink && lcomp(rsrci, orpi))
                                         {
-                                            if(! crthlnk(orpi, nrpi)) return exit();
+                                            if(! crthlnk(orpi, nrpi)) return out();
                                             goto nitem_3;
                                         }
 
-                                        if(ThrdKill) return exit();
+                                        if(ThrdKill) return out();
                                     }
 
-                                    if(! cplink(rsrci, nrpi)) return exit();
+                                    if(! cplink(rsrci, nrpi)) return out();
                                     break;
                                 case Isdir:
-                                    if(! crtdir(nrpi)) return exit();
+                                    if(! crtdir(nrpi)) return out();
                                     break;
                                 case Isfile:
                                     for(cQStr &pname : rplst)
@@ -2400,20 +2400,20 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                                         if(stype(orpi) == Isfile && fcomp(rsrci, orpi) == 2)
                                         {
-                                            if(! crthlnk(orpi, nrpi)) return exit();
+                                            if(! crthlnk(orpi, nrpi)) return out();
                                             goto nitem_3;
                                         }
 
-                                        if(ThrdKill) return exit();
+                                        if(ThrdKill) return out();
                                     }
 
-                                    if(! cpfile(rsrci, nrpi)) return exit();
+                                    if(! cpfile(rsrci, nrpi)) return out();
                                 }
                             }
                         }
 
                     nitem_3:
-                        if(ThrdKill) return exit();
+                        if(ThrdKill) return out();
                         ++lcnt;
                     }
 
@@ -2427,35 +2427,35 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                         if(cditmst->at(lcnt++) == Isdir)
                         {
                             QStr srci(cdir % '/' % item), nrpi(trgt % srci);
-                            if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return exit();
+                            if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return out();
                         }
 
-                        if(ThrdKill) return exit();
+                        if(ThrdKill) return out();
                     }
 
                     cditms->clear();
                     cditmst->clear();
                 }
 
-                if(! cpertime(rcdir, rtrgt % cdir)) return exit();
+                if(! cpertime(rcdir, rtrgt % cdir)) return out();
             }
         }
     }
 
     if(isdir("./media"))
     {
-        if(! crtdir(rtrgt % "/media")) return exit();
+        if(! crtdir(rtrgt % "/media")) return out();
 
         if(isfile("./etc/fstab"))
         {
             QSL dlst(QDir("./media").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot));
             QFile file("./etc/fstab");
-            if(! fopen(file)) return exit();
+            if(! fopen(file)) return out();
 
             for(uchar a(0) ; a < dlst.count() ; ++a)
             {
                 cQStr &item(dlst.at(a));
-                if(a && ! fopen(file)) return exit();
+                if(a && ! fopen(file)) return out();
                 QSL incl{"* /media/" % item % " *", "* /media/" % item % "/*"};
 
                 while(! file.atEnd())
@@ -2467,17 +2467,17 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                             if(! cdname.isEmpty())
                             {
                                 QStr nrpi(rtrgt % "/media" % fdir.append('/' % (cdname.contains("\\040") ? QStr(cdname).replace("\\040", " ") : cdname)));
-                                if(! (isdir(nrpi) || cpdir("./media" % fdir, nrpi))) return exit();
+                                if(! (isdir(nrpi) || cpdir("./media" % fdir, nrpi))) return out();
                             }
 
-                    if(ThrdKill) return exit();
+                    if(ThrdKill) return out();
                 }
 
                 file.close();
             }
         }
 
-        if(! cpertime("./media", rtrgt % "/media")) return exit();
+        if(! cpertime("./media", rtrgt % "/media")) return out();
     }
 
     if(isdir("./var/log"))
@@ -2486,7 +2486,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
         logitms.reserve(20000);
         QUCL logitmst;
         logitmst.reserve(1000);
-        if(! rodir(logitms, logitmst, "./var/log")) return exit();
+        if(! rodir(logitms, logitmst, "./var/log")) return out();
 
         if(! logitmst.isEmpty())
         {
@@ -2500,18 +2500,18 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                 switch(logitmst.at(lcnt++)) {
                 case Isdir:
-                    if(! crtdir(rtrgt % "/var/log/" % item)) return exit();
+                    if(! crtdir(rtrgt % "/var/log/" % item)) return out();
                     break;
                 case Isfile:
                     if(! (like(item, excl) || (item.contains('.') && isnum(right(item, -rinstr(item, "."))))))
                     {
                         QStr srci("/var/log/" % item), nrpi(rtrgt % srci);
                         crtfile(nrpi);
-                        if(! cpertime('.' % srci, nrpi)) return exit();
+                        if(! cpertime('.' % srci, nrpi)) return out();
                     }
                 }
 
-                if(ThrdKill) return exit();
+                if(ThrdKill) return out();
             }
 
             in.seek(0);
@@ -2524,17 +2524,17 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                 if(logitmst.at(lcnt++) == Isdir)
                 {
                     QStr srci("./var/log/" % item), nrpi(trgt % srci);
-                    if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return exit();
+                    if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return out();
                 }
 
-                if(ThrdKill) return exit();
+                if(ThrdKill) return out();
             }
         }
 
-        if(! (cpertime("./var/log", rtrgt % "/var/log") && cpertime("./var", rtrgt % "/var"))) return exit();
+        if(! (cpertime("./var/log", rtrgt % "/var/log") && cpertime("./var", rtrgt % "/var"))) return out();
     }
 
-    return exit(true);
+    return out(true);
 }
 
 bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab)

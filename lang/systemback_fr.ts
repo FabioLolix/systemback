@@ -4,162 +4,199 @@
 <context>
     <name>systemback</name>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="101"/>
+        <location filename="../libsystemback/sblib.cpp" line="180"/>
+        <source>Version:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="180"/>
+        <source>Compilation date and time:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="180"/>
+        <location filename="../libsystemback/sblib.cpp" line="183"/>
+        <source>Installed files:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="193"/>
+        <source>Operating system:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="204"/>
+        <location filename="../libsystemback/sblib.cpp" line="206"/>
+        <source>Mounted filesystems:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="227"/>
+        <source>System language:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="227"/>
+        <source>Translation:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="104"/>
         <source>The specified debug level is invalid!</source>
         <translation>Le niveau de débogage spécifié est invalide !</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="101"/>
+        <location filename="../libsystemback/sblib.cpp" line="104"/>
         <source>The default level (1) will be used.</source>
         <translation>Le niveau par défaut (1) sera utilisé.</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="160"/>
+        <location filename="../libsystemback/sblib.cpp" line="327"/>
         <source>An error occurred while opening the following file:</source>
         <translation>Une erreur s&apos;est produite lors de l&apos;ouverture du fichier suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="289"/>
+        <location filename="../libsystemback/sblib.cpp" line="456"/>
         <source>An error occurred while creating the following directory:</source>
         <translation>Une erreur s&apos;est produite lors de la création du répertoire suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="291"/>
+        <location filename="../libsystemback/sblib.cpp" line="458"/>
         <source>An error occurred while removing the following file:</source>
         <translation>Une erreur s&apos;est produite lors de la suppression du fichier suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="293"/>
+        <location filename="../libsystemback/sblib.cpp" line="460"/>
         <source>An error occurred while creating the following hard link:</source>
         <translation>Une erreur s&apos;est produite lors de la création du lien physique suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="293"/>
+        <location filename="../libsystemback/sblib.cpp" line="460"/>
         <source>Reference file:</source>
         <translation>fichier de référence :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="300"/>
+        <location filename="../libsystemback/sblib.cpp" line="467"/>
         <source>An error occurred while creating the following file:</source>
         <translation>Une erreur s&apos;est produite lors de la création du fichier suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="311"/>
+        <location filename="../libsystemback/sblib.cpp" line="478"/>
         <source>An error occurred while renaming the following item:</source>
         <translation>Une erreur s&apos;est produite lors du changement de nom de l&apos;élément suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="311"/>
+        <location filename="../libsystemback/sblib.cpp" line="478"/>
         <source>New path:</source>
         <translation>Nouveau chemin :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="639"/>
+        <location filename="../libsystemback/sblib.cpp" line="806"/>
         <source>An error occurred while executing the following command:</source>
         <translation>Une erreur s&apos;est produite lors de l’exécution de la commande suivante :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="639"/>
+        <location filename="../libsystemback/sblib.cpp" line="806"/>
         <source>Exit code:</source>
         <translation>Code de sortie :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="832"/>
+        <location filename="../libsystemback/sblib.cpp" line="999"/>
         <source>Failed to detect the device for installing the GRUB!</source>
         <translation>Échec de détection de périphérique pour l&apos;installation de GRUB !</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="957"/>
+        <location filename="../libsystemback/sblib.cpp" line="1124"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>La mise à jour du système a généré une erreur !</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="958"/>
+        <location filename="../libsystemback/sblib.cpp" line="1125"/>
         <source>Restart upgrade ...</source>
         <translation>Effectuer de nouveau la mise à jour du système ...</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="969"/>
+        <location filename="../libsystemback/sblib.cpp" line="1151"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation>Ce fichier n&apos;a pas pu être copié car il n&apos;existe pas :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="984"/>
+        <location filename="../libsystemback/sblib.cpp" line="1166"/>
         <source>The following partition has no UUID:</source>
         <translation>La partition suivante n&apos;a pas d&apos;UUID :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1003"/>
+        <location filename="../libsystemback/sblib.cpp" line="1185"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation>Une erreur s&apos;est produite lors de la création d&apos;une nouvelle partition sur le périphérique suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1017"/>
+        <location filename="../libsystemback/sblib.cpp" line="1199"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation>Une erreur s&apos;est produite lors du montage de partition/image suivante :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1052"/>
+        <location filename="../libsystemback/sblib.cpp" line="1234"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation>Une erreur s&apos;est produite lors du réglage d&apos;un ou plusieurs drapeau(x) sur la partition suivante :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1052"/>
+        <location filename="../libsystemback/sblib.cpp" line="1234"/>
         <source>Flag(s):</source>
         <translation>Drapeau(x) :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1074"/>
+        <location filename="../libsystemback/sblib.cpp" line="1256"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation>Une erreur s&apos;est produite lors de la création de la table de partition sur le périphérique suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1099"/>
+        <location filename="../libsystemback/sblib.cpp" line="1281"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation>Une erreur s&apos;est produite lors du démontage de partition/image/point de montage suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1153"/>
+        <location filename="../libsystemback/sblib.cpp" line="1335"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation>Une erreur s&apos;est produite lors du clonage des propriétés de l&apos;élément suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1153"/>
+        <location filename="../libsystemback/sblib.cpp" line="1335"/>
         <source>Target item:</source>
         <translation>Élément cible :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1185"/>
+        <location filename="../libsystemback/sblib.cpp" line="1367"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation>Une erreur s&apos;est produite lors du clonage du lien symbolique suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1185"/>
+        <location filename="../libsystemback/sblib.cpp" line="1367"/>
         <source>Target symlink:</source>
         <translation>Lien symbolique cible :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1198"/>
+        <location filename="../libsystemback/sblib.cpp" line="1380"/>
         <source>An error occurred while cloning the following file:</source>
         <translation>Une erreur s&apos;est produite lors du clonage du fichier suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1198"/>
+        <location filename="../libsystemback/sblib.cpp" line="1380"/>
         <source>Target file:</source>
         <translation>Fichier cible :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1249"/>
+        <location filename="../libsystemback/sblib.cpp" line="1431"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation>Une erreur s&apos;est produite lors du clonage du répertoire suivant :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1249"/>
+        <location filename="../libsystemback/sblib.cpp" line="1431"/>
         <source>Target directory:</source>
         <translation>Répertoire cible :</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1574"/>
+        <location filename="../libsystemback/sblib.cpp" line="1756"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation>Une erreur s&apos;est produite lors de la suppression du répertoire suivant :</translation>
     </message>

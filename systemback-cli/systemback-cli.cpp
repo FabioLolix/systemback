@@ -104,7 +104,7 @@ void systemback::main()
 
     if(! sb::like(rv, {0, 255})) sb::error("\n " % [=]() -> QStr {
             auto dbg([](cQStr &txt) {
-                    if(! sb::eout.isEmpty()) sb::crtfile("/tmp/systemback-cli_stderr", sb::eout.trimmed().replace("\n\n\n ", "\n") % '\n');
+                    if(! sb::eout.isEmpty()) sb::crtfile("/tmp/systemback-cli_stderr", QStr((sb::dbglev == sb::sb::Cextdbg ? sb::dbginf() : nullptr) % sb::eout).trimmed().replace("\n\n\n", "\n\n").replace("\n ", "\n") % '\n');
                     return txt;
                 });
 

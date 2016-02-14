@@ -29,7 +29,8 @@ QMAKE_CXXFLAGS += -g \
                   -fvisibility-inlines-hidden \
                   -fno-asynchronous-unwind-tables
 
-QMAKE_CXXFLAGS_WARN_ON += -Wextra \
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-result \
+                          -Wextra \
                           -Wshadow \
                           -Werror
 

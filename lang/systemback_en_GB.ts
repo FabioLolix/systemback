@@ -1253,5 +1253,33 @@ These will be defined as restorable configuration files!</source>
         <source>The default level (1) will be used.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Version:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compilation date and time:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Installed files:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operating system:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mounted filesystems:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System language:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Translation:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

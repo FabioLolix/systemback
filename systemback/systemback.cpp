@@ -4170,7 +4170,7 @@ void systemback::on_systemupgrade_clicked()
     pset(11);
     QDateTime ofdate(QFileInfo("/usr/bin/systemback").lastModified());
     sb::unlock(sb::Dpkglock);
-    sb::exec("xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+" % QStr::number(ss(80)) % '+' % QStr::number(ss(70)) % " -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e sbsysupgrade");
+    sb::exec("xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+" % QStr::number(ss(80)) % '+' % QStr::number(ss(70)) % " -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e sbsysupgrade", sb::Noflag, "DBGLEV=0");
 
     if(isVisible())
     {
@@ -4335,7 +4335,7 @@ void systemback::on_partitionrefresh_clicked()
             { QTblWI *dev(new QTblWI(path));
             dev->setTextAlignment(Qt::AlignBottom);
             ui->partitionsettings->setItem(sn, 0, dev);
-            QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
+            QTblWI *rsize(new QTblWI(sb::hunit(bsize)));
             rsize->setTextAlignment(Qt::AlignRight | Qt::AlignBottom);
             ui->partitionsettings->setItem(sn, 1, rsize);
             QFont fnt;
@@ -4354,7 +4354,7 @@ void systemback::on_partitionrefresh_clicked()
                 ui->partitionsettings->setRowCount(++sn + 1);
                 { QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
+                QTblWI *rsize(new QTblWI(sb::hunit(bsize)));
                 rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 ui->partitionsettings->setItem(sn, 1, rsize);
                 QFont fnt;
@@ -4371,7 +4371,7 @@ void systemback::on_partitionrefresh_clicked()
                 ui->partitionsettings->setRowCount(++sn + 1);
                 { QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
+                QTblWI *rsize(new QTblWI(sb::hunit(bsize)));
                 rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 ui->partitionsettings->setItem(sn, 1, rsize);
                 QTblWI *lbl(new QTblWI(dts.at(5)));
@@ -4429,7 +4429,7 @@ void systemback::on_partitionrefresh_clicked()
                 ui->partitionsettings->setRowCount(++sn + 1);
                 { QTblWI *dev(new QTblWI(path));
                 ui->partitionsettings->setItem(sn, 0, dev);
-                QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
+                QTblWI *rsize(new QTblWI(sb::hunit(bsize)));
                 rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 ui->partitionsettings->setItem(sn, 1, rsize);
                 QFont fnt;
@@ -4930,7 +4930,7 @@ void systemback::on_livedevicesrefresh_clicked()
         QTblWI *dev(new QTblWI(dts.at(0)));
         ui->livedevices->setItem(sn, 0, dev);
         ullong bsize(dts.at(2).toULongLong());
-        QTblWI *rsize(new QTblWI(bsize < 1073741824 ? QStr::number((bsize * 10 / 1048576 + 5) / 10) % " MiB" : bsize < 1073741824000 ? QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(bsize * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB"));
+        QTblWI *rsize(new QTblWI(sb::hunit(bsize)));
         rsize->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         ui->livedevices->setItem(sn, 1, rsize);
         QTblWI *name(new QTblWI(dts.at(1)));

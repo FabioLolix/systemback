@@ -45,8 +45,8 @@ class SHARED_EXPORT_IMPORT sb : public QThread
 public:
     enum { Remove = 0, Copy = 1, Sync = 2, Mount = 3, Umount = 4, Readprttns = 5, Readlvdevs = 6, Ruuid = 7, Setpflag = 8, Mkptable = 9, Mkpart = 10, Delpart = 11, Crtrpoint = 12, Srestore = 13, Scopy = 14, Lvprpr = 15,
            MSDOS = 0, GPT = 1, Clear = 2, Primary = 3, Extended = 4, Logical = 5, Freespace = 6, Emptyspace = 7,
+           Nodbg = 0, Errdbg = 1, Alldbg = 2, Extdbg = 3, Cextdbg = 4, Nulldbg = 5, Falsedbg = 6,
            Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknown = 5,
-           Nodbg = 0, Errdbg = 1, Alldbg = 2, Nulldbg = 3, Falsedbg = 4,
            Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4, Wait = 8,
            False = 0, True = 1, Empty = 2, Include = 3,
            Sblock = 0, Dpkglock = 1, Schdlrlock = 2,
@@ -67,15 +67,17 @@ public:
     static QStr left(cQStr &txt, short len);
     static QStr gdetect(cQStr rdir = "/");
     static QStr rndstr(uchar vlen = 10);
+    static fnln QStr hunit(ullong size);
     static QStr ruuid(cQStr &part);
     static QStr appver();
+    static QStr dbginf();
     static QBA fload(cQStr &path);
     template<typename T> static ullong dfree(const T &path);
     static fnln ullong fsize(cQStr &path);
     static fnln ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
     static fnln ushort rinstr(cQStr &txt, cQStr &stxt);
+    template<typename T> static uchar stype(const T &path, bool flink = false);
     static uchar exec(cQStr &cmd, uchar flag = Noflag, cQStr &envv = nullptr);
-    template<typename T> static uchar stype(const T &path);
     static uchar exec(cQSL &cmds);
     static bool srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);
     template<typename T1, typename T2> static bool issmfs(const T1 &item1, const T2 &item2);
@@ -134,7 +136,9 @@ private:
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 
+    static QStr fdbg(cQStr &path1, cQStr &path2 = nullptr);
     static QStr rlink(cQStr &path, ushort blen);
+    static ullong devsize(cQStr &dev);
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), uchar oplen = 0);
     static bool cerr(uchar type, cQStr &str1, cQStr &str2 = nullptr);
     static bool rodir(QUCL &ucl, cQStr &path, uchar oplen = 0);
@@ -211,10 +215,10 @@ inline bool sb::isdir(cQStr &path)
     return QFileInfo(path).isDir();
 }
 
-template<typename T> inline uchar sb::stype(const T &path)
+template<typename T> inline uchar sb::stype(const T &path, bool flink)
 {
     struct stat istat;
-    if(lstat(bstr(path), &istat)) return Notexist;
+    if(flink ? stat(bstr(path), &istat) : lstat(bstr(path), &istat)) return Notexist;
 
     switch(istat.st_mode & S_IFMT) {
     case S_IFREG:
@@ -239,6 +243,11 @@ template<typename T> ullong sb::dfree(const T &path)
 {
     struct statvfs dstat;
     return statvfs(bstr(path), &dstat) ? 0 : dstat.f_bavail * dstat.f_bsize;
+}
+
+inline QStr sb::hunit(ullong size)
+{
+    return size < 1024 ? QStr(QStr::number(size) % " B") : size < 1048576 ? QStr::number(qRound64(size * 100.0 / 1024.0) / 100.0) % " KiB" : size < 1073741824 ? QStr::number(qRound64(size * 100.0 / 1024.0 / 1024.0) / 100.0) % " MiB" : size < 1073741824000 ? QStr::number(qRound64(size * 100.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " GiB" : QStr::number(qRound64(size * 100.0 / 1024.0 / 1024.0 / 1024.0 / 1024.0) / 100.0) % " TiB";
 }
 
 template<typename T1, typename T2> inline bool sb::issmfs(const T1 &item1, const T2 &item2)

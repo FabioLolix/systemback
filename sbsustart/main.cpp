@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 #endif
 
     QCoreApplication a(argc, argv);
+    if(sb::dbglev) sb::dbglev = sb::Nodbg;
     sb::ldtltr();
     sustart s;
 

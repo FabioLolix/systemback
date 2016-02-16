@@ -51,6 +51,7 @@
 #undef True
 #endif
 
+Display *dsply(XOpenDisplay(nullptr));
 ushort lblevent::MouseX, lblevent::MouseY;
 
 systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new Ui::systemback)
@@ -583,14 +584,12 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
     {
         for(QWdt wdgt : QWL{ui->wallpaper, ui->logo}) wdgt->hide();
         if(sb::waot && ! windowFlags().testFlag(Qt::WindowStaysOnTopHint)) setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-        Display *dsply(XOpenDisplay(nullptr));
         Atom atm(XInternAtom(dsply, "_MOTIF_WM_HINTS", 0));
         ulong hnts[]{3, 44, 0, 0, 0};
         XChangeProperty(dsply, winId(), atm, atm, 32, PropModeReplace, (uchar *)&hnts, 5);
-        XFlush(dsply);
-        XCloseDisplay(dsply);
     }
 
+    XFlush(dsply);
     installEventFilter(this);
 }
 
@@ -620,6 +619,7 @@ systemback::~systemback()
         if(tmr) delete tmr;
 
     delete ui;
+    XCloseDisplay(dsply);
 }
 
 void systemback::closeEvent(QCloseEvent *ev)
@@ -1717,12 +1717,10 @@ void systemback::wbreleased()
             }
             else
             {
-                Display *dsply(XOpenDisplay(nullptr));
                 XWindowAttributes attr;
                 XGetWindowAttributes(dsply, winId(), &attr);
                 XIconifyWindow(dsply, winId(), XScreenNumberOfScreen(attr.screen));
                 XFlush(dsply);
-                XCloseDisplay(dsply);
             }
         }
     }
@@ -3044,7 +3042,6 @@ void systemback::setwontop(bool state)
 {
     if(! (fscrn || sb::waot))
     {
-        Display *dsply(XOpenDisplay(nullptr));
         XEvent ev;
         ev.xclient.type = ClientMessage,
         ev.xclient.message_type = XInternAtom(dsply, "_NET_WM_STATE", 0),
@@ -3052,11 +3049,12 @@ void systemback::setwontop(bool state)
         ev.xclient.window = winId(),
         ev.xclient.format = 32,
         ev.xclient.data.l[0] = state ? 1 : 0,
-        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_ABOVE", 0),
-        XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev),
+        ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_ABOVE", 0);
+        Window win(XDefaultRootWindow(dsply));
+        XSendEvent(dsply, win, 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev),
         ev.xclient.data.l[1] = XInternAtom(dsply, "_NET_WM_STATE_STAYS_ON_TOP", 0),
-        XSendEvent(dsply, XDefaultRootWindow(dsply), 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
-        XCloseDisplay(dsply);
+        XSendEvent(dsply, win, 0, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
+        XFlush(dsply);
     }
 }
 

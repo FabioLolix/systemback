@@ -22,7 +22,6 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    sb::ldtltr();
-    sb::supgrade();
+    sb::ldtltr(), sb::supgrade();
     return 0;
 }

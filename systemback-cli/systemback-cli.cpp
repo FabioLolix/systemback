@@ -68,17 +68,17 @@ void systemback::main()
                                     uchar crv(! has_colors() ? 6
                                         : LINES < 24 || COLS < 80 ? 7
                                         : [crtrpt, this]() -> uchar {
-                                                noecho();
-                                                raw();
-                                                curs_set(0);
-                                                attron(A_BOLD);
-                                                start_color();
-                                                assume_default_colors(COLOR_BLUE, COLOR_BLACK);
-                                                init_pair(1, COLOR_WHITE, COLOR_BLACK);
-                                                init_pair(2, COLOR_BLUE, COLOR_BLACK);
-                                                init_pair(3, COLOR_GREEN, COLOR_BLACK);
-                                                init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-                                                init_pair(5, COLOR_RED, COLOR_BLACK);
+                                                noecho(),
+                                                raw(),
+                                                curs_set(0),
+                                                attron(A_BOLD),
+                                                start_color(),
+                                                assume_default_colors(COLOR_BLUE, COLOR_BLACK),
+                                                init_pair(1, COLOR_WHITE, COLOR_BLACK),
+                                                init_pair(2, COLOR_BLUE, COLOR_BLACK),
+                                                init_pair(3, COLOR_GREEN, COLOR_BLACK),
+                                                init_pair(4, COLOR_YELLOW, COLOR_BLACK),
+                                                init_pair(5, COLOR_RED, COLOR_BLACK),
                                                 sbtxt = bstr("Systemback " % tr("basic restore UI")), blgn = COLS / 2 - 6 - tr("basic restore UI").length() / 2;
                                                 if(! crtrpt) return clistart();
                                                 sb::pupgrade();
@@ -145,10 +145,10 @@ void systemback::main()
 
 uchar systemback::clistart()
 {
-    mvprintw(0, blgn, sbtxt);
-    attron(COLOR_PAIR(1));
-    printw(bstr("\n\n " % tr("Available restore point(s):") % "\n\n"));
-    sb::pupgrade();
+    mvprintw(0, blgn, sbtxt),
+    attron(COLOR_PAIR(1)),
+    printw(bstr("\n\n " % tr("Available restore point(s):") % "\n\n")),
+    sb::pupgrade(),
     attron(COLOR_PAIR(3));
     if(! sb::pnames[0].isEmpty()) printw(bstr("  1 ─ " % sb::left(sb::pnames[0], COLS - 7) % '\n'));
     if(! sb::pnames[1].isEmpty()) printw(bstr("  2 ─ " % sb::left(sb::pnames[1], COLS - 7) % '\n'));
@@ -174,9 +174,9 @@ uchar systemback::clistart()
     if(! sb::pnames[12].isEmpty()) printw(bstr("  D ─ " % sb::left(sb::pnames[12], COLS - 7) % '\n'));
     if(! sb::pnames[13].isEmpty()) printw(bstr("  E ─ " % sb::left(sb::pnames[13], COLS - 7) % '\n'));
     if(! sb::pnames[14].isEmpty()) printw(bstr("  F ─ " % sb::left(sb::pnames[14], COLS - 7) % '\n'));
-    printw(bstr("\n G ─ " % tr("Create new") % "\n Q ─ " % tr("Quit") % '\n'));
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+    printw(bstr("\n G ─ " % tr("Create new") % "\n Q ─ " % tr("Quit") % '\n')),
+    attron(COLOR_PAIR(2)),
+    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
     refresh();
     if(! sb::eout.isEmpty()) sb::eout.clear();
     if(! pname.isEmpty()) pname.clear();
@@ -234,23 +234,22 @@ uchar systemback::clistart()
         }
     } while(pname.isEmpty());
 
-    clear();
-    mvprintw(0, blgn, sbtxt);
-    attron(COLOR_PAIR(1));
-    printw(bstr("\n\n " % tr("Selected restore point:")));
-    attron(COLOR_PAIR(4));
-    printw(bstr("\n\n  " % sb::left(pname, COLS - 3)));
-    attron(COLOR_PAIR(3));
-    printw(bstr("\n\n 1 ─ " % tr("Delete") % "\n 2 ─ " % tr("System restore") % " ▸\n B ─ ◂ " % tr("Back")));
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+    clear(),
+    mvprintw(0, blgn, sbtxt),
+    attron(COLOR_PAIR(1)),
+    printw(bstr("\n\n " % tr("Selected restore point:"))),
+    attron(COLOR_PAIR(4)),
+    printw(bstr("\n\n  " % sb::left(pname, COLS - 3))),
+    attron(COLOR_PAIR(3)),
+    printw(bstr("\n\n 1 ─ " % tr("Delete") % "\n 2 ─ " % tr("System restore") % " ▸\n B ─ ◂ " % tr("Back"))),
+    attron(COLOR_PAIR(2)),
+    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
     refresh();
 
     forever
         switch(getch()) {
         case '1':
-            pset(2);
-            progress(Start);
+            pset(2), progress(Start);
 
             if(! (sb::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) && sb::remove(sb::sdir[1] % "/.DELETED_" % pname)))
             {
@@ -258,8 +257,8 @@ uchar systemback::clistart()
                 return 14;
             }
 
-            emptycache();
-            progress(Stop);
+            emptycache(),
+            progress(Stop),
             clear();
             return clistart();
         case '2':
@@ -306,11 +305,8 @@ uchar systemback::storagedir(cQSL &args)
             if(! sb::cfgwrite()) return 8;
         }
 
-        if(! (sb::isdir(sb::sdir[1]) || sb::crtdir(sb::sdir[1])))
-        {
-            sb::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr());
-            sb::crtdir(sb::sdir[1]);
-        }
+        if(! (sb::isdir(sb::sdir[1]) || sb::crtdir(sb::sdir[1]))) sb::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr()),
+                                                                  sb::crtdir(sb::sdir[1]);
 
         if(! sb::isfile(sb::sdir[1] % "/.sbschedule")) sb::crtfile(sb::sdir[1] % "/.sbschedule");
         sb::print("\n " % twrp(tr("The specified storage directory path is set.")) % "\n\n");
@@ -321,7 +317,7 @@ uchar systemback::storagedir(cQSL &args)
 
 void systemback::emptycache()
 {
-    pset(1);
+    pset(1),
     sb::fssync();
     if(sb::ecache) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }
@@ -357,32 +353,32 @@ bool systemback::newrpnt()
         if(! sb::rename(sb::sdir[1] % "/S0" % QStr::number(a + 1) % '_' % sb::pnames[a], sb::sdir[1] % (a < 8 ? "/S0" : "/S") % QStr::number(a + 2) % '_' % sb::pnames[a])) return end(false);
 
     if(! sb::rename(sb::sdir[1] % "/.S00_" % dtime, sb::sdir[1] % "/S01_" % dtime)) return end(false);
-    sb::crtfile(sb::sdir[1] % "/.sbschedule");
+    sb::crtfile(sb::sdir[1] % "/.sbschedule"),
     emptycache();
     return end();
 }
 
 uchar systemback::restore()
 {
-    mvprintw(0, blgn, sbtxt);
+    mvprintw(0, blgn, sbtxt),
     attron(COLOR_PAIR(1));
     uchar mthd(0), fsave(0), greinst(0);
 
     {
         bstr rtxt[3]{bstr("\n\n " % tr("Restore with the following restore point:")), bstr("\n\n  " % pname), bstr("\n\n " % tr("Restore with the following restore method:"))};
-        printw(rtxt[0]);
-        attron(COLOR_PAIR(4));
-        printw(rtxt[1]);
-        attron(COLOR_PAIR(1));
-        printw(rtxt[2]);
-        attron(COLOR_PAIR(3));
-        printw(bstr("\n\n  1 ─ " % tr("Full restore") % "\n  2 ─ " % tr("System files restore")));
-        attron(COLOR_PAIR(1));
-        printw(bstr("\n\n  " % tr("Users configuration files restore")));
-        attron(COLOR_PAIR(3));
-        printw(bstr("\n\n   3 ─ " % tr("Complete configuration files restore") % "\n   4 ─ " % tr("Keep newly installed configuration files") % "\n\n C ─ " % tr("Cancel")));
-        attron(COLOR_PAIR(2));
-        mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+        printw(rtxt[0]),
+        attron(COLOR_PAIR(4)),
+        printw(rtxt[1]),
+        attron(COLOR_PAIR(1)),
+        printw(rtxt[2]),
+        attron(COLOR_PAIR(3)),
+        printw(bstr("\n\n  1 ─ " % tr("Full restore") % "\n  2 ─ " % tr("System files restore"))),
+        attron(COLOR_PAIR(1)),
+        printw(bstr("\n\n  " % tr("Users configuration files restore"))),
+        attron(COLOR_PAIR(3)),
+        printw(bstr("\n\n   3 ─ " % tr("Complete configuration files restore") % "\n   4 ─ " % tr("Keep newly installed configuration files") % "\n\n C ─ " % tr("Cancel"))),
+        attron(COLOR_PAIR(2)),
+        mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
         refresh();
 
         do {
@@ -398,14 +394,14 @@ uchar systemback::restore()
             }
         } while(! mthd);
 
-        clear();
-        mvprintw(0, blgn, sbtxt);
-        attron(COLOR_PAIR(1));
-        printw(rtxt[0]);
-        attron(COLOR_PAIR(4));
-        printw(rtxt[1]);
-        attron(COLOR_PAIR(1));
-        printw(rtxt[2]);
+        clear(),
+        mvprintw(0, blgn, sbtxt),
+        attron(COLOR_PAIR(1)),
+        printw(rtxt[0]),
+        attron(COLOR_PAIR(4)),
+        printw(rtxt[1]),
+        attron(COLOR_PAIR(1)),
+        printw(rtxt[2]),
         attron(COLOR_PAIR(4));
 
         printw(bstr("\n\n  " % [mthd] {
@@ -427,9 +423,9 @@ uchar systemback::restore()
         {
             if(sb::isfile("/etc/fstab"))
             {
-                printw(bstr("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)")));
-                attron(COLOR_PAIR(2));
-                mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+                printw(bstr("\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)"))),
+                attron(COLOR_PAIR(2)),
+                mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
                 refresh();
 
                 do {
@@ -441,23 +437,23 @@ uchar systemback::restore()
                         fsave = 2;
                 } while(! fsave);
 
-                clear();
-                mvprintw(0, blgn, sbtxt);
-                attron(COLOR_PAIR(1));
-                printw(rtxt[0]);
-                attron(COLOR_PAIR(4));
-                printw(rtxt[1]);
-                attron(COLOR_PAIR(1));
-                printw(rtxt[2]);
-                attron(COLOR_PAIR(4));
-                printw(bstr("\n\n  " % (mthd == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1]));
+                clear(),
+                mvprintw(0, blgn, sbtxt),
+                attron(COLOR_PAIR(1)),
+                printw(rtxt[0]),
+                attron(COLOR_PAIR(4)),
+                printw(rtxt[1]),
+                attron(COLOR_PAIR(1)),
+                printw(rtxt[2]),
+                attron(COLOR_PAIR(4)),
+                printw(bstr("\n\n  " % (mthd == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1])),
                 attron(COLOR_PAIR(3));
 
                 if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
                 {
-                    printw(bstr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")));
-                    attron(COLOR_PAIR(2));
-                    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+                    printw(bstr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)"))),
+                    attron(COLOR_PAIR(2)),
+                    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
                     refresh();
 
                     do {
@@ -469,23 +465,23 @@ uchar systemback::restore()
                             greinst = 2;
                     } while(! greinst);
 
-                    clear();
-                    mvprintw(0, blgn, sbtxt);
-                    attron(COLOR_PAIR(1));
-                    printw(rtxt[0]);
-                    attron(COLOR_PAIR(4));
-                    printw(rtxt[1]);
-                    attron(COLOR_PAIR(1));
-                    printw(rtxt[2]);
-                    attron(COLOR_PAIR(4));
+                    clear(),
+                    mvprintw(0, blgn, sbtxt),
+                    attron(COLOR_PAIR(1)),
+                    printw(rtxt[0]),
+                    attron(COLOR_PAIR(4)),
+                    printw(rtxt[1]),
+                    attron(COLOR_PAIR(1)),
+                    printw(rtxt[2]),
+                    attron(COLOR_PAIR(4)),
                     printw(bstr("\n\n  " % (mthd == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("You want to keep the current fstab file?") % ' ' % tr("(Y/N)") % ' ' % yn[fsave == 1 ? 0 : 1] % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1]));
                 }
             }
             else if(sb::execsrch("update-grub2", sb::sdir[1] % '/' % cpoint % '_' % pname))
             {
-                printw(bstr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)")));
-                attron(COLOR_PAIR(2));
-                mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+                printw(bstr("\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)"))),
+                attron(COLOR_PAIR(2)),
+                mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
                 refresh();
 
                 do {
@@ -497,24 +493,24 @@ uchar systemback::restore()
                         greinst = 2;
                 } while(! greinst);
 
-                clear();
-                mvprintw(0, blgn, sbtxt);
-                attron(COLOR_PAIR(1));
-                printw(rtxt[0]);
-                attron(COLOR_PAIR(4));
-                printw(rtxt[1]);
-                attron(COLOR_PAIR(1));
-                printw(rtxt[2]);
-                attron(COLOR_PAIR(4));
+                clear(),
+                mvprintw(0, blgn, sbtxt),
+                attron(COLOR_PAIR(1)),
+                printw(rtxt[0]),
+                attron(COLOR_PAIR(4)),
+                printw(rtxt[1]),
+                attron(COLOR_PAIR(1)),
+                printw(rtxt[2]),
+                attron(COLOR_PAIR(4)),
                 printw(bstr("\n\n  " % (mthd == 1 ? tr("Full restore") : tr("System files restore")) % "\n\n " % tr("Reinstall the GRUB 2 bootloader?") % ' ' % tr("(Y/N)") % ' ' % yn[greinst == 1 ? 0 : 1]));
             }
         }
     }
 
-    attron(COLOR_PAIR(3));
-    printw(bstr("\n\n " % tr("Start the restore?") % ' ' % tr("(Y/N)")));
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+    attron(COLOR_PAIR(3)),
+    printw(bstr("\n\n " % tr("Start the restore?") % ' ' % tr("(Y/N)"))),
+    attron(COLOR_PAIR(2)),
+    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
     refresh();
     bool rstart(false);
 
@@ -527,15 +523,15 @@ uchar systemback::restore()
             return 9;
     } while(! rstart);
 
-    pset(mthd + 5);
+    pset(mthd + 5),
     progress(Start);
     bool sfstab(fsave == 1);
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
     { bool err(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', sb::Silent));
     progress(Stop);
     if(err) return 10; }
-    clear();
-    mvprintw(0, blgn, sbtxt);
+    clear(),
+    mvprintw(0, blgn, sbtxt),
     attron(COLOR_PAIR(1));
 
     printw(bstr("\n\n " % twrp([mthd] {
@@ -551,10 +547,10 @@ uchar systemback::restore()
             }
         }())));
 
-    attron(COLOR_PAIR(3));
-    printw(bstr("\n\n " % twrp(mthd < 3 ? tr("Press 'ENTER' key to reboot the computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit."))));
-    attron(COLOR_PAIR(2));
-    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+    attron(COLOR_PAIR(3)),
+    printw(bstr("\n\n " % twrp(mthd < 3 ? tr("Press 'ENTER' key to reboot the computer, or 'Q' to quit.") : tr("Press 'ENTER' key to quit.")))),
+    attron(COLOR_PAIR(2)),
+    mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
     refresh();
 
     forever
@@ -598,8 +594,8 @@ void systemback::progress(uchar status)
 {
     switch(status) {
     case Start:
-        connect(ptimer = new QTimer, SIGNAL(timeout()), this, SLOT(progress()));
-        QTimer::singleShot(0, this, SLOT(progress()));
+        connect(ptimer = new QTimer, SIGNAL(timeout()), this, SLOT(progress())),
+        QTimer::singleShot(0, this, SLOT(progress())),
         ptimer->start(2000);
         if(sb::dbglev == sb::Nulldbg) sb::dbglev = sb::Errdbg;
         return;
@@ -631,9 +627,9 @@ void systemback::progress(uchar status)
             }
 
             if(! ptimer) return;
-            clear();
-            attron(COLOR_PAIR(2));
-            mvprintw(0, blgn, sbtxt);
+            clear(),
+            attron(COLOR_PAIR(2)),
+            mvprintw(0, blgn, sbtxt),
             attron(COLOR_PAIR(1));
 
             mvprintw(LINES / 2 - 1, COLS / 2 - (prun.txt.length() + prun.pbar.length() + 4) / 2, bstr(prun.txt % prun.pbar % [a] {
@@ -649,16 +645,15 @@ void systemback::progress(uchar status)
                     }
                 }()));
 
-            attron(COLOR_PAIR(2));
-            mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3");
+            attron(COLOR_PAIR(2)),
+            mvprintw(LINES - 1, COLS - 13, "Kendek, GPLv3"),
             refresh();
             if(a < 3) sb::delay(500);
         }
 
         break;
     case Stop:
-        delete ptimer;
-        ptimer = nullptr;
+        delete ptimer, ptimer = nullptr;
         prun.txt.clear();
         if(! prun.pbar.isEmpty()) prun.pbar.clear();
         if(prun.cperc) prun.cperc = 0;

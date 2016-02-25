@@ -32,12 +32,12 @@ public:
     static ushort MouseX, MouseY;
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent *ev);
-    void mouseReleaseEvent(QMouseEvent *ev);
-    void mousePressEvent(QMouseEvent *ev);
-    void mouseMoveEvent(QMouseEvent *);
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
+    void mouseDoubleClickEvent(QMouseEvent *ev),
+         mouseReleaseEvent(QMouseEvent *ev),
+         mousePressEvent(QMouseEvent *ev),
+         mouseMoveEvent(QMouseEvent *),
+         enterEvent(QEvent *),
+         leaveEvent(QEvent *);
 
 private:
     bool MousePressed;
@@ -56,9 +56,7 @@ inline void lblevent::mousePressEvent(QMouseEvent *ev)
 {
     if(ev->button() == Qt::LeftButton)
     {
-        MouseX = ev->x();
-        MouseY = ev->y();
-        MousePressed = true;
+        MouseX = ev->x(), MouseY = ev->y(), MousePressed = true;
         emit Mouse_Pressed();
     }
 }

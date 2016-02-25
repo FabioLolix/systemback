@@ -61,67 +61,76 @@ public:
     static schar Progress;
     static bool ExecKill, ThrdKill;
 
-    static QStr mid(cQStr &txt, ushort start, ushort len);
-    static QStr fload(cQStr &path, bool ascnt);
-    static QStr right(cQStr &txt, short len);
-    static QStr left(cQStr &txt, short len);
-    static QStr gdetect(cQStr rdir = "/");
-    static QStr rndstr(uchar vlen = 10);
     static fnln QStr hunit(ullong size);
-    static QStr ruuid(cQStr &part);
-    static QStr appver();
-    static QStr dbginf();
+
+    static QStr mid(cQStr &txt, ushort start, ushort len),
+                fload(cQStr &path, bool ascnt),
+                right(cQStr &txt, short len),
+                left(cQStr &txt, short len),
+                gdetect(cQStr rdir = "/"),
+                rndstr(uchar vlen = 10),
+                ruuid(cQStr &part),
+                appver(),
+                dbginf();
+
     static QBA fload(cQStr &path);
     template<typename T> static ullong dfree(const T &path);
     static fnln ullong fsize(cQStr &path);
-    static fnln ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1);
-    static fnln ushort rinstr(cQStr &txt, cQStr &stxt);
+
+    static fnln ushort instr(cQStr &txt, cQStr &stxt, ushort start = 1),
+                       rinstr(cQStr &txt, cQStr &stxt);
+
     template<typename T> static uchar stype(const T &path, bool flink = false);
-    static uchar exec(cQStr &cmd, uchar flag = Noflag, cQStr &envv = nullptr);
-    static uchar exec(cQSL &cmds);
-    static bool srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false);
+
+    static uchar exec(cQStr &cmd, uchar flag = Noflag, cQStr &envv = nullptr),
+                 exec(cQSL &cmds);
+
     template<typename T1, typename T2> static bool issmfs(const T1 &item1, const T2 &item2);
-    static bool mkpart(cQStr &dev, ullong start = 0, ullong len = 0, uchar type = Primary);
-    static bool mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = nullptr);
     template<typename T> static fnln bool crtdir(const T &path);
     template<typename T> static fnln bool rmfile(const T &file);
-    static bool like(cQStr &txt, cQSL &lst, uchar mode = Norm);
-    static bool execsrch(cQStr &fname, cQStr &ppath = nullptr);
-    static bool scopy(uchar mthd, cQStr &usr, cQStr &srcdir);
-    static bool mkptable(cQStr &dev, cQStr &type = "msdos");
-    static bool crtfile(cQStr &path, cQStr &txt = nullptr);
-    static bool like(int num, cSIL &lst, bool all = false);
     template<typename T> static bool exist(const T &path);
-    static bool access(cQStr &path, uchar mode = Read);
-    static bool copy(cQStr &srcfile, cQStr &newfile);
-    static bool setpflag(cQStr &part, cQStr &flags);
-    static bool error(cQStr &txt, bool dbg = false);
-    static bool rename(cQStr &opath, cQStr &npath);
-    static bool cfgwrite(cQStr &file = cfgfile);
-    static fnln bool islink(cQStr &path);
-    static fnln bool isfile(cQStr &path);
-    static fnln bool isdir(cQStr &path);
-    static bool crtrpoint(cQStr &pname);
-    static bool islnxfs(cQStr &path);
-    static bool remove(cQStr &path);
-    static bool mcheck(cQStr &item);
-    static bool lvprpr(bool iudata);
-    static bool fopen(QFile &file);
-    static bool umount(cQStr &dev);
-    static bool isnum(cQStr &txt);
-    static bool lock(uchar type);
-    static void readprttns(QSL &strlst);
-    static void readlvdevs(QSL &strlst);
-    static void delpart(cQStr &part);
-    static void unlock(uchar type);
-    static void delay(ushort msec);
-    static void print(cQStr &txt);
-    static void supgrade();
-    static void pupgrade();
-    static void thrdelay();
-    static void cfgread();
-    static void fssync();
-    static void ldtltr();
+
+    static fnln bool islink(cQStr &path),
+                     isfile(cQStr &path),
+                     isdir(cQStr &path);
+
+    static bool srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false),
+                mkpart(cQStr &dev, ullong start = 0, ullong len = 0, uchar type = Primary),
+                mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = nullptr),
+                like(cQStr &txt, cQSL &lst, uchar mode = Norm),
+                execsrch(cQStr &fname, cQStr &ppath = nullptr),
+                scopy(uchar mthd, cQStr &usr, cQStr &srcdir),
+                mkptable(cQStr &dev, cQStr &type = "msdos"),
+                crtfile(cQStr &path, cQStr &txt = nullptr),
+                like(int num, cSIL &lst, bool all = false),
+                access(cQStr &path, uchar mode = Read),
+                copy(cQStr &srcfile, cQStr &newfile),
+                setpflag(cQStr &part, cQStr &flags),
+                rename(cQStr &opath, cQStr &npath),
+                error(QStr txt, bool dbg = false),
+                cfgwrite(cQStr &file = cfgfile),
+                crtrpoint(cQStr &pname),
+                islnxfs(cQStr &path),
+                remove(cQStr &path),
+                mcheck(cQStr &item),
+                lvprpr(bool iudata),
+                fopen(QFile &file),
+                umount(cQStr &dev),
+                isnum(cQStr &txt),
+                lock(uchar type);
+
+    static void readprttns(QSL &strlst),
+                readlvdevs(QSL &strlst),
+                delpart(cQStr &part),
+                unlock(uchar type),
+                delay(ushort msec),
+                print(cQStr &txt),
+                supgrade(),
+                pupgrade(),
+                thrdelay(),
+                cfgread(),
+                fssync(),
+                ldtltr();
 
 protected:
     void run();
@@ -136,28 +145,33 @@ private:
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 
-    static QStr fdbg(cQStr &path1, cQStr &path2 = nullptr);
-    static QStr rlink(cQStr &path, ushort blen);
+    static QStr fdbg(cQStr &path1, cQStr &path2 = nullptr),
+                rlink(cQStr &path, ushort blen);
+
     static ullong devsize(cQStr &dev);
-    static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), uchar oplen = 0);
-    static bool cerr(uchar type, cQStr &str1, cQStr &str2 = nullptr);
-    static bool rodir(QUCL &ucl, cQStr &path, uchar oplen = 0);
-    static bool rodir(QBA &ba, cQStr &path, uchar oplen = 0);
-    static bool inclcheck(cQSL &ilist, cQStr &item);
+
+    static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), uchar oplen = 0),
+                cerr(uchar type, cQStr &str1, cQStr &str2 = nullptr),
+                rodir(QUCL &ucl, cQStr &path, uchar oplen = 0),
+                rodir(QBA &ba, cQStr &path, uchar oplen = 0),
+                inclcheck(cQSL &ilist, cQStr &item);
+
     uchar fcomp(cQStr &file1, cQStr &file2);
-    bool odir(QBAL &balst, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), cQStr &ppath = nullptr);
     template<typename T1, typename T2> fnln bool crthlnk(const T1 &srclnk, const T2 &newlnk);
-    bool thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab);
-    bool cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false);
-    bool cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false);
-    bool thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir);
-    bool recrmdir(cbstr &path, bool slimit = false);
-    bool cplink(cQStr &srclink, cQStr &newlink);
-    bool cpdir(cQStr &srcdir, cQStr &newdir);
-    bool exclcheck(cQSL &elist, cQStr &item);
-    bool lcomp(cQStr &link1, cQStr &link2);
-    bool thrdcrtrpoint(cQStr &trgt);
-    bool thrdlvprpr(bool iudata);
+
+    bool odir(QBAL &balst, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), cQStr &ppath = nullptr),
+         thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab),
+         cpertime(cQStr &srcitem, cQStr &newitem, bool skel = false),
+         cpfile(cQStr &srcfile, cQStr &newfile, bool skel = false),
+         thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir),
+         recrmdir(cbstr &path, bool slimit = false),
+         cplink(cQStr &srclink, cQStr &newlink),
+         cpdir(cQStr &srcdir, cQStr &newdir),
+         exclcheck(cQSL &elist, cQStr &item),
+         lcomp(cQStr &link1, cQStr &link2),
+         thrdcrtrpoint(cQStr &trgt),
+         thrdlvprpr(bool iudata);
+
     void edetect(QSL &elst, bool spath = false);
 };
 

@@ -46,9 +46,10 @@ public:
 
 protected:
     bool eventFilter(QObject *, QEvent *ev);
-    void keyReleaseEvent(QKeyEvent *ev);
-    void keyPressEvent(QKeyEvent *ev);
-    void closeEvent(QCloseEvent *ev);
+
+    void keyReleaseEvent(QKeyEvent *ev),
+         keyPressEvent(QKeyEvent *ev),
+         closeEvent(QCloseEvent *ev);
 
 private:
     enum { Normal = 100, High = 147, Max = 200 };
@@ -77,33 +78,37 @@ private:
 
     QLE getpoint(uchar num);
     QCB getppipe(uchar num);
-    QStr guname();
-    QStr ckname();
+
+    QStr guname(),
+         ckname();
+
     QRect sgeom(bool rdc = false, QDW dtp = nullptr);
     ushort ss(ushort dsize);
     template<typename T> bool cfmod(const T &path, ushort mode);
-    bool minside(cQRect &rct);
-    bool minside(QWdt wgt);
-    void windowmove(ushort nwidth, ushort nheight, bool fxdw = true);
-    void dialogopen(ushort dlg = 0, cbstr &dev = nullptr);
-    void ilstupdt(bool inc = false, cQStr &dir = nullptr);
-    void pset(uchar type, cbstr &tend = nullptr);
-    void dirxpnd(QTrWI *item, bool inc = false);
-    void ptxtchange(uchar num, cQStr &txt);
-    void setwontop(bool state = true);
-    void busy(bool state = true);
-    void pnmchange(uchar num);
-    void pntupgrade();
-    void emptycache();
-    void statustart();
-    void systemcopy();
-    void livewrite();
-    void rmntcheck();
-    void stschange();
-    void bttnsshow();
-    void bttnshide();
-    void restore();
-    void repair();
+
+    bool minside(cQRect &rct),
+         minside(QWdt wgt);
+
+    void windowmove(ushort nwidth, ushort nheight, bool fxdw = true),
+         dialogopen(ushort dlg = 0, cbstr &dev = nullptr),
+         ilstupdt(bool inc = false, cQStr &dir = nullptr),
+         pset(uchar type, cbstr &tend = nullptr),
+         dirxpnd(QTrWI *item, bool inc = false),
+         ptxtchange(uchar num, cQStr &txt),
+         setwontop(bool state = true),
+         busy(bool state = true),
+         pnmchange(uchar num),
+         pntupgrade(),
+         emptycache(),
+         statustart(),
+         systemcopy(),
+         livewrite(),
+         rmntcheck(),
+         stschange(),
+         bttnsshow(),
+         bttnshide(),
+         restore(),
+         repair();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
 private slots:

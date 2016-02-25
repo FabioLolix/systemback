@@ -30,8 +30,8 @@ public:
     inline chckbxevent(QWidget *prnt) : QCheckBox(prnt) {}
 
 protected:
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
+    void enterEvent(QEvent *),
+         leaveEvent(QEvent *);
 
 signals:
     void Mouse_Enter();

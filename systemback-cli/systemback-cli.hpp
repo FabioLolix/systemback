@@ -52,11 +52,14 @@ private:
 
     QStr twrp(cQStr &txt);
     uchar storagedir(cQSL &args);
-    uchar clistart();
-    uchar restore();
+
+    uchar clistart(),
+          restore();
+
     bool newrpnt();
-    void pset(uchar type);
-    void emptycache();
+
+    void pset(uchar type),
+         emptycache();
 
 private slots:
     void progress(uchar status = Inprog);
@@ -64,9 +67,8 @@ private slots:
 
 inline systemback::systemback() : ptimer(nullptr)
 {
-    prun.cperc = 0;
     QStr yns(tr("(Y/N)"));
-    yn[0] = yns.at(1), yn[1] = yns.at(3);
+    yn[0] = yns.at(1), yn[1] = yns.at(3), prun.cperc = 0;
 }
 
 inline systemback::~systemback()

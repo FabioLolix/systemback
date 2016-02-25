@@ -30,8 +30,8 @@ public:
     inline tblwdgtevent(QWidget *prnt) : QTableWidget(prnt) {}
 
 protected:
-    void focusInEvent(QFocusEvent *ev);
-    void focusOutEvent(QFocusEvent *ev);
+    void focusInEvent(QFocusEvent *ev),
+         focusOutEvent(QFocusEvent *ev);
 
 signals:
     void Focus_In();

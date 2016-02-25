@@ -54,10 +54,8 @@ bool sb::ThrdBool, sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdRslt;
 
 sb::sb()
 {
-    qputenv("PATH", "/usr/lib/systemback:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin");
-    setlocale(LC_ALL, "C.UTF-8");
-    chdir("/");
-    umask(0);
+    qputenv("PATH", "/usr/lib/systemback:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"),
+    setlocale(LC_ALL, "C.UTF-8"), chdir("/"), umask(0);
 
     dbglev = qEnvironmentVariableIsEmpty("DBGLEV") ? Nulldbg : [] {
             bool ok;
@@ -101,7 +99,7 @@ void sb::ldtltr()
 
     switch(dbglev) {
     case Falsedbg:
-        error("\n " % tr("The specified debug level is invalid!") % "\n\n " % tr("The default level (1) will be used.") % "\n\n");
+        error("\n " % tr("The specified debug level is invalid!") % "\n\n " % tr("The default level (1) will be used.") % "\n\n"),
         dbglev = Nulldbg;
         break;
     case Extdbg:
@@ -114,38 +112,39 @@ void sb::print(cQStr &txt)
     QTS(stdout) << (isatty(fileno(stdout)) ? "\033[1m" % txt % "\033[0m" : QStr(txt).replace("\n ", "\n"));
 }
 
-bool sb::error(cQStr &txt, bool dbg)
+bool sb::error(QStr txt, bool dbg)
 {
-    if(dbglev)
-    {
-        QStr ftxt;
-
-        if(txt.length() > 80)
-        {
-            QSL llst(txt.split('\n'));
-
-            for(uchar a(1) ; a < llst.count() ; ++a)
+    auto splt([](cQStr &stxt) {
+            if(stxt.length() > 80)
             {
-                cQStr &line(llst.at(a));
-                ftxt.append('\n' % (line.length() > 79 && ! like(line, {"*: /*", "*： /*"}) ? llst.value(a).replace(line.left(79).lastIndexOf(' '), 1, "\n ") : line));
+                QStr ftxt;
+                QSL llst(stxt.split('\n'));
+
+                for(uchar a(1) ; a < llst.count() ; ++a)
+                {
+                    cQStr &line(llst.at(a));
+                    ftxt.append('\n' % (line.length() > 79 && ! like(line, {"*: /*", "*： /*"}) ? llst.value(a).replace(line.left(79).lastIndexOf(' '), 0, '\n') : line));
+                }
+
+                return ftxt;
             }
-        }
-        else
-            ftxt = txt;
+            else
+                return stxt;
+        });
 
-        if(ftxt.contains("\n\n  ./")) ftxt.replace("\n\n  ./", "\n\n  /");
-        if(! dbg) goto print;
+    auto pfix([&txt]{ if(txt.contains("\n\n  ./")) txt.replace("\n\n  ./", "\n\n  /"); });
+    if(! dbg) goto print;
 
-        switch(dbglev) {
-        case Errdbg:
-        case Cextdbg:
-            eout.append(isatty(fileno(stderr)) ? ftxt : ftxt.replace("\n ", "\n"));
-            break;
-        case Alldbg:
-        case Extdbg:
-    print:
-            QTS(stderr) << (isatty(fileno(stderr)) ? "\033[1;31m" % ftxt % "\033[0m" : ftxt.replace("\n ", "\n"));
-        }
+    switch(dbglev) {
+    case Errdbg:
+    case Cextdbg:
+        pfix(), eout.append(isatty(fileno(stderr)) ? splt(txt) : splt(txt).replace("\n ", "\n"));
+        break;
+    case Alldbg:
+    case Extdbg:
+        pfix();
+print:
+        QTS(stderr) << (isatty(fileno(stderr)) ? "\033[1;31m" % splt(txt) % "\033[0m" : splt(txt).replace("\n ", "\n"));
     }
 
     return false;
@@ -202,8 +201,8 @@ QStr sb::dbginf()
 
                 return nullptr;
             }() % "\n " % tr("Mounted filesystems:") % [] {
-                    QStr mpts;
                     uchar ind(tr("Mounted filesystems:").length() + 2);
+                    QStr mpts, spcs('\n' % QStr(ind++, ' '));
                     QBA mnts(fload("/proc/self/mounts"));
                     QTS in(&mnts, QIODevice::ReadOnly);
 
@@ -211,12 +210,12 @@ QStr sb::dbginf()
                     {
                         QStr cline(in.readLine());
 
-                        if(cline.startsWith("/dev/")) mpts.append((mpts.isEmpty() ? " " : QStr('\n' % QStr(ind, ' '))) % [&cline, ind] {
-                                if((cline.contains("\\040") ? cline.replace("\\040", " ") : cline).length() > 80 - ind && isatty(fileno(stderr)))
+                        if(cline.startsWith("/dev/")) mpts.append((mpts.isEmpty() ? " " : spcs) % [&, ind] {
+                                if((cline.contains("\\040") ? cline.replace("\\040", " ") : cline).length() > 81 - ind && isatty(fileno(stderr)))
                                 {
                                     ushort clen(cline.length());
-                                    uchar mlen(79 - ind);
-                                    for(ushort a(mlen) ; a < clen ; a += mlen) cline.replace(a, 0, QStr('\n' % QStr(ind, ' ')));
+                                    uchar mlen(80 - ind);
+                                    for(struct{ushort a; uchar b;} a{mlen, 0} ; a.a < clen ; a.a += mlen, ++a.b) cline.replace(a.a + a.b * ind, 0, spcs);
                                 }
 
                                 return cline;
@@ -241,9 +240,8 @@ QStr sb::fdbg(cQStr &path1, cQStr &path2)
 
         for(uchar a(0) ; a < 2 && ! (a && path2.isEmpty()) ; ++a)
         {
-            txt.append('\n');
+            txt.append('\n'), path = a ? path2 : path1;
             bool cut(false);
-            path = a ? path2 : path1;
 
             do {
                 txt.append("\n " % (cut ? path = path.left(rinstr(path, "/") - 1) : path) % "\n  ");
@@ -389,9 +387,8 @@ bool sb::like(cQStr &txt, cQSL &lst, uchar mode)
 
 QStr sb::rndstr(uchar vlen)
 {
-    qsrand(QTime::currentTime().msecsSinceStartOfDay());
     QStr val, chrs("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz./");
-    val.reserve(vlen);
+    val.reserve(vlen), qsrand(QTime::currentTime().msecsSinceStartOfDay());
     uchar clen(vlen == 16 ? 64 : 62), num(255);
 
     do {
@@ -429,8 +426,7 @@ QStr sb::fload(cQStr &path, bool ascnt)
     QTS in(&ba, QIODevice::ReadOnly);
     while(! in.atEnd()) lst.append(in.readLine());
     QStr str;
-    str.reserve(ba.size() + 1);
-    ba.clear();
+    str.reserve(ba.size() + 1), ba.clear();
     for(ushort a(lst.count()) ; a ; --a) str.append(lst.at(a - 1) % '\n');
     return str;
 }
@@ -506,20 +502,13 @@ void sb::delay(ushort msec)
 {
     QTime time;
     time.start();
-
-    do {
-        msleep(10);
-        qApp->processEvents();
-    } while(ushort(time.elapsed()) < msec);
+    do msleep(10), qApp->processEvents();
+    while(ushort(time.elapsed()) < msec);
 }
 
 void sb::thrdelay()
 {
-    while(SBThrd.isRunning())
-    {
-        msleep(10);
-        qApp->processEvents();
-    }
+    while(SBThrd.isRunning()) msleep(10), qApp->processEvents();
 }
 
 bool sb::cfgwrite(cQStr &file)
@@ -822,32 +811,19 @@ uchar sb::exec(cQStr &cmd, uchar flag, cQStr &envv)
     QProcess proc;
 
     if(silent)
-    {
-        proc.setStandardOutputFile("/dev/null");
-        proc.setStandardErrorFile("/dev/null");
-    }
+        proc.setStandardOutputFile("/dev/null"), proc.setStandardErrorFile("/dev/null");
     else if(! rprcnt)
-    {
-        proc.setProcessChannelMode(QProcess::ForwardedChannels);
-        proc.setInputChannelMode(QProcess::ForwardedInputChannel);
-    }
+        proc.setProcessChannelMode(QProcess::ForwardedChannels), proc.setInputChannelMode(QProcess::ForwardedInputChannel);
 
     if(! envv.isEmpty())
     {
         QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
-        env.insert(left(envv, instr(envv, "=") - 1), right(envv, envv.length() - instr(envv, "=")));
-        proc.setProcessEnvironment(env);
+        env.insert(left(envv, instr(envv, "=") - 1), right(envv, envv.length() - instr(envv, "="))), proc.setProcessEnvironment(env);
     }
 
     if(bckgrnd) return proc.startDetached(cmd) ? 0 : exit(255);
     proc.start(cmd, QProcess::ReadOnly);
-
-    while(proc.state() == QProcess::Starting)
-    {
-        msleep(10);
-        qApp->processEvents();
-    }
-
+    while(proc.state() == QProcess::Starting) msleep(10), qApp->processEvents();
     if(proc.error() == QProcess::FailedToStart) return exit(255);
 
     if(wait)
@@ -860,8 +836,7 @@ uchar sb::exec(cQStr &cmd, uchar flag, cQStr &envv)
 
         while(proc.state() == QProcess::Running)
         {
-            msleep(10);
-            qApp->processEvents();
+            msleep(10), qApp->processEvents();
             if(ExecKill) proc.kill();
 
             switch(rprcnt) {
@@ -886,9 +861,8 @@ uchar sb::exec(cQStr &cmd, uchar flag, cQStr &envv)
                 if(! ThrdLng[0])
                 {
                     QBA itms;
-                    itms.reserve(10000);
                     QUCL itmst;
-                    itmst.reserve(500);
+                    itms.reserve(10000), itmst.reserve(500);
                     ushort lcnt(0);
                     rodir(itms, itmst, sdir[2] % "/.sblivesystemcreate");
 
@@ -909,9 +883,8 @@ uchar sb::exec(cQStr &cmd, uchar flag, cQStr &envv)
                 break;
             case 4:
                 QBA itms;
-                itms.reserve(10000);
                 QUCL itmst;
-                itmst.reserve(500);
+                itms.reserve(10000), itmst.reserve(500);
                 ushort lcnt(0);
                 rodir(itms, itmst, ThrdStr[0]);
 
@@ -957,9 +930,8 @@ bool sb::mcheck(cQStr &item)
     else
     {
         blkid_probe pr(blkid_new_probe_from_filename(bstr(itm)));
-        blkid_do_probe(pr);
         cchar *val(nullptr);
-        blkid_probe_lookup_value(pr, "UUID", &val, nullptr);
+        blkid_do_probe(pr), blkid_probe_lookup_value(pr, "UUID", &val, nullptr);
         QStr uuid(val);
         blkid_free_probe(pr);
         return ! uuid.isEmpty() && QStr('\n' % mnts).contains("\n/dev/disk/by-uuid/" % uuid % ' ');
@@ -1077,13 +1049,7 @@ void sb::supgrade()
                 {
                     QProcess proc;
                     proc.start("dpkg -l", QProcess::ReadOnly);
-
-                    while(proc.state() == QProcess::Starting || proc.state() == QProcess::Running)
-                    {
-                        msleep(10);
-                        qApp->processEvents();
-                    }
-
+                    while(proc.state() == QProcess::Starting || proc.state() == QProcess::Running) msleep(10), qApp->processEvents();
                     QBA sout(proc.readAllStandardOutput());
                     QStr iplist;
                     QTS in(&sout, QIODevice::ReadOnly);
@@ -1120,13 +1086,9 @@ void sb::supgrade()
 
         exec({"tput reset", "tput civis"});
 
-        for(uchar a(3) ; a ; --a)
-        {
-            error("\n " % tr("An error occurred while upgrading the system!") % '\n');
-            print("\n " % tr("Restart upgrade ...") % ' ' % QStr::number(a));
-            sleep(1);
-            exec("tput cup 0 0");
-        }
+        for(uchar a(3) ; a ; --a) error("\n " % tr("An error occurred while upgrading the system!") % '\n'),
+                                  print("\n " % tr("Restart upgrade ...") % ' ' % QStr::number(a)),
+                                  sleep(1), exec("tput cup 0 0");
 
         exec("tput reset");
     }
@@ -1152,18 +1114,16 @@ bool sb::copy(cQStr &srcfile, cQStr &newfile)
     if(! isfile(srcfile)) return error("\n " % tr("This file could not be copied because it does not exist:") % "\n\n  " % srcfile % fdbg(srcfile), true);
     ThrdType = Copy,
     ThrdStr[0] = srcfile,
-    ThrdStr[1] = newfile;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[1] = newfile,
+    SBThrd.start(), thrdelay();
     return ThrdRslt;
 }
 
 QStr sb::ruuid(cQStr &part)
 {
     ThrdType = Ruuid,
-    ThrdStr[0] = part;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[0] = part,
+    SBThrd.start(), thrdelay();
     if(ThrdStr[1].isEmpty()) error("\n " % tr("The following partition has no UUID:") % "\n\n  " % part % "\n\n", true);
     return ThrdStr[1];
 }
@@ -1175,9 +1135,8 @@ bool sb::srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfsta
     ThrdStr[0] = usr,
     ThrdStr[1] = srcdir,
     ThrdStr[2] = trgt,
-    ThrdBool = sfstab;
-    SBThrd.start();
-    thrdelay();
+    ThrdBool = sfstab,
+    SBThrd.start(), thrdelay();
     return ThrdRslt;
 }
 
@@ -1189,9 +1148,8 @@ bool sb::mkpart(cQStr &dev, ullong start, ullong len, uchar type)
     ThrdStr[0] = dev,
     ThrdLng[0] = start,
     ThrdLng[1] = len,
-    ThrdChr = type;
-    SBThrd.start();
-    thrdelay();
+    ThrdChr = type,
+    SBThrd.start(), thrdelay();
     return ThrdRslt ? true : err();
 }
 
@@ -1204,9 +1162,8 @@ bool sb::mount(cQStr &dev, cQStr &mpoint, cQStr &moptns)
     ThrdType = Mount,
     ThrdStr[0] = dev,
     ThrdStr[1] = mpoint,
-    ThrdStr[2] = moptns;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[2] = moptns,
+    SBThrd.start(), thrdelay();
     return ThrdRslt ? true : err();
 }
 
@@ -1215,18 +1172,16 @@ bool sb::scopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     ThrdType = Scopy,
     ThrdChr = mthd,
     ThrdStr[0] = usr,
-    ThrdStr[1] = srcdir;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[1] = srcdir,
+    SBThrd.start(), thrdelay();
     return ThrdRslt;
 }
 
 bool sb::crtrpoint(cQStr &pname)
 {
     ThrdType = Crtrpoint,
-    ThrdStr[0] = sdir[1] % "/.S00_" % pname;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[0] = sdir[1] % "/.S00_" % pname,
+    SBThrd.start(), thrdelay();
     return ThrdRslt;
 }
 
@@ -1237,18 +1192,16 @@ bool sb::setpflag(cQStr &part, cQStr &flags)
     if(part.length() < (ismmc ? 14 : 9) || stype(part) != Isblock || stype(left(part, (ismmc ? 12 : 8))) != Isblock) return err(); }
     ThrdType = Setpflag,
     ThrdStr[0] = part,
-    ThrdStr[1] = flags;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[1] = flags,
+    SBThrd.start(), thrdelay();
     return ThrdRslt ? true : err();
 }
 
 bool sb::lvprpr(bool iudata)
 {
     ThrdType = Lvprpr,
-    ThrdBool = iudata;
-    SBThrd.start();
-    thrdelay();
+    ThrdBool = iudata,
+    SBThrd.start(), thrdelay();
     return ThrdRslt;
 }
 
@@ -1258,51 +1211,45 @@ bool sb::mkptable(cQStr &dev, cQStr &type)
     if(dev.length() > (dev.contains("mmc") ? 12 : 8) || stype(dev) != Isblock) return err();
     ThrdType = Mkptable,
     ThrdStr[0] = dev,
-    ThrdStr[1] = type;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[1] = type,
+    SBThrd.start(), thrdelay();
     return ThrdRslt ? true : err();
 }
 
 bool sb::remove(cQStr &path)
 {
     ThrdType = Remove,
-    ThrdStr[0] = path;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[0] = path,
+    SBThrd.start(), thrdelay();
     return ThrdRslt;
 }
 
 bool sb::umount(cQStr &dev)
 {
     ThrdType = Umount,
-    ThrdStr[0] = dev;
-    SBThrd.start();
-    thrdelay();
+    ThrdStr[0] = dev,
+    SBThrd.start(), thrdelay();
     return ThrdRslt ? true : error("\n " % tr("An error occurred while unmounting the following partition/image/mount point:") % "\n\n  " % dev % fdbg(dev), true);
 }
 
 void sb::readlvdevs(QSL &strlst)
 {
     ThrdType = Readlvdevs,
-    ThrdSlst = &strlst;
-    SBThrd.start();
-    thrdelay();
+    ThrdSlst = &strlst,
+    SBThrd.start(), thrdelay();
 }
 
 void sb::readprttns(QSL &strlst)
 {
     ThrdType = Readprttns,
-    ThrdSlst = &strlst;
-    SBThrd.start();
-    thrdelay();
+    ThrdSlst = &strlst,
+    SBThrd.start(), thrdelay();
 }
 
 void sb::fssync()
 {
-    ThrdType = Sync;
-    SBThrd.start();
-    thrdelay();
+    ThrdType = Sync,
+    SBThrd.start(), thrdelay();
 }
 
 void sb::delpart(cQStr &part)
@@ -1310,9 +1257,8 @@ void sb::delpart(cQStr &part)
     if(stype(part) == Isblock)
     {
         ThrdType = Delpart,
-        ThrdStr[0] = part;
-        SBThrd.start();
-        thrdelay();
+        ThrdStr[0] = part,
+        SBThrd.start(), thrdelay();
     }
 }
 
@@ -1568,8 +1514,7 @@ bool sb::rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden, cQSL &ilist, uchar
                 switch(type) {
                 case Islink:
                 case Isfile:
-                    ucl.append(type);
-                    ba.append(npath % '\n');
+                    ucl.append(type), ba.append(npath % '\n');
                     break;
                 case Isdir:
                     rodir(ba.append(npath % '\n'), ucl << Isdir, path % '/' % iname, hidden == True ? ilist.isEmpty() ? uchar(False) : uchar(Include) : hidden, ilist, (oplen ? oplen : path.length()));
@@ -1792,20 +1737,20 @@ void sb::run()
     case Mount:
     {
         libmnt_context *mcxt(mnt_new_context());
-        mnt_context_set_source(mcxt, bstr(ThrdStr[0]));
-        mnt_context_set_target(mcxt, bstr(ThrdStr[1]));
-        mnt_context_set_options(mcxt, ! ThrdStr[2].isEmpty() ? bstr(ThrdStr[2]).data : isdir(ThrdStr[0]) ? "bind" : "noatime");
+        mnt_context_set_source(mcxt, bstr(ThrdStr[0])),
+        mnt_context_set_target(mcxt, bstr(ThrdStr[1])),
+        mnt_context_set_options(mcxt, ! ThrdStr[2].isEmpty() ? bstr(ThrdStr[2]).data : isdir(ThrdStr[0]) ? "bind" : "noatime"),
         ThrdRslt = ! mnt_context_mount(mcxt);
         return mnt_free_context(mcxt);
     }
     case Umount:
     {
         libmnt_context *ucxt(mnt_new_context());
-        mnt_context_set_target(ucxt, bstr(ThrdStr[0]));
-        mnt_context_enable_force(ucxt, true);
-        mnt_context_enable_lazy(ucxt, true);
+        mnt_context_set_target(ucxt, bstr(ThrdStr[0])),
+        mnt_context_enable_force(ucxt, true),
+        mnt_context_enable_lazy(ucxt, true),
 #ifndef C_MNT_LIB
-        mnt_context_enable_loopdel(ucxt, true);
+        mnt_context_enable_loopdel(ucxt, true),
 #endif
         ThrdRslt = ! mnt_context_umount(ucxt);
         return mnt_free_context(ucxt);
@@ -1846,10 +1791,8 @@ void sb::run()
                                 if(stype(ppath) == Isblock)
                                 {
                                     if(prt->type == PED_PARTITION_EXTENDED)
-                                    {
-                                        ThrdSlst->append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(Extended) % '\n' % QStr::number(prt->geom.start * dev->sector_size));
+                                        ThrdSlst->append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(Extended) % '\n' % QStr::number(prt->geom.start * dev->sector_size)),
                                         egeom.append({prt->geom.start, prt->geom.end});
-                                    }
                                     else
                                     {
                                         if(egeom.count() > 2)
@@ -1863,13 +1806,10 @@ void sb::run()
                                         blkid_do_probe(pr);
                                         cchar *uuid(nullptr), *fstype("?"), *label(nullptr);
 
-                                        if(! blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr))
-                                        {
-                                            blkid_probe_lookup_value(pr, "TYPE", &fstype, nullptr);
-                                            blkid_probe_lookup_value(pr, "LABEL", &label, nullptr);
-                                        }
+                                        if(! blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr)) blkid_probe_lookup_value(pr, "TYPE", &fstype, nullptr),
+                                                                                                   blkid_probe_lookup_value(pr, "LABEL", &label, nullptr);
 
-                                        ThrdSlst->append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(prt->type == PED_PARTITION_LOGICAL ? Logical : Primary) % '\n' % QStr::number(prt->geom.start * dev->sector_size) % '\n' % fstype % '\n' % label % '\n' % uuid);
+                                        ThrdSlst->append(ppath % '\n' % QStr::number(prt->geom.length * dev->sector_size) % '\n' % QStr::number(prt->type == PED_PARTITION_LOGICAL ? Logical : Primary) % '\n' % QStr::number(prt->geom.start * dev->sector_size) % '\n' % fstype % '\n' % label % '\n' % uuid),
                                         blkid_free_probe(pr);
                                     }
                                 }
@@ -1879,7 +1819,7 @@ void sb::run()
                                 if(egeom.count() > 2)
                                 {
                                     ullong pstart(psalign(egeom.at(2), dev->sector_size));
-                                    ThrdSlst->append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - pstart + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(pstart * dev->sector_size + 1048576));
+                                    ThrdSlst->append(path % "?\n" % QStr::number((pealign(egeom.at(3), dev->sector_size) - pstart + 1) * dev->sector_size - 1048576) % '\n' % QStr::number(Emptyspace) % '\n' % QStr::number(pstart * dev->sector_size + 1048576)),
                                     egeom.clear();
                                 }
 
@@ -1990,7 +1930,7 @@ void sb::run()
         blkid_probe pr(blkid_new_probe_from_filename(bstr(ThrdStr[0])));
         blkid_do_probe(pr);
         cchar *uuid(nullptr);
-        blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr);
+        blkid_probe_lookup_value(pr, "UUID", &uuid, nullptr),
         ThrdStr[1] = uuid;
         return blkid_free_probe(pr);
     }
@@ -2013,17 +1953,14 @@ void sb::run()
                 break;
             }
 
-        ped_disk_destroy(dsk);
-        return ped_device_destroy(dev);
+        return ped_disk_destroy(dsk), ped_device_destroy(dev);
     }
     case Mkptable:
     {
         PedDevice *dev(ped_device_get(bstr(ThrdStr[0])));
         PedDisk *dsk(ped_disk_new_fresh(dev, ped_disk_type_get(bstr(ThrdStr[1]))));
         ThrdRslt = ped_disk_commit_to_dev(dsk);
-        ped_disk_commit_to_os(dsk);
-        ped_disk_destroy(dsk);
-        return ped_device_destroy(dev);
+        return ped_disk_commit_to_os(dsk), ped_disk_destroy(dsk), ped_device_destroy(dev);
     }
     case Mkpart:
     {
@@ -2048,23 +1985,15 @@ void sb::run()
                     break;
                 }
 
-        ped_disk_destroy(dsk);
-        return ped_device_destroy(dev);
+        return ped_disk_destroy(dsk), ped_device_destroy(dev);
     }
     case Delpart:
     {
         bool ismmc(ThrdStr[0].contains("mmc"));
         PedDevice *dev(ped_device_get(bstr(left(ThrdStr[0], ismmc ? 12 : 8))));
         PedDisk *dsk(ped_disk_new(dev));
-
-        if(ped_disk_delete_partition(dsk, ped_disk_get_partition(dsk, right(ThrdStr[0], -(ismmc ? 13 : 8)).toUShort())))
-        {
-            ped_disk_commit_to_dev(dsk);
-            ped_disk_commit_to_os(dsk);
-        }
-
-        ped_disk_destroy(dsk);
-        return ped_device_destroy(dev);
+        if(ped_disk_delete_partition(dsk, ped_disk_get_partition(dsk, right(ThrdStr[0], -(ismmc ? 13 : 8)).toUShort()))) ped_disk_commit_to_dev(dsk), ped_disk_commit_to_os(dsk);
+        return ped_disk_destroy(dsk), ped_device_destroy(dev);
     }
     case Crtrpoint:
         ThrdRslt = thrdcrtrpoint(ThrdStr[0]);
@@ -2103,8 +2032,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
             for(uchar a(0) ; a < 12 ; ++a)
                 if(isdir(dirs[a]))
                 {
-                    sysitms[a].reserve(bbs[a]);
-                    sysitmst[a].reserve(ibs[a]);
+                    sysitms[a].reserve(bbs[a]), sysitmst[a].reserve(ibs[a]);
                     if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return out();
                 }
         }
@@ -2129,12 +2057,9 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                 {
                     QStr usr(file.readLine().trimmed());
 
-                    if(usr.contains(":/home/") && isdir("./home/" % (usr = left(usr, instr(usr, ":") -1))))
-                    {
-                        usrs.append(usr);
-                        homeitms.append(nullptr);
-                        homeitmst.append(QUCL());
-                    }
+                    if(usr.contains(":/home/") && isdir("./home/" % (usr = left(usr, instr(usr, ":") -1)))) usrs.append(usr),
+                                                                                                            homeitms.append(nullptr),
+                                                                                                            homeitmst.append(QUCL());
                 }
             }
 
@@ -2155,17 +2080,14 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                 if(! (usrs << (isdir("./root") ? "" : nullptr)).last().isNull())
                 {
-                    homeitms.append(nullptr);
-                    homeitms.last().reserve(50000);
-                    homeitmst.append(QUCL());
-                    homeitmst.last().reserve(1000);
+                    homeitms.append(nullptr), homeitms.last().reserve(50000),
+                    homeitmst.append(QUCL()), homeitmst.last().reserve(1000);
                     if(! rodir(homeitms.last(), homeitmst.last(), "./root", True, ilst)) return out();
                 }
 
                 for(schar a(usrs.count() - 2) ; a > -1 ; --a)
                 {
-                    homeitms[a].reserve(5000000);
-                    homeitmst[a].reserve(100000);
+                    homeitms[a].reserve(5000000), homeitmst[a].reserve(100000);
                     if(! rodir(homeitms[a], homeitmst[a], "./home/" % usrs.at(a), True, ilst)) return out();
                 }
             }
@@ -2276,8 +2198,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                             ++lcnt;
                         }
 
-                        in.seek(0);
-                        lcnt = 0;
+                        in.seek(0), lcnt = 0;
 
                         while(! in.atEnd())
                         {
@@ -2292,8 +2213,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                             if(ThrdKill) return out();
                         }
 
-                        cditms->clear();
-                        cditmst->clear();
+                        cditms->clear(), cditmst->clear();
                     }
 
                     if(! cpertime('.' % srcd, rtrgt % srcd)) return out();
@@ -2418,8 +2338,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                         ++lcnt;
                     }
 
-                    in.seek(0);
-                    lcnt = 0;
+                    in.seek(0), lcnt = 0;
 
                     while(! in.atEnd())
                     {
@@ -2434,8 +2353,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                         if(ThrdKill) return out();
                     }
 
-                    cditms->clear();
-                    cditmst->clear();
+                    cditms->clear(), cditmst->clear();
                 }
 
                 if(! cpertime(rcdir, rtrgt % cdir)) return out();
@@ -2484,9 +2402,8 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
     if(isdir("./var/log"))
     {
         QBA logitms;
-        logitms.reserve(20000);
         QUCL logitmst;
-        logitmst.reserve(1000);
+        logitms.reserve(20000), logitmst.reserve(1000);
         if(! rodir(logitms, logitmst, "./var/log")) return out();
 
         if(! logitmst.isEmpty())
@@ -2515,8 +2432,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                 if(ThrdKill) return out();
             }
 
-            in.seek(0);
-            lcnt = 0;
+            in.seek(0), lcnt = 0;
 
             while(! in.atEnd())
             {
@@ -2550,23 +2466,16 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         if(! like(mthd, {4, 6}))
         {
             if(isdir(srcdir % "/home"))
-                for(cQStr &cusr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot))
-                {
-                    usrs.append(cusr);
-                    homeitms.append(nullptr);
-                    homeitmst.append(QUCL());
-                }
+                for(cQStr &cusr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot)) usrs.append(cusr),
+                                                                                                                          homeitms.append(nullptr),
+                                                                                                                          homeitmst.append(QUCL());
 
             usrs.append(isdir(srcdir % "/root") ? "" : nullptr);
         }
         else if(usr == "root")
             usrs.append(isdir(srcdir % "/root") ? "" : nullptr);
         else if(isdir(srcdir % "/home/" % usr))
-        {
-            usrs = QSL{usr, nullptr};
-            homeitms.append(nullptr);
-            homeitmst.append(QUCL());
-        }
+            usrs = QSL{usr, nullptr}, homeitms.append(nullptr), homeitmst.append(QUCL());
         else
             usrs.append(nullptr);
 
@@ -2585,17 +2494,14 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
 
         if(! usrs.last().isNull())
         {
-            homeitms.append(nullptr);
-            homeitms.last().reserve(50000);
-            homeitmst.append(QUCL());
-            homeitmst.last().reserve(1000);
+            homeitms.append(nullptr), homeitms.last().reserve(50000),
+            homeitmst.append(QUCL()), homeitmst.last().reserve(1000);
             if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/root", True, ilst)) return false;
         }
 
         for(schar a(usrs.count() - 2) ; a > -1 ; --a)
         {
-            homeitms[a].reserve(5000000);
-            homeitmst[a].reserve(100000);
+            homeitms[a].reserve(5000000), homeitmst[a].reserve(100000);
             if(! rodir(homeitms[a], homeitmst[a], srcdir % "/home/" % usrs.at(a), True, ilst)) return false;
         }
 
@@ -2621,8 +2527,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                 for(uchar a(0) ; a < 12 ; ++a)
                     if(isdir(dirs[a]))
                     {
-                        sysitms[a].reserve(bbs[a]);
-                        sysitmst[a].reserve(ibs[a]);
+                        sysitms[a].reserve(bbs[a]), sysitmst[a].reserve(ibs[a]);
                         if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
                     }
             }
@@ -2803,8 +2708,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                             ++lcnt;
                         }
 
-                        in.seek(0);
-                        lcnt = 0;
+                        in.seek(0), lcnt = 0;
 
                         while(! in.atEnd())
                         {
@@ -2819,8 +2723,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                             if(ThrdKill) return false;
                         }
 
-                        cditms->clear();
-                        cditmst->clear();
+                        cditms->clear(), cditmst->clear();
                     }
 
                     cpertime(srcd, trgd);
@@ -2890,9 +2793,8 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
         if(srcdir == "/.systembacklivepoint" && isdir("/.systembacklivepoint/.systemback"))
         {
             QBA sbitms;
-            sbitms.reserve(10000);
             QUCL sbitmst;
-            sbitmst.reserve(500);
+            sbitms.reserve(10000), sbitmst.reserve(500);
             if(! rodir(sbitms, sbitmst, "/.systembacklivepoint/.systemback")) return false;
             lcnt = 0;
             QTS in(&sbitms, QIODevice::ReadOnly);
@@ -2913,8 +2815,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                 if(ThrdKill) return false;
             }
 
-            in.seek(0);
-            lcnt = 0;
+            in.seek(0), lcnt = 0;
 
             while(! in.atEnd())
             {
@@ -3092,8 +2993,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                         ++lcnt;
                     }
 
-                    in.seek(0);
-                    lcnt = 0;
+                    in.seek(0), lcnt = 0;
 
                     while(! in.atEnd())
                     {
@@ -3108,8 +3008,7 @@ bool sb::thrdsrestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool s
                         if(ThrdKill) return false;
                     }
 
-                    cditms->clear();
-                    cditmst->clear();
+                    cditms->clear(), cditmst->clear();
                 }
 
                 cpertime(srcd, trgd);
@@ -3135,8 +3034,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             for(uchar a(0) ; a < 12 ; ++a)
                 if(isdir(dirs[a]))
                 {
-                    sysitms[a].reserve(bbs[a]);
-                    sysitmst[a].reserve(ibs[a]);
+                    sysitms[a].reserve(bbs[a]), sysitmst[a].reserve(ibs[a]);
                     if(! rodir(sysitms[a], sysitmst[a], dirs[a])) return false;
                 }
         }
@@ -3156,8 +3054,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             if(mthd > 2)
             {
                 if(isdir(srcdir % "/home/" % usr)) usrs.append(usr);
-                homeitms.append(nullptr);
-                homeitmst.append(QUCL());
+                homeitms.append(nullptr), homeitmst.append(QUCL());
             }
             else if(mthd && isdir(srcdir % "/home"))
             {
@@ -3170,21 +3067,15 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                     {
                         QStr cusr(file.readLine().trimmed());
 
-                        if(cusr.contains(":/home/") && isdir("/home/" % (cusr = left(cusr, instr(cusr, ":") -1))))
-                        {
-                            usrs.append(cusr);
-                            homeitms.append(nullptr);
-                            homeitmst.append(QUCL());
-                        }
+                        if(cusr.contains(":/home/") && isdir("/home/" % (cusr = left(cusr, instr(cusr, ":") -1)))) usrs.append(cusr),
+                                                                                                                   homeitms.append(nullptr),
+                                                                                                                   homeitmst.append(QUCL());
                     }
                 }
                 else
-                    for(cQStr &cusr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot))
-                    {
-                        usrs.append(cusr);
-                        homeitms.append(nullptr);
-                        homeitmst.append(QUCL());
-                    }
+                    for(cQStr &cusr : QDir(srcdir % "/home").entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot)) usrs.append(cusr),
+                                                                                                                              homeitms.append(nullptr),
+                                                                                                                              homeitmst.append(QUCL());
 
                 if(ThrdKill) return false;
             }
@@ -3193,25 +3084,21 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 
             if(mthd == 5)
             {
-                homeitms[0].reserve(10000);
-                homeitmst[0].reserve(500);
+                homeitms[0].reserve(10000), homeitmst[0].reserve(500);
                 if(! rodir(homeitms[0], homeitmst[0], srcdir % "/etc/skel")) return false;
             }
             else
             {
                 if(! usrs.last().isNull())
                 {
-                    homeitms.append(nullptr);
-                    homeitms.last().reserve(50000);
-                    homeitmst.append(QUCL());
-                    homeitmst.last().reserve(1000);
+                    homeitms.append(nullptr), homeitms.last().reserve(50000),
+                    homeitmst.append(QUCL()), homeitmst.last().reserve(1000);
                     if(! rodir(homeitms.last(), homeitmst.last(), srcdir % "/root", like(mthd, {2, 3}) ? True : False)) return false;
                 }
 
                 for(schar a(usrs.count() - 2) ; a > -1 ; --a)
                 {
-                    homeitms[a].reserve(5000000);
-                    homeitmst[a].reserve(100000);
+                    homeitms[a].reserve(5000000), homeitmst[a].reserve(100000);
                     if(! rodir(homeitms[a], homeitmst[a], srcdir % "/home/" % usrs.at(a), like(mthd, {2, 3}) ? True : False)) return false;
                 }
             }
@@ -3359,8 +3246,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                             ++lcnt;
                         }
 
-                        in.seek(0);
-                        lcnt = 0;
+                        in.seek(0), lcnt = 0;
 
                         while(! in.atEnd())
                         {
@@ -3375,11 +3261,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                             if(ThrdKill) return false;
                         }
 
-                        if(mthd < 5)
-                        {
-                            cditms->clear();
-                            cditmst->clear();
-                        }
+                        if(mthd < 5) cditms->clear(), cditmst->clear();
                     }
 
                     if(! cusr.isEmpty())
@@ -3490,7 +3372,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
         else
         {
             elst.append("/etc/systemback/");
-            if(srcdir == "/.systembacklivepoint" && fload("/proc/cmdline").contains("noxconf")) elst.append("/etc/X11/xorg.conf");
+            if(srcdir == "/.systembacklivepoint" && fload("/proc/cmdline").contains("noxconf")) elst.append({"/etc/X11/xorg.conf", "/etc/X11/xorg.conf.d/"});
         }
 
         edetect(elst);
@@ -3638,8 +3520,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                         ++lcnt;
                     }
 
-                    in.seek(0);
-                    lcnt = 0;
+                    in.seek(0), lcnt = 0;
 
                     while(! in.atEnd())
                     {
@@ -3654,8 +3535,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                         if(ThrdKill) return false;
                     }
 
-                    cditms->clear();
-                    cditmst->clear();
+                    cditms->clear(), cditmst->clear();
                 }
 
                 if(! cpertime(srcd, trgd)) return false;
@@ -3757,9 +3637,8 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     {
         if(! crtdir("/.sbsystemcopy/var/log")) return false;
         QBA logitms;
-        logitms.reserve(20000);
         QUCL logitmst;
-        logitmst.reserve(1000);
+        logitms.reserve(20000), logitmst.reserve(1000);
         if(! rodir(logitms, logitmst, srcdir % "/var/log")) return false;
 
         if(! logitmst.isEmpty())
@@ -3788,8 +3667,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
                 if(ThrdKill) return false;
             }
 
-            in.seek(0);
-            lcnt = 0;
+            in.seek(0), lcnt = 0;
 
             while(! in.atEnd())
             {
@@ -3804,9 +3682,8 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
     if(srcdir == "/.systembacklivepoint" && isdir("/.systembacklivepoint/.systemback"))
     {
         QBA sbitms;
-        sbitms.reserve(10000);
         QUCL sbitmst;
-        sbitmst.reserve(500);
+        sbitms.reserve(10000), sbitmst.reserve(500);
         if(! rodir(sbitms, sbitmst, "/.systembacklivepoint/.systemback")) return false;
         lcnt = 0;
         QTS in(&sbitms, QIODevice::ReadOnly);
@@ -3826,8 +3703,7 @@ bool sb::thrdscopy(uchar mthd, cQStr &usr, cQStr &srcdir)
             if(ThrdKill) return false;
         }
 
-        in.seek(0);
-        lcnt = 0;
+        in.seek(0), lcnt = 0;
 
         while(! in.atEnd())
         {
@@ -3939,9 +3815,8 @@ bool sb::thrdlvprpr(bool iudata)
 
     {
         QBA varitms;
-        varitms.reserve(1000000);
         QUCL varitmst;
-        varitmst.reserve(50000);
+        varitms.reserve(1000000), varitmst.reserve(50000);
         if(! rodir(varitms, varitmst, "/var")) return false;
         if(! (crtdir("/var/.sblvtmp") && crtdir("/var/.sblvtmp/var"))) return false;
         ++ThrdLng[0];
@@ -3995,8 +3870,7 @@ bool sb::thrdlvprpr(bool iudata)
                 ++lcnt;
             }
 
-            in.seek(0);
-            lcnt = 0;
+            in.seek(0), lcnt = 0;
 
             while(! in.atEnd())
             {
@@ -4068,7 +3942,6 @@ bool sb::thrdlvprpr(bool iudata)
     QSL excl{"_lost+found_", "_lost+found/*", "*/lost+found_", "*/lost+found/*", "_Systemback_", "_Systemback/*", "*/Systemback_", "*/Systemback/*", "*~_", "*~/*"};
 
     for(cQStr &usr : usrs)
-    {
         if(! usr.isNull())
         {
             QStr usdir;
@@ -4096,9 +3969,8 @@ bool sb::thrdlvprpr(bool iudata)
             ++ThrdLng[0];
             QStr srcd(usr.isEmpty() ? "/root" : QStr("/home/" % usr));
             QBA useritms;
-            useritms.reserve(usr.isEmpty() ? 50000 : 5000000);
             QUCL useritmst;
-            useritmst.reserve(usr.isEmpty() ? 1000 : 100000);
+            useritms.reserve(usr.isEmpty() ? 50000 : 5000000), useritmst.reserve(usr.isEmpty() ? 1000 : 100000);
             if(! rodir(useritms, useritmst, srcd, ! iudata ? True : False)) return false;
 
             if(! useritmst.isEmpty())
@@ -4151,8 +4023,7 @@ bool sb::thrdlvprpr(bool iudata)
                     ++lcnt;
                 }
 
-                in.seek(0);
-                lcnt = 0;
+                in.seek(0), lcnt = 0;
 
                 while(! in.atEnd())
                 {
@@ -4202,7 +4073,6 @@ bool sb::thrdlvprpr(bool iudata)
 
             if(! cpertime(srcd, usdir)) return false;
         }
-    }
 
     return true;
 }

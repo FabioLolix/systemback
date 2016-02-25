@@ -68,16 +68,12 @@ void scheduler::main()
 
         if(! sb::isfile(*pfile) || (pflmd != QFileInfo(*pfile).lastModified() && sb::fload(*pfile) != QBA::number(qApp->applicationPid())))
         {
-            sb::unlock(sb::Schdlrlock);
-            sb::exec("sbscheduler " % qApp->arguments().at(1), sb::Silent | sb::Bckgrnd);
+            sb::unlock(sb::Schdlrlock), sb::exec("sbscheduler " % qApp->arguments().at(1), sb::Silent | sb::Bckgrnd);
             break;
         }
 
-        if(! sb::isfile(cfgfile) || cfglmd != QFileInfo(cfgfile).lastModified())
-        {
-            sb::cfgread();
-            cfglmd = QFileInfo(cfgfile).lastModified();
-        }
+        if(! sb::isfile(cfgfile) || cfglmd != QFileInfo(cfgfile).lastModified()) sb::cfgread(),
+                                                                                 cfglmd = QFileInfo(cfgfile).lastModified();
 
         if(! (sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write)))
             sleep(50);
@@ -100,16 +96,11 @@ void scheduler::main()
                     if((qEnvironmentVariableIsSet("XAUTHORITY") && QFile(qgetenv("XAUTHORITY")).copy(xauth)) || [&] {
                             QStr path("/home/" % qApp->arguments().at(1) % "/.Xauthority");
                             return (sb::isfile(path) && QFile(path).copy(xauth)) || (sb::isfile(path = usrhm % "/.Xauthority") && QFile(path).copy(xauth));
-                        }())
-                    {
-                        sb::exec("systemback schedule", sb::Wait, "XAUTHORITY=" % xauth);
-                        sb::rmfile(xauth);
-                    }
+                        }()) sb::exec("systemback schedule", sb::Wait, "XAUTHORITY=" % xauth),
+                             sb::rmfile(xauth);
                 }
 
-                sb::unlock(sb::Sblock);
-                sb::unlock(sb::Dpkglock);
-                sleep(50);
+                sb::unlock(sb::Sblock), sb::unlock(sb::Dpkglock), sleep(50);
             }
         }
     }
@@ -141,7 +132,6 @@ void scheduler::newrpnt()
     else
         return;
 
-    sb::crtfile(sb::sdir[1] % "/.sbschedule");
-    sb::fssync();
+    sb::crtfile(sb::sdir[1] % "/.sbschedule"), sb::fssync();
     if(sb::ecache) sb::crtfile("/proc/sys/vm/drop_caches", "3");
 }

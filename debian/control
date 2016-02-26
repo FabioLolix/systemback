@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 9),
                libparted0-dev,
                qtbase5-dev,
                qttools5-dev-tools
-Standards-Version: 3.9.6
+Standards-Version: 3.9.7
 
 Package: systemback
 Architecture: amd64 i386

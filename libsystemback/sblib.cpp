@@ -1,20 +1,19 @@
 /*
  * Copyright(C) 2014-2016, Krisztián Kende <nemh@freemail.hu>
  *
- * This file is part of Systemback.
+ * This file is part of the Systemback.
  *
- * Systemback is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * The Systemback is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 3 of the License, or (at your option) any later
+ * version.
  *
- * Systemback is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The Systemback is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Systemback. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with the
+ * Systemback. If not, see <http://www.gnu.org/licenses>.
  */
 
 #include "sblib.hpp"
@@ -1180,7 +1179,7 @@ bool sb::scopy(uchar mthd, cQStr &usr, cQStr &srcdir)
 bool sb::crtrpoint(cQStr &pname)
 {
     ThrdType = Crtrpoint,
-    ThrdStr[0] = sdir[1] % "/.S00_" % pname,
+    ThrdStr[0] = "/.S00_" % pname,
     SBThrd.start(), thrdelay();
     return ThrdRslt;
 }
@@ -2011,6 +2010,7 @@ void sb::run()
 
 bool sb::thrdcrtrpoint(cQStr &trgt)
 {
+    QStr rsdir('.' % QDir(sdir[1]).canonicalPath());
     if(chroot(bstr(sdir[1]))) return false;
 
     auto out([](bool val = false) {
@@ -2018,7 +2018,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
             return val;
         });
 
-    QStr rtrgt('.' % trgt);
+    QStr rtrgt(rsdir % trgt);
     uint lcnt;
 
     {
@@ -2155,7 +2155,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                                     case Islink:
                                         for(cQStr &pname : rplst)
                                         {
-                                            QStr orpi('.' % sdir[1] % '/' % pname % srci);
+                                            QStr orpi(rsdir % '/' % pname % srci);
 
                                             if(stype(orpi) == Islink && lcomp(rsrci, orpi))
                                             {
@@ -2176,7 +2176,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                                         {
                                             for(cQStr &pname : rplst)
                                             {
-                                                QStr orpi('.' % sdir[1] % '/' % pname % srci);
+                                                QStr orpi(rsdir % '/' % pname % srci);
 
                                                 if(stype(orpi) == Isfile && fcomp(rsrci, orpi) == 2)
                                                 {
@@ -2238,7 +2238,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                         for(cQStr &pname : rplst)
                         {
-                            QStr orpi('.' % sdir[1] % '/' % pname % srci);
+                            QStr orpi(rsdir % '/' % pname % srci);
 
                             if(stype(orpi) == Islink && lcomp(rsrci, orpi))
                             {
@@ -2298,7 +2298,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                                 case Islink:
                                     for(cQStr &pname : rplst)
                                     {
-                                        QStr orpi('.' % sdir[1] % '/' % pname % srci);
+                                        QStr orpi(rsdir % '/' % pname % srci);
 
                                         if(stype(orpi) == Islink && lcomp(rsrci, orpi))
                                         {
@@ -2317,7 +2317,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
                                 case Isfile:
                                     for(cQStr &pname : rplst)
                                     {
-                                        QStr orpi('.' % sdir[1] % '/' % pname % srci);
+                                        QStr orpi(rsdir % '/' % pname % srci);
 
                                         if(stype(orpi) == Isfile && fcomp(rsrci, orpi) == 2)
                                         {
@@ -2346,7 +2346,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                         if(cditmst->at(lcnt++) == Isdir)
                         {
-                            QStr srci(cdir % '/' % item), nrpi(trgt % srci);
+                            QStr srci(cdir % '/' % item), nrpi(rtrgt % srci);
                             if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return out();
                         }
 
@@ -2440,7 +2440,7 @@ bool sb::thrdcrtrpoint(cQStr &trgt)
 
                 if(logitmst.at(lcnt++) == Isdir)
                 {
-                    QStr srci("./var/log/" % item), nrpi(trgt % srci);
+                    QStr srci("/var/log/" % item), nrpi(rtrgt % srci);
                     if(exist(nrpi) && ! cpertime('.' % srci, nrpi)) return out();
                 }
 

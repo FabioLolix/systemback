@@ -4,43 +4,6 @@
 <context>
     <name>systemback</name>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="178"/>
-        <source>Version:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="178"/>
-        <source>Compilation date and time:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="178"/>
-        <location filename="../libsystemback/sblib.cpp" line="181"/>
-        <source>Installed files:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="191"/>
-        <source>Operating system:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="202"/>
-        <location filename="../libsystemback/sblib.cpp" line="203"/>
-        <source>Mounted filesystems:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="225"/>
-        <source>System language:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../libsystemback/sblib.cpp" line="225"/>
-        <source>Translation:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../libsystemback/sblib.cpp" line="101"/>
         <source>The specified debug level is invalid!</source>
         <translation>特定的调试等级无效！</translation>
@@ -49,6 +12,43 @@
         <location filename="../libsystemback/sblib.cpp" line="101"/>
         <source>The default level (1) will be used.</source>
         <translation>默认等级（1）将被使用。</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="178"/>
+        <source>Version:</source>
+        <translation>版本：</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="178"/>
+        <source>Compilation date and time:</source>
+        <translation>编译日期和时间：</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="178"/>
+        <location filename="../libsystemback/sblib.cpp" line="181"/>
+        <source>Installed files:</source>
+        <translation>已安装的文件：</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="191"/>
+        <source>Operating system:</source>
+        <translation>操作系统：</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="202"/>
+        <location filename="../libsystemback/sblib.cpp" line="203"/>
+        <source>Mounted filesystems:</source>
+        <translation>挂载文件系统：</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="225"/>
+        <source>System language:</source>
+        <translation>系统语言：</translation>
+    </message>
+    <message>
+        <location filename="../libsystemback/sblib.cpp" line="225"/>
+        <source>Translation:</source>
+        <translation>翻译：</translation>
     </message>
     <message>
         <location filename="../libsystemback/sblib.cpp" line="324"/>
@@ -106,97 +106,97 @@
         <translation>为安装GRUB探测设备失败！</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1088"/>
+        <location filename="../libsystemback/sblib.cpp" line="1094"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>进行系统更新出现错误！</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1089"/>
+        <location filename="../libsystemback/sblib.cpp" line="1095"/>
         <source>Restart upgrade ...</source>
         <translation>重新更新……</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1113"/>
+        <location filename="../libsystemback/sblib.cpp" line="1119"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation>这个文件由于不存在而无法被复制：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1126"/>
+        <location filename="../libsystemback/sblib.cpp" line="1132"/>
         <source>The following partition has no UUID:</source>
         <translation>以下分区没有UUID：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1144"/>
+        <location filename="../libsystemback/sblib.cpp" line="1150"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation>在以下设备上新建分区时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1157"/>
+        <location filename="../libsystemback/sblib.cpp" line="1163"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation>在挂载以下分区/镜像时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1189"/>
+        <location filename="../libsystemback/sblib.cpp" line="1195"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation>在以下分区上设置一个或多个标志位时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1189"/>
+        <location filename="../libsystemback/sblib.cpp" line="1195"/>
         <source>Flag(s):</source>
         <translation>标志位：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1209"/>
+        <location filename="../libsystemback/sblib.cpp" line="1215"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation>在以下设备上新建分区表时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1231"/>
+        <location filename="../libsystemback/sblib.cpp" line="1237"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation>在卸载以下分区/镜像/挂载点时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1281"/>
+        <location filename="../libsystemback/sblib.cpp" line="1287"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation>在克隆以下条目的属性时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1281"/>
+        <location filename="../libsystemback/sblib.cpp" line="1287"/>
         <source>Target item:</source>
         <translation>目标条目：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1313"/>
+        <location filename="../libsystemback/sblib.cpp" line="1319"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation>在克隆以下符号链接时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1313"/>
+        <location filename="../libsystemback/sblib.cpp" line="1319"/>
         <source>Target symlink:</source>
         <translation>目标链接：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1326"/>
+        <location filename="../libsystemback/sblib.cpp" line="1332"/>
         <source>An error occurred while cloning the following file:</source>
         <translation>在克隆以下文件时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1326"/>
+        <location filename="../libsystemback/sblib.cpp" line="1332"/>
         <source>Target file:</source>
         <translation>目标文件：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1377"/>
+        <location filename="../libsystemback/sblib.cpp" line="1383"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation>在克隆以下目录时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1377"/>
+        <location filename="../libsystemback/sblib.cpp" line="1383"/>
         <source>Target directory:</source>
         <translation>目标目录：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1701"/>
+        <location filename="../libsystemback/sblib.cpp" line="1707"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation>在删除以下目录时发生了一个错误：</translation>
     </message>
@@ -1520,12 +1520,12 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback/systemback.cpp" line="2874"/>
         <location filename="../systemback/systemback.cpp" line="2888"/>
         <source>The specified partition could not be mounted.</source>
-        <translation>指定的分区无法挂载！</translation>
+        <translation>指定的分区无法挂载。</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2844"/>
         <source>The system install is completed, but an error occurred while installing the GRUB!</source>
-        <translation>安装系统已完成，不够安装GRUB的过程当中出现错误！请手动安装引导程序。</translation>
+        <translation>安装系统已完成，不够安装GRUB的过程当中出现错误！</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="2846"/>
@@ -1664,45 +1664,45 @@ These will be defined as restorable configuration files!</source>
     <message>
         <location filename="../systemback/systemback.cpp" line="7404"/>
         <source>Boot Live without xorg.conf file</source>
-        <translation type="unfinished"></translation>
+        <translation>不使用xorg.conf文件启动Live系统</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7407"/>
         <location filename="../systemback/systemback.cpp" line="7409"/>
         <location filename="../systemback/systemback.cpp" line="7411"/>
         <source>Boot Live system</source>
-        <translation type="unfinished"></translation>
+        <translation>启动Live系统</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7407"/>
         <location filename="../systemback/systemback.cpp" line="7409"/>
         <location filename="../systemback/systemback.cpp" line="7411"/>
         <source>Boot system installer</source>
-        <translation type="unfinished"></translation>
+        <translation>启动系统安装器</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7407"/>
         <location filename="../systemback/systemback.cpp" line="7409"/>
         <location filename="../systemback/systemback.cpp" line="7411"/>
         <source>Boot Live in safe graphics mode</source>
-        <translation type="unfinished"></translation>
+        <translation>在安全图像模式下启动Live系统</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7407"/>
         <location filename="../systemback/systemback.cpp" line="7409"/>
         <location filename="../systemback/systemback.cpp" line="7411"/>
         <source>Boot Live in debug mode</source>
-        <translation type="unfinished"></translation>
+        <translation>在调试模式下启动Live系统</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7408"/>
         <source>Press &apos;E&apos; key to edit</source>
-        <translation type="unfinished"></translation>
+        <translation>按&apos;E&apos;键编辑</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.cpp" line="7411"/>
         <source>Press TAB key to edit</source>
-        <translation type="unfinished"></translation>
+        <translation>按TAB键编辑</translation>
     </message>
     <message>
         <location filename="../systemback/systemback.hpp" line="320"/>
@@ -1843,7 +1843,7 @@ These will be defined as restorable configuration files!</source>
         <location filename="../systemback-cli/systemback-cli.cpp" line="510"/>
         <location filename="../systemback-cli/systemback-cli.hpp" line="69"/>
         <source>(Y/N)</source>
-        <translation>（Y是/N否）</translation>
+        <translation>（Y/N）</translation>
     </message>
     <message>
         <location filename="../systemback-cli/systemback-cli.cpp" line="453"/>

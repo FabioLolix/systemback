@@ -1014,9 +1014,16 @@ void sb::supgrade()
 {
     exec("apt-get update");
 
+    QStr fyes([] {
+            QProcess proc;
+            proc.start("apt -v", QProcess::ReadOnly), proc.waitForFinished(-1);
+            QStr sout(proc.readAllStandardOutput());
+            return sout.length() < 7 || mid(sout, 5, 3).replace('.', nullptr).toUShort() < 12 ? "--force-yes" : "--allow-downgrades --allow-change-held-packages";
+        }());
+
     forever
     {
-        if(! exec({"apt-get install -fym --force-yes", "dpkg --configure -a", "apt-get dist-upgrade --no-install-recommends -ym --force-yes", "apt-get autoremove --purge -y"}))
+        if(! exec({"apt-get install -fym " % fyes, "dpkg --configure -a", "apt-get dist-upgrade --no-install-recommends -ym " % fyes, "apt-get autoremove --purge -y"}))
         {
             QStr rklist;
 
@@ -1047,8 +1054,7 @@ void sb::supgrade()
             {
                 {
                     QProcess proc;
-                    proc.start("dpkg -l", QProcess::ReadOnly);
-                    while(proc.state() == QProcess::Starting || proc.state() == QProcess::Running) msleep(10), qApp->processEvents();
+                    proc.start("dpkg -l", QProcess::ReadOnly), proc.waitForFinished(-1);
                     QBA sout(proc.readAllStandardOutput());
                     QStr iplist;
                     QTS in(&sout, QIODevice::ReadOnly);

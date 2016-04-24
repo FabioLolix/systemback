@@ -59,13 +59,14 @@ void systemback::main()
                     : getuid() + getgid() ? 3
                     : ! sb::lock(sb::Sblock) ? 4
                     : ! sb::lock(sb::Dpkglock) ? 5
+                    : ! sb::lock(sb::Aptlock) ? 6
                     : [&] {
                             auto startui([this](bool crtrpt = false) -> uchar {
                                     if(! (isatty(fileno(stdin)) && isatty(fileno(stdout)) && isatty(fileno(stderr)))) return 255;
                                     initscr();
 
-                                    uchar crv(! has_colors() ? 6
-                                        : LINES < 24 || COLS < 80 ? 7
+                                    uchar crv(! has_colors() ? 7
+                                        : LINES < 24 || COLS < 80 ? 8
                                         : [crtrpt, this]() -> uchar {
                                                 noecho(),
                                                 raw(),
@@ -81,7 +82,7 @@ void systemback::main()
                                                 sbtxt = bstr("Systemback " % tr("basic restore UI")), blgn = COLS / 2 - 6 - tr("basic restore UI").length() / 2;
                                                 if(! crtrpt) return clistart();
                                                 sb::pupgrade();
-                                                return newrpnt() ? 0 : sb::dfree(sb::sdir[1]) < 104857600 ? 11 : 12;
+                                                return newrpnt() ? 0 : sb::dfree(sb::sdir[1]) < 104857600 ? 12 : 13;
                                             }());
 
                                     endwin();
@@ -89,10 +90,10 @@ void systemback::main()
                                 });
 
                             return args.count() == 1 ? startui()
-                                : sb::like(args.at(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 13
+                                : sb::like(args.at(1), {"_-n_", "_--newrestorepoint_"}) ? sb::isdir(sb::sdir[1]) && sb::access(sb::sdir[1], sb::Write) ? startui(true) : 14
                                 : sb::like(args.at(1), {"_-s_", "_--storagedir_"}) ? storagedir(args)
                                 : sb::like(args.at(1), {"_-u_", "_--upgrade_"}) ? [] {
-                                        sb::unlock(sb::Dpkglock);
+                                        sb::unlock(sb::Dpkglock), sb::unlock(sb::Aptlock),
                                         sb::supgrade();
                                         return 0;
                                     }() : 1;
@@ -119,20 +120,22 @@ void systemback::main()
             case 5:
                 return tr("Unable to get exclusive lock!") % "\n\n " % tr("First, close all package manager.");
             case 6:
-                return tr("This stupid terminal does not support color!");
+                return tr("The re-synchronization of package index files currently in progress, please wait until it finishes.");
             case 7:
-                return tr("This terminal is too small!") % " (< 80x24)";
+                return tr("This stupid terminal does not support color!");
             case 8:
-                return tr("The specified storage directory path has not been set!");
+                return tr("This terminal is too small!") % " (< 80x24)";
             case 9:
-                return tr("The restoration is aborted!");
+                return tr("The specified storage directory path has not been set!");
             case 10:
-                return dbg(tr("The restoration is completed, but an error occurred while reinstalling the GRUB!"));
+                return tr("The restoration is aborted!");
             case 11:
-                return dbg(tr("The restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process."));
+                return dbg(tr("The restoration is completed, but an error occurred while reinstalling the GRUB!"));
             case 12:
-                return dbg(tr("The restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation."));
+                return dbg(tr("The restore point creation is aborted!") % "\n\n " % tr("Not enough free disk space to complete the process."));
             case 13:
+                return dbg(tr("The restore point creation is aborted!") % "\n\n " % tr("There has been critical changes in the file system during this operation."));
+            case 14:
                 return dbg(tr("The restore points storage directory is not available or not writable!"));
             default:
                 return dbg(tr("The restore point deletion is aborted!") % "\n\n " % tr("An error occurred while during the process."));
@@ -224,7 +227,7 @@ uchar systemback::clistart()
             break;
         case 'g':
         case 'G':
-            if(! newrpnt()) return sb::dfree(sb::sdir[1]) < 104857600 ? 11 : 12;
+            if(! newrpnt()) return sb::dfree(sb::sdir[1]) < 104857600 ? 12 : 13;
             clear();
             return clistart();
         case 'q':
@@ -253,7 +256,7 @@ uchar systemback::clistart()
             if(! (sb::rename(sb::sdir[1] % '/' % cpoint % '_' % pname, sb::sdir[1] % "/.DELETED_" % pname) && sb::remove(sb::sdir[1] % "/.DELETED_" % pname)))
             {
                 progress(Stop);
-                return 14;
+                return 15;
             }
 
             emptycache(),
@@ -285,7 +288,7 @@ uchar systemback::storagedir(cQSL &args)
                 for(uchar a(3) ; a < args.count() ; ++a) idir.append(' ' % args.at(a));
 
             QSL excl{"*/Systemback_", "*/Systemback/*", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"};
-            if(sb::like(ndir = QDir::cleanPath(idir), excl) || sb::like(cpath = QDir(idir).canonicalPath(), excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 8;
+            if(sb::like(ndir = QDir::cleanPath(idir), excl) || sb::like(cpath = QDir(idir).canonicalPath(), excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 9;
         }
 
         if(sb::sdir[0] != ndir)
@@ -301,7 +304,7 @@ uchar systemback::storagedir(cQSL &args)
             }
 
             sb::sdir[0] = ndir, sb::sdir[1] = sb::sdir[0] % "/Systemback", sb::ismpnt = ! sb::issmfs(sb::sdir[0], sb::sdir[0].count('/') == 1 ? "/" : sb::left(sb::sdir[0], sb::rinstr(sb::sdir[0], "/") - 1));
-            if(! sb::cfgwrite()) return 8;
+            if(! sb::cfgwrite()) return 9;
         }
 
         if(! (sb::isdir(sb::sdir[1]) || sb::crtdir(sb::sdir[1]))) sb::rename(sb::sdir[1], sb::sdir[1] % '_' % sb::rndstr()),
@@ -519,7 +522,7 @@ uchar systemback::restore()
         if(sb::like(gtch.toUpper(), {"_Y_", '_' % yn[0] % '_'}))
             rstart = true;
         else if(sb::like(gtch.toUpper(), {"_N_", '_' % yn[1] % '_'}))
-            return 9;
+            return 10;
     } while(! rstart);
 
     pset(mthd + 5),
@@ -528,7 +531,7 @@ uchar systemback::restore()
     sb::srestore(mthd, nullptr, sb::sdir[1] % '/' % cpoint % '_' % pname, nullptr, sfstab);
     { bool err(greinst == 1 && sb::exec("sh -c \"update-grub ; grub-install --force " % sb::gdetect() % '\"', sb::Silent));
     progress(Stop);
-    if(err) return 10; }
+    if(err) return 11; }
     clear(),
     mvprintw(0, blgn, sbtxt),
     attron(COLOR_PAIR(1));

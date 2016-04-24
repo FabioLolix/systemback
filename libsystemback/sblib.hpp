@@ -47,8 +47,8 @@ public:
            Nodbg = 0, Errdbg = 1, Alldbg = 2, Extdbg = 3, Cextdbg = 4, Nulldbg = 5, Falsedbg = 6,
            Notexist = 0, Isfile = 1, Isdir = 2, Islink = 3, Isblock = 4, Unknown = 5,
            Noflag = 0, Silent = 1, Bckgrnd = 2, Prgrss = 4, Wait = 8,
+           Sblock = 0, Dpkglock = 1, Aptlock = 2, Schdlrlock = 3,
            False = 0, True = 1, Empty = 2, Include = 3,
-           Sblock = 0, Dpkglock = 1, Schdlrlock = 2,
            Crtdir = 0, Rmfile = 1, Crthlnk = 2,
            Read = 0, Write = 1, Exec = 2,
            Norm = 0, All = 1, Mixed = 2 };
@@ -140,7 +140,7 @@ private:
 
     static QTrn *SBtr;
     static QSL *ThrdSlst;
-    static int sblock[3];
+    static int sblock[4];
     static uchar ThrdType, ThrdChr;
     static bool ThrdBool, ThrdRslt;
 

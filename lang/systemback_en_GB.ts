@@ -1281,5 +1281,9 @@ These will be defined as restorable configuration files!</source>
         <source>Translation:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The re-synchronization of package index files currently in progress, please wait until it finishes.</source>
+        <translation>The re-synchronisation of package index files currently in progress, please wait until it finishes.</translation>
+    </message>
 </context>
 </TS>

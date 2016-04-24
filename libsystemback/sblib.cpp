@@ -46,7 +46,7 @@ QTrn *sb::SBtr(nullptr);
 QSL *sb::ThrdSlst;
 QStr sb::ThrdStr[3], sb::eout, sb::sdir[3], sb::schdlr[2], sb::pnames[15], sb::lang, sb::style, sb::wsclng;
 ullong sb::ThrdLng[]{0, 0};
-int sb::sblock[3];
+int sb::sblock[4];
 uchar sb::ThrdType, sb::ThrdChr, sb::dbglev, sb::pnumber(0), sb::ismpnt(sb::Empty), sb::schdle[]{sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty, sb::Empty}, sb::waot(sb::Empty), sb::incrmtl(sb::Empty), sb::xzcmpr(sb::Empty), sb::autoiso(sb::Empty), sb::ecache(sb::Empty);
 schar sb::Progress(-1);
 bool sb::ThrdBool, sb::ExecKill(true), sb::ThrdKill(true), sb::ThrdRslt;
@@ -486,6 +486,8 @@ bool sb::lock(uchar type)
                 return isdir("/run") ? "/run/systemback.lock" : "/var/run/systemback.lock";
             case Dpkglock:
                 return "/var/lib/dpkg/lock";
+            case Aptlock:
+                return "/var/lib/apt/lists/lock";
             default:
                 return isdir("/run") ? "/run/sbscheduler.lock" : "/var/run/sbscheduler.lock";
             }

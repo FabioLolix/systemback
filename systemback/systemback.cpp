@@ -85,7 +85,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                                                               connect(wdgt, SIGNAL(Mouse_Pressed()), this, SLOT(mpressed())),
                                                               connect(wdgt, SIGNAL(Mouse_Released()), this, SLOT(wbreleased()));
 
-    dialog = getuid() + getgid() ? 305 : [this] {
+    dialog = getuid() + getgid() ? 306 : [this] {
             QSL args(qApp->arguments());
 
             if(args.count() == 2 && args.at(1) == "schedule" && [] {
@@ -96,10 +96,18 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                 sstart = true;
             else if(! sb::lock(sb::Sblock))
                 return 300;
-            else if((sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")) || sb::lock(sb::Dpkglock))
-                sstart = false;
             else
-                return 301;
+            {
+                if(! (sislive = sb::isfile("/cdrom/casper/filesystem.squashfs") || sb::isfile("/lib/live/mount/medium/live/filesystem.squashfs")))
+                {
+                    if(! sb::lock(sb::Dpkglock))
+                        return 301;
+                    else if(! sb::lock(sb::Aptlock))
+                        return 302;
+                }
+
+                sstart = false;
+            }
 
             return 0;
         }();
@@ -296,7 +304,7 @@ systemback::systemback() : QMainWindow(nullptr, Qt::FramelessWindowHint), ui(new
                     {
                         sb::wsclng = nsclng,
                         sb::cfgwrite(), ocfg.clear(),
-                        sb::unlock(sb::Sblock), sb::unlock(sb::Dpkglock);
+                        sb::unlock(sb::Sblock), sb::unlock(sb::Dpkglock), sb::unlock(sb::Aptlock);
 
                         if(fscrn)
                             utimer.stop(), hide(),
@@ -1805,7 +1813,7 @@ void systemback::pntupgrade()
 
 void systemback::statustart()
 {
-    if(sstart && dialog != 304)
+    if(sstart && dialog != 305)
         ui->schedulerpanel->hide(),
         ui->statuspanel->show(),
         setwontop(false);
@@ -1849,7 +1857,7 @@ void systemback::restore()
 
                 if(fcmp < 2 || ! (ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto"))
                 {
-                    if(sb::exec("grub-install --force " % (grub.isEFI ? nullptr : ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? sb::gdetect() : ui->grubreinstallrestore->currentText()))) dialog = 308;
+                    if(sb::exec("grub-install --force " % (grub.isEFI ? nullptr : ui->autorestoreoptions->isChecked() || ui->grubreinstallrestore->currentText() == "Auto" ? sb::gdetect() : ui->grubreinstallrestore->currentText()))) dialog = 309;
                     if(intrrpt) return exit();
                 }
             }
@@ -1857,7 +1865,7 @@ void systemback::restore()
             sb::crtfile(sb::sdir[1] % "/.sbschedule");
         }
 
-        if(dialog != 308) dialog = [mthd, this] {
+        if(dialog != 309) dialog = [mthd, this] {
                 switch(mthd) {
                 case 1:
                     return 205;
@@ -1869,7 +1877,7 @@ void systemback::restore()
             }();
     }
     else
-        dialog = 338;
+        dialog = 339;
 
     if(intrrpt) return exit();
     dialogopen();
@@ -1886,7 +1894,7 @@ void systemback::repair()
     {
         QSL mlst{"dev", "dev/pts", "proc", "sys"};
         for(cQStr &bpath : (sb::mcheck("/run") ? mlst << "/run" : mlst)) sb::mount('/' % bpath, "/mnt/" % bpath);
-        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText()) % '\"') ? 317 : 208,
+        dialog = sb::exec("chroot /mnt sh -c \"update-grub ; grub-install --force " % (grub.isEFI ? nullptr : ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText()) % '\"') ? 318 : 208,
         mlst.move(0, 1);
         for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
         if(intrrpt) return exit();
@@ -1901,7 +1909,7 @@ void systemback::repair()
             if(! (sb::isdir("/.systembacklivepoint") || sb::crtdir("/.systembacklivepoint"))) sb::rename("/.systembacklivepoint", "/.systembacklivepoint_" % sb::rndstr()),
                                                                                               sb::crtdir("/.systembacklivepoint");
 
-            if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop")) return dialogopen(333);
+            if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop")) return dialogopen(334);
 
             if(fcmp == 1)
             {
@@ -1939,7 +1947,7 @@ void systemback::repair()
                 for(cQStr &bpath : (sb::mcheck("/run") ? mlst << "/run" : mlst)) sb::mount('/' % bpath, "/mnt/" % bpath);
                 sb::exec("chroot /mnt update-grub");
                 if(intrrpt) return exit();
-                if((fcmp < 2 || ! (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")) && sb::exec("chroot /mnt grub-install --force " % (grub.isEFI ? nullptr : ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText()))) dialog = ui->fullrepair->isChecked() ? 309 : 303;
+                if((fcmp < 2 || ! (ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto")) && sb::exec("chroot /mnt grub-install --force " % (grub.isEFI ? nullptr : ui->autorepairoptions->isChecked() || ui->grubreinstallrepair->currentText() == "Auto" ? sb::gdetect("/mnt") : ui->grubreinstallrepair->currentText()))) dialog = ui->fullrepair->isChecked() ? 310 : 304;
                 mlst.move(0, 1);
                 for(cQStr &pend : mlst) sb::umount("/mnt/" % pend);
                 if(intrrpt) return exit();
@@ -1965,14 +1973,14 @@ void systemback::systemcopy()
     statustart(), pset(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 8 : 9);
 
     auto err([this](ushort dlg = 0, cbstr &dev = nullptr) {
-            if(! (intrrpt || (dlg && sb::like(dlg, {307, 313, 314, 316, 329, 330, 331, 332})))) dlg = [this] {
+            if(! (intrrpt || (dlg && sb::like(dlg, {308, 314, 315, 317, 330, 331, 332, 333})))) dlg = [this] {
                     if(sb::dfree("/.sbsystemcopy") > 104857600 && (! sb::isdir("/.sbsystemcopy/home") || sb::dfree("/.sbsystemcopy/home") > 104857600) && (! sb::isdir("/.sbsystemcopy/boot") || sb::dfree("/.sbsystemcopy/boot") > 52428800) && (! sb::isdir("/.sbsystemcopy/boot/efi") || sb::dfree("/.sbsystemcopy/boot/efi") > 10485760))
                     {
                         irblck = true;
-                        return ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 319 : 320;
+                        return ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 320 : 321;
                     }
                     else
-                        return ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 306 : 315;
+                        return ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 307 : 316;
                 }();
 
             {
@@ -2045,7 +2053,7 @@ void systemback::systemcopy()
                        : sb::exec("mkfs." % fstype % " -FL " % lbl % ' ' % part));
 
                 if(intrrpt) return err();
-                if(rv) return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 316 : 330, part);
+                if(rv) return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 317 : 331, part);
             }
 
             if(mpoint != "SWAP")
@@ -2084,7 +2092,7 @@ void systemback::systemcopy()
                                 if(sb::mount(part, mpt))
                                     ckd.append(part);
                                 else
-                                    return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, part);
+                                    return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 314 : 330, part);
                             }
 
                             break;
@@ -2095,11 +2103,11 @@ void systemback::systemcopy()
                             if(sb::mount(part, "/.sbsystemcopy" % mpoint, "noatime,subvol=" % sv))
                                 ++a;
                             else if(a == 3 || ! sb::rename(mpt % '/' % sv, mpt % '/' % sv % '_' % sb::rndstr()))
-                                return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, part);
+                                return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 314 : 330, part);
                         }
                 }
                 else if(! sb::mount(part, "/.sbsystemcopy" % mpoint))
-                    return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 313 : 329, part);
+                    return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 314 : 330, part);
             }
 
             if(intrrpt) return err();
@@ -2121,7 +2129,7 @@ void systemback::systemcopy()
                 if(! sb::crtdir("/.systembacklivepoint") || intrrpt) return err();
             }
 
-            if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop")) return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 331 : 332);
+            if(! sb::mount(sb::isfile("/cdrom/casper/filesystem.squashfs") ? "/cdrom/casper/filesystem.squashfs" : "/lib/live/mount/medium/live/filesystem.squashfs", "/.systembacklivepoint", "loop")) return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 332 : 333);
             if(intrrpt) return err();
 
             if(ui->usersettingscopy->isVisibleTo(ui->copypanel))
@@ -2543,7 +2551,7 @@ void systemback::systemcopy()
         if(ui->grubinstallcopy->currentText() == tr("Disabled"))
             sb::exec("chroot /.sbsystemcopy update-grub");
         else if(sb::exec("chroot /.sbsystemcopy sh -c \"update-grub ; grub-install --force " % (grub.isEFI ? nullptr : ui->grubinstallcopy->currentText() == "Auto" ? sb::gdetect("/.sbsystemcopy") : ui->grubinstallcopy->currentText()) % '\"'))
-            return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 307 : 314);
+            return err(ui->userdatafilescopy->isVisibleTo(ui->copypanel) ? 308 : 315);
     }
 
     if(intrrpt) return err();
@@ -2579,7 +2587,7 @@ void systemback::livewrite()
     QStr ldev(ui->livedevices->item(ui->livedevices->currentRow(), 0)->text());
     bool ismmc(ldev.contains("mmc"));
 
-    auto err([&, ismmc](ushort dlg = 335) {
+    auto err([&, ismmc](ushort dlg = 336) {
             if(sb::isdir("/.sblivesystemwrite"))
             {
                 if(sb::mcheck("/.sblivesystemwrite/sblive")) sb::umount("/.sblivesystemwrite/sblive");
@@ -2597,11 +2605,11 @@ void systemback::livewrite()
             if(intrrpt)
                 intrrpt = false;
             else
-                dialogopen(dlg, sb::like(dlg, {336, 337}) ? bstr(ldev % (ismmc ? "p" : nullptr) % '1') : nullptr);
+                dialogopen(dlg, sb::like(dlg, {337, 338}) ? bstr(ldev % (ismmc ? "p" : nullptr) % '1') : nullptr);
         });
 
     if(! sb::exist(ldev))
-        return err(337);
+        return err(338);
     else if(sb::mcheck(ldev))
     {
         for(cQStr &sitem : QDir("/dev").entryList(QDir::System))
@@ -2619,7 +2627,7 @@ void systemback::livewrite()
         if(intrrpt) return err();
     }
 
-    if(! sb::mkptable(ldev) || intrrpt) return err(337);
+    if(! sb::mkptable(ldev) || intrrpt) return err(338);
     sb::delay(100);
     QStr lrdir;
 
@@ -2628,19 +2636,19 @@ void systemback::livewrite()
 
         if(isize < 4294967295)
         {
-            if(! sb::mkpart(ldev) || intrrpt) return err(337);
+            if(! sb::mkpart(ldev) || intrrpt) return err(338);
             sb::delay(100),
             lrdir = "sblive";
         }
         else
         {
-            if(! (sb::mkpart(ldev, 1048576, 104857600) && sb::mkpart(ldev)) || intrrpt) return err(337);
+            if(! (sb::mkpart(ldev, 1048576, 104857600) && sb::mkpart(ldev)) || intrrpt) return err(338);
             sb::delay(100);
-            if(sb::exec("mkfs.ext2 -FL SBROOT " % ldev % (ismmc ? "p" : nullptr) % '2') || intrrpt) return err(337);
+            if(sb::exec("mkfs.ext2 -FL SBROOT " % ldev % (ismmc ? "p" : nullptr) % '2') || intrrpt) return err(338);
             lrdir = "sbroot";
         }
 
-        if(sb::exec("mkfs.vfat -F 32 -n SBLIVE " % ldev % (ismmc ? "p" : nullptr) % '1') || intrrpt) return err(337);
+        if(sb::exec("mkfs.vfat -F 32 -n SBLIVE " % ldev % (ismmc ? "p" : nullptr) % '1') || intrrpt) return err(338);
 
         if(sb::exec("dd if=/usr/lib/syslinux/" % QStr(sb::isfile("/usr/lib/syslinux/mbr.bin") ? nullptr : "mbr/") % "mbr.bin of=" % ldev % " conv=notrunc bs=440 count=1") || ! sb::setpflag(ldev % (ismmc ? "p" : nullptr) % '1', "boot lba")
             || intrrpt || (sb::exist("/.sblivesystemwrite") && (((sb::mcheck("/.sblivesystemwrite/sblive") && ! sb::umount("/.sblivesystemwrite/sblive")) || (sb::mcheck("/.sblivesystemwrite/sbroot") && ! sb::umount("/.sblivesystemwrite/sbroot"))) || ! sb::remove("/.sblivesystemwrite")))
@@ -2648,24 +2656,24 @@ void systemback::livewrite()
             || intrrpt) return err();
 
         sb::delay(100);
-        if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '1', "/.sblivesystemwrite/sblive") || intrrpt) return err(336);
+        if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '1', "/.sblivesystemwrite/sblive") || intrrpt) return err(337);
 
         if(lrdir == "sbroot")
         {
             if(! sb::crtdir("/.sblivesystemwrite/sbroot")) return err();
-            if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '2', "/.sblivesystemwrite/sbroot") || intrrpt) return err(336);
+            if(! sb::mount(ldev % (ismmc ? "p" : nullptr) % '2', "/.sblivesystemwrite/sbroot") || intrrpt) return err(337);
         }
 
-        if(sb::dfree("/.sblivesystemwrite/" % lrdir) < isize + 52428800) return err(321);
+        if(sb::dfree("/.sblivesystemwrite/" % lrdir) < isize + 52428800) return err(322);
         sb::ThrdStr[0] = "/.sblivesystemwrite", sb::ThrdLng[0] = isize;
     }
 
     if(lrdir == "sblive")
     {
-        if(sb::exec("tar -xf \"" % sb::sdir[2] % "\"/" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions", sb::Prgrss)) return err(322);
+        if(sb::exec("tar -xf \"" % sb::sdir[2] % "\"/" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --no-same-owner --no-same-permissions", sb::Prgrss)) return err(323);
     }
     else if(sb::exec("tar -xf \"" % sb::sdir[2] % "\"/" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sblive --exclude=casper/filesystem.squashfs --exclude=live/filesystem.squashfs --no-same-owner --no-same-permissions") || sb::exec("tar -xf \"" % sb::sdir[2] % "\"/" % sb::left(ui->livelist->currentItem()->text(), sb::instr(ui->livelist->currentItem()->text(), " ") - 1) % ".sblive -C /.sblivesystemwrite/sbroot --exclude=.disk --exclude=boot --exclude=EFI --exclude=syslinux --exclude=casper/initrd.gz --exclude=casper/vmlinuz --exclude=live/initrd.gz --exclude=live/vmlinuz --no-same-owner --no-same-permissions", sb::Prgrss))
-        return err(322);
+        return err(323);
 
     pset(1);
     if(sb::exec("syslinux -ifd syslinux " % ldev % (ismmc ? "p" : nullptr) % '1')) return err();
@@ -2817,78 +2825,80 @@ void systemback::dialogopen(ushort dlg, cbstr &dev)
                     case 301:
                         return tr("Unable to get exclusive lock!") % "<p>" % tr("First, close all package manager.");
                     case 302:
-                        return tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name.");
+                        return tr("The re-synchronization of package index files currently in progress, please wait until it finishes.");
                     case 303:
-                        return tr("The system files repair are completed, but an error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
+                        return tr("The specified name contain(s) unsupported character(s)!") % "<p>" % tr("Please enter a new name.");
                     case 304:
-                        return tr("The restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
+                        return tr("The system files repair are completed, but an error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
                     case 305:
-                        return tr("Root privileges are required for running the Systemback!");
+                        return tr("The restore point creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
                     case 306:
-                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.");
+                        return tr("Root privileges are required for running the Systemback!");
                     case 307:
-                        return tr("The system copy is completed, but an error occurred while installing the GRUB!") % ' ' % tr("You need to manually install a bootloader.");
+                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to copy the system. The copied system will not function properly.");
                     case 308:
-                        return tr("The system restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling the GRUB.");
+                        return tr("The system copy is completed, but an error occurred while installing the GRUB!") % ' ' % tr("You need to manually install a bootloader.");
                     case 309:
-                        return tr("The full system repair is completed, but an error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
+                        return tr("The system restoration is aborted!") % "<p>" % tr("An error occurred while reinstalling the GRUB.");
                     case 310:
-                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the file system image.");
+                        return tr("The full system repair is completed, but an error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
                     case 311:
-                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the container file.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the file system image.");
                     case 312:
-                        return tr("The Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the container file.");
                     case 313:
-                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("Not enough free disk space to complete the process.");
                     case 314:
-                        return tr("The system install is completed, but an error occurred while installing the GRUB!") % ' ' % tr("You need to manually install a bootloader.");
+                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 315:
-                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.");
+                        return tr("The system install is completed, but an error occurred while installing the GRUB!") % ' ' % tr("You need to manually install a bootloader.");
                     case 316:
-                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
+                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition(s) does not have enough free space to install the system. The installed system will not function properly.");
                     case 317:
-                        return tr("An error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
+                        return tr("The system copy is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 318:
-                        return tr("The restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("An error occurred while reinstalling the GRUB!") % ' ' % tr("The system may not bootable! (In general, the different architecture is causing the problem.)");
                     case 319:
-                        return tr("The system copy is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The restore point creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 320:
-                        return tr("The system installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The system copy is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 321:
-                        return tr("The Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system.");
+                        return tr("The system installation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 322:
-                        return tr("The Live write is aborted!") % "<p>" % tr("An error occurred while unpacking the Live system files.");
+                        return tr("The Live write is aborted!") % "<p>" % tr("The selected device does not have enough space to write the Live system.");
                     case 323:
-                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming the essential Live files.");
+                        return tr("The Live write is aborted!") % "<p>" % tr("An error occurred while unpacking the Live system files.");
                     case 324:
-                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while creating the .iso image.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while renaming the essential Live files.");
                     case 325:
-                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while reading the .sblive image.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while creating the .iso image.");
                     case 326:
-                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the new initramfs image.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("An error occurred while reading the .sblive image.");
                     case 327:
-                        return tr("The Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("An error occurred while creating the new initramfs image.");
                     case 328:
-                        return tr("The restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process.");
+                        return tr("The Live system creation is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 329:
-                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
+                        return tr("The restore point deletion is aborted!") % "<p>" % tr("An error occurred while during the process.");
                     case 330:
-                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
+                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 331:
-                        return tr("The system copy is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                        return tr("The system installation is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
                     case 332:
-                        return tr("The system installation is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                        return tr("The system copy is aborted!") % "<p>" % tr("The Live image could not be mounted.");
                     case 333:
-                        return tr("The system repair is aborted!") % "<p>" % tr("The Live image could not be mounted.");
+                        return tr("The system installation is aborted!") % "<p>" % tr("The Live image could not be mounted.");
                     case 334:
-                        return tr("The Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The system repair is aborted!") % "<p>" % tr("The Live image could not be mounted.");
                     case 335:
-                        return tr("The Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
+                        return tr("The Live conversion is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 336:
-                        return tr("The Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
+                        return tr("The Live write is aborted!") % "<p>" % tr("There has been critical changes in the file system during this operation.");
                     case 337:
-                        return tr("The Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
+                        return tr("The Live write is aborted!") % "<p>" % tr("The specified partition could not be mounted.") % "<p><b>" % dev.data;
                     case 338:
+                        return tr("The Live write is aborted!") % "<p>" % tr("The specified partition could not be formatted (in use or unavailable).") % "<p><b>" % dev.data;
+                    case 339:
                         return tr("The system restoration is aborted!") % "<p>" % tr("There is not enough free space.");
                     default:
                         return tr("The system repair is aborted!") % "<p>" % tr("There is not enough free space.");
@@ -2909,7 +2919,7 @@ void systemback::dialogopen(ushort dlg, cbstr &dev)
             windowmove(ui->dialogpanel->width(), ui->dialogpanel->height());
         else
         {
-            if(sstart && ! (sb::like(dialog, {300, 301, 305}) || ui->function3->text().contains(' '))) ui->function3->setText("Systemback " % tr("scheduler"));
+            if(sstart && ! (sb::like(dialog, {300, 301, 306}) || ui->function3->text().contains(' '))) ui->function3->setText("Systemback " % tr("scheduler"));
             setFixedSize(wgeom[2] = ui->dialogpanel->width(), wgeom[3] = ui->dialogpanel->height());
             QRect sgm(sgeom());
             move(wgeom[0] = sgm.x() + sgm.width() / 2 - ss(253), wgeom[1] = sgm.y() + sgm.height() / 2 - ss(100));
@@ -4018,7 +4028,7 @@ void systemback::on_systemupgrade_clicked()
 {
     statustart(), pset(11);
     QDateTime ofdate(QFileInfo("/usr/bin/systemback").lastModified());
-    sb::unlock(sb::Dpkglock),
+    sb::unlock(sb::Dpkglock), sb::unlock(sb::Aptlock),
     sb::exec("xterm +sb -bg grey85 -fg grey25 -fa a -fs 9 -geometry 80x24+" % QStr::number(ss(80)) % '+' % QStr::number(ss(70)) % " -n \"System upgrade\" -T \"System upgrade\" -cr grey40 -selbg grey86 -bw 0 -bc -bcf 500 -bcn 500 -e sbsysupgrade", sb::Noflag, "DBGLEV=0");
 
     if(isVisible())
@@ -4028,7 +4038,7 @@ void systemback::on_systemupgrade_clicked()
             sb::unlock(sb::Sblock),
             sb::exec("systemback", sb::Bckgrnd),
             close();
-        else if(sb::lock(sb::Dpkglock))
+        else if(sb::lock(sb::Dpkglock) && sb::lock(sb::Aptlock))
             ui->statuspanel->hide(),
             ui->mainpanel->show(),
             ui->functionmenunext->setFocus(),
@@ -4903,9 +4913,9 @@ void systemback::on_dialogok_clicked()
 {
     if(ui->dialogok->text() == "OK")
     {
-        if(dialog == 308)
+        if(dialog == 309)
             dialogopen(ui->fullrestore->isChecked() ? 205 : 204);
-        else if(dialog == 304)
+        else if(dialog == 305)
         {
             statustart();
 
@@ -4939,7 +4949,7 @@ void systemback::on_dialogok_clicked()
                         if(intrrpt)
                             intrrpt = false;
                         else
-                            dialogopen(328);
+                            dialogopen(329);
                     }
 
                     return;
@@ -4956,7 +4966,7 @@ void systemback::on_dialogok_clicked()
         }
         else if(! utimer.isActive() || sstart)
             close();
-        else if(sb::like(dialog, {207, 210, 302, 306, 310, 311, 312, 313, 315, 316, 319, 320, 321, 322, 323, 324, 325, 326, 327, 329, 330, 331, 332, 333, 334, 335, 336, 337}))
+        else if(sb::like(dialog, {207, 210, 303, 307, 311, 312, 313, 314, 316, 317, 320, 321, 322, 323, 324, 325, 326, 327, 328, 330, 331, 332, 333, 334, 335, 336, 337, 338}))
         {
             ui->dialogpanel->hide();
             ui->mainpanel->show();
@@ -5047,7 +5057,7 @@ void systemback::on_pointhighlight_clicked()
 void systemback::on_pointrename_clicked()
 {
     busy();
-    if(dialog == 302) dialog = 0;
+    if(dialog == 303) dialog = 0;
     schar num(-1);
 
     for(QCB ckbx : ui->sbpanel->findChildren<QCB>())
@@ -5073,15 +5083,15 @@ void systemback::on_pointrename_clicked()
 
                 if(sb::rename(sb::sdir[1] % ppath % sb::pnames[num], sb::sdir[1] % ppath % ldt->text()))
                     ckbx->click();
-                else if(dialog != 302)
-                    dialog = 302;
+                else if(dialog != 303)
+                    dialog = 303;
             }
         }
     }
 
     pntupgrade(),
     busy(false);
-    if(dialog == 302) dialogopen();
+    if(dialog == 303) dialogopen();
 }
 
 void systemback::on_autorestoreoptions_clicked(bool chckd)
@@ -7057,7 +7067,7 @@ void systemback::on_newrestorepoint_clicked()
                 intrrpt = false;
             else
             {
-                dialogopen(sb::dfree(sb::sdir[1]) < 104857600 ? 304 : 318);
+                dialogopen(sb::dfree(sb::sdir[1]) < 104857600 ? 305 : 319);
                 if(! sstart) pntupgrade();
             }
         });
@@ -7131,7 +7141,7 @@ void systemback::on_pointdelete_clicked()
                         if(intrrpt)
                             intrrpt = false;
                         else
-                            dialogopen(328),
+                            dialogopen(329),
                             pntupgrade();
                     }();
         }
@@ -7150,12 +7160,12 @@ void systemback::on_livenew_clicked()
     statustart(), pset(17, " 1/3");
 
     auto err([this](ushort dlg = 0) {
-            if(! (intrrpt || dlg == 326))
+            if(! (intrrpt || dlg == 327))
             {
                 if(sb::dfree(sb::sdir[2]) < 104857600 || (sb::isdir("/home/.sbuserdata") && sb::dfree("/home") < 104857600))
-                    dlg = 312;
+                    dlg = 313;
                 else if(! dlg)
-                    dlg = 327;
+                    dlg = 328;
             }
 
             for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/var/.sblvtmp", "/home/.sbuserdata", "/root/.sbuserdata"})
@@ -7307,7 +7317,7 @@ void systemback::on_livenew_clicked()
             return err();
 
         if((xmntry && ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbnoxconf")) || ! sb::remove("/usr/share/initramfs-tools/scripts/init-bottom/sbfinstall")) return err();
-        if(rv) return err(326);
+        if(rv) return err(327);
     }
 
     irblck = false;
@@ -7351,7 +7361,7 @@ void systemback::on_livenew_clicked()
                 for(cQStr &item : QDir(cdir).entryList(QDir::Files))
                     if(item.contains("cryptdisks")) elist.append(" -e " % cdir % '/' % item);
 
-        if(sb::exec("mksquashfs" % ide % " \"" % sb::sdir[2] % "\"/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var \"" % sb::sdir[2] % "\"/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, sb::Prgrss)) return err(310);
+        if(sb::exec("mksquashfs" % ide % " \"" % sb::sdir[2] % "\"/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var \"" % sb::sdir[2] % "\"/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, sb::Prgrss)) return err(311);
     }
 
     pset(19, " 3/3"),
@@ -7421,7 +7431,7 @@ void systemback::on_livenew_clicked()
     if(sb::exec("tar -cf \"" % sb::sdir[2] % "\"/" % ifname % ".sblive -C \"" % sb::sdir[2] % "\"/.sblivesystemcreate .", sb::Prgrss))
     {
         if(sb::exist(sb::sdir[2] % '/' % ifname % ".sblive")) sb::remove(sb::sdir[2] % '/' % ifname % ".sblive");
-        return err(311);
+        return err(312);
     }
 
     if(! cfmod(sb::sdir[2] % '/' % ifname % ".sblive", 0666)) return err();
@@ -7440,7 +7450,7 @@ void systemback::on_livenew_clicked()
             if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o \"" % sb::sdir[2] % "\"/" % ifname % ".iso \"" % sb::sdir[2] % "\"/.sblivesystemcreate", sb::Prgrss))
             {
                 if(sb::isfile(sb::sdir[2] % '/' % ifname % ".iso")) sb::remove(sb::sdir[2] % '/' % ifname % ".iso");
-                return err(311);
+                return err(312);
             }
 
             if(sb::exec("isohybrid \"" % sb::sdir[2] % "\"/" % ifname % ".iso") || ! cfmod(sb::sdir[2] % '/' % ifname % ".iso", 0666) || intrrpt) return err();
@@ -7465,17 +7475,17 @@ void systemback::on_liveconvert_clicked()
             if(intrrpt)
                 intrrpt = false;
             else
-                dialogopen(dlg ? dlg : 334);
+                dialogopen(dlg ? dlg : 335);
         });
 
     if((sb::exist(sb::sdir[2] % "/.sblivesystemconvert") && ! sb::remove(sb::sdir[2] % "/.sblivesystemconvert")) || ! sb::crtdir(sb::sdir[2] % "/.sblivesystemconvert")) return err();
     sb::ThrdLng[0] = sb::fsize(path % ".sblive"), sb::ThrdStr[0] = sb::sdir[2] % "/.sblivesystemconvert";
-    if(sb::exec("tar -xf \"" % path % "\".sblive -C \"" % sb::sdir[2] % "\"/.sblivesystemconvert --no-same-owner --no-same-permissions", sb::Prgrss)) return err(325);
-    if(! (sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") && sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux")) || intrrpt) return err(323);
+    if(sb::exec("tar -xf \"" % path % "\".sblive -C \"" % sb::sdir[2] % "\"/.sblivesystemconvert --no-same-owner --no-same-permissions", sb::Prgrss)) return err(326);
+    if(! (sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux/syslinux.cfg", sb::sdir[2] % "/.sblivesystemconvert/syslinux/isolinux.cfg") && sb::rename(sb::sdir[2] % "/.sblivesystemconvert/syslinux", sb::sdir[2] % "/.sblivesystemconvert/isolinux")) || intrrpt) return err(324);
     pset(21, " 2/2"),
     sb::Progress = -1,
     ui->progressbar->setValue(0);
-    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o \"" % path % "\".iso \"" % sb::sdir[2] % "\"/.sblivesystemconvert", sb::Prgrss)) return err(324);
+    if(sb::exec("genisoimage -r -V sblive -cache-inodes -J -l -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o \"" % path % "\".iso \"" % sb::sdir[2] % "\"/.sblivesystemconvert", sb::Prgrss)) return err(325);
     if(sb::exec("isohybrid \"" % path % "\".iso") || ! cfmod(path % ".iso", 0666)) return err();
     sb::remove(sb::sdir[2] % "/.sblivesystemconvert");
     if(intrrpt) return err();

@@ -182,7 +182,7 @@ QStr sb::dbginf()
 
             if(isdir("/usr/share/systemback/lang"))
                 for(cQStr &file : QDir("/usr/share/systemback/lang").entryList(QDir::Files))
-                    if(file.endsWith(".qm")) lst.append(file);
+                    if(file.endsWith(".qm")) lst.append("/usr/share/systemback/lang/" % file);
 
             for(cQStr &file : lst)
                 if(isfile(file)) fls.append((fls.isEmpty() ? " " : QStr('\n' % QStr(ind, ' '))) % file);

@@ -29,10 +29,13 @@ QMAKE_CXXFLAGS += -g \
                   -fvisibility-inlines-hidden \
                   -fno-asynchronous-unwind-tables
 
-QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-result \
-                          -Wextra \
-                          -Wshadow \
-                          -Werror
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-result
+
+CONFIG(debug, debug|release) {
+    QMAKE_CXXFLAGS_WARN_ON += -Wextra \
+                              -Wshadow \
+                              -Werror
+}
 
 QMAKE_LFLAGS += -g \
                 -Wl,-Bsymbolic-functions \

@@ -4812,7 +4812,7 @@ void systemback::ilstupdt(bool inc, cQStr &dir)
         inc ? (ilst = ui->includeitemslist, dlst = ui->includedlist) : (ilst = ui->excludeitemslist, dlst = ui->excludedlist);
 
         for(cQStr &item : QDir(dir).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-            if((inc || ui->liveexclude->isChecked() ? ! item.startsWith('.') : item.startsWith('.') && ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"})) && dlst->findItems(item, Qt::MatchExactly).isEmpty())
+            if((inc || ui->liveexclude->isChecked() ? ! sb::like(item, {"_.*", "_snap_"}) : [&item] { return item.startsWith('.') ? ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}) : item == "snap"; }()) && dlst->findItems(item, Qt::MatchExactly).isEmpty())
             {
                 QList<QTrWI *> flst(ilst->findItems(item, Qt::MatchExactly));
 
@@ -4891,7 +4891,7 @@ void systemback::on_pointexclude_clicked()
             {
                 QStr cline(sb::left(file.readLine(), -1));
 
-                if(cline.startsWith('.'))
+                if(sb::like(cline, {"_.*", "_snap_", "_snap/*"}))
                 {
                     if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
                 }
@@ -5150,7 +5150,7 @@ void systemback::on_dirrefresh_clicked()
     busy();
     if(ui->dirchoose->topLevelItemCount()) ui->dirchoose->clear();
     QStr pwdrs(sb::fload("/etc/passwd"));
-    QSL excl{"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "srv", "sys", "tmp", "usr", "var"};
+    QSL excl{"bin", "boot", "cdrom", "dev", "etc", "lib", "lib32", "lib64", "opt", "proc", "root", "run", "sbin", "selinux", "snap", "srv", "sys", "tmp", "usr", "var"};
     ushort sz(ss(12));
 
     for(cQStr &item : QDir("/").entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot))
@@ -6424,7 +6424,7 @@ void systemback::on_excludeadditem_clicked()
             {
                 QStr cline(in.readLine());
 
-                if(cline.startsWith('.'))
+                if(sb::like(cline, {"_.*", "_snap_", "_snap/*"}))
                 {
                     if(ui->pointexclude->isChecked()) ui->excludedlist->addItem(cline);
                 }
@@ -7168,7 +7168,7 @@ void systemback::on_livenew_clicked()
                     dlg = 328;
             }
 
-            for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/var/.sblvtmp", "/home/.sbuserdata", "/root/.sbuserdata"})
+            for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/snap/.sblvtmp", "/var/.sblvtmp", "/home/.sbuserdata", "/root/.sbuserdata"})
                 if(sb::isdir(dir)) sb::remove(dir);
 
             if(sb::autoiso) on_livemenu_clicked();
@@ -7361,12 +7361,12 @@ void systemback::on_livenew_clicked()
                 for(cQStr &item : QDir(cdir).entryList(QDir::Files))
                     if(item.contains("cryptdisks")) elist.append(" -e " % cdir % '/' % item);
 
-        if(sb::exec("mksquashfs" % ide % " \"" % sb::sdir[2] % "\"/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var \"" % sb::sdir[2] % "\"/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, sb::Prgrss)) return err(311);
+        if(sb::exec("mksquashfs" % ide % " \"" % sb::sdir[2] % "\"/.sblivesystemcreate/.systemback /media/.sblvtmp/media /snap/.sblvtmp/snap /var/.sblvtmp/var \"" % sb::sdir[2] % "\"/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, sb::Prgrss)) return err(311);
     }
 
     pset(19, " 3/3"),
     sb::Progress = -1;
-    for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/var/.sblvtmp"}) sb::remove(dir);
+    for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/snap/.sblvtmp", "/var/.sblvtmp"}) sb::remove(dir);
 
     for(cQStr &dir : {"/home/.sbuserdata", "/root/.sbuserdata"})
         if(sb::isdir(dir)) sb::remove(dir);

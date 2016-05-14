@@ -32,9 +32,7 @@
 
 #define fnln __attribute__((always_inline))
 #define cfgfile "/etc/systemback/systemback.conf"
-#define oldcfgfile "/etc/systemback.conf"
 #define excfile "/etc/systemback/systemback.excludes"
-#define oldexcfile "/etc/systemback.excludes"
 #define incfile "/etc/systemback/systemback.includes"
 
 class SHARED_EXPORT_IMPORT sb : public QThread
@@ -95,6 +93,7 @@ public:
 
     static bool srestore(uchar mthd, cQStr &usr, cQStr &srcdir, cQStr &trgt, bool sfstab = false),
                 mkpart(cQStr &dev, ullong start = 0, ullong len = 0, uchar type = Primary),
+                mcheck(cQStr &item, cQStr &mnts = fload("/proc/self/mounts")),
                 mount(cQStr &dev, cQStr &mpoint, cQStr &moptns = nullptr),
                 like(cQStr &txt, cQSL &lst, uchar mode = Norm),
                 execsrch(cQStr &fname, cQStr &ppath = nullptr),
@@ -111,7 +110,6 @@ public:
                 crtrpoint(cQStr &pname),
                 islnxfs(cQStr &path),
                 remove(cQStr &path),
-                mcheck(cQStr &item),
                 lvprpr(bool iudata),
                 fopen(QFile &file),
                 umount(cQStr &dev),
@@ -150,6 +148,7 @@ private:
     static ullong devsize(cQStr &dev);
 
     static bool rodir(QBA &ba, QUCL &ucl, cQStr &path, uchar hidden = False, cQSL &ilist = QSL(), uchar oplen = 0),
+                rodir(cQStr &path, QBA &ba, QUCL &ucl, ullong id = 0, uchar oplen = 0),
                 cerr(uchar type, cQStr &str1, cQStr &str2 = nullptr),
                 rodir(QUCL &ucl, cQStr &path, uchar oplen = 0),
                 rodir(QBA &ba, cQStr &path, uchar oplen = 0),
@@ -169,7 +168,8 @@ private:
          exclcheck(cQSL &elist, cQStr &item),
          lcomp(cQStr &link1, cQStr &link2),
          thrdcrtrpoint(cQStr &trgt),
-         thrdlvprpr(bool iudata);
+         thrdlvprpr(bool iudata),
+         umnt(cbstr &dev);
 
     void edetect(QSL &elst, bool spath = false);
 };

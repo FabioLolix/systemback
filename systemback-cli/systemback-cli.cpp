@@ -287,7 +287,7 @@ uchar systemback::storagedir(cQSL &args)
             if(args.count() > 3)
                 for(uchar a(3) ; a < args.count() ; ++a) idir.append(' ' % args.at(a));
 
-            QSL excl{"*/Systemback_", "*/Systemback/*", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/srv_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"};
+            QSL excl{"*/Systemback_", "*/Systemback/*", "*/_", "_/bin_", "_/bin/*", "_/boot_", "_/boot/*", "_/cdrom_", "_/cdrom/*", "_/dev_", "_/dev/*", "_/etc_", "_/etc/*", "_/lib_", "_/lib/*", "_/lib32_", "_/lib32/*", "_/lib64_", "_/lib64/*", "_/opt_", "_/opt/*", "_/proc_", "_/proc/*", "_/root_", "_/root/*", "_/run_", "_/run/*", "_/sbin_", "_/sbin/*", "_/selinux_", "_/selinux/*", "_/snap_", "_/snap/*", "_/srv_", "_/srv/*_", "_/sys_", "_/sys/*", "_/tmp_", "_/tmp/*", "_/usr_", "_/usr/*", "_/var_", "_/var/*"};
             if(sb::like(ndir = QDir::cleanPath(idir), excl) || sb::like(cpath = QDir(idir).canonicalPath(), excl) || sb::like(sb::fload("/etc/passwd"), {"*:" % idir % ":*","*:" % ndir % ":*", "*:" % cpath % ":*"}) || ! sb::islnxfs(cpath)) return 9;
         }
 

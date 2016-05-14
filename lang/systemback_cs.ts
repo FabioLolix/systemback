@@ -101,102 +101,102 @@
         <translation>Návratový kód:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="973"/>
+        <location filename="../libsystemback/sblib.cpp" line="972"/>
         <source>Failed to detect the device for installing the GRUB!</source>
         <translation>Nezdařilo se zjistit zařízení pro instalaci zavaděče GRUB!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1096"/>
+        <location filename="../libsystemback/sblib.cpp" line="1095"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>V průběhu přechodu na novější verzi systému došlo k chybě!</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1097"/>
+        <location filename="../libsystemback/sblib.cpp" line="1096"/>
         <source>Restart upgrade ...</source>
         <translation>Opakovat pokus o přechod na novější verzi ...</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1121"/>
+        <location filename="../libsystemback/sblib.cpp" line="1120"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation>Tento soubor nemůže být zkopírován protože neexistuje:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1134"/>
+        <location filename="../libsystemback/sblib.cpp" line="1133"/>
         <source>The following partition has no UUID:</source>
         <translation>Tento oddíl nemá univerzálně jedinečný identifikátor (UUID):</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1152"/>
+        <location filename="../libsystemback/sblib.cpp" line="1151"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation>Došlo k chybě při vytváření nového oddílu na tomto zařízení:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1165"/>
+        <location filename="../libsystemback/sblib.cpp" line="1164"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation>Došlo k chybě při připojování tohoto oddílu/obrazu:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1197"/>
+        <location filename="../libsystemback/sblib.cpp" line="1196"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation>Došlo k chybě při nastavování jednoho či více příznaků (flag) na tomto oddílu:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1197"/>
+        <location filename="../libsystemback/sblib.cpp" line="1196"/>
         <source>Flag(s):</source>
         <translation>Příznaky (flag):</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1217"/>
+        <location filename="../libsystemback/sblib.cpp" line="1216"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation>Došlo k chybě při vytváření tabulky oddílů na tomto zařízení:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1239"/>
+        <location filename="../libsystemback/sblib.cpp" line="1238"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation>Došlo k chybě při odpojování tohoto oddílu/obrazu / přípojného bodu:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1289"/>
+        <location filename="../libsystemback/sblib.cpp" line="1288"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation>Došlo k chybě při klonování vlastností této položky:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1289"/>
+        <location filename="../libsystemback/sblib.cpp" line="1288"/>
         <source>Target item:</source>
         <translation>Cílová položka:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1321"/>
+        <location filename="../libsystemback/sblib.cpp" line="1320"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation>Došlo k chybě při klonování tohoto symbolického odkazu:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1321"/>
+        <location filename="../libsystemback/sblib.cpp" line="1320"/>
         <source>Target symlink:</source>
         <translation>Cílový symbolický odkaz:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1334"/>
+        <location filename="../libsystemback/sblib.cpp" line="1333"/>
         <source>An error occurred while cloning the following file:</source>
         <translation>Došlo k chybě při klonování tohoto souboru:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1334"/>
+        <location filename="../libsystemback/sblib.cpp" line="1333"/>
         <source>Target file:</source>
         <translation>Cílový soubor:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1385"/>
+        <location filename="../libsystemback/sblib.cpp" line="1384"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation>Došlo k chybě při klonování této složky:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1385"/>
+        <location filename="../libsystemback/sblib.cpp" line="1384"/>
         <source>Target directory:</source>
         <translation>Cílová složka:</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1709"/>
+        <location filename="../libsystemback/sblib.cpp" line="1769"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation>Došlo k chybě při mazání této složky:</translation>
     </message>

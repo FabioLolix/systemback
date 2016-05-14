@@ -101,102 +101,102 @@
         <translation>退出代码：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="973"/>
+        <location filename="../libsystemback/sblib.cpp" line="972"/>
         <source>Failed to detect the device for installing the GRUB!</source>
         <translation>为安装GRUB探测设备失败！</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1096"/>
+        <location filename="../libsystemback/sblib.cpp" line="1095"/>
         <source>An error occurred while upgrading the system!</source>
         <translation>进行系统更新出现错误！</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1097"/>
+        <location filename="../libsystemback/sblib.cpp" line="1096"/>
         <source>Restart upgrade ...</source>
         <translation>重新更新……</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1121"/>
+        <location filename="../libsystemback/sblib.cpp" line="1120"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation>这个文件由于不存在而无法被复制：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1134"/>
+        <location filename="../libsystemback/sblib.cpp" line="1133"/>
         <source>The following partition has no UUID:</source>
         <translation>以下分区没有UUID：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1152"/>
+        <location filename="../libsystemback/sblib.cpp" line="1151"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation>在以下设备上新建分区时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1165"/>
+        <location filename="../libsystemback/sblib.cpp" line="1164"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation>在挂载以下分区/镜像时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1197"/>
+        <location filename="../libsystemback/sblib.cpp" line="1196"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation>在以下分区上设置一个或多个标志位时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1197"/>
+        <location filename="../libsystemback/sblib.cpp" line="1196"/>
         <source>Flag(s):</source>
         <translation>标志位：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1217"/>
+        <location filename="../libsystemback/sblib.cpp" line="1216"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation>在以下设备上新建分区表时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1239"/>
+        <location filename="../libsystemback/sblib.cpp" line="1238"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation>在卸载以下分区/镜像/挂载点时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1289"/>
+        <location filename="../libsystemback/sblib.cpp" line="1288"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation>在克隆以下条目的属性时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1289"/>
+        <location filename="../libsystemback/sblib.cpp" line="1288"/>
         <source>Target item:</source>
         <translation>目标条目：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1321"/>
+        <location filename="../libsystemback/sblib.cpp" line="1320"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation>在克隆以下符号链接时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1321"/>
+        <location filename="../libsystemback/sblib.cpp" line="1320"/>
         <source>Target symlink:</source>
         <translation>目标链接：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1334"/>
+        <location filename="../libsystemback/sblib.cpp" line="1333"/>
         <source>An error occurred while cloning the following file:</source>
         <translation>在克隆以下文件时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1334"/>
+        <location filename="../libsystemback/sblib.cpp" line="1333"/>
         <source>Target file:</source>
         <translation>目标文件：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1385"/>
+        <location filename="../libsystemback/sblib.cpp" line="1384"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation>在克隆以下目录时发生了一个错误：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1385"/>
+        <location filename="../libsystemback/sblib.cpp" line="1384"/>
         <source>Target directory:</source>
         <translation>目标目录：</translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1709"/>
+        <location filename="../libsystemback/sblib.cpp" line="1769"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation>在删除以下目录时发生了一个错误：</translation>
     </message>

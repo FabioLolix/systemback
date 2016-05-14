@@ -1714,102 +1714,102 @@ These will be defined as restorable configuration files!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="973"/>
+        <location filename="../libsystemback/sblib.cpp" line="972"/>
         <source>Failed to detect the device for installing the GRUB!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1096"/>
+        <location filename="../libsystemback/sblib.cpp" line="1095"/>
         <source>An error occurred while upgrading the system!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1097"/>
+        <location filename="../libsystemback/sblib.cpp" line="1096"/>
         <source>Restart upgrade ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1121"/>
+        <location filename="../libsystemback/sblib.cpp" line="1120"/>
         <source>This file could not be copied because it does not exist:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1134"/>
+        <location filename="../libsystemback/sblib.cpp" line="1133"/>
         <source>The following partition has no UUID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1152"/>
+        <location filename="../libsystemback/sblib.cpp" line="1151"/>
         <source>An error occurred while creating a new partition on the following device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1165"/>
+        <location filename="../libsystemback/sblib.cpp" line="1164"/>
         <source>An error occurred while mounting the following partition/image:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1197"/>
+        <location filename="../libsystemback/sblib.cpp" line="1196"/>
         <source>An error occurred while setting one or more flags on the following partition:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1197"/>
+        <location filename="../libsystemback/sblib.cpp" line="1196"/>
         <source>Flag(s):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1217"/>
+        <location filename="../libsystemback/sblib.cpp" line="1216"/>
         <source>An error occurred while creating the partition table on the following device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1239"/>
+        <location filename="../libsystemback/sblib.cpp" line="1238"/>
         <source>An error occurred while unmounting the following partition/image/mount point:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1289"/>
+        <location filename="../libsystemback/sblib.cpp" line="1288"/>
         <source>An error occurred while cloning the properties of the following item:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1289"/>
+        <location filename="../libsystemback/sblib.cpp" line="1288"/>
         <source>Target item:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1321"/>
+        <location filename="../libsystemback/sblib.cpp" line="1320"/>
         <source>An error occurred while cloning the following symbolic link:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1321"/>
+        <location filename="../libsystemback/sblib.cpp" line="1320"/>
         <source>Target symlink:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1334"/>
+        <location filename="../libsystemback/sblib.cpp" line="1333"/>
         <source>An error occurred while cloning the following file:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1334"/>
+        <location filename="../libsystemback/sblib.cpp" line="1333"/>
         <source>Target file:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1385"/>
+        <location filename="../libsystemback/sblib.cpp" line="1384"/>
         <source>An error occurred while cloning the following directory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1385"/>
+        <location filename="../libsystemback/sblib.cpp" line="1384"/>
         <source>Target directory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../libsystemback/sblib.cpp" line="1709"/>
+        <location filename="../libsystemback/sblib.cpp" line="1769"/>
         <source>An error occurred while deleting the following directory:</source>
         <translation type="unfinished"></translation>
     </message>

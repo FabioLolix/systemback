@@ -34,11 +34,18 @@ public:
     operator cchar *() const;
 
     cchar *data;
+
+    cchar *rplc(cchar *bef, cchar *aft);
 };
 
 inline bstr::operator cchar *() const
 {
     return data;
+}
+
+inline cchar *bstr::rplc(cchar *bef, cchar *aft)
+{
+    return ba.replace(bef, aft);
 }
 
 #endif

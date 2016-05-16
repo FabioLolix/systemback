@@ -7366,9 +7366,9 @@ void systemback::on_livenew_clicked()
 
     pset(19, " 3/3"),
     sb::Progress = -1;
-    for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/snap/.sblvtmp", "/var/.sblvtmp"}) sb::remove(dir);
+    for(cQStr &dir : {"/.sblvtmp", "/media/.sblvtmp", "/var/.sblvtmp"}) sb::remove(dir);
 
-    for(cQStr &dir : {"/home/.sbuserdata", "/root/.sbuserdata"})
+    for(cQStr &dir : {"/home/.sbuserdata", "/root/.sbuserdata", "/snap/.sblvtmp"})
         if(sb::isdir(dir)) sb::remove(dir);
 
     if(intrrpt) return err();

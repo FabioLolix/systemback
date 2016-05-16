@@ -7335,7 +7335,7 @@ void systemback::on_livenew_clicked()
     {
         QStr ide;
 
-        for(cQStr &item : {"/.sblvtmp/cdrom", "/.sblvtmp/dev", "/.sblvtmp/mnt", "/.sblvtmp/proc", "/.sblvtmp/run", "/.sblvtmp/srv", "/.sblvtmp/sys", "/.sblvtmp/tmp", "/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"})
+        for(cQStr &item : {"/.sblvtmp/cdrom", "/.sblvtmp/dev", "/.sblvtmp/mnt", "/.sblvtmp/proc", "/.sblvtmp/run", "/.sblvtmp/srv", "/.sblvtmp/sys", "/.sblvtmp/tmp", "/bin", "/boot", "/etc", "/lib", "/lib32", "/lib64", "/opt", "/sbin", "/selinux", "/snap/.sblvtmp/snap", "/usr", "/initrd.img", "/initrd.img.old", "/vmlinuz", "/vmlinuz.old"})
             if(sb::exist(item)) ide.append(' ' % item);
 
         if(sb::isdir(sb::sdir[2] % "/.sblivesystemcreate/userdata"))
@@ -7361,7 +7361,7 @@ void systemback::on_livenew_clicked()
                 for(cQStr &item : QDir(cdir).entryList(QDir::Files))
                     if(item.contains("cryptdisks")) elist.append(" -e " % cdir % '/' % item);
 
-        if(sb::exec("mksquashfs" % ide % " \"" % sb::sdir[2] % "\"/.sblivesystemcreate/.systemback /media/.sblvtmp/media /snap/.sblvtmp/snap /var/.sblvtmp/var \"" % sb::sdir[2] % "\"/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, sb::Prgrss)) return err(311);
+        if(sb::exec("mksquashfs" % ide % " \"" % sb::sdir[2] % "\"/.sblivesystemcreate/.systemback /media/.sblvtmp/media /var/.sblvtmp/var \"" % sb::sdir[2] % "\"/.sblivesystemcreate/" % lvtype % "/filesystem.squashfs " % (sb::xzcmpr ? "-comp xz " : nullptr) % "-info -b 1M -no-duplicates -no-recovery -always-use-fragments" % elist, sb::Prgrss)) return err(311);
     }
 
     pset(19, " 3/3"),

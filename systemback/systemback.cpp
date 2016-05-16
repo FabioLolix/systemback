@@ -4812,7 +4812,7 @@ void systemback::ilstupdt(bool inc, cQStr &dir)
         inc ? (ilst = ui->includeitemslist, dlst = ui->includedlist) : (ilst = ui->excludeitemslist, dlst = ui->excludedlist);
 
         for(cQStr &item : QDir(dir).entryList(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot))
-            if((inc || ui->liveexclude->isChecked() ? ! sb::like(item, {"_.*", "_snap_"}) : [&item] { return item.startsWith('.') ? ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}) : item == "snap"; }()) && dlst->findItems(item, Qt::MatchExactly).isEmpty())
+            if((inc || ui->liveexclude->isChecked() ? ! sb::like(item, {"_.*", "_snap_"}) : item.startsWith('.') ? ! sb::like(item, {"_.gvfs_", "_.Xauthority_", "_.ICEauthority_"}) : item == "snap") && dlst->findItems(item, Qt::MatchExactly).isEmpty())
             {
                 QList<QTrWI *> flst(ilst->findItems(item, Qt::MatchExactly));
 
